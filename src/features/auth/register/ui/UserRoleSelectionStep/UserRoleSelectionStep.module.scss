@@ -1,0 +1,54 @@
+.cards {
+	display: flex;
+	flex-direction: column;
+	gap: 40px;
+}
+
+.clientCard,
+.lawyerCard {
+	border-radius: 10px;
+	width: 390px;
+	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
+}
+
+.clientCard {
+	background-color: rgba(237, 238, 247, 1);
+}
+
+.lawyerCard {
+	background-color: rgba(245, 241, 238, 1);
+}
+
+.inner {
+	padding: 16px;
+	position: relative;
+}
+
+.left {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-width: 210px;
+}
+
+.right {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	img {
+		object-fit: cover;
+	}
+}
+
+.title {
+	font-size: 17px;
+	font-weight: 600;
+	line-height: 22px;
+}
+
+.descr {
+	color: $light-gray-color;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 130%;
+}

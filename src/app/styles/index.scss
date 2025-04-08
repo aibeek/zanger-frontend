@@ -1,0 +1,57 @@
+@use './reset.scss';
+
+body {
+	color: $primary-color;
+	font-family: 'Open Sans', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.authedWrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	gap: 40px;
+	min-height: 100vh;
+	background-color: $primary-bg;
+}
+
+.container {
+	max-width: 1200px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.container-big {
+	max-width: 1600px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.search-select {
+	height: 100%;
+
+	.ant-select-selector {
+		border: 1px solid $light-blue-color !important;
+		font-size: 14px !important;
+		line-height: 130% !important;
+		padding: 11px !important;
+		border-radius: 10px;
+		font-weight: 400 !important;
+		color: $primary-color !important;
+	}
+
+	.ant-select-item-option-hidden {
+	}
+
+	.ant-select-item-option-active {
+	}
+
+	.ant-select-item-option:hover {
+	}
+}

@@ -1,0 +1,58 @@
+.wrapper {
+	background-color: white;
+	border-radius: 20px;
+	max-width: 435px;
+}
+
+.inner {
+	padding: 38px 46px;
+}
+
+.top {
+	text-align: center;
+	color: $secondary-color;
+	margin-bottom: 38px;
+}
+
+.btn {
+	margin-top: 30px;
+}
+
+.label {
+	display: block;
+	margin-bottom: 6px;
+}
+
+.error {
+	color: $error-color;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 130%;
+	margin-top: 6px;
+}
+
+.title {
+	font-size: 25px;
+	margin-bottom: 8px;
+	line-height: 120%;
+}
+
+.form {
+	margin-bottom: 16px;
+}
+
+.descr {
+	font-weight: 400;
+	line-height: 120%;
+}
+
+.warning {
+	font-size: 14px;
+	line-height: 130%;
+	color: $light-gray-color;
+	text-align: center;
+}
+
+.link {
+	color: $blue-color;
+}
