@@ -1,3 +1,5 @@
+import { authApi } from './authApi'
+
 export const tokenService = {
 	saveToken({ access_token, expires_in }: { access_token: string; expires_in: number }) {
 		localStorage.setItem('access_token', access_token)
@@ -27,5 +29,21 @@ export const tokenService = {
 			throw new Error('Токен просрочен, требуется повторная авторизация')
 		}
 		return this.getToken()
+	},
+
+	async getRole(): Promise<'client' | 'lawyer' | 'manager' | 'admin' | null> {
+		const token = this.getToken()
+		if (!token) return null
+
+		try {
+			const response = await authApi.me()
+
+			if (!response.ok) {
+				throw new Error('Не удалось получить данные пользователя')
+			}
+			console.log(response)
+
+			return response.data.role_id.code ?? null
+		} catch (error) {}
 	},
 }
