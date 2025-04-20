@@ -4,9 +4,9 @@ import { useEffect } from 'react'
 import { redirect, useParams } from 'next/navigation'
 
 import { useStepMarcher } from '@/shared'
-import { EnterPhoneNumberStep } from '@/features/auth/register'
-import { PhoneVerificationStep } from '@/features/PhoneVerificationStep'
 import { EnterNewPasswordStep } from '@/features/auth/reset-password/ui'
+import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
+import { PhoneVerificationStep } from '@/widgets/PhoneVerificationStep'
 
 const stepComponents = {
 	phone: EnterPhoneNumberStep,

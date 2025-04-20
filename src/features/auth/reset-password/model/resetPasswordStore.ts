@@ -1,59 +1,65 @@
 import { create } from 'zustand'
-
+import { z } from 'zod'
+import { passwordSchema } from '@/shared'
 import { authApi } from '@/shared/api'
+import { redirect } from 'next/navigation'
 
-interface NewPasswordStore {
+interface NewPasswordState {
 	password: string
-	passwordConfirmation: string
-	loading: boolean
-	error: string | null
-	setPassword: (val: string) => void
-	setPasswordConfirmation: (val: string) => void
-	saveNewPassword: (onSuccess: () => void, onSuccessCondition?: (res: any) => boolean) => Promise<void>
+	password_confirmation: string
+	errors: Partial<Record<keyof z.infer<typeof passwordSchema>, string>>
+	isSubmitting: boolean
+	success: boolean
+	setField: (field: string, value: string) => void
+	submit: () => Promise<void>
+	checkPhoneExist: (phone: string | null, locale: string) => void
 }
 
-export const useNewPassword = create<NewPasswordStore>((set, get) => ({
+export const useNewPasswordStore = create<NewPasswordState>((set, get) => ({
 	password: '',
-	passwordConfirmation: '',
-	loading: false,
-	error: null,
+	password_confirmation: '',
+	errors: {},
+	isSubmitting: false,
+	success: false,
+	setField: (field, value) => {
+		set({ [field]: value })
+	},
 
-	setPassword: (val) => set({ password: val, error: null }),
-	setPasswordConfirmation: (val) => set({ passwordConfirmation: val, error: null }),
+	checkPhoneExist: (phone, locale) => {
+		if (!phone) {
+			redirect(`/${locale}/auth/reset-password`)
+		}
+	},
 
-	saveNewPassword: async (
-		onSuccess,
-		onSuccessCondition = (res: any) => res?.message === 'messages.password_success_reset',
-	) => {
-		const { password, passwordConfirmation } = get()
+	submit: async () => {
+		const { password, password_confirmation } = get()
 
-		if (!password || !passwordConfirmation) {
-			set({ error: 'Заполните все поля' })
+		const parsed = passwordSchema.safeParse({ password, password_confirmation })
+
+		if (!parsed.success) {
+			const errors: any = {}
+			for (const key in parsed.error.formErrors.fieldErrors) {
+				errors[key] = parsed.error.formErrors.fieldErrors[key]?.[0] ?? ''
+			}
+			set({ errors })
 			return
 		}
 
-		if (password !== passwordConfirmation) {
-			set({ error: 'Пароли не совпадают' })
-			return
-		}
-
-		set({ loading: true, error: null })
+		set({ isSubmitting: true, errors: {}, success: false })
 
 		try {
-			const res = await authApi.updatePassword({ password, password_confirmation: passwordConfirmation })
+			const res = (await authApi.updatePassword({ password, password_confirmation })) as { message: string }
 
-			console.log('resetPassword response:', res)
-
-			if (onSuccessCondition(res)) {
-				onSuccess()
+			if (res.message === 'messages.password_success_reset') {
+				set({ success: true })
 			} else {
-				set({ error: 'Не удалось сменить пароль' })
+				alert('Не удалось сменить пароль')
 			}
 		} catch (e) {
 			console.error(e)
-			set({ error: 'Ошибка при смене пароля' })
+			alert('Ошибка при смене пароля')
 		} finally {
-			set({ loading: false })
+			set({ isSubmitting: false })
 		}
 	},
 }))

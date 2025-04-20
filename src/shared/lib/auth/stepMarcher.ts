@@ -9,8 +9,6 @@ type Mode = 'register' | 'resetPassword'
 const registerStepsConfig: Record<Role, StepKey[]> = {
 	client: ['phone', 'code', 'clientRegistrationForm'],
 	lawyer: ['phone', 'code', 'lawyerRegistrationForm'],
-	manager: [],
-	admin: [],
 }
 
 const resetPasswordStepsConfig: StepKey[] = ['phone', 'code', 'newPassword', 'success']

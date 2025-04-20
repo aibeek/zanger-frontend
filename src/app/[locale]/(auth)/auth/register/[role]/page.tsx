@@ -5,9 +5,9 @@ import { redirect, useParams } from 'next/navigation'
 
 import { arrRoles } from '@/shared/lib/consts'
 import { Role, useStepMarcher } from '@/shared'
-import { PhoneVerificationStep } from '@/features/PhoneVerificationStep'
-import { EnterPhoneNumberStep } from '@/features/EnterPhoneNumberStep'
 import { RegistrationFormStep } from '@/features/auth/register'
+import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
+import { PhoneVerificationStep } from '@/widgets/PhoneVerificationStep'
 
 const stepComponents = {
 	phone: EnterPhoneNumberStep,

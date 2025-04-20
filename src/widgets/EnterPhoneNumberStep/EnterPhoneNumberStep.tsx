@@ -6,10 +6,10 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button, Input } from '@/shared/ui-kit'
+import { useEnterPhone } from '@/features/auth/register'
 import { PhoneAuthVariant, useStepMarcher, phoneSchema, PhoneSchemaType } from '@/shared'
 
 import s from './EnterPhoneNumberStep.module.scss'
-import { useEnterPhone } from '../auth/register'
 
 type Props = { warning?: boolean; variant: PhoneAuthVariant }
 

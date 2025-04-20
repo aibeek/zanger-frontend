@@ -3,34 +3,29 @@
 import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
-import { useEnterPhone } from '@/features/auth/register'
 import { Input, Button } from '@/shared/ui-kit'
+import { useEnterPhone } from '@/features/auth/register'
 
-import { useNewPassword } from '../../model/resetPasswordStore'
 import s from './EnterNewPasswordStep.module.scss'
+import { useNewPasswordStore } from '../../model/resetPasswordStore'
 
 export const EnterNewPasswordStep = () => {
 	const { locale } = useParams()
 	const router = useRouter()
-
 	const phone = useEnterPhone((s) => s.phone)
 
-	const { password, passwordConfirmation, loading, error, setPassword, setPasswordConfirmation, saveNewPassword } =
-		useNewPassword()
+	const { password, password_confirmation, setField, submit, checkPhoneExist, errors, isSubmitting, success } =
+		useNewPasswordStore()
 
 	useEffect(() => {
-		if (!phone) {
-			router.replace(`/${locale}/auth/reset-password`)
-		}
-	}, [phone, locale, router])
+		checkPhoneExist(phone, String(locale))
+	}, [phone, locale])
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault()
-
-		await saveNewPassword(() => {
+	useEffect(() => {
+		if (success) {
 			router.push(`/${locale}/auth/login`)
-		})
-	}
+		}
+	}, [success, locale, router])
 
 	return (
 		<div className={s.wrapper}>
@@ -41,15 +36,18 @@ export const EnterNewPasswordStep = () => {
 
 				<form
 					className={s.form}
-					onSubmit={handleSubmit}>
+					onSubmit={(e) => {
+						e.preventDefault()
+						submit()
+					}}>
 					<div className={`${s.password} ${s.inputBox}`}>
 						<label className={s.label}>Пароль</label>
 						<Input
 							type="password"
 							placeholder="Введите пароль"
 							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							hasError={!!error && !password}
+							onChange={(e) => setField('password', e.target.value)}
+							hasError={!!errors.password}
 						/>
 					</div>
 
@@ -58,26 +56,24 @@ export const EnterNewPasswordStep = () => {
 						<Input
 							type="password"
 							placeholder="Повторите пароль"
-							value={passwordConfirmation}
-							onChange={(e) => setPasswordConfirmation(e.target.value)}
-							hasError={!!error && password !== passwordConfirmation}
+							value={password_confirmation}
+							onChange={(e) => setField('password_confirmation', e.target.value)}
+							hasError={!!errors.password_confirmation}
 						/>
-
-						<p className={s.descr}>
+						{errors.password_confirmation && <p className={s.error}>{errors.password_confirmation}</p>}
+						<p className={`${s.descr} ${errors.password ? s.descrError : ''}`}>
 							Пароль должен состоять минимум из 6 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и
 							специальные символы (! ? $ % *)
 						</p>
 					</div>
-
-					{error && <p className={s.error}>{error}</p>}
 
 					<Button
 						className={s.btn}
 						variant="primary"
 						size="full"
 						type="submit"
-						disabled={loading}>
-						{loading ? 'Сохраняем...' : 'Сменить пароль'}
+						disabled={isSubmitting}>
+						{isSubmitting ? 'Сохраняем...' : 'Сменить пароль'}
 					</Button>
 				</form>
 			</div>

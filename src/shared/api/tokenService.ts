@@ -31,19 +31,19 @@ export const tokenService = {
 		return this.getToken()
 	},
 
-	async getRole(): Promise<'client' | 'lawyer' | 'manager' | 'admin' | null> {
+	async getRole(): Promise<'client' | 'lawyer' | null> {
 		const token = this.getToken()
 		if (!token) return null
 
 		try {
-			const response = await authApi.me()
+			const personalData = await authApi.me()
+			// @ts-expect-error fix it
+			const currentRole = personalData.role_id.code
 
-			if (!response.ok) {
-				throw new Error('Не удалось получить данные пользователя')
-			}
-			console.log(response)
-
-			return response.data.role_id.code ?? null
-		} catch (error) {}
+			return currentRole
+		} catch (error) {
+			console.error('Ошибка при получении роли:', error)
+			return null
+		}
 	},
 }

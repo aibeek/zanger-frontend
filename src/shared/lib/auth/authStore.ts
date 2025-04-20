@@ -13,6 +13,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set) => ({
 	isAuthenticated: false,
 	authChecked: false,
+
 	checkAuth: async () => {
 		const valid = tokenService.isTokenValid()
 
@@ -25,7 +26,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 		}
 
 		const role = await tokenService.getRole()
-		Cookies.set('role', role)
+
+		if (role) {
+			Cookies.set('role', role)
+		}
 		set({ isAuthenticated: valid, authChecked: true })
 	},
 

@@ -1,10 +1,10 @@
 import { Button } from '@/shared/ui-kit'
-import { useRequestTimer, useStepMarcher } from '@/shared/lib'
-import { authApi, PhoneAuthVariant } from '@/shared/api'
 import { InputOTPPattern } from '@/shared/ui-kit'
+import { authApi, PhoneAuthVariant } from '@/shared/api'
+import { useRequestTimer, useStepMarcher } from '@/shared/lib'
+import { useEnterPhone, useVerifyCode } from '@/features/auth/register'
 
 import s from './PhoneVerificationStep.module.scss'
-import { useEnterPhone, useVerifyCode } from '../auth/register'
 
 type Props = {
 	variant: PhoneAuthVariant

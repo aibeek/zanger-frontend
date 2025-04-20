@@ -1,4 +1,3 @@
-export * from '../../../EnterPhoneNumberStep'
 export * from './RegistrationFormStep'
 export * from './UserRoleSelectionStep'
 export * from './CitiesSelect'

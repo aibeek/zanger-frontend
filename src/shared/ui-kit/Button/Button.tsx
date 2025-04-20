@@ -27,7 +27,6 @@ export const Button: React.FC<ButtonProps> = ({ className, children, variant = '
 //   const reset = useLoginStore((state) => state.reset)
 
 //   const handleLogout = () => {
-//     // Очищаем хранилище состояния
 //     reset()
 //     tokenService.logout()
 //     router.push('/login') // Редирект на страницу логина

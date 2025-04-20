@@ -7,7 +7,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IMaskInput } from 'react-imask'
 
-import { Button, Input, loginSchema, LoginSchemaType } from '@/shared'
+import { authApi, Button, Input, loginSchema, LoginSchemaType } from '@/shared'
 import { useLoginStore } from '@/features/auth/login/model'
 
 import s from './Login.module.scss'
@@ -40,12 +40,13 @@ export const Login = () => {
 				phone: rawPhone,
 				password: data.password,
 			})
-			await getPersonalDataByToken()
+
+			const personalData = await authApi.me()
+			// @ts-expect-error fix it
 			const currentRole = personalData.role_id.code
 
 			router.push(`/${locale}/dashboard/${currentRole}`)
 		} catch (error: any) {
-			console.error(error)
 			setFormError(error.message)
 		}
 	}
