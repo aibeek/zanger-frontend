@@ -19,9 +19,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 	return (
 		<html lang="ru">
 			<body className={openSans.variable}>
-				<Header variant={'lendos-variant'} />
+				{/* <Header variant={'lending-variant'} /> */}
 				{children}
-				<Footer variant={'lendos-variant'} />
+				<Footer variant={'lending-variant'} />
 			</body>
 		</html>
 	)

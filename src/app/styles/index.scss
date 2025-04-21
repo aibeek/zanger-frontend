@@ -2,7 +2,7 @@
 
 body {
 	color: $primary-color;
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Open Sans', sans-serif !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	font-weight: 600;
@@ -26,11 +26,37 @@ body {
 	padding: 0 20px;
 }
 
+.container-middle {
+	max-width: 1300px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 20px;
+	@media (max-width: 480px) {
+		padding: 0 16px;
+	}
+}
+
 .container-big {
 	max-width: 1600px;
 	width: 100%;
 	margin: 0 auto;
 	padding: 0 20px;
+}
+
+.lending-title {
+	font-size: clamp(24px, 5vw, 60px);
+	font-weight: 600;
+	line-height: 130%;
+}
+
+.lending-descr {
+	font-size: 18px;
+	line-height: 140%;
+	font-weight: 400;
+	color: rgba(80, 80, 89, 1);
+	@media (max-width: 480px) {
+		font-size: 14px;
+	}
 }
 
 .search-select {
@@ -44,14 +70,5 @@ body {
 		border-radius: 10px;
 		font-weight: 400 !important;
 		color: $primary-color !important;
-	}
-
-	.ant-select-item-option-hidden {
-	}
-
-	.ant-select-item-option-active {
-	}
-
-	.ant-select-item-option:hover {
 	}
 }

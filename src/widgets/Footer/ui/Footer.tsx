@@ -2,10 +2,11 @@ import Link from 'next/link'
 import s from './Footer.module.scss'
 
 interface Props {
-	variant: 'user-variant' | 'lendos-variant'
+	variant?: 'user-variant' | 'lending-variant'
+	id?: string
 }
 
-export const Footer = ({ variant }: Props) => {
+export const Footer = ({ variant, id }: Props) => {
 	return variant === 'user-variant' ? (
 		<footer className={s.footer}>
 			<div className="container-big">
@@ -27,8 +28,10 @@ export const Footer = ({ variant }: Props) => {
 			</div>
 		</footer>
 	) : (
-		<footer className={s.footer}>
-			<h1>lendos-variant</h1>
+		<footer
+			id={id}
+			className={s.footer}>
+			<h1>lending-variant</h1>
 		</footer>
 	)
 }
