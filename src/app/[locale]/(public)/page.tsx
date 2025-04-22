@@ -2,6 +2,7 @@ import { FaqSection } from '@/widgets/MainPage/FaqSection'
 import { MainSection } from '@/widgets/MainPage/MainSection'
 import { CardsSection } from '@/widgets/MainPage/CardsSection'
 import { BenefitShowcase } from '@/widgets/MainPage/BenefitShowcase'
+import { DownloadAppSection } from '@/widgets/MainPage/DownloadAppSection'
 import { advantageData, clientsValueCards, specialistsValueCards, valueData } from '@/shared/lib/data'
 
 import s from './page.module.scss'
@@ -31,6 +32,7 @@ export default function Home() {
 				content={valueData}
 			/>
 			<FaqSection id={'faq'} />
+			<DownloadAppSection />
 		</div>
 	)
 }

@@ -26,3 +26,40 @@
 	align-items: center;
 	gap: 32px;
 }
+
+.lendingFooter {
+	padding-top: 34px;
+	background-color: rgba(6, 1, 30, 1);
+
+	.lendingBottom {
+		font-size: 12px;
+		font-weight: 400;
+		line-height: 160%;
+		padding: 24px 0;
+		color: rgba(110, 110, 121, 1);
+		position: relative;
+		&::before {
+			content: '';
+			position: absolute;
+			width: 100%;
+			top: 0;
+			right: 0;
+			left: 0;
+			height: 1px;
+			color: rgba(235, 237, 241, 1);
+			background-color: rgba(235, 237, 241, 1);
+		}
+	}
+
+	.lendingBottomInner {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.lendingBottomRight {
+		display: flex;
+		align-items: center;
+		gap: 32px;
+	}
+}

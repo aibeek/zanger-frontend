@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import s from './Footer.module.scss'
+import Logo from '@/app/assets/icons/footer-logo.svg'
+import Image from 'next/image'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -30,8 +32,34 @@ export const Footer = ({ variant, id }: Props) => {
 	) : (
 		<footer
 			id={id}
-			className={s.footer}>
-			<h1>lending-variant</h1>
+			className={s.lendingFooter}>
+			<div className="container-middle">
+				<div className={s.lengingInner}>
+					<div className={s.lendingTop}>
+						<Image
+							src={Logo}
+							alt={'логотип'}
+							width={96}
+							height={18}
+						/>
+					</div>
+
+					<div className={s.lendingMiddle}></div>
+				</div>
+			</div>
+			<div className={s.lendingBottom}>
+				<div className="container-middle">
+					<div className={s.lendingBottomInner}>
+						<div className={s.lendingBottomLeft}>
+							<p>© {new Date().getFullYear()} Zanger. Все права защищены</p>
+						</div>
+						<div className={s.lendingBottomRight}>
+							<p>Политика конфиденциальности</p>
+							<p>Публичная оферта</p>
+						</div>
+					</div>
+				</div>
+			</div>
 		</footer>
 	)
 }
