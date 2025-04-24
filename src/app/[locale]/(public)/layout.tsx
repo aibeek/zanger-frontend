@@ -21,7 +21,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 			<body className={openSans.variable}>
 				{/* <Header variant={'lending-variant'} /> */}
 				{children}
-				<Footer variant={'lending-variant'} />
+				<Footer
+					id={'footer'}
+					variant={'lending-variant'}
+				/>
 			</body>
 		</html>
 	)

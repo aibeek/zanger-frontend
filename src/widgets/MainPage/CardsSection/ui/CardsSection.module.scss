@@ -56,11 +56,9 @@
 	flex-direction: column;
 	gap: 16px;
 	max-width: 570px;
-
-	@media (max-width: 1170px) {
-		img {
-			height: 100px;
-		}
+	img {
+		width: 100px;
+		height: 100px;
 	}
 }
 

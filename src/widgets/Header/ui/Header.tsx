@@ -4,43 +4,22 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Disclosure } from '@headlessui/react'
 
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/20/solid'
-
+import closeIcon from '@/app/assets/icons/close.svg'
+import burger from '@/app/assets/icons/burger.svg'
 import { Button, headerMenuData, scrollToSection } from '@/shared'
 
 import s from './Header.module.scss'
-import { useEffect, useState } from 'react'
+import { useSectionScroll } from '@/shared/lib/hooks/useSectionScroll'
+import { useState } from 'react'
 
 export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant' }) => {
-	const [activeSection, setActiveSection] = useState<string | null>('/ru')
-
-	useEffect(() => {
-		const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-			entries.forEach((entry) => {
-				if (entry.isIntersecting) {
-					setActiveSection(`#${entry.target.id}`)
-				}
-			})
-		}
-
-		const observer = new IntersectionObserver(handleIntersect, {
-			rootMargin: '-40% 0px -55% 0px',
-			threshold: 0.1,
-		})
-
-		const sections = document.querySelectorAll('section[id]')
-		sections.forEach((section) => observer.observe(section))
-
-		return () => {
-			sections.forEach((section) => observer.unobserve(section))
-		}
-	}, [])
+	const { activeSection, setActiveSection } = useSectionScroll()
+	const [isMenuOpen, setIsMenuOpen] = useState(false)
 
 	const isActive = (link: string) => activeSection === link
-
 	if (variant === 'lending-variant') {
 		return (
-			<header className={s.lendingHeader}>
+			<header className={`${s.lendingHeader} ${isMenuOpen ? s.open : ''}`}>
 				<div className={s.left}>
 					<div className={s.logo}>
 						<Image
@@ -54,44 +33,64 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 					<Disclosure
 						as="nav"
 						className={s.nav}>
-						{({ open }) => (
-							<>
-								<div className={s.desktopMenu}>
-									{headerMenuData.map(({ name, link }) => (
-										<Link
-											key={name}
-											href={link}
-											onClick={(e) => {
-												scrollToSection(e, link)
-												setActiveSection(link)
-											}}
-											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{name}
-										</Link>
-									))}
-								</div>
-								<div className={s.mobileMenuButton}>
-									<Disclosure.Button className={s.burger}>
-										{open ? <XMarkIcon className={s.iconBurger} /> : <Bars3Icon className={s.iconBurger} />}
-									</Disclosure.Button>
-								</div>
+						{({ open, close }) => {
+							if (open !== isMenuOpen) setIsMenuOpen(open)
+							return (
+								<>
+									<div className={s.desktopMenu}>
+										{headerMenuData.map(({ name, link }) => (
+											<Link
+												key={name}
+												href={link}
+												onClick={(e) => {
+													scrollToSection(e, link)
+													setActiveSection(link)
+												}}
+												className={`${s.link} ${isActive(link) ? s.active : ''}`}>
+												{name}
+											</Link>
+										))}
+									</div>
+									<div className={s.mobileMenuButton}>
+										<Disclosure.Button className={s.burger}>
+											{open ? (
+												<Image
+													src={closeIcon}
+													alt={'закрыть'}
+													width={24}
+													height={24}
+													className={s.iconClose}
+												/>
+											) : (
+												<Image
+													src={burger}
+													alt={'кнопка открытия меню'}
+													width={24}
+													height={24}
+													className={s.iconBurger}
+												/>
+											)}
+										</Disclosure.Button>
+									</div>
 
-								<Disclosure.Panel className={s.mobileMenu}>
-									{headerMenuData.map(({ name, link }) => (
-										<Link
-											key={name}
-											href={link}
-											onClick={(e) => {
-												scrollToSection(e, link)
-												document.body.click()
-											}}
-											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{name}
-										</Link>
-									))}
-								</Disclosure.Panel>
-							</>
-						)}
+									<Disclosure.Panel className={s.mobileMenu}>
+										{headerMenuData.map(({ name, link }) => (
+											<Link
+												key={name}
+												href={link}
+												onClick={(e) => {
+													scrollToSection(e, link)
+													document.body.click()
+													close()
+												}}
+												className={`${s.link} ${isActive(link) ? s.active : ''}`}>
+												{name}
+											</Link>
+										))}
+									</Disclosure.Panel>
+								</>
+							)
+						}}
 					</Disclosure>
 				</div>
 

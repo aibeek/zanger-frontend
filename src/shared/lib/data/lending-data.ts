@@ -277,3 +277,22 @@ export const headerMenuData = [
 		link: '#footer',
 	},
 ]
+
+export const footerMenuData = [
+	{
+		name: 'Для клиентов',
+		link: '#clients',
+	},
+	{
+		name: 'Для юристов',
+		link: '#lawyers',
+	},
+	{
+		name: 'Часто задаваемые вопросы',
+		link: '#faq',
+	},
+	{
+		name: 'Контакты',
+		link: '#footer',
+	},
+]

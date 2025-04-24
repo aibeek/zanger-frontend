@@ -31,7 +31,7 @@ export default function Home() {
 				descr="Вы и представить себе не можете, сколько у нас преимуществ! Просто оставьте заявку, а мы, наши эксперты, поможем вам с решением"
 				content={valueData}
 			/>
-			<FaqSection id={'faq'} />
+			<FaqSection id="faq" />
 			<DownloadAppSection />
 		</div>
 	)
