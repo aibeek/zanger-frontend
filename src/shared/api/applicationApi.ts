@@ -1,6 +1,21 @@
 import { httpClientWithAuth } from './httpClient'
 import { baseApiURI } from '../lib/consts'
 
+type Tag = {
+	id: number
+	name: string
+}
+
+export type ApplicationHistoryItem = {
+	id: number
+	description: string
+	created_at: string
+	responses: any[]
+	responses_count: number
+	status: 'Опубликован' | 'На модерации' | 'Отменен' | 'Отклонен'
+	tag: Tag | null
+}
+
 export interface CreateApplicationType {
 	description: string
 	region_id: number

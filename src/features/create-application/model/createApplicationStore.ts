@@ -24,7 +24,7 @@ export const useCreateApplicationStore = create<CreateApplicationState>((set) =>
 
 			await applicationApi.createApplication(data)
 
-			toast.success('Ваша заявка отправлена модератору на проверку', {
+			toast.success('Ваша заявка отправлено модератору на проверку', {
 				position: 'top-right',
 			})
 

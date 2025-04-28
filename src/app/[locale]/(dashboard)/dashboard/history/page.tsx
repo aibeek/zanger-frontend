@@ -1,7 +1,12 @@
 'use client'
 
+import { ApplicationHistoryTab } from '@/features/view-application-history/ui/ApplicationHistoryTab'
 import s from './page.module.scss'
 
 export default function HistoryView() {
-	return <h1 className={s.page}>History</h1>
+	return (
+		<div className={s.page}>
+			<ApplicationHistoryTab />
+		</div>
+	)
 }
