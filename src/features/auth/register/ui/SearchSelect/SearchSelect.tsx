@@ -26,6 +26,7 @@ export function SearchSelect<T>({
 	renderGroupLabel = (name) => name,
 	placeholder = 'Выберите элемент',
 	loading = false,
+	className,
 }: GroupedSelectProps<T>) {
 	const actualData = Array.isArray(data) ? data : data || []
 
@@ -50,12 +51,11 @@ export function SearchSelect<T>({
 		<Select
 			showSearch
 			placeholder={placeholder}
-			style={{ width: '100%' }}
 			onChange={handleChange}
 			loading={loading}
 			optionFilterProp="children"
 			value={value ? getId(value) : undefined}
-			className="search-select">
+			className={className}>
 			{!groupBy &&
 				actualData.map((item) => (
 					<Option
