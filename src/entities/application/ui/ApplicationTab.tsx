@@ -1,4 +1,5 @@
 import { CreateApplicationForm } from '@/features/create-application'
+
 import s from './ApplicationTab.module.scss'
 
 export const ApplicationTab = () => {
