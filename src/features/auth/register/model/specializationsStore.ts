@@ -16,7 +16,6 @@ export const useSpecializationsStore = create<SpecializationsStore>((set) => ({
 		set({ loadingSpecializations: true })
 		try {
 			const specializations = (await sharedApi.getAllSpecializations()) as any
-			console.log(specializations)
 
 			set({ specializations: specializations })
 		} catch (error) {

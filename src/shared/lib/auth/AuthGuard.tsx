@@ -4,6 +4,7 @@ import { useEffect, ReactNode } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
 import { useAuthStore } from './authStore'
+import { Loader } from '@/shared/ui-kit'
 
 interface AuthGuardProps {
 	children: ReactNode
@@ -25,7 +26,7 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 	}, [authChecked, isAuthenticated, router, locale])
 
 	if (!authChecked) {
-		return <div>Loading...</div>
+		return <Loader />
 	}
 
 	return <>{children}</>

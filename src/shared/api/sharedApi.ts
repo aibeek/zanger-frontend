@@ -1,9 +1,22 @@
-import { httpClient } from './httpClient'
+import { httpClient, httpClientWithAuth } from './httpClient'
 import { baseApiURI } from '../lib/consts'
 
 export interface CityType {
 	id: number
 	name: 'Город' | 'Область'
+}
+
+export interface Application {
+	id: number
+	created_at: string
+	description: string
+	status: string
+	responses_count: number
+	responses: any[]
+	tag: {
+		id: number
+		name: string
+	}
 }
 
 export interface City {
@@ -13,8 +26,17 @@ export interface City {
 	path: string | null
 }
 
+export interface Tag {
+	id: number
+	name: string
+}
+
 export interface CitiesResponse {
 	data: City[]
+}
+
+export interface TagsResponse {
+	data: Tag[]
 }
 
 export const sharedApi = {
@@ -25,6 +47,11 @@ export const sharedApi = {
 
 	getAllSpecializations: () =>
 		httpClient(`${baseApiURI}/lawyer-types`, {
+			method: 'GET',
+		}),
+
+	getAllTags: () =>
+		httpClientWithAuth(`${baseApiURI}/tags`, {
 			method: 'GET',
 		}),
 }

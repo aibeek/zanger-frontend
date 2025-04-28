@@ -1,5 +1,10 @@
 @use './reset.scss';
 
+.spinner {
+	position: absolute;
+	inset: 0;
+}
+
 body {
 	color: $primary-color;
 	font-family: 'Open Sans', sans-serif !important;
@@ -9,7 +14,7 @@ body {
 	font-size: 16px;
 }
 
-.authedWrapper {
+.authed-wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -17,6 +22,20 @@ body {
 	gap: 40px;
 	min-height: 100vh;
 	background-color: $primary-bg;
+}
+
+.dashboard-top {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 54px;
+}
+
+.little-container {
+	max-width: 900px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 0 10px;
 }
 
 .container {

@@ -1,4 +1,4 @@
 export * from './RegistrationFormStep'
 export * from './UserRoleSelectionStep'
-export * from './CitiesSelect'
+export * from './SearchSelect'
 export * from './SpecializationSelect'

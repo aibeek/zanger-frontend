@@ -89,3 +89,19 @@ export const loginSchema = z.object({
 })
 
 export type LoginSchemaType = z.infer<typeof loginSchema>
+
+export const createApplicationSchema = z.object({
+	description: z
+		.string({
+			required_error: 'Опишите заявку',
+			invalid_type_error: 'Опишите заявку',
+		})
+		.min(10, 'Описание слишком короткое'),
+	tag_id: z.union([z.number(), z.null()]).optional(),
+	region_id: z.number({
+		required_error: 'Выберите регион или город',
+		invalid_type_error: 'Выберите регион или город',
+	}),
+})
+
+export type CreateApplicationSchemaType = z.infer<typeof createApplicationSchema>

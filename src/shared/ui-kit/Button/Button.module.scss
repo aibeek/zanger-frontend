@@ -34,8 +34,11 @@
 }
 
 .danger {
-	background-color: #e00;
+	background-color: $error-color;
 	color: white;
+	&:hover {
+		background-color: #e00;
+	}
 }
 
 .clear {

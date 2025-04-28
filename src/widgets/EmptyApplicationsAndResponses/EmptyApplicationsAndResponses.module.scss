@@ -1,0 +1,15 @@
+.wrapper {
+	margin-top: 100px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.img {
+	margin-bottom: 6px;
+}
+
+.descr {
+	margin-bottom: 30px;
+	color: $light-gray-color;
+}
