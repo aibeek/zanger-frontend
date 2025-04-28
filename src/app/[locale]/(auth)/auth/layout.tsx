@@ -24,7 +24,7 @@ export default function AuthLayout({
 	return (
 		<html lang="ru">
 			<body className={openSans.variable}>
-				<div className="authedWrapper">
+				<div className="authed-wrapper">
 					<Header variant={'user-variant'} />
 					<section>{children}</section>
 					<Footer variant={'user-variant'} />

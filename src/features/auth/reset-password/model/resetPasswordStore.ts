@@ -53,11 +53,9 @@ export const useNewPasswordStore = create<NewPasswordState>((set, get) => ({
 			if (res.message === 'messages.password_success_reset') {
 				set({ success: true })
 			} else {
-				alert('Не удалось сменить пароль')
 			}
 		} catch (e) {
 			console.error(e)
-			alert('Ошибка при смене пароля')
 		} finally {
 			set({ isSubmitting: false })
 		}

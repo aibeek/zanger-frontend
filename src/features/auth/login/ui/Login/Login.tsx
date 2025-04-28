@@ -41,11 +41,7 @@ export const Login = () => {
 				password: data.password,
 			})
 
-			const personalData = await authApi.me()
-			// @ts-expect-error fix it
-			const currentRole = personalData.role_id.code
-
-			router.push(`/${locale}/dashboard/${currentRole}`)
+			router.push(`/${locale}/dashboard/main`)
 		} catch (error: any) {
 			setFormError(error.message)
 		}
@@ -70,6 +66,7 @@ export const Login = () => {
 							control={control}
 							render={({ field: { onChange, onBlur, value, ref } }) => (
 								<Input
+									autoFocus
 									type="tel"
 									placeholder="Введите номер телефона"
 									hasError={!!errors.phone}

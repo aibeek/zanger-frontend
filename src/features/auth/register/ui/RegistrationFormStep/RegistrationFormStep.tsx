@@ -10,9 +10,9 @@ import { Button, clientRegistrationSchema, formatPhoneNumber, Input, lawyerRegis
 
 import s from './RegistrationFormStep.module.scss'
 import { useCitiesStore } from '../../model/citiesStore'
-import { CitiesSelect } from '../CitiesSelect/CitiesSelect'
 import { SpecializationSelect } from '../SpecializationSelect'
 import { useEnterPhone, useRegisterFormByVariant, useSpecializationsStore } from '../../model'
+import { SearchSelect } from '../SearchSelect'
 
 export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer' }) => {
 	const router = useRouter()
@@ -47,7 +47,7 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 	const onSubmit = async (data: any) => {
 		await sendData(async () => {
 			resetState()
-			router.push(`/${locale}/dashboard/${role}`)
+			router.push(`/${locale}/dashboard/main`)
 		})
 	}
 
@@ -113,18 +113,13 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 							control={control}
 							rules={{ required: 'Выберите регион или город' }}
 							render={({ field }) => (
-								<CitiesSelect
+								<SearchSelect
 									data={cities}
 									loading={loadingCities}
-									// @ts-expect-error to fix
-									value={field.value}
-									// @ts-expect-error to fix
+									value={cities.find((city) => city.id === field.value)}
 									onChange={(city) => field.onChange(city?.id)}
-									// @ts-expect-error to fix
 									getId={(item) => item.id}
-									// @ts-expect-error to fix
 									getLabel={(item) => (item?.type?.name === 'Область' ? `${item.name} (Область)` : item.name)}
-									// @ts-expect-error to fix
 									groupBy={(item) => (item?.type?.name === 'Город' ? item.path : null)}
 									renderGroupLabel={(name) => <span>{name}</span>}
 									placeholder="Выберите регион или город"
@@ -171,7 +166,7 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 							hasError={!!errors.password}
 						/>
 						<p className={`${s.descr} ${errors.password ? s.descrError : ''}`}>
-							Пароль должен состоять минимум из 6 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и
+							Пароль должен состоять минимум из 8 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и
 							специальные символы (! ? $ % *)
 						</p>
 					</div>

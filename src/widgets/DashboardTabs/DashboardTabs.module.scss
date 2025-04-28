@@ -1,0 +1,49 @@
+.greetings {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin-bottom: 28px;
+}
+
+.title {
+	font-size: 30px;
+	font-weight: 600;
+	line-height: 22px;
+	span {
+		text-transform: capitalize;
+	}
+}
+
+.tabList {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 30px;
+	justify-content: space-between;
+}
+
+.tab {
+	border-radius: 10px;
+	background-color: white;
+	padding: 16px;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 130%;
+	border: none;
+	width: 100%;
+	text-align: start;
+	transition: all 0.2s;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	&:hover {
+		background-color: $light-blue-color;
+		color: $blue-color;
+	}
+}
+
+.active {
+	background-color: $light-blue-color;
+	color: $blue-color;
+}

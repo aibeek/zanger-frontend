@@ -24,7 +24,7 @@
 .chevron {
 	width: 24px;
 	height: 24px;
-	color: rgba(55, 55, 55, 1);
+	color: $secondary-color;
 }
 
 .tabList {
@@ -66,7 +66,7 @@
 }
 
 .question {
-	color: rgba(55, 55, 61, 1);
+	color: $secondary-color;
 	font-weight: 600;
 	line-height: 120%;
 	font-size: 18px;

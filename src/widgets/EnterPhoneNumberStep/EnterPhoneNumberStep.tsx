@@ -49,6 +49,7 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 						control={control}
 						render={({ field: { onChange, onBlur, value, ref } }) => (
 							<Input
+								autoFocus
 								type="tel"
 								placeholder="Введите номер телефона"
 								hasError={!!errors.phone || !!error}

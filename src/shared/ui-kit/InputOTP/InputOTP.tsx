@@ -15,6 +15,7 @@ export const InputOTPPattern = ({ hasError }: { hasError: boolean }) => {
 
 	return (
 		<OtpInput
+			shouldAutoFocus={true}
 			containerStyle={{ gap: '10px', justifyContent: 'center' }}
 			value={code}
 			onChange={handleChange}

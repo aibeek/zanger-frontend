@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 
-import { sharedApi, CitiesResponse } from '@/shared'
+import { sharedApi, CitiesResponse, City } from '@/shared'
 
 interface CitiesStore {
-	cities: CitiesResponse[]
+	cities: City[]
 	loadingCities: boolean
 	fetchCities: () => Promise<void>
 }

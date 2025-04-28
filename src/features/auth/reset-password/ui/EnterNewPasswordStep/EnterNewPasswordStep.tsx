@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { redirect, useParams, useRouter } from 'next/navigation'
 
 import { Input, Button } from '@/shared/ui-kit'
 import { useEnterPhone } from '@/features/auth/register'
@@ -39,10 +39,12 @@ export const EnterNewPasswordStep = () => {
 					onSubmit={(e) => {
 						e.preventDefault()
 						submit()
+						redirect('/ru/auth/login')
 					}}>
 					<div className={`${s.password} ${s.inputBox}`}>
 						<label className={s.label}>Пароль</label>
 						<Input
+							autoFocus
 							type="password"
 							placeholder="Введите пароль"
 							value={password}
