@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { LawyerRegisterDto, authApi } from '@/shared'
+import { LawyerRegisterDto, authApi } from '@/shared/api'
 
 interface LawyerRegisterFormStore {
 	data: LawyerRegisterDto
@@ -18,7 +18,7 @@ export const useLawyerRegisterForm = create<LawyerRegisterFormStore>((set, get) 
 		password_confirmation: '',
 		region_id: 0,
 		language: 'ru',
-		iin: 0,
+		iin: '',
 		lawyer_type_id: 0,
 	},
 
@@ -57,7 +57,7 @@ export const useLawyerRegisterForm = create<LawyerRegisterFormStore>((set, get) 
 				password_confirmation: '',
 				region_id: 0,
 				language: 'ru',
-				iin: 0,
+				iin: '',
 				lawyer_type_id: 0,
 			},
 		}),

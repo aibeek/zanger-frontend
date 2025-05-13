@@ -21,7 +21,7 @@ interface StepMarcherStore {
 
 	setRole: (role: Role) => void
 	initResetPasswordFlow: () => void
-
+	forceSetRole: (role: Role) => void
 	nextStep: () => void
 	prevStep: () => void
 	getCurrentStep: () => StepKey | null
@@ -36,13 +36,21 @@ export const useStepMarcher = create<StepMarcherStore>((set, get) => ({
 
 	setRole: (role: Role) => set({ role, mode: 'register', currentStepIndex: 0, isInitialized: true }),
 
+	// 👇 Новый метод — сбрасывает и устанавливает роль
+	forceSetRole: (role: Role) => {
+		set({
+			role,
+			mode: 'register',
+			currentStepIndex: 0,
+			isInitialized: true,
+		})
+	},
+
 	initResetPasswordFlow: () => set({ role: null, mode: 'resetPassword', currentStepIndex: 0, isInitialized: true }),
 
 	nextStep: () => {
 		const { role, mode, currentStepIndex } = get()
-
 		const steps = mode === 'register' ? registerStepsConfig[role as Role] : resetPasswordStepsConfig
-
 		if (currentStepIndex < steps.length - 1) {
 			set({ currentStepIndex: currentStepIndex + 1 })
 		}
@@ -57,11 +65,8 @@ export const useStepMarcher = create<StepMarcherStore>((set, get) => ({
 
 	getCurrentStep: () => {
 		const { role, mode, currentStepIndex } = get()
-
 		if (!mode) return null
-
 		const steps = mode === 'register' ? registerStepsConfig[role as Role] : resetPasswordStepsConfig
-
 		return steps[currentStepIndex] ?? null
 	},
 

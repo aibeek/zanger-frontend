@@ -1,1 +1,1 @@
-export * from './DashboardTabs'
+export * from './ui'

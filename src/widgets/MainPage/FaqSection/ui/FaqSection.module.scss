@@ -1,5 +1,6 @@
 .wrapper {
 	margin-bottom: 160px;
+	scroll-margin-top: 150px;
 	@media (max-width: 768px) {
 		margin-bottom: 80px;
 	}
@@ -108,7 +109,7 @@
 
 .faqItem[data-headlessui-state='open'] {
 	.chevron {
-		transform: rotate(180deg);
+		transform: rotate(-180deg);
 		transition: transform 0.3s ease;
 	}
 }

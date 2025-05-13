@@ -1,4 +1,4 @@
-import { baseApiURI } from '../lib/consts'
+import { API_URL } from '../config'
 import { tokenService } from './tokenService'
 import { httpClient, httpClientWithAuth } from './httpClient'
 
@@ -25,7 +25,7 @@ export interface ClientRegisterDto {
 }
 
 export interface LawyerRegisterDto extends ClientRegisterDto {
-	iin: number
+	iin: string
 	lawyer_type_id: number
 }
 
@@ -35,31 +35,31 @@ export type PhoneAuthVariant = 'reset-password' | 'register'
 
 export const authApi = {
 	sendPhone: (data: SendSmsCodeDto, variant: PhoneAuthVariant) =>
-		httpClient(`${baseApiURI}/${variant === 'reset-password' ? 'password/' : ''}send-sms-code`, {
+		httpClient(`${API_URL}/${variant === 'reset-password' ? 'password/' : ''}send-sms-code`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		}),
 
 	verifyCode: (data: ValidateCodeDto, variant: PhoneAuthVariant) =>
-		httpClient(`${baseApiURI}/${variant === 'reset-password' ? 'password/' : ''}validate-code`, {
+		httpClient(`${API_URL}/${variant === 'reset-password' ? 'password/' : ''}validate-code`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		}),
 
 	registerLawyer: (data: LawyerRegisterDto) =>
-		httpClient(`${baseApiURI}/lawyer/sign-up`, {
+		httpClient(`${API_URL}/lawyer/sign-up`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		}),
 
 	registerClient: (data: ClientRegisterDto) =>
-		httpClient(`${baseApiURI}/client/sign-up`, {
+		httpClient(`${API_URL}/client/sign-up`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		}),
 
 	login: async (data: LoginDto) => {
-		const res = await httpClient(`${baseApiURI}/auth/login`, {
+		const res = await httpClient(`${API_URL}/auth/login`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		})
@@ -69,12 +69,12 @@ export const authApi = {
 	},
 
 	me: () =>
-		httpClientWithAuth(`${baseApiURI}/auth/me`, {
+		httpClientWithAuth(`${API_URL}/auth/me`, {
 			method: 'GET',
 		}),
 
 	updatePassword: (data: { password: string; password_confirmation: string }) =>
-		httpClientWithAuth(`${baseApiURI}/password/update`, {
+		httpClientWithAuth(`${API_URL}/password/update`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 		}),

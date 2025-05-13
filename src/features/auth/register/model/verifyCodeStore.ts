@@ -26,7 +26,7 @@ export const useVerifyCode = create<verifyCodeStore>((set) => ({
 		const { code } = useVerifyCode.getState()
 
 		if (!code) {
-			set({ error: 'Введите код' })
+			set({ error: 'Enter code' })
 			return
 		}
 
@@ -48,11 +48,11 @@ export const useVerifyCode = create<verifyCodeStore>((set) => ({
 			if (onSuccessCondition(res)) {
 				onSuccess()
 			} else {
-				set({ error: 'Неверный код' })
+				set({ error: 'Invalid code' })
 			}
 		} catch (e) {
 			console.error(e)
-			set({ error: 'Неверный код' })
+			set({ error: 'Invalid code' })
 		} finally {
 			set({ loading: false })
 		}

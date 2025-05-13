@@ -14,10 +14,10 @@ export const defaultTabByRole: Record<'client' | 'lawyer', string> = {
 }
 
 export const allTabs = [
-	{ name: 'Лента заявок', route: 'lenta', icon: LentaIcon, onlyFor: 'lawyer' },
-	{ name: 'Отклики', route: 'responses', icon: ResponsesIcon, onlyFor: 'lawyer' },
-	{ name: 'Главная', route: 'main', icon: MainIcon, onlyFor: 'client' },
-	{ name: 'Мои заявки', route: 'applications', icon: ResponsesIcon, onlyFor: 'client' },
-	{ name: 'История', route: 'history', icon: HistoryIcon },
-	{ name: 'Профиль', route: 'profile', icon: ProfileIcon },
+	{ name: 'feed', route: 'lenta', icon: LentaIcon, onlyFor: 'lawyer' },
+	{ name: 'responses', route: 'responses', icon: ResponsesIcon, onlyFor: 'lawyer' },
+	{ name: 'main', route: 'main', icon: MainIcon, onlyFor: 'client' },
+	{ name: 'applications', route: 'applications', icon: ResponsesIcon, onlyFor: 'client' },
+	{ name: 'history', route: 'history', icon: HistoryIcon },
+	{ name: 'profile', route: 'profile', icon: ProfileIcon },
 ] as const

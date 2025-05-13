@@ -1,9 +1,7 @@
-'use client'
-
 import { ClientFaq } from '@/widgets/ClientFaq'
 
 import s from './page.module.scss'
-import { ApplicationTab } from '@/entities/application'
+import { ApplicationTab } from '@/features/create-application'
 
 export default function MainView() {
 	return (

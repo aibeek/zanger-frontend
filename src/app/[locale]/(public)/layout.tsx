@@ -1,13 +1,15 @@
+import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import { notFound } from 'next/navigation'
+import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 
-import { Header } from '@/widgets/Header'
-import { Footer } from '@/widgets/Footer'
 import '@/app/styles/index.scss'
+import { Footer } from '@/widgets/Footer'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
-	subsets: ['latin'],
+	subsets: ['cyrillic'],
 })
 
 export const metadata: Metadata = {
@@ -15,16 +17,28 @@ export const metadata: Metadata = {
 	description: 'Zanger',
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+	children,
+	params,
+}: {
+	children: React.ReactNode
+	params: Promise<{ locale: string }>
+}) {
+	const { locale } = await params
+	if (!hasLocale(routing.locales, locale)) {
+		notFound()
+	}
+
 	return (
-		<html lang="ru">
+		<html lang={locale}>
 			<body className={openSans.variable}>
-				{/* <Header variant={'lending-variant'} /> */}
-				{children}
-				<Footer
-					id={'footer'}
-					variant={'lending-variant'}
-				/>
+				<NextIntlClientProvider>
+					{children}
+					<Footer
+						id={'footer'}
+						variant={'lending-variant'}
+					/>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	)

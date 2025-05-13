@@ -23,23 +23,35 @@ export function SearchSelect<T>({
 	getId,
 	getLabel,
 	groupBy,
-	renderGroupLabel = (name) => name,
+	renderGroupLabel,
 	placeholder = 'Выберите элемент',
 	loading = false,
 	className,
 }: GroupedSelectProps<T>) {
 	const actualData = Array.isArray(data) ? data : data || []
 
+	const sortedData = [
+		...actualData
+			.filter((item) => getLabel(item) !== 'Другое')
+			.sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'ru', { sensitivity: 'base' })),
+		...actualData.filter((item) => getLabel(item) === 'Другое'),
+	]
+
 	const grouped: Record<string, T[]> = {}
+	const ungrouped: T[] = []
 
 	if (groupBy) {
-		actualData.forEach((item) => {
+		sortedData.forEach((item) => {
 			const group = groupBy(item)
 			if (group) {
 				if (!grouped[group]) grouped[group] = []
 				grouped[group].push(item)
+			} else {
+				ungrouped.push(item)
 			}
 		})
+	} else {
+		ungrouped.push(...sortedData)
 	}
 
 	const handleChange = (id: string | number) => {
@@ -56,29 +68,31 @@ export function SearchSelect<T>({
 			optionFilterProp="children"
 			value={value ? getId(value) : undefined}
 			className={className}>
-			{!groupBy &&
-				actualData.map((item) => (
-					<Option
-						key={getId(item)}
-						value={getId(item)}>
-						{getLabel(item)}
-					</Option>
-				))}
-
-			{groupBy &&
-				Object.entries(grouped).map(([groupName, items]) => (
-					<OptGroup
-						key={groupName}
-						label={renderGroupLabel(groupName)}>
-						{items.map((item) => (
-							<Option
-								key={getId(item)}
-								value={getId(item)}>
-								{getLabel(item)}
-							</Option>
-						))}
-					</OptGroup>
-				))}
+			{ungrouped.map((item) => (
+				<Option
+					key={`${getId(item)}-${Math.random()}`}
+					value={getId(item)}>
+					{getLabel(item)}
+				</Option>
+			))}
+			{Object.entries(grouped).map(([groupName, items]) => {
+				if (items.length > 0 && (renderGroupLabel ? renderGroupLabel(groupName) : groupName)) {
+					return (
+						<OptGroup
+							key={groupName}
+							label={renderGroupLabel ? renderGroupLabel(groupName) : groupName}>
+							{items.map((item) => (
+								<Option
+									key={`${getId(item)}-${Math.random()}`}
+									value={getId(item)}>
+									{getLabel(item)}
+								</Option>
+							))}
+						</OptGroup>
+					)
+				}
+				return null
+			})}
 		</Select>
 	)
 }

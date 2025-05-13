@@ -10,13 +10,16 @@ import {
 	TabPanel,
 	TabPanels,
 } from '@headlessui/react'
-
-import { faqData } from '@/shared/lib/data/lending-data'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 
 import s from './FaqSection.module.scss'
+import { useTranslations } from 'next-intl'
+import { useAppContentData } from '@/shared/lib'
 
 export const FaqSection = ({ id }: { id: string }) => {
+	const t = useTranslations('lending.faqSection')
+	const { faqData } = useAppContentData()
+
 	return (
 		<section
 			id={id}
@@ -24,7 +27,7 @@ export const FaqSection = ({ id }: { id: string }) => {
 			<div className="container-middle">
 				<div className={s.inner}>
 					<div className={s.top}>
-						<h2 className="lending-title">Часто задаваемые вопросы</h2>
+						<h2 className="lending-title">{t('commonTitle')}</h2>
 
 						<div className={s.content}>
 							<TabGroup>

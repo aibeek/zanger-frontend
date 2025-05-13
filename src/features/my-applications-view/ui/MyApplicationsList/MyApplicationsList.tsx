@@ -2,17 +2,18 @@
 
 import { useState } from 'react'
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
-
-import { Button, cancelReasons, Modal, useModal } from '@/shared'
-import { formatPublishedDate } from '@/shared/lib/helpers/formatPublishedDate'
+import { cancelReasons } from '@/shared/lib'
+import { DateComponent } from '@/shared/ui-kit/DateComponent'
+import { Button, DescriptionText, Modal, useModal, Loader } from '@/shared/ui-kit'
 
 import s from './MyApplicationsList.module.scss'
 import { useMyApplicationsStore } from '../../model'
 import { MyApplicationsLawyersCards } from '../MyApplicationsLawyersCards'
 
-export const MyApplicationsList = () => {
+export const MyApplicationsList = ({ data }: any) => {
 	const { open, isOpen, close } = useModal()
-	const { myApplications, cancelTheApplication } = useMyApplicationsStore()
+	const { cancelTheApplication, isCancellingApplication, setCancellingApplication } = useMyApplicationsStore()
+
 	const [selectedApplicationId, setSelectedApplicationId] = useState<number | null>(null)
 
 	const handleOpenModal = (id: number) => {
@@ -20,13 +21,20 @@ export const MyApplicationsList = () => {
 		open()
 	}
 
-	const handleSelectReason = (cancel_reason: string) => {
+	const handleClose = () => {
+		close()
+		setSelectedApplicationId(null)
+		setCancellingApplication(false)
+	}
+
+	const handleSelectReason = async (cancel_reason: string) => {
 		if (selectedApplicationId !== null) {
-			cancelTheApplication({
+			setCancellingApplication(true)
+			await cancelTheApplication({
 				application_id: selectedApplicationId,
 				cancel_reason,
 			})
-			close()
+			handleClose()
 		}
 	}
 
@@ -35,21 +43,21 @@ export const MyApplicationsList = () => {
 			<div className={s.wrapper}>
 				<div className={s.inner}>
 					<div className={s.items}>
-						{myApplications.map((item) => (
+						{data.map((item) => (
 							<article
 								className={s.item}
 								key={item.id}>
 								<div className={s.top}>
 									<div className={s.topContent}>
-										<p className={s.date}>{formatPublishedDate(item.created_at)}</p>
+										<DateComponent date={item.created_at} />
+
 										<span className={s.status}>{item.status}</span>
 									</div>
-									<h5 className={s.title}>title</h5>
 									{item.tag?.name && <span className={s.tag}>{item.tag.name}</span>}
-									<p className={s.descr}>{item.description}</p>
+									<DescriptionText>{item.description}</DescriptionText>
 								</div>
 
-								<MyApplicationsLawyersCards />
+								<MyApplicationsLawyersCards responses={item.responses} />
 
 								<div className={s.bottom}>
 									{item.status !== 'Отменена' && (
@@ -70,7 +78,7 @@ export const MyApplicationsList = () => {
 			<Modal
 				className={s.modal}
 				isOpen={isOpen}
-				onClose={close}
+				onClose={handleClose}
 				title="Причина отзыва заявки">
 				<div className={s.reasons}>
 					{cancelReasons.map((reason) => (
@@ -78,9 +86,10 @@ export const MyApplicationsList = () => {
 							key={reason.key}
 							variant="clear"
 							className={s.reasonBtn}
-							onClick={() => handleSelectReason(reason.label)}>
+							onClick={() => handleSelectReason(reason.label)}
+							disabled={isCancellingApplication}>
 							{reason.label}
-							<ChevronRightIcon className={s.reasonIcon} />
+							{isCancellingApplication ? <Loader /> : <ChevronRightIcon className={s.reasonIcon} />}
 						</Button>
 					))}
 				</div>

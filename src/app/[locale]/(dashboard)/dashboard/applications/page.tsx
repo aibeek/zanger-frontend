@@ -1,11 +1,10 @@
-import { ApplicationHistoryTab } from '@/features/my-applications-view/ui/MyApplicationsTab'
-
 import s from './page.module.scss'
+import { MyApplicationsTab } from '@/features/my-applications-view'
 
 export default function RequestsView() {
 	return (
 		<div className={s.page}>
-			<ApplicationHistoryTab />
+			<MyApplicationsTab />
 		</div>
 	)
 }

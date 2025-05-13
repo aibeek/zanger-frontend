@@ -1,19 +1,19 @@
 'use client'
 
 import { useEffect, ReactNode } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+
+import { Loader } from '@/shared/ui-kit'
 
 import { useAuthStore } from './authStore'
-import { Loader } from '@/shared/ui-kit'
 
 interface AuthGuardProps {
 	children: ReactNode
 }
 
-const AuthGuard = ({ children }: AuthGuardProps) => {
+export const AuthGuard = ({ children }: AuthGuardProps) => {
 	const { isAuthenticated, authChecked, checkAuth } = useAuthStore()
 	const router = useRouter()
-	const { locale } = useParams()
 
 	useEffect(() => {
 		checkAuth()
@@ -21,9 +21,9 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
 	useEffect(() => {
 		if (authChecked && !isAuthenticated) {
-			router.push(`/${locale}/auth/login`)
+			router.push(`/auth/login`)
 		}
-	}, [authChecked, isAuthenticated, router, locale])
+	}, [authChecked, isAuthenticated, router])
 
 	if (!authChecked) {
 		return <Loader />
@@ -31,5 +31,3 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
 	return <>{children}</>
 }
-
-export default AuthGuard

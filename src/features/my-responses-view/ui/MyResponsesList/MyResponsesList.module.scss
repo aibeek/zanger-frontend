@@ -1,0 +1,135 @@
+.items {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.item {
+	background-color: white;
+	padding: 10px;
+	border-radius: 10px;
+	position: relative;
+	transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+
+	&.responded {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+}
+
+.top {
+	margin-bottom: 8px;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.title {
+	display: flex;
+	flex-direction: column;
+}
+
+.specialization {
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 130%;
+	margin-bottom: 10px;
+}
+
+.tag {
+	font-weight: 700;
+	width: max-content;
+	background-color: rgba(244, 244, 246, 1);
+	padding: 5px 8px;
+	border-radius: 5px;
+	font-size: 10px;
+	line-height: 120%;
+	color: rgba(170, 174, 183, 1);
+	display: inline-block;
+	margin-bottom: 10px;
+	border: 1px solid rgba(170, 174, 183, 0.2);
+}
+
+.middle {
+	margin-bottom: 10px;
+}
+
+.statusList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	border: 1px solid $light-blue-color;
+
+	padding: 16px;
+	border-radius: 5px;
+}
+
+.statusItemBox {
+	position: relative;
+	padding: 4px 0px 4px 32px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.statusItem {
+	font-size: 14px;
+	color: $secondary-color;
+	position: relative;
+}
+
+.dot {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid $light-blue-color;
+	background-color: transparent;
+	transition: background-color 0.2s ease;
+	&::after {
+		content: '';
+		position: absolute;
+		width: 1px;
+		height: 15px;
+		left: 50%;
+		border: 1px dashed rgb(204, 229, 255);
+		bottom: 50%;
+		transform: translate(-50%, 185%);
+	}
+
+	&.active {
+		background-color: $light-blue-color;
+	}
+}
+.statusItemBox:last-child .dot::after {
+	display: none;
+}
+
+.bottom {
+	margin-top: 10px;
+}
+
+.btns {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.reportBtn {
+	color: rgba(156, 165, 172, 1) !important;
+	font-size: 14px;
+	font-weight: 400;
+	font-size: 14px !important;
+	margin-left: auto;
+	transition: all 0.2s;
+	&:hover {
+		color: $error-color !important;
+	}
+}

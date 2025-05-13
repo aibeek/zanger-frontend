@@ -1,37 +1,36 @@
 'use client'
 
 import { useEffect } from 'react'
-import { redirect, useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 import { Input, Button } from '@/shared/ui-kit'
-import { useEnterPhone } from '@/features/auth/register'
+import { useEnterPhone, useNewPasswordStore } from '@/features/auth'
 
 import s from './EnterNewPasswordStep.module.scss'
-import { useNewPasswordStore } from '../../model/resetPasswordStore'
+import { useTranslations } from 'next-intl'
 
 export const EnterNewPasswordStep = () => {
-	const { locale } = useParams()
 	const router = useRouter()
 	const phone = useEnterPhone((s) => s.phone)
-
+	const t = useTranslations()
 	const { password, password_confirmation, setField, submit, checkPhoneExist, errors, isSubmitting, success } =
 		useNewPasswordStore()
 
 	useEffect(() => {
-		checkPhoneExist(phone, String(locale))
-	}, [phone, locale])
+		checkPhoneExist(phone)
+	}, [phone])
 
 	useEffect(() => {
 		if (success) {
-			router.push(`/${locale}/auth/login`)
+			router.push(`/auth/login`)
 		}
-	}, [success, locale, router])
+	}, [success, router])
 
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.top}>
-					<h1 className={s.title}>Новый пароль</h1>
+					<h1 className={s.title}>{t('auth.enterNewPassword.newPassword')}</h1>
 				</div>
 
 				<form
@@ -39,14 +38,13 @@ export const EnterNewPasswordStep = () => {
 					onSubmit={(e) => {
 						e.preventDefault()
 						submit()
-						redirect('/ru/auth/login')
 					}}>
 					<div className={`${s.password} ${s.inputBox}`}>
-						<label className={s.label}>Пароль</label>
+						<label className={s.label}>{t('auth.enterNewPassword.password')}</label>
 						<Input
 							autoFocus
 							type="password"
-							placeholder="Введите пароль"
+							placeholder={t('auth.enterNewPassword.passwordPlaceholder')}
 							value={password}
 							onChange={(e) => setField('password', e.target.value)}
 							hasError={!!errors.password}
@@ -54,18 +52,17 @@ export const EnterNewPasswordStep = () => {
 					</div>
 
 					<div className={`${s.password_confirmation} ${s.inputBox}`}>
-						<label className={s.label}>Повторите пароль</label>
+						<label className={s.label}>{t('auth.enterNewPassword.passwordConfirmation')}</label>
 						<Input
 							type="password"
-							placeholder="Повторите пароль"
+							placeholder={t('auth.enterNewPassword.passwordConfirmationPlaceholder')}
 							value={password_confirmation}
 							onChange={(e) => setField('password_confirmation', e.target.value)}
 							hasError={!!errors.password_confirmation}
 						/>
-						{errors.password_confirmation && <p className={s.error}>{errors.password_confirmation}</p>}
+						{errors.password_confirmation && <p className={s.error}>{t(errors.password_confirmation)}</p>}
 						<p className={`${s.descr} ${errors.password ? s.descrError : ''}`}>
-							Пароль должен состоять минимум из 6 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и
-							специальные символы (! ? $ % *)
+							{t('auth.enterNewPassword.passwordDesc')}
 						</p>
 					</div>
 
@@ -75,7 +72,7 @@ export const EnterNewPasswordStep = () => {
 						size="full"
 						type="submit"
 						disabled={isSubmitting}>
-						{isSubmitting ? 'Сохраняем...' : 'Сменить пароль'}
+						{isSubmitting ? t('auth.enterNewPassword.saving') : t('auth.enterNewPassword.changePassword')}
 					</Button>
 				</form>
 			</div>

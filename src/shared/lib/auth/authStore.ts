@@ -1,7 +1,6 @@
-import Cookies from 'js-cookie'
 import { create } from 'zustand'
 
-import { tokenService } from '@/shared/api'
+import { authService } from '@/features/auth'
 
 interface AuthState {
 	isAuthenticated: boolean
@@ -15,26 +14,12 @@ export const useAuthStore = create<AuthState>((set) => ({
 	authChecked: false,
 
 	checkAuth: async () => {
-		const valid = tokenService.isTokenValid()
-
-		if (!valid) {
-			tokenService.logout()
-			Cookies.remove('role')
-			set({ isAuthenticated: false, authChecked: true })
-
-			return
-		}
-
-		const role = await tokenService.getRole()
-
-		if (role) {
-			Cookies.set('role', role)
-		}
-		set({ isAuthenticated: valid, authChecked: true })
+		const result = await authService.check()
+		set({ isAuthenticated: result.isAuthenticated, authChecked: true })
 	},
 
 	logout: () => {
-		tokenService.logout()
+		authService.logout()
 		set({ isAuthenticated: false, authChecked: true })
 	},
 }))

@@ -1,33 +1,33 @@
 'use client'
 
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-
-import { Button } from '@/shared'
+import { Button } from '@/shared/ui-kit'
 import client from '@/app/assets/images/role-client.webp'
 import lawyer from '@/app/assets/images/role-lawyer.webp'
+import { Link } from '@/i18n'
+import { useTranslations } from 'next-intl'
 
 import s from './UserRoleSelectionStep.module.scss'
 
-const cardData = [
-	{
-		role: 'client',
-		className: 'clientCard',
-		title: 'Я - клиент',
-		descr: 'Мне необходимо воспользоваться услугами специалистов в области права',
-		imgSrc: client,
-	},
-	{
-		role: 'lawyer',
-		className: 'lawyerCard',
-		title: 'Я - юрист',
-		descr: 'Я готов оказать содействие в разрешении юридических вопросов и обеспечить их оперативное урегулирование',
-		imgSrc: lawyer,
-	},
-]
-
 export const UserRoleSelectionStep = () => {
-	const router = useRouter()
+	const t = useTranslations('auth.roleSelection')
+
+	const cardData = [
+		{
+			role: 'client',
+			className: 'clientCard',
+			title: t('client.title'),
+			descr: t('client.description'),
+			imgSrc: client,
+		},
+		{
+			role: 'lawyer',
+			className: 'lawyerCard',
+			title: t('lawyer.title'),
+			descr: t('lawyer.description'),
+			imgSrc: lawyer,
+		},
+	]
 
 	return (
 		<div className={s.wrapper}>
@@ -40,13 +40,14 @@ export const UserRoleSelectionStep = () => {
 							<div className={s.left}>
 								<h2 className={s.title}>{title}</h2>
 								<p className={s.descr}>{descr}</p>
-								<Button
-									className={s.btn}
-									variant="border"
-									onClick={() => router.push(`/ru/auth/register/${role}`)}
-									size="auto">
-									Выбрать
-								</Button>
+								<Link href={`/auth/register/${role}`}>
+									<Button
+										className={s.btn}
+										variant="border"
+										size="auto">
+										{t('choose')}
+									</Button>
+								</Link>
 							</div>
 							<div className={s.right}>
 								<Image

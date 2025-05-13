@@ -1,11 +1,11 @@
-'use client'
+import { MyResponsesTab } from '@/features/my-responses-view'
 
 import s from './page.module.scss'
 
 export default function ResponsesView() {
 	return (
 		<div className={s.page}>
-			<div className={s.wrapper}>responses</div>
+			<MyResponsesTab />
 		</div>
 	)
 }

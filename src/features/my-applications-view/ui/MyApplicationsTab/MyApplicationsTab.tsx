@@ -1,28 +1,29 @@
 'use client'
-import { useEffect } from 'react'
 
-import s from './ApplicationHistoryTab.module.scss'
-import { useMyApplicationsStore } from '../../model'
+import { useLocale } from 'next-intl'
+
+import { Loader } from '@/shared/ui-kit'
+import { defaultClientTab } from '@/shared/lib'
 import { EmptyApplicationsAndResponses } from '@/widgets/EmptyApplicationsAndResponses'
+
+import { useMyApplicationsStore } from '../../model'
 import { MyApplicationsList } from '../MyApplicationsList'
+import { useMyApplicationsSWR } from '../../model/myApplicationsStore'
 
-export const ApplicationHistoryTab = () => {
-	const { myApplications, loadingMyApplications, fetchMyApplications } = useMyApplicationsStore()
+export const MyApplicationsTab = () => {
+	const locale = useLocale()
+	const { myApplications, loading } = useMyApplicationsStore()
+	useMyApplicationsSWR()
 
-	useEffect(() => {
-		fetchMyApplications()
-	}, [])
+	if (loading) return <Loader />
 
-	return (
-		<>
-			{myApplications.length === 0 ? (
-				<EmptyApplicationsAndResponses
-					redirectUrl={'/ru/dashboard/main'}
-					buttonContent={'Создать заявку'}
-				/>
-			) : (
-				<MyApplicationsList />
-			)}
-		</>
+	return myApplications.length === 0 ? (
+		<EmptyApplicationsAndResponses
+			redirectUrl={`/${locale}/${defaultClientTab}`}
+			buttonContent="Создать заявку"
+			descr="Заявок пока нет"
+		/>
+	) : (
+		<MyApplicationsList data={myApplications} />
 	)
 }

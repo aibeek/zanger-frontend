@@ -1,0 +1,47 @@
+.switch {
+	display: inline-flex;
+	align-items: center;
+	width: 44px;
+	height: 24px;
+	border-radius: 9999px;
+	background-color: #e5e7eb;
+	transition: background-color 0.2s;
+	border: none;
+
+	&Checked {
+		background-color: $blue-color;
+	}
+}
+
+.thumb {
+	width: 16px;
+	height: 16px;
+	background-color: white;
+	border-radius: 9999px;
+	transform: translateX(4px);
+	transition: transform 0.2s;
+
+	&Checked {
+		transform: translateX(22px);
+	}
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 0;
+}
+
+.label {
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 130%;
+}
+
+.notifications {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 100%;
+}

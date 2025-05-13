@@ -50,7 +50,7 @@
 
 .wrapper[data-headlessui-state='open'] {
 	.chevron {
-		transform: rotate(180deg);
+		transform: rotate(-180deg);
 		transition: transform 0.3s ease;
 		color: $blue-color;
 	}

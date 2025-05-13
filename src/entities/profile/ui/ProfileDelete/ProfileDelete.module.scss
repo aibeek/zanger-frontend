@@ -1,0 +1,51 @@
+.accordion {
+	width: 100%;
+	border-bottom: 1px solid rgba(245, 246, 251, 1);
+	&:has(.item[data-open]) {
+		border-bottom: none;
+	}
+
+	&:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+
+	.item,
+	.btn {
+		border: none;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 20px 16px;
+		background: none;
+		cursor: pointer;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 130%;
+		transition: background-color 0.3s ease, border-radius 0.3s ease;
+	}
+
+	.item[data-open] {
+		background-color: $light-blue-color;
+		border-radius: 10px;
+	}
+}
+
+.modal {
+	max-width: 300px;
+	.modalBtns {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.modalDescr {
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 130%;
+		color: $light-gray-color;
+		margin-bottom: 20px;
+		text-align: center;
+	}
+}

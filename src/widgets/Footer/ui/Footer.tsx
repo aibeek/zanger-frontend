@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
 
 import vk from '@/app/assets/icons/vk.svg'
@@ -12,11 +11,12 @@ import appstore from '@/app/assets/icons/appstore.webp'
 import location from '@/app/assets/icons/location.svg'
 import telegram from '@/app/assets/icons/telegram.svg'
 import instagram from '@/app/assets/icons/instagram.svg'
-import { footerMenuData, scrollToSection } from '@/shared'
 import googleplay from '@/app/assets/icons/googleplay.webp'
-import { useSectionScroll } from '@/shared/lib/hooks/useSectionScroll'
+import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/lib'
 
 import s from './Footer.module.scss'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -25,7 +25,8 @@ interface Props {
 
 export const Footer = ({ variant, id }: Props) => {
 	const { activeSection } = useSectionScroll()
-
+	const { footerMenuData } = useAppContentData()
+	const t = useTranslations('footer')
 	const isActive = (link: string) => activeSection === link
 
 	return variant === 'user-variant' ? (
@@ -34,17 +35,20 @@ export const Footer = ({ variant, id }: Props) => {
 			className={s.footer}>
 			<div className="container-big">
 				<div className={s.inner}>
-					<div className={s.left}>© {new Date().getFullYear()} Zanger. Все права защищены</div>
+					<div className={s.left}>
+						© {new Date().getFullYear()} Zanger. {t('copyright')}
+					</div>
+
 					<div className={s.right}>
 						<Link
 							target={'_blank'}
-							href="/policy">
-							Политика конфиденциальности
+							href="/privacy">
+							{t('privacy')}
 						</Link>
 						<Link
 							target={'_blank'}
 							href="/rules">
-							Публичная оферта
+							{t('offer')}
 						</Link>
 					</div>
 				</div>
@@ -67,33 +71,33 @@ export const Footer = ({ variant, id }: Props) => {
 
 					<div className={s.lendingMiddle}>
 						<div className={s.lendingMiddleLeft}>
-							<p className={s.text}>
-								Будьте в курсе наших новостей
-								<br /> в социальных сетях
-							</p>
+							<p
+								className={s.text}
+								dangerouslySetInnerHTML={{ __html: t('socials') }}
+							/>
 							<div className={s.socials}>
 								<Link href={'/'}>
 									<Image
 										src={telegram}
-										alt={'телеграм'}
+										alt={t('telegram')}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
 										src={facebook}
-										alt={'фейсбук'}
+										alt={t('facebook')}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
 										src={vk}
-										alt={'вконтакте'}
+										alt={t('vk')}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
 										src={instagram}
-										alt={'инстаграм'}
+										alt={t('instagram')}
 									/>
 								</Link>
 							</div>
@@ -101,7 +105,7 @@ export const Footer = ({ variant, id }: Props) => {
 								<Link href={'/'}>
 									<Image
 										src={appstore}
-										alt={'эплстор'}
+										alt={t('appstore')}
 										width={180}
 										height={52}
 									/>
@@ -109,7 +113,7 @@ export const Footer = ({ variant, id }: Props) => {
 								<Link href={'/'}>
 									<Image
 										src={googleplay}
-										alt={'гуглплей'}
+										alt={t('googleplay')}
 										width={180}
 										height={52}
 									/>
@@ -118,7 +122,7 @@ export const Footer = ({ variant, id }: Props) => {
 						</div>
 
 						<div className={s.column}>
-							<h6 className={s.columnTitle}>Адрес:</h6>
+							<h6 className={s.columnTitle}>{t('address')}</h6>
 
 							<ul className={s.columnList}>
 								<li className={s.columnItem}>
@@ -126,7 +130,7 @@ export const Footer = ({ variant, id }: Props) => {
 										src={location}
 										alt={'метка'}
 									/>
-									г. Алматы, ул Толе би 51
+									{t('location')}
 								</li>
 								<li className={s.columnItem}>
 									<Image
@@ -142,12 +146,12 @@ export const Footer = ({ variant, id }: Props) => {
 							</ul>
 						</div>
 						<div className={s.column}>
-							<h6 className={s.columnTitle}>Навигация:</h6>
+							<h6 className={s.columnTitle}>{t('nav')}</h6>
 
 							<ul className={s.columnList}>
 								{footerMenuData.map(({ name, link }) => (
 									<li
-										key={name}
+										key={link}
 										className={s.columnItem}>
 										<Link
 											href={link}
@@ -156,7 +160,7 @@ export const Footer = ({ variant, id }: Props) => {
 												document.body.click()
 											}}
 											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{name}
+											{t(name)} 
 										</Link>
 									</li>
 								))}
@@ -164,7 +168,7 @@ export const Footer = ({ variant, id }: Props) => {
 						</div>
 
 						<div className={s.column}>
-							<h6 className={s.columnTitle}>Служба поддержки:</h6>
+							<h6 className={s.columnTitle}>{t('support')}</h6>
 
 							<ul className={s.columnList}>
 								<li className={s.columnItem}>
@@ -198,11 +202,21 @@ export const Footer = ({ variant, id }: Props) => {
 				<div className="container-middle">
 					<div className={s.lendingBottomInner}>
 						<div className={s.lendingBottomLeft}>
-							<p>© {new Date().getFullYear()} Zanger. Все права защищены</p>
+							<p>
+								© {new Date().getFullYear()} Zanger. {t('copyright')}
+							</p>
 						</div>
 						<div className={s.lendingBottomRight}>
-							<p>Политика конфиденциальности</p>
-							<p>Публичная оферта</p>
+							<Link
+								target={'_blank'}
+								href="/privacy">
+								{t('privacy')}
+							</Link>
+							<Link
+								target={'_blank'}
+								href="/rules">
+								{t('offer')}
+							</Link>
 						</div>
 					</div>
 				</div>

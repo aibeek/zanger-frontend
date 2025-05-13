@@ -1,22 +1,13 @@
 'use client'
 
-import {
-	Disclosure,
-	DisclosureButton,
-	DisclosurePanel,
-	Tab,
-	TabGroup,
-	TabList,
-	TabPanel,
-	TabPanels,
-} from '@headlessui/react'
-
-import { clientFaqData, faqData } from '@/shared/lib/data/lending-data'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 
 import s from './ClientFaq.module.scss'
+import { useAppContentData } from '@/shared/lib'
 
 export const ClientFaq = () => {
+	const { clientFaqData } = useAppContentData()
 	return (
 		<section className={s.wrapper}>
 			<div className={s.inner}>

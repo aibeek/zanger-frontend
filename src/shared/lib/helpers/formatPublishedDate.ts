@@ -1,16 +1,28 @@
 import { format, isToday, isYesterday, parseISO } from 'date-fns'
-import { ru } from 'date-fns/locale'
+import { ru, kk } from 'date-fns/locale'
 
-export const formatPublishedDate = (dateString: string) => {
-	const date = parseISO(dateString)
+const getLocaleFromCookies = () => {
+	const cookies = document.cookie.split('; ')
+	const localeCookie = cookies.find((cookie) => cookie.startsWith('NEXT_LOCALE='))
+	return localeCookie?.split('=')[1] || 'ru'
+}
 
-	if (isToday(date)) {
-		return 'Опубликовано сегодня'
+export const formatPublishedDate = (dateString?: string): string => {
+	if (!dateString) return ''
+
+	let date: Date
+	try {
+		date = parseISO(dateString)
+	} catch {
+		return ''
 	}
 
-	if (isYesterday(date)) {
-		return 'Опубликовано вчера'
-	}
+	const locale = getLocaleFromCookies()
+	const localeMap = { ru, kk }
+	const selectedLocale = localeMap[locale] || ru
 
-	return `Опубликовано ${format(date, 'dd.MM / HH:mm', { locale: ru })}`
+	if (isToday(date)) return locale === 'ru' ? 'сегодня' : 'бүгін'
+	if (isYesterday(date)) return locale === 'ru' ? 'вчера' : 'кеше'
+
+	return format(date, 'd MMM yyyy / HH:mm', { locale: selectedLocale })
 }

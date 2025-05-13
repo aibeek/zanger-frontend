@@ -4,37 +4,5 @@ export const cancelReasons = [
 	{ key: 'didnt_help', label: 'Мне не помогли' },
 ]
 
-export const mockCard = [
-	{
-		name: 'Аскарова Асылым Ануаровна',
-		job: 'Юрист',
-		city: 'Алматы',
-		costs: '4 500 ₸',
-		tag: 'Трудовое право',
-		phone: '+7 (777) 120-00-12',
-	},
-	{
-		name: 'Аскарова Асылым Ануаровна',
-		job: 'Юрист',
-		city: 'Алматы',
-		costs: '4 500 ₸',
-		tag: 'Трудовое право',
-		phone: '+7 (777) 120-00-12',
-	},
-	{
-		name: 'Аскарова Асылым Ануаровна',
-		job: 'Юрист',
-		city: 'Алматы',
-		costs: '4 500 ₸',
-		tag: 'Трудовое право',
-		phone: '+7 (777) 120-00-12',
-	},
-	{
-		name: 'Аскарова Асылым Ануаровна',
-		job: 'Юрист',
-		city: 'Алматы',
-		costs: '4 500 ₸',
-		tag: 'Трудовое право',
-		phone: '+7 (777) 120-00-12',
-	},
-]
+export const defaultClientTab = '/dashboard/main'
+export const defaultLawyerTab = '/dashboard/lenta'

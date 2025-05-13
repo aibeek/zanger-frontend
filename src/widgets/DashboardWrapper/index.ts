@@ -1,1 +1,1 @@
-export * from './DashboardWrapper'
+export * from './ui'

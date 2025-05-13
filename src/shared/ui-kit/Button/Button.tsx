@@ -21,16 +21,3 @@ export const Button: React.FC<ButtonProps> = ({ className, children, variant = '
 		</button>
 	)
 }
-
-// const LogoutButton = () => {
-//   const router = useRouter()
-//   const reset = useLoginStore((state) => state.reset)
-
-//   const handleLogout = () => {
-//     reset()
-//     tokenService.logout()
-//     router.push('/login') // Редирект на страницу логина
-//   }
-
-//   return <button onClick={handleLogout}>Выйти</button>
-// }
