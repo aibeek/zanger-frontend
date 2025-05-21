@@ -2,25 +2,27 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Button, clientRegistrationSchema, formatPhoneNumber, Input, lawyerRegistrationSchema } from '@/shared'
+import { Button, Input } from '@/shared/ui-kit'
+import { LawyerRegisterDto } from '@/shared/api'
+import { clientRegistrationSchema, formatPhoneNumber, lawyerRegistrationSchema } from '@/shared/lib'
 
 import s from './RegistrationFormStep.module.scss'
-import { useCitiesStore } from '../../model/citiesStore'
-import { CitiesSelect } from '../CitiesSelect/CitiesSelect'
-import { SpecializationSelect } from '../SpecializationSelect'
-import { useEnterPhone, useRegisterFormByVariant, useSpecializationsStore } from '../../model'
+import { SearchSelect } from '../SearchSelect'
+import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegions } from '../../model'
+import { useTranslations } from 'next-intl'
+import { policyURL } from '@/shared/lib/consts/urls'
 
 export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer' }) => {
+	const t = useTranslations()
 	const router = useRouter()
 	const { phone } = useEnterPhone()
-	const { locale, role } = useParams()
-	const { cities, fetchCities, loadingCities } = useCitiesStore()
+	const { regions, loadingRegions } = useRegions()
 	const { setField, sendData, resetState, loading } = useRegisterFormByVariant(variant)
-	const { specializations, fetchSpecializations, loadingSpecializations } = useSpecializationsStore()
+	const { lawyerTypes, fetchLawyerTypes, loadingLawyerTypes } = useLawyerTypesStore()
 
 	const clientVariant = variant === 'client'
 	const lawyerVariant = variant === 'lawyer'
@@ -31,23 +33,24 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 		watch,
 		control,
 		formState: { errors },
-	} = useForm({
+	} = useForm<LawyerRegisterDto>({
 		defaultValues: {
 			phone,
 		},
+
+		//@ts-expect-error fix it
 		resolver: zodResolver(variant === 'client' ? clientRegistrationSchema : lawyerRegistrationSchema),
 		mode: 'onChange',
 	})
 
 	useEffect(() => {
-		fetchCities()
-		if (lawyerVariant) fetchSpecializations()
+		if (lawyerVariant) fetchLawyerTypes()
 	}, [])
 
 	const onSubmit = async (data: any) => {
 		await sendData(async () => {
 			resetState()
-			router.push(`/${locale}/dashboard/${role}`)
+			router.push(`/auth/login`)
 		})
 	}
 
@@ -55,8 +58,10 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 		const subscription = watch((value, { name }) => {
 			if (!name) return
 			const val = value[name as keyof typeof value]
+			//@ts-expect-error fix it
 			setField(name as keyof typeof value, val)
 		})
+
 		return () => subscription.unsubscribe()
 	}, [watch])
 
@@ -68,12 +73,12 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 		<div className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.top}>
-					<h1 className={s.title}>Регистрация</h1>
+					<h1 className={s.title}>{t('auth.registration.title')}</h1>
 				</div>
 
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<div className={`${s.phone} ${s.inputBox}`}>
-						<label className={s.label}>Номер телефона</label>
+						<label className={s.label}>{t('auth.registration.phoneLabel')}</label>
 						<Input
 							{...register('phone')}
 							value={formatPhoneNumber(phone)}
@@ -82,108 +87,117 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 						/>
 					</div>
 					<div className={`${s.name} ${s.inputBox}`}>
-						<label className={s.label}>{clientVariant ? 'Фамилия и Имя' : 'Укажите ФИО'}</label>
+						<label className={s.label}>
+							{clientVariant ? t('auth.registration.nameLabel') : t('auth.registration.lawyerNameLabel')}
+						</label>
 						<Input
-							placeholder={clientVariant ? 'Укажите Имя и Фамилию' : 'Введите ФИО'}
-							{...register('name', { required: 'Укажите имя и фамилию' })}
+							placeholder={
+								clientVariant ? t('auth.registration.namePlaceholder') : t('auth.registration.lawyerNamePlaceholder')
+							}
+							{...register('name', { required: t('auth.registration.nameRequired') })}
 							hasError={!!errors.name}
 						/>
-						{errors.name && <p className={s.error}>{errors.name.message}</p>}
+						{errors.name && <p className={s.error}>{t(errors.name.message)}</p>}
 					</div>
 
 					{lawyerVariant && (
 						<div className={`${s.iin} ${s.inputBox}`}>
-							<label className={s.label}>ИИН</label>
+							<label className={s.label}>{t('auth.registration.iinLabel')}</label>
 							<Input
-								placeholder="Введите ИИН"
-								// @ts-expect-error fix it
-								{...register('iin', { required: 'Укажите ИИН' })}
-								// @ts-expect-error fix it
+								type="text"
+								placeholder={t('auth.registration.iinPlaceholder')}
+								maxLength={12}
+								inputMode="numeric"
+								{...register('iin', { required: t('auth.registration.iinRequired') })}
+								onInput={(e) => {
+									const input = e.target as HTMLInputElement
+									input.value = input.value.replace(/\D/g, '').slice(0, 12)
+								}}
 								hasError={!!errors.iin}
 							/>
-							{/* @ts-expect-error fix it */}
-							{errors.iin && <p className={s.error}>{errors.iin.message}</p>}
+							{errors.iin && <p className={s.error}>{t(errors.iin.message)}</p>}
 						</div>
 					)}
 
 					<div className={`${s.city} ${s.inputBox}`}>
-						<label className={s.label}>Город</label>
+						<label className={s.label}>{t('auth.registration.cityLabel')}</label>
 						<Controller
 							name="region_id"
 							control={control}
-							rules={{ required: 'Выберите регион или город' }}
-							render={({ field }) => (
-								<CitiesSelect
-									data={cities}
-									loading={loadingCities}
-									// @ts-expect-error to fix
-									value={field.value}
-									// @ts-expect-error to fix
-									onChange={(city) => field.onChange(city?.id)}
-									// @ts-expect-error to fix
-									getId={(item) => item.id}
-									// @ts-expect-error to fix
-									getLabel={(item) => (item?.type?.name === 'Область' ? `${item.name} (Область)` : item.name)}
-									// @ts-expect-error to fix
-									groupBy={(item) => (item?.type?.name === 'Город' ? item.path : null)}
-									renderGroupLabel={(name) => <span>{name}</span>}
-									placeholder="Выберите регион или город"
-								/>
-							)}
-						/>
+							rules={{ required: t('auth.registration.regionRequired') }}
+							render={({ field }) => {
+								const filteredRegions = regions.filter((region) => region.type.name !== 'Область')
 
-						{errors.region_id && <p className={s.error}>{errors.region_id.message}</p>}
+								return (
+									<SearchSelect
+										className="search-select"
+										data={filteredRegions}
+										loading={loadingRegions}
+										value={filteredRegions.find((region) => region.id === field.value)}
+										onChange={(region) => field.onChange(region?.id)}
+										getId={(item) => item.id}
+										getLabel={(item) => item.name}
+										groupBy={(item) => {
+											if (item.type.name === 'Город' && item.path !== item.name) return item.path
+											if (item.type.name === 'Город' && item.path === item.name) return 'Города'
+											return null
+										}}
+										renderGroupLabel={(name) => <span>{name}</span>}
+										placeholder={t('auth.registration.regionPlaceholder')}
+									/>
+								)
+							}}
+						/>
+						{errors.region_id && <p className={s.error}>{t(errors.region_id.message)}</p>}
 					</div>
 
 					{lawyerVariant && (
 						<div className={`${s.specialization} ${s.inputBox}`}>
-							<label className={s.label}>Ваша специальность</label>
+							<label className={s.label}>{t('auth.registration.specializationLabel')}</label>
 							<Controller
-								// @ts-expect-error fix it
 								name="lawyer_type_id"
 								control={control}
-								rules={{ required: 'Выберите роль' }}
+								rules={{ required: t('auth.registration.specializationRequired') }}
 								render={({ field }) => (
-									<SpecializationSelect
-										data={specializations}
-										loading={loadingSpecializations}
-										value={field.value}
-										onChange={(specialization) => field.onChange(specialization?.id)}
+									<SearchSelect
+										className={`search-select`}
+										data={lawyerTypes}
+										loading={loadingLawyerTypes}
+										value={lawyerTypes.find((item) => item.id === field.value)}
+										onChange={(item) => field.onChange(item?.id)}
 										getId={(item) => item.id}
-										getLabel={(item) => (item?.type?.name === 'ХЗ' ? `${item.name} (ХЗ)` : item.name)}
-										groupBy={(item) => (item?.type?.name === 'ХЗ' ? item.path : null)}
+										getLabel={(item) => item.name}
+										groupBy={(item) => item.name}
 										renderGroupLabel={(name) => <span>{name}</span>}
-										placeholder="Выберите роль"
+										placeholder={t('auth.registration.specializationPlaceholder')}
 									/>
 								)}
 							/>
-							{/*  @ts-expect-error to fix */}
-							{errors.lawyer_type_id && <p className={s.error}>{errors.lawyer_type_id.message}</p>}
+							{errors.lawyer_type_id && <p className={s.error}>{t(errors.lawyer_type_id.message)}</p>}
 						</div>
 					)}
 
 					<div className={`${s.password} ${s.inputBox}`}>
-						<label className={s.label}>Пароль</label>
+						<label className={s.label}>{t('auth.registration.passwordLabel')}</label>
 						<Input
 							type="password"
-							placeholder="Введите пароль"
+							placeholder={t('auth.registration.passwordPlaceholder')}
 							{...register('password')}
 							hasError={!!errors.password}
 						/>
 						<p className={`${s.descr} ${errors.password ? s.descrError : ''}`}>
-							Пароль должен состоять минимум из 6 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и
-							специальные символы (! ? $ % *)
+							{t('auth.registration.passwordDescr')}
 						</p>
 					</div>
 					<div className={`${s.password_confirmation} ${s.inputBox}`}>
-						<label className={s.label}>Повторите пароль</label>
+						<label className={s.label}>{t('auth.registration.passwordConfirmationLabel')}</label>
 						<Input
 							type="password"
-							placeholder="Повторите пароль"
+							placeholder={t('auth.registration.passwordConfirmationPlaceholder')}
 							{...register('password_confirmation')}
 							hasError={!!errors.password_confirmation}
 						/>
-						{errors.password_confirmation && <p className={s.error}>{errors.password_confirmation.message}</p>}
+						{errors.password_confirmation && <p className={s.error}>{t(errors.password_confirmation.message)}</p>}
 					</div>
 
 					<div className={s.submit}>
@@ -192,17 +206,17 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 							size={'full'}
 							type="submit"
 							disabled={loading}>
-							{loading ? 'Отправляется...' : 'Зарегистрироваться'}
+							{loading ? t('auth.registration.loading') : t('auth.registration.submit')}
 						</Button>
 					</div>
 				</form>
 
 				<div className={s.warning}>
-					<p>Продолжая, вы соглашаетесь с</p>
+					<p>{t('auth.registration.warningText')}</p>
 					<Link
 						target={'_blank'}
-						href={'/policy'}>
-						Политикой конфиденциальности
+						href={policyURL}>
+						{t('auth.registration.privacyPolicy')}
 					</Link>
 				</div>
 			</div>

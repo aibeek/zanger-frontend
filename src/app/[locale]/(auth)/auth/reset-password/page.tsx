@@ -3,10 +3,11 @@
 import { useEffect } from 'react'
 import { redirect, useParams } from 'next/navigation'
 
-import { useStepMarcher } from '@/shared'
-import { EnterNewPasswordStep } from '@/features/auth/reset-password/ui'
+import { useStepMarcher } from '@/shared/lib'
+import { EnterNewPasswordStep } from '@/features/auth'
 import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
 import { PhoneVerificationStep } from '@/widgets/PhoneVerificationStep'
+import { Loader } from '@/shared/ui-kit'
 
 const stepComponents = {
 	phone: EnterPhoneNumberStep,
@@ -33,7 +34,7 @@ export default function ResetPasswordPage() {
 		}
 	}, [step, locale])
 
-	if (!isInitialized) return <div>Загрузка...</div>
+	if (!isInitialized) return <Loader />
 
 	const StepComponent = step ? stepComponents[step] : null
 

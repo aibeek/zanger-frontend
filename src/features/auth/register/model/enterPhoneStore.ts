@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 
-import { errorMessages } from '@/shared'
 import { authApi, PhoneAuthVariant } from '@/shared/api'
 
 interface EnterPhoneStore {
@@ -28,14 +27,10 @@ export const useEnterPhone = create<EnterPhoneStore>((set) => ({
 		try {
 			await authApi.sendPhone({ phone }, variant)
 			onSuccess()
-			set({ success: true })
+			set({ success: true, loading: false })
 		} catch (error: any) {
 			const errorMessage = error?.errors?.phone?.[0] || error?.message
-			const localizedMessage = errorMessages[errorMessage] || 'Произошла ошибка при отправке номера'
-
-			set({ error: localizedMessage, disableAfterError: true })
-		} finally {
-			set({ loading: false })
+			set({ error: errorMessage, disableAfterError: true, loading: false })
 		}
 	},
 

@@ -1,46 +1,40 @@
 import { create } from 'zustand'
 
-import { authApi, LoginDto, parseError, tokenService } from '@/shared'
+import { LoginDto } from '@/shared/api'
+
+import { authService } from '../service'
+import { UserProfile } from '@/shared/lib/types'
 
 interface AuthState {
-	loginResponse: any | null
-	personalData: any | null
+	personalData: UserProfile | null
 	loading: boolean
+	error: string | null
 	reset: () => void
 	login: (loginData: LoginDto) => Promise<void>
 	getPersonalDataByToken: () => Promise<void>
 }
 
 export const useLoginStore = create<AuthState>((set) => ({
-	loginResponse: null,
 	personalData: null,
 	loading: false,
+	error: null,
 
 	reset: () =>
 		set({
-			loginResponse: null,
 			personalData: null,
 			loading: false,
+			error: null,
 		}),
 
 	login: async (loginData) => {
-		set({ loading: true })
+		set({ loading: true, error: null })
 
 		try {
-			const loginResponse = await authApi.login(loginData)
-
-			tokenService.saveToken({
-				// @ts-expect-error to fix
-				access_token: loginResponse.access_token,
-				// @ts-expect-error to fix
-				expires_in: loginResponse.expires_in,
-			})
-			set({ loginResponse })
-
-			const personalData = await authApi.me()
+			const { personalData } = await authService.loginAndGetPersonalData(loginData)
 			set({ personalData })
 		} catch (e: any) {
-			throw new Error(parseError(e, 'Ошибка при логине'))
+			set({ error: e.message })
+			throw e
 		} finally {
 			set({ loading: false })
 		}
@@ -48,10 +42,10 @@ export const useLoginStore = create<AuthState>((set) => ({
 
 	getPersonalDataByToken: async () => {
 		try {
-			const personalData = await authApi.me()
+			const personalData = await authService.getPersonalDataByToken()
 			set({ personalData })
-		} catch (e) {
-			console.error('Ошибка при получении личных данных:', e)
+		} catch (e: any) {
+			set({ error: e.message })
 		}
 	},
 }))

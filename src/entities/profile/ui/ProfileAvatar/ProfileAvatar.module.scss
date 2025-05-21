@@ -1,0 +1,38 @@
+.avatar {
+	position: relative;
+	margin-bottom: 16px;
+}
+
+.editBtn {
+	border: none;
+	background: none;
+	position: absolute;
+	bottom: -10px;
+	right: -10px;
+	width: 30px;
+	height: 30px;
+}
+
+.modal {
+	min-width: 480px;
+	div {
+		width: 100%;
+	}
+	h2 {
+		margin: 0 !important;
+	}
+	.modalBtns {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.modalDescr {
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 130%;
+		color: $light-gray-color;
+		margin-bottom: 20px;
+		text-align: center;
+	}
+}

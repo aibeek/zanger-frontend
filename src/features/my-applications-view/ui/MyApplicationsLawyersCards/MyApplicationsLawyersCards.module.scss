@@ -1,0 +1,220 @@
+.cards {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	padding-bottom: 8px;
+}
+
+.card {
+	transition: all 0.3s ease;
+
+	&.openCard {
+		border: 1px solid $light-blue-color;
+		border-radius: 13px;
+		padding: 16px;
+		margin-bottom: 14px;
+		.avatar {
+			width: 80px;
+			height: 80px;
+		}
+
+		.userName {
+			text-align: center;
+			width: 100%;
+		}
+	}
+
+	.leftOpen {
+		width: 100%;
+		flex-direction: column;
+		margin-bottom: 8px;
+	}
+
+	.userName {
+		display: flex;
+		gap: 2px;
+		flex-direction: column;
+		transition: all 0.3s ease;
+	}
+}
+
+.denyBtn {
+	background-color: rgba(187, 197, 207, 1) !important;
+	background-image: none !important;
+	&:hover {
+		background-image: none;
+		background-color: $error-color !important;
+	}
+}
+
+.quantity {
+	font-size: 12px;
+	color: $secondary-color;
+	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+
+	span {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-radius: 50px;
+		background-color: $error-color;
+		color: white;
+		font-size: 10px;
+		width: 16px;
+		height: 16px;
+	}
+}
+
+.cardPreview {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.name {
+	font-size: 14px;
+	color: $secondary-color;
+}
+
+.job {
+	color: rgba(156, 165, 172, 1);
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.btns {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.avatar {
+	border-radius: 10px;
+	transition: all 0.3s ease;
+}
+
+.cardDetails {
+	.cardDetailsList {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 8px;
+		li {
+			border-bottom: 1px solid rgba(245, 246, 251, 1);
+			padding: 16px 16px 16px 6px;
+			color: $light-gray-color;
+			font-weight: 400;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			line-height: 130%;
+		}
+		.city,
+		.cost {
+			span {
+				font-weight: 600;
+				color: $primary-color !important;
+			}
+		}
+
+		.tag {
+			color: $primary-color;
+			span {
+				background-color: $secondary-color;
+				border-radius: 10px;
+				padding: 5px 10px;
+				color: white;
+			}
+		}
+		.phone {
+			span {
+				color: $blue-color;
+			}
+		}
+	}
+}
+
+.cardDetaildBottom {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 16px;
+	.btns {
+		button {
+			padding: 8px 30px;
+			font-size: 16px;
+			line-height: 150%;
+			font-weight: 600;
+		}
+	}
+}
+
+.others {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.othersTitle {
+	font-size: 12px;
+	font-weight: 600;
+	padding-bottom: 16px;
+	color: $secondary-color;
+	border-bottom: 1px solid rgba(245, 246, 251, 1);
+}
+
+.reportBtn {
+	color: rgba(156, 165, 172, 1) !important;
+	font-size: 14px;
+	font-weight: 400;
+	font-size: 14px !important;
+	margin-left: auto;
+	transition: all 0.2s;
+	&:hover {
+		color: $error-color !important;
+	}
+}
+
+.notificationsBox {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	p {
+		font-size: 12px;
+		color: $secondary-color;
+		line-height: 120%;
+		font-weight: 600;
+	}
+}
+
+.others {
+	font-size: 12px;
+	color: $secondary-color;
+	line-height: 120%;
+	font-weight: 600;
+}
+
+.notification {
+	width: max-content;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(255, 101, 101);
+	color: white;
+	border-radius: 50%;
+	font-size: 10px;
+	font-weight: 600;
+	padding: 4px;
+	min-width: 16px;
+	line-height: 130%;
+}

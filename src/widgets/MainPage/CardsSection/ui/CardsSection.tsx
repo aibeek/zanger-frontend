@@ -22,7 +22,10 @@ export const CardsSection = ({ title, data, id }: Props) => {
 			<div className="container-middle">
 				<div className={s.inner}>
 					<div className={s.top}>
-						<h2 className="lending-title">{title}</h2>
+						<h2
+							className="lending-title"
+							dangerouslySetInnerHTML={{ __html: title }}
+						/>
 					</div>
 					<div className={s.cards}>
 						{data.map((card) => (

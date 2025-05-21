@@ -1,9 +1,22 @@
-import { httpClient } from './httpClient'
-import { baseApiURI } from '../lib/consts'
+import { API_URL } from '../config'
+import { httpClient, httpClientWithAuth } from './httpClient'
 
 export interface CityType {
 	id: number
 	name: 'Город' | 'Область'
+}
+
+export interface Application {
+	id: number
+	created_at: string
+	description: string
+	status: string
+	responses_count: number
+	responses: any[]
+	tag: {
+		id: number
+		name: string
+	}
 }
 
 export interface City {
@@ -13,18 +26,55 @@ export interface City {
 	path: string | null
 }
 
+export interface Tag {
+	id: number
+	name: string
+	code: string
+}
+
 export interface CitiesResponse {
 	data: City[]
 }
 
+export interface TagsResponse {
+	data: Tag[]
+}
+
 export const sharedApi = {
-	getAllCities: () =>
-		httpClient(`${baseApiURI}/regions/all`, {
+	getCities: () =>
+		httpClient(`${API_URL}/regions/cities`, {
+			method: 'GET',
+		}),
+
+	regionsPaginated: () =>
+		httpClient(`${API_URL}/regions/paginated`, {
+			method: 'GET',
+		}),
+
+	getAllRegions: () =>
+		httpClient(`${API_URL}/regions/all`, {
 			method: 'GET',
 		}),
 
 	getAllSpecializations: () =>
-		httpClient(`${baseApiURI}/lawyer-types`, {
+		httpClientWithAuth(`${API_URL}/specializations`, {
 			method: 'GET',
+		}),
+
+	getLawyerTypes: () =>
+		httpClient(`${API_URL}/lawyer-types`, {
+			method: 'GET',
+		}),
+
+	getAllTags: () =>
+		httpClientWithAuth(`${API_URL}/tags`, {
+			method: 'GET',
+		}),
+
+	updateNotifications: ({ generalNotifications, lawyerReplies, appUpdates }) => console.log('updateNotifications'),
+
+	deleteAccount: () =>
+		httpClientWithAuth(`${API_URL}/profile/delete`, {
+			method: 'DELETE',
 		}),
 }

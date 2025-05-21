@@ -1,5 +1,8 @@
 import path from 'path'
 import { NextConfig } from 'next'
+import createNextIntlPlugin from 'next-intl/plugin'
+
+const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
 	webpack(config) {
@@ -27,6 +30,10 @@ const nextConfig: NextConfig = {
 
 		return config
 	},
+
+	images: {
+		domains: ['api.lawyerplace.kulenkov-group.kz'],
+	},
 }
 
-export default nextConfig
+export default withNextIntl(nextConfig)

@@ -1,24 +1,27 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { useRouter, useParams } from 'next/navigation'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { IMaskInput } from 'react-imask'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
-import { authApi, Button, Input, loginSchema, LoginSchemaType } from '@/shared'
-import { useLoginStore } from '@/features/auth/login/model'
+import { Button, Input } from '@/shared/ui-kit'
+import { useEnterPhone, useLoginStore } from '@/features/auth'
+import { defaultClientTab, defaultLawyerTab, loginSchema, LoginSchemaType, Role } from '@/shared/lib'
 
 import s from './Login.module.scss'
-import { useEnterPhone } from '@/features/auth/register'
+import { useBrowserLang } from '@/shared/lib/hooks/useBrowserLang'
 
 export const Login = () => {
-	const { locale } = useParams()
 	const router = useRouter()
-	const { login, loading, personalData, getPersonalDataByToken } = useLoginStore()
+	const { login, loading, personalData } = useLoginStore()
 	const [formError, setFormError] = useState<string | null>(null)
 	const { setPhone } = useEnterPhone()
+	const locale = useBrowserLang()
+	const t = useTranslations()
 
 	const {
 		register,
@@ -30,22 +33,26 @@ export const Login = () => {
 		mode: 'onChange',
 	})
 
+	useEffect(() => {
+		if (!personalData) return
+
+		// @ts-expect-error fix it
+		const role = personalData?.role_id.code as Role
+
+		if (role === 'client') {
+			router.push(`/${locale}/${defaultClientTab}`)
+		}
+		if (role === 'lawyer') {
+			router.push(`/${locale}/${defaultLawyerTab}`)
+		}
+	}, [personalData, router])
+
 	const onSubmit = async (data: LoginSchemaType) => {
 		setFormError(null)
 
 		try {
 			const rawPhone = data.phone.replace(/\D/g, '')
-
-			await login({
-				phone: rawPhone,
-				password: data.password,
-			})
-
-			const personalData = await authApi.me()
-			// @ts-expect-error fix it
-			const currentRole = personalData.role_id.code
-
-			router.push(`/${locale}/dashboard/${currentRole}`)
+			await login({ phone: rawPhone, password: data.password })
 		} catch (error: any) {
 			setFormError(error.message)
 		}
@@ -55,23 +62,24 @@ export const Login = () => {
 		<div className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.top}>
-					<h1 className={s.title}>
-						Войти
-						<br /> в приложение
-					</h1>
+					<h1
+						className={s.title}
+						dangerouslySetInnerHTML={{ __html: t('auth.login.title') }}
+					/>
 				</div>
 
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<div className={`${s.phone} ${s.inputBox}`}>
-						<label className={s.label}>Номер телефона</label>
+						<label className={s.label}>{t('auth.login.phoneLabel')}</label>
 
 						<Controller
 							name="phone"
 							control={control}
 							render={({ field: { onChange, onBlur, value, ref } }) => (
 								<Input
+									autoFocus
 									type="tel"
-									placeholder="Введите номер телефона"
+									placeholder={t('auth.login.phonePlaceholder')}
 									hasError={!!errors.phone}
 									disabled={loading}
 									// @ts-expect-error fix it
@@ -88,26 +96,27 @@ export const Login = () => {
 								/>
 							)}
 						/>
-						{errors.phone && <p className={s.error}>{errors.phone.message}</p>}
+						{errors.phone && <p className={s.error}>{t(errors.phone.message || 'validation.generic')}</p>}
 					</div>
 
 					<div className={`${s.password} ${s.inputBox}`}>
-						<label className={s.label}>Пароль</label>
+						<label className={s.label}>{t('auth.login.passwordLabel')}</label>
 						<Input
 							type="password"
-							placeholder="Введите пароль"
+							placeholder={t('auth.login.passwordPlaceholder')}
 							{...register('password')}
 							hasError={!!errors.password}
+							disabled={loading}
 						/>
-						{errors.password && <p className={s.error}>{errors.password.message}</p>}
+						{errors.password && <p className={s.error}>{t(errors.password.message)}</p>}
 					</div>
 
 					{formError && <p className={s.error}>{formError}</p>}
 
 					<Link
-						href={`/${locale}/auth/reset-password`}
+						href={`/auth/reset-password`}
 						className={s.forgetPassword}>
-						Забыли пароль?
+						{t('auth.login.forgotPassword')}
 					</Link>
 
 					<Button
@@ -115,14 +124,14 @@ export const Login = () => {
 						size="full"
 						type="submit"
 						disabled={loading}>
-						{loading ? 'Входим...' : 'Войти'}
+						{loading ? t('auth.login.submitting') : t('auth.login.submit')}
 					</Button>
 				</form>
 
 				<Link
 					className={s.link}
-					href={`/${locale}/auth/register/select-role`}>
-					Регистрация
+					href={`/auth/register/select-role`}>
+					{t('auth.login.registerLink')}
 				</Link>
 			</div>
 		</div>

@@ -3,11 +3,11 @@
 import { useEffect } from 'react'
 import { redirect, useParams } from 'next/navigation'
 
-import { arrRoles } from '@/shared/lib/consts'
-import { Role, useStepMarcher } from '@/shared'
 import { RegistrationFormStep } from '@/features/auth/register'
 import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
 import { PhoneVerificationStep } from '@/widgets/PhoneVerificationStep'
+import { arrRoles, Role, useStepMarcher } from '@/shared/lib'
+import { Loader } from '@/shared/ui-kit'
 
 const stepComponents = {
 	phone: EnterPhoneNumberStep,
@@ -17,25 +17,28 @@ const stepComponents = {
 }
 
 export default function RegisterPage() {
-	const { role, locale } = useParams()
-	const { getCurrentStep, isInitialized, setRole } = useStepMarcher()
+	const { role } = useParams()
+
+	const { getCurrentStep, isInitialized, forceSetRole, role: currentRoleFromStore } = useStepMarcher()
 	const step = getCurrentStep()
 
 	useEffect(() => {
-		if (arrRoles.includes(role as Role) && !isInitialized) {
-			setRole(role as Role)
-		} else if (!arrRoles.includes(role as Role)) {
-			redirect(`/${locale}`)
+		if (!arrRoles.includes(role as Role)) {
+			redirect(`/`)
 		}
-	}, [role, locale, isInitialized])
+
+		if (!isInitialized || role !== currentRoleFromStore) {
+			forceSetRole(role as Role)
+		}
+	}, [role, isInitialized])
 
 	useEffect(() => {
 		if (!step && isInitialized) {
-			redirect(`/login`)
+			redirect(`/auth/login`)
 		}
 	}, [step, isInitialized])
 
-	if (!isInitialized) return <div>Загрузка...</div>
+	if (!isInitialized) return <Loader />
 
 	const StepComponent = step ? stepComponents[step] : null
 

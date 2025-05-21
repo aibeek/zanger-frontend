@@ -1,0 +1,22 @@
+.item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 16px;
+	width: 100%;
+	border-bottom: 1px solid rgb(245, 246, 251);
+}
+
+.title,
+.plan {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 130%;
+}
+
+.plan {
+	color: white;
+	background-color: $blue-color;
+	padding: 5px 10px;
+	border-radius: 10px;
+}

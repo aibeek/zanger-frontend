@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { ClientRegisterDto, authApi } from '@/shared'
+import { authApi, ClientRegisterDto } from '@/shared/api'
 
 interface ClientRegisterFormStore {
 	data: ClientRegisterDto

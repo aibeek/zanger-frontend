@@ -1,1 +1,1 @@
-// export * from './resetPasswordStore'
+export * from './resetPasswordStore'

@@ -1,8 +1,11 @@
-import { create } from 'zustand'
 import { z } from 'zod'
-import { passwordSchema } from '@/shared'
-import { authApi } from '@/shared/api'
+import { create } from 'zustand'
 import { redirect } from 'next/navigation'
+
+import { authApi } from '@/shared/api'
+import { passwordSchema } from '@/shared/lib'
+
+import { useLoginStore } from '../../login'
 
 interface NewPasswordState {
 	password: string
@@ -12,7 +15,7 @@ interface NewPasswordState {
 	success: boolean
 	setField: (field: string, value: string) => void
 	submit: () => Promise<void>
-	checkPhoneExist: (phone: string | null, locale: string) => void
+	checkPhoneExist: (phone: string | null) => void
 }
 
 export const useNewPasswordStore = create<NewPasswordState>((set, get) => ({
@@ -25,9 +28,9 @@ export const useNewPasswordStore = create<NewPasswordState>((set, get) => ({
 		set({ [field]: value })
 	},
 
-	checkPhoneExist: (phone, locale) => {
+	checkPhoneExist: (phone) => {
 		if (!phone) {
-			redirect(`/${locale}/auth/reset-password`)
+			redirect(`/auth/reset-password`)
 		}
 	},
 
@@ -48,16 +51,13 @@ export const useNewPasswordStore = create<NewPasswordState>((set, get) => ({
 		set({ isSubmitting: true, errors: {}, success: false })
 
 		try {
-			const res = (await authApi.updatePassword({ password, password_confirmation })) as { message: string }
+			await authApi.updatePassword({ password, password_confirmation })
 
-			if (res.message === 'messages.password_success_reset') {
-				set({ success: true })
-			} else {
-				alert('Не удалось сменить пароль')
-			}
+			useLoginStore.getState().reset()
+
+			set({ success: true })
 		} catch (e) {
 			console.error(e)
-			alert('Ошибка при смене пароля')
 		} finally {
 			set({ isSubmitting: false })
 		}

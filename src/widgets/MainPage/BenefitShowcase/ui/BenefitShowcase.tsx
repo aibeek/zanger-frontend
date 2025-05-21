@@ -1,8 +1,10 @@
 import Image from 'next/image'
 
+import { ContentDataItem } from '@/shared/lib'
+
 import s from './BenefitShowcase.module.scss'
-import { ContentDataItem } from '@/shared/lib/data/lending-data'
 import { BenefitShowcaseAccordion } from './BenefitShowcaseAccordion'
+import { useTranslations } from 'next-intl'
 
 type Props = {
 	title: string
@@ -11,13 +13,20 @@ type Props = {
 }
 
 export const BenefitShowcase = ({ title, descr, content }: Props) => {
+	const t = useTranslations('lending.benefitShowcase')
 	return (
 		<section className={s.wrapper}>
 			<div className="container-middle">
 				<div className={s.inner}>
 					<div className={s.top}>
-						<h2 className="lending-title">{title}</h2>
-						<p className="lending-descr">{descr}</p>
+						<h2
+							className="lending-title"
+							dangerouslySetInnerHTML={{ __html: title }}
+						/>
+						<p
+							className="lending-descr"
+							dangerouslySetInnerHTML={{ __html: descr }}
+						/>
 					</div>
 
 					<div className={s.content}>
@@ -29,8 +38,11 @@ export const BenefitShowcase = ({ title, descr, content }: Props) => {
 									<>
 										<div className={s.faqBox}>
 											<div className={s.faqBoxTop}>
-												<h4 className={s.faqBoxTitle}>{top.title}</h4>
-												<p className="lending-descr">{top.descr}</p>
+												<h4 className={s.faqBoxTitle}>{t('faqBox.top.title')}</h4>
+												<p
+													className="lending-descr"
+													dangerouslySetInnerHTML={{ __html: t('faqBox.top.descr') }}
+												/>
 											</div>
 
 											{top.faq.map((faq, idx) => (
@@ -63,8 +75,14 @@ export const BenefitShowcase = ({ title, descr, content }: Props) => {
 										</div>
 										<div className={s.faqBox}>
 											<div className={s.faqBoxTop}>
-												<h4 className={s.faqBoxTitle}>{bottom.title}</h4>
-												<p className="lending-descr">{bottom.descr}</p>
+												<h4
+													className={s.faqBoxTitle}
+													dangerouslySetInnerHTML={{ __html: t('faqBox.bottom.title') }}
+												/>
+												<p
+													className="lending-descr"
+													dangerouslySetInnerHTML={{ __html: t('faqBox.bottom.descr') }}
+												/>
 											</div>
 
 											{bottom.faq.map((faq, idx) => (

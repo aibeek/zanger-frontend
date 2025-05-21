@@ -8,6 +8,56 @@
 		align-items: center;
 		height: 64px;
 	}
+
+	.left {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.city {
+		color: rgba(156, 165, 172, 1);
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 130%;
+		display: flex;
+		gap: 2px;
+		align-items: center;
+		span {
+			color: $primary-color;
+			font-weight: 600;
+		}
+	}
+
+	.right {
+		display: flex;
+		align-items: center;
+		gap: 24px;
+	}
+
+	.user {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.userInfo {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		align-items: end;
+	}
+
+	.userName {
+		font-size: 14px;
+		text-transform: capitalize;
+	}
+
+	.userPhone {
+		color: rgba(179, 179, 179, 1);
+		font-size: 12px;
+		font-weight: 500;
+	}
 }
 
 .lendingHeader {
@@ -27,6 +77,31 @@
 	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
 	background-color: white;
 
+	.user {
+		display: flex;
+		flex-direction: row-reverse;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.userInfo {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		align-items: end;
+	}
+
+	.userName {
+		font-size: 14px;
+		text-transform: capitalize;
+	}
+
+	.userPhone {
+		color: rgba(179, 179, 179, 1);
+		font-size: 12px;
+		font-weight: 500;
+	}
+
 	@media (max-width: 1366px) {
 		width: 90vw;
 	}
@@ -41,8 +116,7 @@
 	.left {
 		display: flex;
 		align-items: center;
-		gap: 140px;
-
+		gap: 100px;
 		@media (max-width: 1366px) {
 			flex-direction: row-reverse;
 			gap: 8px;
@@ -59,9 +133,14 @@
 	}
 
 	.btn {
+		min-width: 118px;
 		padding: 16px 8px !important;
 		@media (max-width: 1366px) {
 			padding: 8px !important;
+		}
+
+		@media (max-width: 440px) {
+			min-width: max-content;
 		}
 	}
 
@@ -134,6 +213,8 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
+		background-color: rgba(244, 248, 251, 1);
+		border-radius: 15px;
 	}
 }
 
@@ -190,5 +271,32 @@
 	gap: 14px;
 	@media (min-width: 1366px) {
 		display: none;
+	}
+}
+
+.modal {
+	h2 {
+		font-size: 16px;
+		margin-bottom: 8px;
+	}
+
+	.descr {
+		color: rgba(187, 197, 207, 1);
+		font-size: 14px;
+		font-weight: 400;
+		margin-bottom: 20px;
+		max-width: 250px;
+		text-align: center;
+	}
+
+	.btns {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.logoutBtn {
+		min-width: 136px;
 	}
 }

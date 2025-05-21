@@ -1,0 +1,16 @@
+.user {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 10px;
+}
+
+.userIcon {
+	width: 40px;
+	height: 40px;
+}
+
+.top {
+	margin-bottom: 8px;
+	border-bottom: 1px solid rgba(245, 246, 251, 1);
+}

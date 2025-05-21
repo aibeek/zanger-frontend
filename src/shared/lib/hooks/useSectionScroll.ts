@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
 export const useSectionScroll = () => {
@@ -13,7 +15,7 @@ export const useSectionScroll = () => {
 		}
 
 		const observer = new IntersectionObserver(handleIntersect, {
-			rootMargin: '-40% 0px -55% 0px',
+			rootMargin: '-50px 0px 0px 0px', // смещение отслеживания на 50px выше
 			threshold: 0.1,
 		})
 

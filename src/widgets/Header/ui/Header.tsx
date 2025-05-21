@@ -1,30 +1,58 @@
 'use client'
-
-import Image from 'next/image'
-import Link from 'next/link'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Disclosure } from '@headlessui/react'
-
-import closeIcon from '@/app/assets/icons/close.svg'
+import Image from 'next/image'
+import { authService, useLoginStore } from '@/features/auth'
 import burger from '@/app/assets/icons/burger.svg'
-import { Button, headerMenuData, scrollToSection } from '@/shared'
+import closeIcon from '@/app/assets/icons/close.svg'
+import LogoutIcon from '@/app/assets/icons/logout.svg'
+import avatar from '@/app/assets/icons/header-avatar.svg'
+import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
+import { Button, LangSwitcher, Modal, useModal } from '@/shared/ui-kit'
+import { formatPhoneNumber, scrollToSection, useAppContentData, useAuthStore, useSectionScroll } from '@/shared/lib'
 
 import s from './Header.module.scss'
-import { useSectionScroll } from '@/shared/lib/hooks/useSectionScroll'
-import { useState } from 'react'
+import { useTranslations } from 'next-intl'
+import Link from 'next/link'
 
 export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant' }) => {
-	const { activeSection, setActiveSection } = useSectionScroll()
+	const router = useRouter()
+	const { isOpen, close, open } = useModal()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
+	const { activeSection, setActiveSection } = useSectionScroll()
+	const { personalData, getPersonalDataByToken, reset } = useLoginStore()
+	const { headerMenuData } = useAppContentData()
+	const t = useTranslations('header')
+	const { isAuthenticated, checkAuth } = useAuthStore()
+
+	useEffect(() => {
+		checkAuth()
+	}, [checkAuth])
+
+	useEffect(() => {
+		if (isAuthenticated && !personalData) {
+			getPersonalDataByToken()
+		}
+	}, [isAuthenticated, personalData, getPersonalDataByToken])
+
+	const handleLogout = () => {
+		reset()
+		authService.logout()
+		router.push('/auth/login')
+	}
 
 	const isActive = (link: string) => activeSection === link
 	if (variant === 'lending-variant') {
 		return (
 			<header className={`${s.lendingHeader} ${isMenuOpen ? s.open : ''}`}>
-				<div className={s.left}>
+				<div
+					onClick={open}
+					className={s.left}>
 					<div className={s.logo}>
 						<Image
 							src="/logo.svg"
-							alt="logo"
+							alt={t('logoAlt')}
 							width={100}
 							height={20}
 						/>
@@ -47,7 +75,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													setActiveSection(link)
 												}}
 												className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-												{name}
+												{t(name)}
 											</Link>
 										))}
 									</div>
@@ -56,7 +84,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											{open ? (
 												<Image
 													src={closeIcon}
-													alt={'закрыть'}
+													alt={t('closeMenu')}
 													width={24}
 													height={24}
 													className={s.iconClose}
@@ -64,7 +92,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											) : (
 												<Image
 													src={burger}
-													alt={'кнопка открытия меню'}
+													alt={t('openMenu')}
 													width={24}
 													height={24}
 													className={s.iconBurger}
@@ -84,7 +112,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													close()
 												}}
 												className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-												{name}
+												{t(name)}
 											</Link>
 										))}
 									</Disclosure.Panel>
@@ -95,40 +123,144 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				</div>
 
 				<div className={s.authBtns}>
-					<Button
-						variant={'primary'}
-						size={'auto'}
-						className={s.btn}>
-						<Link href={`/ru/auth/login`}>Войти</Link>
-					</Button>
-					<Button
-						variant="border"
-						size={'auto'}
-						className={s.btn}>
-						<Link href={`/ru/auth/register/select-role`}>Регистарция</Link>
-					</Button>
+					{isAuthenticated && personalData ? (
+						<div className={s.user}>
+							<Link
+								style={{ cursor: 'pointer' }}
+								href={'/dashboard/profile'}>
+								<Image
+									style={{ borderRadius: '10px' }}
+									src={personalData.icon ?? avatar}
+									alt={t('avatarAlt')}
+									width={40}
+									height={40}
+								/>
+							</Link>
+							<div className={s.userInfo}>
+								<p className={s.userName}>{personalData.name}</p>
+								<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+							</div>
+						</div>
+					) : (
+						<>
+							<Button
+								variant={'primary'}
+								size={'auto'}
+								className={s.btn}>
+								<Link href={'/auth/login'}>{t('login')}</Link>
+							</Button>
+							<Button
+								variant="border"
+								size={'auto'}
+								className={s.btn}>
+								<Link href={'/auth/register/select-role'}>{t('register')}</Link>
+							</Button>
+						</>
+					)}
 				</div>
 			</header>
 		)
 	}
 
 	return (
-		<header className={s.userHeader}>
-			<div className="container">
-				<div className={s.inner}>
-					<div className={s.left}>
-						<Link href={'/ru'}>
-							<Image
-								src="/logo.svg"
-								alt="logo"
-								width={100}
-								height={20}
-							/>
-						</Link>
+		<>
+			<header className={s.userHeader}>
+				<div className="container">
+					<div className={s.inner}>
+						<div className={s.left}>
+							<Link href={'/'}>
+								<Image
+									src="/logo.svg"
+									alt={t('logoAlt')}
+									width={100}
+									height={20}
+								/>
+							</Link>
+
+							{isAuthenticated && personalData && (
+								<p className={s.city}>
+									{t('city')}: <span>{personalData.region.name}</span>
+								</p>
+							)}
+						</div>
+						<div className={s.right}>
+							<LangSwitcher />
+
+							{isAuthenticated && personalData && (
+								<>
+									<Button
+										// onClick={handleNotifications}
+										className={s.notifications}
+										size={'auto'}
+										variant={'clear'}>
+										<Image
+											style={{ borderRadius: '10px', objectFit: 'cover' }}
+											src={NotificationsIcon}
+											alt={t('notificationsAlt')}
+											width={24}
+											height={24}
+										/>
+									</Button>
+									<div className={s.user}>
+										<Image
+											style={{ borderRadius: '10px', objectFit: 'cover' }}
+											src={personalData.icon ?? avatar}
+											alt={t('avatarAlt')}
+											width={40}
+											height={40}
+										/>
+										<div className={s.userInfo}>
+											<p className={s.userName}>{personalData.name}</p>
+											<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+										</div>
+									</div>
+									<Button
+										onClick={open}
+										className={s.logout}
+										size={'auto'}
+										variant={'clear'}>
+										<Image
+											src={LogoutIcon}
+											alt={t('logoutAlt')}
+											width={24}
+											height={24}
+										/>
+									</Button>
+								</>
+							)}
+						</div>
 					</div>
-					<div className={s.right}>Lang switcher</div>
 				</div>
-			</div>
-		</header>
+			</header>
+
+			<Modal
+				className={s.modal}
+				isOpen={isOpen}
+				onClose={close}
+				title={t('modalTitle')}>
+				<div className={s.top}>
+					<p
+						className={s.descr}
+						dangerouslySetInnerHTML={{ __html: t('modalDescription') }}
+					/>
+				</div>
+				<div className={s.btns}>
+					<Button
+						variant="border"
+						size={'lg'}
+						className={s.stayBtn}
+						onClick={close}>
+						{t('stay')}
+					</Button>
+					<Button
+						variant="danger"
+						size={'lg'}
+						className={s.logoutBtn}
+						onClick={handleLogout}>
+						{t('logout')}
+					</Button>
+				</div>
+			</Modal>
+		</>
 	)
 }
