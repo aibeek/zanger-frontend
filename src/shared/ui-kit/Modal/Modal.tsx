@@ -1,9 +1,12 @@
 'use client'
 
-import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import { ReactNode } from 'react'
-import s from './Modal.module.scss'
 import clsx from 'clsx'
+import { ReactNode } from 'react'
+import { Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
+
+import s from './Modal.module.scss'
+import { Button } from '../Button'
+import { XMarkIcon } from '@heroicons/react/20/solid'
 
 type Props = {
 	isOpen: boolean
@@ -11,9 +14,11 @@ type Props = {
 	title?: string
 	children: ReactNode
 	className?: string
+	closeButton?: boolean
 }
 
-export const Modal = ({ isOpen, onClose, title, children, className }: Props) => {
+export const Modal = (props: Props) => {
+	const { isOpen, onClose, title, children, className, closeButton = false } = props
 	return (
 		<Dialog
 			open={isOpen}
@@ -25,7 +30,21 @@ export const Modal = ({ isOpen, onClose, title, children, className }: Props) =>
 			/>
 			<div className={s.wrapper}>
 				<DialogPanel className={clsx(s.panel, className)}>
-					{title && <DialogTitle className={s.title}>{title}</DialogTitle>}
+					<div className={s.top}>
+						{title && <DialogTitle className={s.title}>{title}</DialogTitle>}
+						{closeButton && (
+							<Button
+								className={s.close}
+								variant="clear"
+								onClick={onClose}>
+								<XMarkIcon
+									width={24}
+									height={24}
+									color={'rgba(55, 55, 55, 1)'}
+								/>
+							</Button>
+						)}
+					</div>
 					{children}
 				</DialogPanel>
 			</div>

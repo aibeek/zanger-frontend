@@ -35,7 +35,6 @@ export const authService = {
 		const token = tokenService.getToken()
 		if (!token) return null
 
-		// Проверка кэша перед запросом
 		const cachedPersonalData = localStorage.getItem('personalData')
 		if (cachedPersonalData) {
 			const personalData = JSON.parse(cachedPersonalData)

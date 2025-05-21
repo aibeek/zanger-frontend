@@ -13,21 +13,15 @@ import { Button } from '@/shared/ui-kit'
 import { Application } from '@/shared/api'
 
 interface MyApplicationsLawyersCardsProps {
-	responses: Application['responses']
+	data: Application
+	mutate: () => Promise<void>
 }
 
-export const MyApplicationsLawyersCards = ({ responses }: MyApplicationsLawyersCardsProps) => {
+export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawyersCardsProps) => {
 	const t = useTranslations()
 	const [openCard, setOpenCard] = useState<number | null>(null)
 
-	const {
-		filteredApplications,
-		refetchApplications,
-		acceptResponse,
-		rejectResponse,
-		getDetailedResponse,
-		detailedResponse,
-	} = useMyApplicationsStore()
+	const { acceptResponse, rejectResponse, getDetailedResponse, detailedResponse } = useMyApplicationsStore()
 
 	const toggleCard = async (responseId: number) => {
 		if (openCard === responseId) {
@@ -39,17 +33,14 @@ export const MyApplicationsLawyersCards = ({ responses }: MyApplicationsLawyersC
 	}
 
 	const handleReject = async (responseId: number) => {
-		await rejectResponse(responseId)
+		await rejectResponse(responseId, mutate)
 		setOpenCard(null)
-		await refetchApplications()
 	}
 
 	const handleAccept = async (responseId: number) => {
-		await acceptResponse(responseId)
-		setOpenCard(null)
+		await acceptResponse(responseId, mutate)
+		await getDetailedResponse(responseId)
 	}
-
-	if (!responses || responses.length === 0) return null
 
 	const renderResponseCard = (application: any, response: any, isOpen: boolean) => {
 		const lawyer = response.lawyer
@@ -115,28 +106,63 @@ export const MyApplicationsLawyersCards = ({ responses }: MyApplicationsLawyersC
 									Специальность: <span>{detailedResponse?.specialization || 'не указано'}</span>
 								</li>
 								<li className={s.phone}>
-									Номер телефона: <span>{detailedResponse?.phone ? detailedResponse.phone : 'Скрыт'}</span>
+									Номер телефона:{' '}
+									<span>
+										{!response.is_accepted
+											? 'Скрыт'
+											: detailedResponse?.contacts?.phone === null
+											? 'Не указан'
+											: detailedResponse?.contacts?.phone}
+									</span>
 								</li>
 								<li className={s.phone}>
-									WhatsApp: <span>{detailedResponse?.whats_app ? detailedResponse.whats_app : 'Скрыт'}</span>
+									WhatsApp:{' '}
+									<span>
+										{!response.is_accepted
+											? 'Скрыт'
+											: detailedResponse?.contacts?.whatsapp === null
+											? 'Не указан'
+											: detailedResponse?.contacts?.whatsapp}
+									</span>
+								</li>
+								<li className={s.phone}>
+									Telegram:{' '}
+									<span>
+										{!response.is_accepted
+											? 'Скрыт'
+											: detailedResponse?.contacts?.telegram === null
+											? 'Не указан'
+											: detailedResponse?.contacts?.telegram}
+									</span>
 								</li>
 							</ul>
 						</div>
 
 						<div className={s.cardDetaildBottom}>
 							<div className={s.btns}>
-								<Button
-									variant="primary"
-									className={s.agreeBtn}
-									onClick={() => handleAccept(response.id)}>
-									Принять
-								</Button>
-								<Button
-									variant="danger"
-									className={s.denyRedBtn}
-									onClick={() => handleReject(response.id)}>
-									Отказать
-								</Button>
+								{!response.is_accepted ? (
+									<>
+										<Button
+											variant="primary"
+											className={s.agreeBtn}
+											onClick={() => handleAccept(response.id)}>
+											Принять
+										</Button>
+										<Button
+											variant="danger"
+											className={s.denyRedBtn}
+											onClick={() => handleReject(response.id)}>
+											Отказать
+										</Button>
+									</>
+								) : (
+									<Button
+										variant="primary"
+										className={s.agreeBtn}
+										onClick={() => toggleCard(response.id)}>
+										Свернуть
+									</Button>
+								)}
 							</div>
 							<Button
 								variant="clear"
@@ -152,40 +178,49 @@ export const MyApplicationsLawyersCards = ({ responses }: MyApplicationsLawyersC
 		)
 	}
 
+	// if (!data.responses || data.responses.length === 0) return null
+
+	const isCardOpen = data.responses.some((r) => r.id === openCard)
+
+	let responsesToRender = []
+
+	if (isCardOpen) {
+		responsesToRender = [
+			...data.responses.filter((r) => r.id === openCard),
+			...data.responses.filter((r) => r.id !== openCard && (!r.is_rejected || r.is_accepted)),
+		]
+	} else {
+		responsesToRender = data.responses.filter((r) => !r.is_rejected || r.is_accepted)
+	}
+
+	const openResponse = data.responses.find((r) => r.id === openCard)
+	const otherResponses = data.responses.filter((r) => r.id !== openCard && (!r.is_rejected || r.is_accepted))
+
 	return (
 		<section className={s.cards}>
+			{data.responses.filter((r) => !r.is_rejected && !r.is_accepted).length > 0 && (
+				<div className={s.notificationsBox}>
+					<p>Отклики юристов:</p>
+					<span className={s.notification}>
+						{data.responses.filter((r) => !r.is_rejected && !r.is_accepted).length}
+					</span>
+				</div>
+			)}
+
 			<AnimatePresence mode="popLayout">
-				{filteredApplications.map((application) => {
-					const { responses } = application
+				{openResponse && renderResponseCard(data, openResponse, true)}
 
-					if (!responses || responses.length === 0) return null
+				{openResponse && otherResponses.length > 0 && (
+					<>
+						<p className={s.others}>Другие специалисты:</p>
+						{otherResponses.map((response) => renderResponseCard(data, response, false))}
+					</>
+				)}
 
-					const isCardOpen = responses.some((r: any) => r.id === openCard)
-
-					let responsesToRender: any[] = []
-
-					if (isCardOpen) {
-						responsesToRender = [
-							...responses.filter((r: any) => r.id === openCard),
-							...responses.filter((r: any) => (r.id !== openCard && !r.is_rejected) || r.is_accepted),
-						]
-					} else {
-						responsesToRender = responses.filter((r: any) => !r.is_rejected || r.is_accepted)
-					}
-
-					return (
-						<div
-							className={s.cards}
-							key={application.id}>
-							<AnimatePresence mode="popLayout">
-								{responsesToRender.map((response: any) => {
-									const isOpen = response.id === openCard
-									return renderResponseCard(application, response, isOpen)
-								})}
-							</AnimatePresence>
-						</div>
-					)
-				})}
+				{!openResponse &&
+					data.responses
+						.filter((r) => !r.is_rejected || r.is_accepted)
+						.map((response) => renderResponseCard(data, response, false))}
 			</AnimatePresence>
 		</section>
 	)

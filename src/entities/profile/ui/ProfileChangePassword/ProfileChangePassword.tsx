@@ -13,6 +13,7 @@ import { useUpdatePasswordStore } from '../../model'
 export const ProfileChangePassword = () => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const t = useTranslations()
+
 	const { old_password, password, password_confirmation, setField, submit, errors, isSubmitting, reset } =
 		useUpdatePasswordStore()
 

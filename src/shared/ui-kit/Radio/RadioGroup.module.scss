@@ -1,0 +1,43 @@
+.wrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.label {
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 130%;
+}
+
+.radio {
+	width: 20px;
+	height: 20px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+	background-color: white;
+	display: inline-block;
+	position: relative;
+
+	&.checked {
+		border-color: #3b82f6;
+		background-color: #3b82f6;
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 4px;
+			left: 4px;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: white;
+		}
+	}
+
+	&.error {
+		border-color: red;
+	}
+}

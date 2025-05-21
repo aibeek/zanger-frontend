@@ -9,7 +9,7 @@ export const UserBox = ({ data }: { data: any }) => {
 	return (
 		<div className={s.user}>
 			<Image
-				style={{ borderRadius: '10px' }}
+				style={{ borderRadius: '10px', objectFit: 'cover' }}
 				src={data.user?.icon ?? avatar}
 				alt={'аватар'}
 				width={40}

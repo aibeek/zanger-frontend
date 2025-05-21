@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import s from './DashboardTabs.module.scss'
 import Image from 'next/image'
 import { useMyResponsesInfinite } from '@/features/my-responses-view'
-import { useMyApplicationsStore } from '@/features/my-applications-view/model'
+import { useMyApplicationsInfinite, useMyApplicationsStore } from '@/features/my-applications-view/model'
 
 type Tab = {
 	name: string
@@ -27,8 +27,7 @@ export const DashboardTabs = ({ tabs, defaultTab }: Props) => {
 	const router = useRouter()
 	const t = useTranslations('tabs')
 	const { items: myResponses } = useMyResponsesInfinite()
-
-	const { myApplications } = useMyApplicationsStore()
+	const { items: myApplications } = useMyApplicationsInfinite()
 
 	const activeTab = pathname.split('/').pop() || defaultTab
 

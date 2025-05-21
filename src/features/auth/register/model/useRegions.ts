@@ -11,21 +11,27 @@ const fetchRegions = async (): Promise<City[]> => {
 
 	const topLevelCities = cities.filter((c) => c.path === c.name).sort((a, b) => a.name.localeCompare(b.name, 'ru'))
 
-	const groupedRegionsAndCities = regions
+	const regionalCities = regions
 		.sort((a, b) => a.name.localeCompare(b.name, 'ru'))
 		.flatMap((region) => {
+			const fullRegionName = region.name.endsWith('область') ? region.name : `${region.name} область`
+
 			const citiesInRegion = cities
-				.filter((city) => city.path === region.name)
+				.filter((city) => city.path.includes(region.name))
 				.sort((a, b) => a.name.localeCompare(b.name, 'ru'))
 
-			return [region, ...citiesInRegion]
+			return citiesInRegion
 		})
 
-	const uniqueRegions = Array.from(
-		new Map([...topLevelCities, ...groupedRegionsAndCities].map((item) => [item.name, item])).values(),
-	)
+	const usedCityIds = new Set([...topLevelCities, ...regionalCities].map((item) => item.id))
 
-	return uniqueRegions
+	const unusedCities = cities.filter((city) => !usedCityIds.has(city.id))
+
+	const allItems = [...topLevelCities, ...regionalCities, ...unusedCities]
+
+	const uniqueItems = Array.from(new Map(allItems.map((item) => [item.id, item])).values())
+
+	return uniqueItems
 }
 
 export const useRegions = () => {

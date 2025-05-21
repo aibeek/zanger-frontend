@@ -35,3 +35,16 @@
 	line-height: 130%;
 	margin-bottom: 8px;
 }
+
+.top {
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+}
+
+.close {
+	padding: 0px;
+	height: 60px;
+	display: flex;
+	align-items: start;
+}

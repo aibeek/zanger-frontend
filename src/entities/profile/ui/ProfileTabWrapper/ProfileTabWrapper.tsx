@@ -11,8 +11,8 @@ type Props = {
 	title: string
 	imgSrc: string
 	imgAlt: string
-	panel_title: string
-	panel_descr: string
+	panel_title?: string
+	panel_descr?: string
 	children: React.ReactNode
 	ref?: any
 }

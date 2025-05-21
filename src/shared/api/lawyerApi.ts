@@ -1,6 +1,6 @@
 import { API_URL } from '../config'
+import { createQuery } from '../lib'
 import { httpClientWithAuth } from './httpClient'
-import { createPaginationQuery } from './paginationUtils'
 
 export interface LentaItem {
 	id: string
@@ -67,7 +67,7 @@ export const lawyerApi = {
 		}),
 
 	getOrders: (params?: Record<string, string | number>) => {
-		const query = createPaginationQuery(params)
+		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/orders${query}`
 
 		return httpClientWithAuth(url, {
@@ -81,7 +81,7 @@ export const lawyerApi = {
 		}),
 
 	getResponses: (params?: { page?: number; per_page?: number }) => {
-		const query = createPaginationQuery(params)
+		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/responses${query}`
 
 		return httpClientWithAuth(url, {
@@ -90,7 +90,7 @@ export const lawyerApi = {
 	},
 
 	historyResponses: (params: { page?: number; per_page?: number } = {}) => {
-		const query = createPaginationQuery(params)
+		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/responses/history${query}`
 
 		return httpClientWithAuth(url, {

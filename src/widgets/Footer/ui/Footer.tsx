@@ -12,11 +12,14 @@ import location from '@/app/assets/icons/location.svg'
 import telegram from '@/app/assets/icons/telegram.svg'
 import instagram from '@/app/assets/icons/instagram.svg'
 import googleplay from '@/app/assets/icons/googleplay.webp'
+import card from '@/app/assets/icons/visa-mc.webp'
+
 import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/lib'
 
 import s from './Footer.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
+import { policyURL, termsURL } from '@/shared/lib/consts/urls'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -42,12 +45,12 @@ export const Footer = ({ variant, id }: Props) => {
 					<div className={s.right}>
 						<Link
 							target={'_blank'}
-							href="/privacy">
+							href={policyURL}>
 							{t('privacy')}
 						</Link>
 						<Link
 							target={'_blank'}
-							href="/rules">
+							href={termsURL}>
 							{t('offer')}
 						</Link>
 					</div>
@@ -160,7 +163,7 @@ export const Footer = ({ variant, id }: Props) => {
 												document.body.click()
 											}}
 											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{t(name)} 
+											{t(name)}
 										</Link>
 									</li>
 								))}
@@ -178,7 +181,8 @@ export const Footer = ({ variant, id }: Props) => {
 									/>
 									<Link
 										className={s.link}
-										href={'tel:7770090000'}>
+										target={'_blank'}
+										href={'https://api.whatsapp.com/send/?phone=77770090000'}>
 										+7 777 009 0000
 									</Link>
 								</li>
@@ -192,6 +196,15 @@ export const Footer = ({ variant, id }: Props) => {
 										href={'mailto:zanger@info.com'}>
 										zanger@info.com
 									</Link>
+								</li>
+
+								<li className={s.columnItem}>
+									<Image
+										width={71}
+										height={46}
+										src={card}
+										alt={'карта'}
+									/>
 								</li>
 							</ul>
 						</div>
@@ -209,12 +222,12 @@ export const Footer = ({ variant, id }: Props) => {
 						<div className={s.lendingBottomRight}>
 							<Link
 								target={'_blank'}
-								href="/privacy">
+								href={policyURL}>
 								{t('privacy')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href="/rules">
+								href={termsURL}>
 								{t('offer')}
 							</Link>
 						</div>

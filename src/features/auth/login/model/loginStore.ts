@@ -3,9 +3,10 @@ import { create } from 'zustand'
 import { LoginDto } from '@/shared/api'
 
 import { authService } from '../service'
+import { UserProfile } from '@/shared/lib/types'
 
 interface AuthState {
-	personalData: any | null
+	personalData: UserProfile | null
 	loading: boolean
 	error: string | null
 	reset: () => void

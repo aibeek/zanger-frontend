@@ -14,6 +14,7 @@ import s from './RegistrationFormStep.module.scss'
 import { SearchSelect } from '../SearchSelect'
 import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegions } from '../../model'
 import { useTranslations } from 'next-intl'
+import { policyURL } from '@/shared/lib/consts/urls'
 
 export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer' }) => {
 	const t = useTranslations()
@@ -214,7 +215,7 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 					<p>{t('auth.registration.warningText')}</p>
 					<Link
 						target={'_blank'}
-						href={'/policy'}>
+						href={policyURL}>
 						{t('auth.registration.privacyPolicy')}
 					</Link>
 				</div>

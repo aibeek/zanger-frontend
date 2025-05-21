@@ -12,6 +12,7 @@ import { useEnterPhone } from '@/features/auth/register'
 import { useStepMarcher, phoneSchema, PhoneSchemaType, useFormError } from '@/shared/lib'
 
 import s from './EnterPhoneNumberStep.module.scss'
+import { termsURL } from '@/shared/lib/consts/urls'
 
 type Props = { warning?: boolean; variant: PhoneAuthVariant }
 
@@ -93,7 +94,7 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 							<Link
 								className={s.link}
 								target="_blank"
-								href="/*">
+								href={termsURL}>
 								{' '}
 								{t('auth.enterPhone.linkText')}
 							</Link>

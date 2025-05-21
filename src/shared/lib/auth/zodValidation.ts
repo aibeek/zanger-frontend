@@ -129,6 +129,66 @@ export const updateProfilePasswordSchema = z
 		}
 	})
 
+export const profilePersonalDataSchema = z.object({
+	name: z.string().min(1, { message: 'Required' }),
+	phone: z
+		.string()
+		.min(10, { message: 'validation.phone_too_short' })
+		.max(15, { message: 'validation.phone_too_long' }),
+	telegram: z.string().optional(),
+	whatsapp: z.string().optional(),
+	iin: z
+		.string()
+		.regex(/^\d{12}$/, { message: 'validation.iin_invalid' })
+		.optional(),
+	lawyer_type: z.number().optional(),
+	region_id: z.number().optional(),
+})
+
+export const profileConsultationPriceSchema = z
+	.object({
+		consultation_price: z.string().optional(),
+	})
+	.superRefine(({ consultation_price }, ctx) => {
+		if (consultation_price === undefined) return
+
+		const digitsOnly = /^\d+(\s?\d+)*$/
+		if (!digitsOnly.test(consultation_price)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: 'validation.only_digits',
+				path: ['consultation_price'],
+			})
+		}
+	})
+
+export const specializationSchema = z.object({
+	specializations: z
+		.array(z.number(), {
+			required_error: 'Выберите хотя бы одну специализацию',
+		})
+		.min(1, 'Выберите хотя бы одну специализацию'),
+})
+
+export const statusesSchema = z.object({
+	statuses: z
+		.array(z.number(), {
+			required_error: 'Выберите статус',
+		})
+		.min(1, 'Выберите свой статус'),
+})
+
+export const servicingCitiesSchema = z.object({
+	region_ids: z
+		.array(z.number(), {
+			required_error: 'Выберите хотя бы одну локацию',
+		})
+		.min(1, 'Выберите хотя бы одну локацию'),
+})
+
+export type ServicingCitiesForm = z.infer<typeof servicingCitiesSchema>
+export type StatusesForm = z.infer<typeof statusesSchema>
+export type SpecializationForm = z.infer<typeof specializationSchema>
 export type PhoneSchemaType = z.infer<typeof phoneSchema>
 export type PasswordSchemaType = z.infer<typeof passwordSchema>
 export type ClientRegistrationSchemaType = z.infer<typeof clientRegistrationSchema>
@@ -136,3 +196,5 @@ export type LawyerRegistrationSchemaType = z.infer<typeof lawyerRegistrationSche
 export type LoginSchemaType = z.infer<typeof loginSchema>
 export type createApplicationSchemaType = z.infer<typeof createApplicationSchema>
 export type UpdateProfilePasswordSchemaType = z.infer<typeof updateProfilePasswordSchema>
+export type ProfilePersonalDataFormValues = z.infer<typeof profilePersonalDataSchema>
+export type ProfileConsultationPriceSchema = z.infer<typeof profileConsultationPriceSchema>
