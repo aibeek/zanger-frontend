@@ -18,6 +18,7 @@ deploy to dev server:
   script:
     - echo "# Deploy Stage start"
     - echo "update project in $HOME_DIR"
+    - git -C $HOME_DIR reset --hard
     - git -C $HOME_DIR checkout -- .
     - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
     - cd $HOME_DIR
