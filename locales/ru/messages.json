@@ -63,6 +63,78 @@
 			"modalDescription": "Желаете ли вы в действительности удалить аккаунт?",
 			"cancel": "Отмена",
 			"confirm": "Удалить"
+		},
+
+		"personal_data": {
+			"title": "Личные данные",
+			"panelTitle": "Настройте личные данные",
+			"panelDescription": "Редактирование личных данных",
+
+			"nameLabel": "ФИО",
+			"namePlaceholder": "Введите ФИО",
+
+			"phoneLabel": "Телефон",
+			"phonePlaceholder": "Введите номер телефона",
+
+			"telegramLabel": "Telegram",
+			"telegramPlaceholder": "Введите Telegram",
+
+			"whatsappLabel": "WhatsApp",
+			"whatsappPlaceholder": "Введите WhatsApp",
+
+			"iinLabel": "ИИН",
+			"iinPlaceholder": "Введите ИИН",
+			"statusLabel": "Ваш статус",
+
+			"cityLabel": "Город",
+			"regionPlaceholder": "Выберите регион",
+			"regionRequired": "Выберите регион",
+			"regionLabel": "Ваш регион",
+
+			"specializationLabel": "Специализация",
+			"specializationPlaceholder": "Выберите специализацию",
+			"specializationRequired": "Выберите специализацию",
+			"save": "Сохранить",
+			"Required": "Обязательное поле"
+		},
+
+		"consultation_price": {
+			"title": "Стоимость консультации",
+			"panelTitle": "Сообщите цену за консультацию для клиентов",
+			"panelDescription": "Контролируйте цены на консультации и добавьте стоимость"
+		},
+
+		"change_specialization": {
+			"title": "Ваша специализация",
+			"panelTitle": "Изменение профиля деятельности",
+			"panelDescription": "Выберите свою специальность, чтобы получить больше предложений о работе"
+		},
+
+		"change_status": {
+			"title": "Ваш статус",
+			"panelTitle": "Смена вашего статуса",
+			"panelDescription": "Чтобы внести изменения, выберите ваш статус"
+		},
+
+		"servicing_cities": {
+			"title": "Обслуживаемая локация",
+			"panelTitle": "Настройте несколько городов",
+			"panelDescription": "Выберите несколько населённых пунктов, в которых будут приниматься заявки.",
+			"regionLabel": "Ваш регион",
+			"save": "Сохранить",
+			"oblasts": "Области",
+			"cities": "Города",
+			"saving": "Сохранение..."
+		},
+
+		"subscription": {
+			"title": "Ваша подписка"
+		},
+
+		"documents": {
+			"title": "Документы",
+			"panelTitle": "Ваши документы",
+			"panelDescription": "Все файлы доступны для редактирования и добавления новых"
 		}
 	},
 
@@ -270,7 +342,8 @@
 		"description_too_short": "Описание слишком короткое",
 		"region_or_city_required": "Укажите регион или город",
 		"phoneRequired": "Телефон нөмірі қажет",
-		"passwordRequired": "Құпия сөз қажет"
+		"passwordRequired": "Құпия сөз қажет",
+		"only_digits": "Введите только цифры"
 	},
 
 	"errors": {

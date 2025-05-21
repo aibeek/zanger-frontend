@@ -6,16 +6,18 @@ import edit from '@/app/assets/icons/avatar-edit.svg'
 import { Button, Modal, useModal } from '@/shared/ui-kit'
 import avatar from '@/app/assets/icons/avatar-default.svg'
 
-import s from './Avatar.module.scss'
+import s from './ProfileAvatar.module.scss'
+import { UploadAvatar } from './UploadAvatar'
 
-export const Avatar = () => {
+export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 	const { open, close, isOpen } = useModal()
 
 	return (
 		<>
 			<div className={s.avatar}>
 				<Image
-					src={avatar}
+					style={{ borderRadius: '10px', objectFit: 'cover' }}
+					src={avatarUrl || avatar}
 					alt="аватар"
 					width={80}
 					height={80}
@@ -38,20 +40,9 @@ export const Avatar = () => {
 				className={s.modal}
 				isOpen={isOpen}
 				onClose={close}
-				title="Сменить аватар">
-				{/* <p className={s.modalDescr}>В</p> */}
-				<div className={s.modalBtns}>
-					<Button
-						variant="border"
-						onClick={close}>
-						Отмена
-					</Button>
-					<Button
-						variant="primary"
-						onClick={close}>
-						Сохранить
-					</Button>
-				</div>
+				closeButton={true}
+				title="Загрузить изображение">
+				<UploadAvatar onClose={close} />
 			</Modal>
 		</>
 	)

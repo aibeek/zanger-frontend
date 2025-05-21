@@ -14,6 +14,7 @@ interface GroupedSelectProps<T> {
 	placeholder?: string
 	loading?: boolean
 	className?: string
+	disabled?: boolean
 }
 
 export function SearchSelect<T>({
@@ -27,6 +28,7 @@ export function SearchSelect<T>({
 	placeholder = 'Выберите элемент',
 	loading = false,
 	className,
+	disabled,
 }: GroupedSelectProps<T>) {
 	const actualData = Array.isArray(data) ? data : data || []
 
@@ -65,6 +67,7 @@ export function SearchSelect<T>({
 			placeholder={placeholder}
 			onChange={handleChange}
 			loading={loading}
+			disabled={disabled}
 			optionFilterProp="children"
 			value={value ? getId(value) : undefined}
 			className={className}>

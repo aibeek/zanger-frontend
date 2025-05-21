@@ -129,7 +129,8 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								style={{ cursor: 'pointer' }}
 								href={'/dashboard/profile'}>
 								<Image
-									src={avatar}
+									style={{ borderRadius: '10px' }}
+									src={personalData.icon ?? avatar}
 									alt={t('avatarAlt')}
 									width={40}
 									height={40}
@@ -193,6 +194,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										size={'auto'}
 										variant={'clear'}>
 										<Image
+											style={{ borderRadius: '10px', objectFit: 'cover' }}
 											src={NotificationsIcon}
 											alt={t('notificationsAlt')}
 											width={24}
@@ -201,7 +203,8 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									</Button>
 									<div className={s.user}>
 										<Image
-											src={avatar}
+											style={{ borderRadius: '10px', objectFit: 'cover' }}
+											src={personalData.icon ?? avatar}
 											alt={t('avatarAlt')}
 											width={40}
 											height={40}

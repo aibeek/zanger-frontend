@@ -25,7 +25,7 @@
 }
 
 .input {
-	padding: 16px;
+	padding: 14px;
 	border-radius: 10px;
 	border: 1px solid $light-blue-color;
 	outline: none;
@@ -55,7 +55,8 @@
 	&.primary {
 		background-color: white;
 		border-color: $light-blue-color;
-		font-size: 16px;
+		font-size: 14px;
+		font-family: inherit;
 		&:focus {
 			border-color: $blue-color;
 

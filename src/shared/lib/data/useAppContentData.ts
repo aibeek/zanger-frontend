@@ -161,14 +161,14 @@ export const useAppContentData = () => {
 
 	const faqData: FaqCategory[] = [
 		{
-			name: 'clientCategory',
+			name: 'Для клиентов',
 			faq: new Array(5).fill({
 				question: 'Будет вопрос, а пока просто прочитать этот текст?',
 				answer: 'Мы собираем лучшие вакансии в отрасли...',
 			}),
 		},
 		{
-			name: 'lawyerCategory',
+			name: 'Для юристов',
 			faq: new Array(5).fill({
 				question: 'Будет вопрос, а пока просто прочитать этот текст?',
 				answer: 'Мы собираем лучшие вакансии в отрасли...',

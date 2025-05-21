@@ -5,25 +5,34 @@ import { useLocale } from 'next-intl'
 import { Loader } from '@/shared/ui-kit'
 import { defaultClientTab } from '@/shared/lib'
 import { EmptyApplicationsAndResponses } from '@/widgets/EmptyApplicationsAndResponses'
-
-import { useMyApplicationsStore } from '../../model'
 import { MyApplicationsList } from '../MyApplicationsList'
-import { useMyApplicationsSWR } from '../../model/myApplicationsStore'
+import { useMyApplicationsInfinite } from '../../model'
 
 export const MyApplicationsTab = () => {
 	const locale = useLocale()
-	const { myApplications, loading } = useMyApplicationsStore()
-	useMyApplicationsSWR()
+	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useMyApplicationsInfinite()
 
-	if (loading) return <Loader />
+	if (size === 0) {
+		return <Loader />
+	}
 
-	return myApplications.length === 0 ? (
-		<EmptyApplicationsAndResponses
-			redirectUrl={`/${locale}/${defaultClientTab}`}
-			buttonContent="Создать заявку"
-			descr="Заявок пока нет"
+	if (!items || items.length === 0) {
+		return (
+			<EmptyApplicationsAndResponses
+				redirectUrl={`/${locale}/${defaultClientTab}`}
+				buttonContent="Создать заявку"
+				descr="Заявок пока нет"
+			/>
+		)
+	}
+
+	return (
+		<MyApplicationsList
+			items={items}
+			loadMore={() => setSize((s) => s + 1)}
+			isLoadingMore={isLoadingMore}
+			isReachingEnd={isReachingEnd}
+			mutate={mutate}
 		/>
-	) : (
-		<MyApplicationsList data={myApplications} />
 	)
 }

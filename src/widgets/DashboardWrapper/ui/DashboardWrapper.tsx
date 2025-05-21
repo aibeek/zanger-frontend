@@ -25,6 +25,7 @@ export const DashboardWrapper = ({ children }: { children: React.ReactNode }) =>
 		return null
 	}
 
+	// @ts-expect-error fix it
 	const role = personalData.role_id.code as 'client' | 'lawyer'
 	// @ts-expect-error fix it
 	const tabs = allTabs.filter((tab) => !tab.onlyFor || tab.onlyFor === role)
@@ -46,6 +47,7 @@ export const DashboardWrapper = ({ children }: { children: React.ReactNode }) =>
 					/>
 				</div>
 				<div className={s.descr}>
+					{/*  @ts-expect-error fix it */}
 					{personalData.role_id.code === 'client' && <p>{t('description.clientRequest')}</p>}
 				</div>
 			</div>

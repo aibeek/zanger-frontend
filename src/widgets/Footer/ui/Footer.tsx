@@ -17,6 +17,7 @@ import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/l
 import s from './Footer.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
+import { policyURL, termsURL } from '@/shared/lib/consts/urls'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -42,12 +43,12 @@ export const Footer = ({ variant, id }: Props) => {
 					<div className={s.right}>
 						<Link
 							target={'_blank'}
-							href="/privacy">
+							href={policyURL}>
 							{t('privacy')}
 						</Link>
 						<Link
 							target={'_blank'}
-							href="/rules">
+							href={termsURL}>
 							{t('offer')}
 						</Link>
 					</div>
@@ -160,7 +161,7 @@ export const Footer = ({ variant, id }: Props) => {
 												document.body.click()
 											}}
 											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{t(name)} 
+											{t(name)}
 										</Link>
 									</li>
 								))}
@@ -178,7 +179,8 @@ export const Footer = ({ variant, id }: Props) => {
 									/>
 									<Link
 										className={s.link}
-										href={'tel:7770090000'}>
+										target={'_blank'}
+										href={'https://api.whatsapp.com/send/?phone=77770090000'}>
 										+7 777 009 0000
 									</Link>
 								</li>
@@ -209,12 +211,12 @@ export const Footer = ({ variant, id }: Props) => {
 						<div className={s.lendingBottomRight}>
 							<Link
 								target={'_blank'}
-								href="/privacy">
+								href={policyURL}>
 								{t('privacy')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href="/rules">
+								href={termsURL}>
 								{t('offer')}
 							</Link>
 						</div>

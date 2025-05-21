@@ -1,6 +1,6 @@
 import { API_URL } from '../config'
 import { httpClientWithAuth } from './httpClient'
-import { createPaginationQuery } from './paginationUtils'
+import { createQuery } from '../lib/helpers/query'
 
 export interface CreateApplicationType {
 	description: string
@@ -27,7 +27,7 @@ export const clientApi = {
 		}),
 
 	historyApplications: (params: { page?: number; per_page?: number } = {}) => {
-		const query = createPaginationQuery(params)
+		const query = createQuery(params)
 		const url = `${API_URL}/clients/orders/history${query}`
 
 		return httpClientWithAuth(url, {
@@ -35,10 +35,14 @@ export const clientApi = {
 		})
 	},
 
-	getApplications: () =>
-		httpClientWithAuth(`${API_URL}/clients/orders/my`, {
+	getApplications: (params: { page?: number; per_page?: number } = {}) => {
+		const query = createQuery(params)
+		const url = `${API_URL}/clients/orders/my${query}`
+
+		return httpClientWithAuth(url, {
 			method: 'GET',
-		}),
+		})
+	},
 
 	acceptResponse: ({ id }: { id: number }) =>
 		httpClientWithAuth(`${API_URL}/clients/orders/responses/${id}/accept`, {

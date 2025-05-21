@@ -1,14 +1,16 @@
 import { authService } from '@/features/auth'
 
 const addAuthHeader = (token: string, options: RequestInit = {}) => {
+	const isFormData = options.body instanceof FormData
+
 	return {
 		...options,
 		headers: {
-			'Content-Type': 'application/json',
 			Accept: 'application/json',
 			'Accept-Language': navigator.language,
 			...options.headers,
 			Authorization: `Bearer ${token}`,
+			...(isFormData ? {} : { 'Content-Type': 'application/json' }),
 		},
 	}
 }
