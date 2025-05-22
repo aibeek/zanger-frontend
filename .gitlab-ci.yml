@@ -21,13 +21,13 @@ deploy to dev server:
     - git -C $HOME_DIR checkout -- .
     - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
     - cd $HOME_DIR
-    - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    # - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
+    # - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     #    - docker pull ${CI_REGISTRY_IMAGE}:${TAG}
     #    - docker stop ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}
     #    - docker rm ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}
     - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
+    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d --build
     - docker system prune -a -f
     - echo "# Deploy Stage end"
   only:
