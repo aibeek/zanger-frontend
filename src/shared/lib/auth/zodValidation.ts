@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!?\$\%\*])/
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d])/
 
 export const phoneSchema = z.object({
 	phone: z
@@ -141,7 +141,7 @@ export const profilePersonalDataSchema = z.object({
 		.string()
 		.regex(/^\d{12}$/, { message: 'validation.iin_invalid' })
 		.optional(),
-	lawyer_type: z.number().optional(),
+	lawyer_type_id: z.number().optional(),
 	region_id: z.number().optional(),
 })
 

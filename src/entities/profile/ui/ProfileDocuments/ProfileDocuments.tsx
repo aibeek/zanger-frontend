@@ -1,135 +1,196 @@
-import { useState } from 'react'
+'use client'
+
+import React, { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-
-import { Button, Input } from '@/shared/ui-kit'
+import { Upload, Select } from 'antd'
+import { UploadFile } from 'antd/lib/upload/interface'
+import { Button, Modal, useModal } from '@/shared/ui-kit'
 import medalIcon from '@/app/assets/icons/medal.svg'
-
+import A4 from '@/app/assets/icons/a4.svg'
 import s from './ProfileDocuments.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
-import { deleteDocument, uploadDocument, useLawyerDocumentsStore, useDocuments } from '../../model'
+import Image from 'next/image'
+import { useDocuments, useLawyerDocumentsStore } from '../../model'
+import toast from 'react-hot-toast'
+import { DocumentsList } from './DocumentsList'
 
-const DOCUMENT_TYPES = [
-	{ id: 1, name: 'Удостоверение личности' },
-	{ id: 2, name: 'Диплом' },
+const { Dragger } = Upload
+const { Option } = Select
+
+const FRONT_SIDE_OPTIONS = [
+	{ value: 0, label: 'Передняя часть документа' },
+	{ value: 1, label: 'Задняя часть документа' },
 ]
 
 export const ProfileDocuments = () => {
 	const t = useTranslations()
-	const { selectedFile, selectedDocumentId, setSelectedFile, setSelectedDocumentId } = useLawyerDocumentsStore()
-	const { documents, loading, error, mutate } = useDocuments()
+	const {
+		selectedFiles,
+		selectedDocumentId,
+		frontSide,
+		addSelectedFile,
+		removeSelectedFile,
+		setSelectedDocumentId,
+		setFrontSide,
+		uploadFiles,
+	} = useLawyerDocumentsStore()
 
-	// Локальный стейт загрузки для операций upload/delete
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	const { mutate, documents } = useDocuments()
+	const { open, close, isOpen } = useModal()
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setSelectedFile(e.target.files[0])
+	const handleBeforeUpload = (file: File) => {
+		if (!selectedDocumentId) {
+			toast.error('Сначала выберите тип документа')
+			return Upload.LIST_IGNORE
 		}
+
+		// if (frontSide === null || frontSide === undefined) {
+		// 	toast.error('Выберите сторону документа')
+		// 	return Upload.LIST_IGNORE
+		// }
+
+		const isImage = file.type.startsWith('image/')
+		const isPdf = file.type === 'application/pdf'
+
+		if (!isImage && !isPdf) {
+			toast.error('Поддерживаемые форматы: jpg, jpeg, png, pdf')
+			return Upload.LIST_IGNORE
+		}
+
+		addSelectedFile(file)
+		return false
+	}
+
+	const handleRemoveFile = (file: UploadFile) => {
+		removeSelectedFile(file.name)
 	}
 
 	const handleUpload = async () => {
-		if (!selectedFile) {
-			alert('Пожалуйста, выберите файл для загрузки')
-			return
-		}
-		if (!selectedDocumentId) {
-			alert('Пожалуйста, выберите тип документа')
-			return
-		}
-
-		const formData = new FormData()
-		formData.append('file', selectedFile)
-		formData.append('document_id', String(selectedDocumentId))
-
-		setIsSubmitting(true)
-		await uploadDocument(formData, mutate)
-		setSelectedFile(null)
-		setSelectedDocumentId(null)
-		setIsSubmitting(false)
+		await uploadFiles(mutate)
+		close()
 	}
 
-	const handleDelete = async (id: number) => {
-		setIsSubmitting(true)
-		await deleteDocument(id, mutate)
-		setIsSubmitting(false)
-	}
+	const uploadFileList: UploadFile[] = selectedFiles.map((file, idx) => ({
+		uid: String(idx),
+		name: file.name,
+		status: 'done',
+	}))
+
+	const documentTypes = Array.isArray(documents)
+		? documents
+				.filter((doc) => {
+					if (doc.sides && Array.isArray(doc.sides)) {
+						// @ts-expect-error fix it
+						return doc.sides.some((side) => side.link === null)
+					}
+					return doc.link === null
+				})
+				.map((doc) => ({
+					id: doc.id,
+					name: doc.name,
+				}))
+		: []
 
 	return (
-		<ProfileTabWrapper
-			title={t('profile.documents.title')}
-			imgSrc={medalIcon}
-			imgAlt="personalData"
-			panel_title={t('profile.documents.panelTitle')}
-			panel_descr={t('profile.documents.panelDescription')}>
-			{loading && <p>Загрузка...</p>}
+		<>
+			<ProfileTabWrapper
+				title={t('profile.documents.title')}
+				imgSrc={medalIcon}
+				imgAlt="personalData"
+				panel_title={t('profile.documents.panelTitle')}
+				panel_descr={t('profile.documents.panelDescription')}>
+				<Button
+					className={s.openModalBtn}
+					variant="primary"
+					size="md"
+					onClick={open}>
+					Загрузить документы
+				</Button>
 
-			{!loading && documents.length === 0 && <h6 className={s.empty}>У вас нет загруженных документов</h6>}
+				{documents.filter((doc) => doc.link).length > 0 ? (
+					<DocumentsList mutate={mutate} />
+				) : (
+					<p className={s.noDocuments}>Нет загруженных документов</p>
+				)}
+			</ProfileTabWrapper>
 
-			<div style={{ marginBottom: 12 }}>
-				<select
-					value={selectedDocumentId ?? ''}
-					onChange={(e) => setSelectedDocumentId(Number(e.target.value))}
-					style={{ marginRight: 12 }}
-					disabled={isSubmitting}>
-					<option
-						value=""
-						disabled>
-						Выберите тип документа
-					</option>
-					{DOCUMENT_TYPES.map((type) => (
-						<option
-							key={type.id}
-							value={type.id}>
-							{type.name}
-						</option>
-					))}
-				</select>
+			<Modal
+				className={s.modal}
+				isOpen={isOpen}
+				onClose={close}
+				closeButton
+				title="Загрузить документ">
+				<div className={s.upload}>
+					<div className={s.top}>
+						<Select
+							value={selectedDocumentId ?? undefined}
+							onChange={setSelectedDocumentId}
+							style={{ width: 250, marginBottom: 16 }}
+							placeholder="Выберите тип документа">
+							{documentTypes.map((type) => (
+								<Option
+									key={type.id}
+									value={type.id}>
+									{type.name}
+								</Option>
+							))}
+						</Select>
 
-				<Input
-					type="file"
-					onChange={handleFileChange}
-					disabled={isSubmitting}
-				/>
-			</div>
-
-			<Button
-				variant="primary"
-				size="sm"
-				onClick={handleUpload}
-				disabled={!selectedFile || !selectedDocumentId || isSubmitting}>
-				Загрузить документ
-			</Button>
-
-			<div style={{ marginTop: 24 }}>
-				{documents.map((doc) => (
-					<div
-						key={doc.document_id}
-						style={{ marginBottom: 8 }}>
-						<span>{doc.name}</span>
-
-						{doc.data ? (
-							<a
-								href={doc.data}
-								target="_blank"
-								rel="noopener noreferrer"
-								style={{ marginLeft: 12 }}>
-								Скачать
-							</a>
-						) : (
-							<span style={{ marginLeft: 12, fontStyle: 'italic', color: 'gray' }}>Файл не загружен</span>
+						{selectedDocumentId === 1 && (
+							<Select
+								value={frontSide ?? undefined}
+								onChange={setFrontSide}
+								style={{ width: 250, marginBottom: 16 }}
+								placeholder="Выберите сторону документа">
+								{FRONT_SIDE_OPTIONS.map((option) => (
+									<Option
+										key={option.value}
+										value={option.value}>
+										{option.label}
+									</Option>
+								))}
+							</Select>
 						)}
-
-						<Button
-							variant="primary"
-							size="sm"
-							onClick={() => handleDelete(doc.document_id)}
-							style={{ marginLeft: 12 }}
-							disabled={isSubmitting}>
-							Удалить
-						</Button>
 					</div>
-				))}
-			</div>
-		</ProfileTabWrapper>
+
+					<Dragger
+						beforeUpload={handleBeforeUpload}
+						multiple={false}
+						disabled={!selectedDocumentId || (selectedDocumentId === 1 && frontSide === null)}
+						showUploadList={false}
+						className={s.dragger}>
+						<div className={s.topDragger}>
+							<p className={s.icon}>
+								<Image
+									src={A4}
+									alt="иконка"
+									width={50}
+									height={60}
+								/>
+							</p>
+							<p className={s.text}>Перетащите или выберите файл(ы)</p>
+						</div>
+					</Dragger>
+
+					{selectedFiles.length > 0 && (
+						<Upload
+							fileList={uploadFileList}
+							showUploadList={{ showRemoveIcon: true }}
+							onRemove={handleRemoveFile}
+						/>
+					)}
+
+					<Button
+						className={s.uploadButton}
+						variant="primary"
+						size="md"
+						style={{ marginTop: 20 }}
+						disabled={(selectedFiles.length === 0 && frontSide === null) || !selectedDocumentId}
+						onClick={handleUpload}>
+						Загрузить документы
+					</Button>
+				</div>
+			</Modal>
+		</>
 	)
 }

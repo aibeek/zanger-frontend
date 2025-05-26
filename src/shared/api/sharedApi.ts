@@ -46,8 +46,8 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	regionsPaginated: () =>
-		httpClient(`${API_URL}/regions/paginated`, {
+	regionsPaginated: (page = 1) =>
+		httpClient(`${API_URL}/regions/paginated?page=${page}`, {
 			method: 'GET',
 		}),
 
@@ -56,10 +56,11 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	getAllSpecializations: () =>
-		httpClientWithAuth(`${API_URL}/specializations`, {
+	getAllSpecializations: () => {
+		return httpClientWithAuth(`${API_URL}/specializations`, {
 			method: 'GET',
-		}),
+		})
+	},
 
 	getLawyerTypes: () =>
 		httpClient(`${API_URL}/lawyer-types`, {
@@ -76,5 +77,11 @@ export const sharedApi = {
 	deleteAccount: () =>
 		httpClientWithAuth(`${API_URL}/profile/delete`, {
 			method: 'DELETE',
+		}),
+
+	reportUser: (id: number, role: string, content: string) =>
+		httpClientWithAuth(`${API_URL}/${role === 'lawyer' ? 'lawyers/' : ''}${id}/complaint`, {
+			method: 'POST',
+			body: JSON.stringify({ content }),
 		}),
 }

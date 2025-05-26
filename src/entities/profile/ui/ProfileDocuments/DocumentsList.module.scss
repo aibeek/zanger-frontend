@@ -1,0 +1,53 @@
+.documentsList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.documentItem {
+	padding: 10px 8px;
+}
+
+.docName {
+	font-size: 17px;
+	font-weight: 600;
+	color: rgba(0, 0, 0, 1);
+	margin-bottom: 8px;
+}
+
+.docStatus {
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.docLink {
+	color: $blue-color;
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.featuresDoc {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.moderation {
+	color: orange;
+}
+
+.approved {
+	color: green;
+}
+
+.rejected {
+	color: red;
+}
+
+//
+
+.trashIcon {
+	&:hover {
+		color: $error-color;
+	}
+}

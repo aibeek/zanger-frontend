@@ -39,7 +39,7 @@ export default function ProfileView() {
 						<ProfilePersonalData role={role} />
 						<ProfileChangePassword />
 						<ProfileNotifications />
-						{/* {lawyer && <ProfileDocuments />} */}
+						{lawyer && <ProfileDocuments />}
 						{lawyer && <ProfileConsultationPrice />}
 						{lawyer && <ProfileChangeSpecialization />}
 						{lawyer && <ProfileSubscription />}

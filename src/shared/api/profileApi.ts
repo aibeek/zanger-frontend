@@ -37,6 +37,20 @@ export type UpdateServicingRegions = {
 	region_ids: number[]
 }
 
+export type LawyerDocument = {
+	id: number
+	id_to_delete: number
+	name: string
+	is_double_sided: boolean
+	link: string
+	status: {
+		type: string
+		title: string
+	}
+	sides: null
+	is_uploaded: boolean
+}
+
 export const profileApi = {
 	updatePassword: (data: UpdatePasswordDto) =>
 		httpClientWithAuth(`${API_URL}/profile/password`, {
@@ -106,13 +120,7 @@ export const profileApi = {
 		}),
 
 	myDocuments: () => {
-		httpClientWithAuth(`${API_URL}/profile/lawyers/documents`, {
-			method: 'GET',
-		})
-	},
-
-	myNeededDocuments: () => {
-		httpClientWithAuth(`${API_URL}/profile/lawyers/documents/need`, {
+		return httpClientWithAuth(`${API_URL}/profile/lawyers/documents`, {
 			method: 'GET',
 		})
 	},

@@ -102,8 +102,9 @@
 		font-weight: 500;
 	}
 
-	@media (max-width: 1366px) {
+	@media (max-width: 1370px) {
 		width: 90vw;
+		height: 70px;
 	}
 
 	@media (max-width: 1170px) {
@@ -117,7 +118,7 @@
 		display: flex;
 		align-items: center;
 		gap: 100px;
-		@media (max-width: 1366px) {
+		@media (max-width: 1370px) {
 			flex-direction: row-reverse;
 			gap: 8px;
 		}
@@ -127,15 +128,15 @@
 		display: flex;
 		gap: 20px;
 		align-items: center;
-		@media (max-width: 1366px) {
+		@media (max-width: 1370px) {
 			gap: 8px;
 		}
 	}
 
-	.btn {
+	.appLink {
 		min-width: 118px;
 		padding: 16px 8px !important;
-		@media (max-width: 1366px) {
+		@media (max-width: 1370px) {
 			padding: 8px !important;
 		}
 
@@ -151,7 +152,7 @@
 		line-height: 140%;
 		font-weight: 600;
 
-		@media (max-width: 1366px) {
+		@media (max-width: 1370px) {
 			// background-color: white;
 			// background: white;
 			// position: sticky;
@@ -167,7 +168,7 @@
 			text-decoration: none;
 			padding: 18px 26px;
 			transition: all 0.2s ease;
-			@media (max-width: 1366px) {
+			@media (max-width: 1370px) {
 				padding: 18px 16px;
 			}
 
@@ -235,7 +236,7 @@
 }
 
 .logo {
-	@media (max-width: 1366px) {
+	@media (max-width: 1370px) {
 		width: 75px;
 	}
 }
@@ -243,14 +244,14 @@
 .desktopMenu {
 	display: flex;
 	padding: 5px;
-	@media (max-width: 1366px) {
+	@media (max-width: 1370px) {
 		display: none !important;
 	}
 }
 
 .mobileMenuButton {
 	display: none;
-	@media (max-width: 1366px) {
+	@media (max-width: 1370px) {
 		height: 32px;
 		display: block;
 	}
@@ -269,7 +270,7 @@
 	flex-direction: column;
 	padding: 120px 20px 70px 20px;
 	gap: 14px;
-	@media (min-width: 1366px) {
+	@media (min-width: 1370px) {
 		display: none;
 	}
 }

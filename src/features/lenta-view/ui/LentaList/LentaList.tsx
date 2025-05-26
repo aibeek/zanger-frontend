@@ -7,6 +7,7 @@ import { useInfiniteScroll } from '@/shared/lib'
 import { Button, DescriptionText, ListLoader, UserBox } from '@/shared/ui-kit'
 
 import s from './LentaList.module.scss'
+import { ReportButton } from '@/features/report/ui/ReportButton'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
 	const loadMoreRef = useRef(null)
@@ -49,13 +50,11 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 											onClick={() => applyToRequest({ order_id: item.id })}>
 											Откликнуться
 										</Button>
-										<Button
-											variant="clear"
-											size="auto"
-											className={s.reportBtn}
-											onClick={() => console.log('Пожаловаться')}>
-											Пожаловаться на клиента
-										</Button>
+
+										<ReportButton
+											userId={item.user.id}
+											role="client"
+										/>
 									</div>
 								</motion.article>
 							)

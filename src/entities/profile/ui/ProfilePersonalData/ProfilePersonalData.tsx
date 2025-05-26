@@ -50,7 +50,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			whatsapp: lawyerData?.whatsapp ?? '',
 			iin: lawyerData?.iin ?? '',
 			region_id: personalData.region.id ?? null,
-			lawyer_type: lawyerData?.lawyer_type.id ?? null,
+			lawyer_type_id: lawyerData?.lawyer_type.id ?? null,
 		},
 	})
 
@@ -70,7 +70,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		whatsapp: false,
 		iin: false,
 		region_id: false,
-		lawyer_type: false,
+		lawyer_type_id: false,
 	}))
 
 	useEffect(() => {

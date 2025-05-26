@@ -45,7 +45,11 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 								onChange={(r) => field.onChange(r?.id)}
 								getId={(item) => item.id}
 								getLabel={(item) => item.name}
-								groupBy={(item) => (item.type.name === 'Город' ? item.path || 'Города' : null)}
+								groupBy={(item) => {
+									if (item.type.name === 'Город' && item.path !== item.name) return item.path
+									if (item.type.name === 'Город' && item.path === item.name) return 'Города'
+									return null
+								}}
 								renderGroupLabel={(name) => <span>{name}</span>}
 								placeholder="Выберите регион или город"
 								disabled={!editableInputs.region_id}
@@ -84,7 +88,7 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 				<label className={s.label}>{t('profile.personal_data.statusLabel')}</label>
 				<div className={s.searchSelect}>
 					<Controller
-						name="lawyer_type"
+						name="lawyer_type_id"
 						control={control}
 						render={({ field }) => (
 							<SearchSelect
@@ -98,14 +102,14 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 								groupBy={(item) => item.name.charAt(0)}
 								renderGroupLabel={(groupName) => <span>{groupName}</span>}
 								placeholder="Выберите свой статус"
-								disabled={!editableInputs.lawyer_type}
+								disabled={!editableInputs.lawyer_type_id}
 							/>
 						)}
 					/>
-					{editableInputs.lawyer_type ? (
-						dirtyFields.lawyer_type && (
+					{editableInputs.lawyer_type_id ? (
+						dirtyFields.lawyer_type_id && (
 							<Button
-								onClick={() => onSave('lawyer_type')}
+								onClick={() => onSave('lawyer_type_id')}
 								type="button"
 								variant="clear"
 								size="sm"
@@ -115,7 +119,7 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 						)
 					) : (
 						<Button
-							onClick={() => setEditableInputs((prev) => ({ ...prev, lawyer_type: true }))}
+							onClick={() => setEditableInputs((prev) => ({ ...prev, lawyer_type_id: true }))}
 							type="button"
 							variant="clear"
 							className={s.editBtn}>

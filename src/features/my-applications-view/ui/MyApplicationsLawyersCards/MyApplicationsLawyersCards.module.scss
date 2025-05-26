@@ -172,18 +172,6 @@
 	border-bottom: 1px solid rgba(245, 246, 251, 1);
 }
 
-.reportBtn {
-	color: rgba(156, 165, 172, 1) !important;
-	font-size: 14px;
-	font-weight: 400;
-	font-size: 14px !important;
-	margin-left: auto;
-	transition: all 0.2s;
-	&:hover {
-		color: $error-color !important;
-	}
-}
-
 .notificationsBox {
 	display: flex;
 	align-items: center;

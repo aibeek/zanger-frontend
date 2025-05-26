@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useMyApplicationsStore } from '../../model'
 import { Button } from '@/shared/ui-kit'
 import { Application } from '@/shared/api'
+import { ReportButton } from '@/features/report/ui/ReportButton'
 
 interface MyApplicationsLawyersCardsProps {
 	data: Application
@@ -80,14 +81,16 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 								Посмотреть
 							</Button>
 
-							<Button
-								style={{ fontSize: '14px' }}
-								variant="primary"
-								size="md"
-								className={s.denyBtn}
-								onClick={() => handleReject(response.id)}>
-								Отклонить
-							</Button>
+							{!rejectResponse && (
+								<Button
+									style={{ fontSize: '14px' }}
+									variant="primary"
+									size="md"
+									className={s.denyBtn}
+									onClick={() => handleReject(response.id)}>
+									Отклонить
+								</Button>
+							)}
 						</div>
 					)}
 				</div>
@@ -164,13 +167,10 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 									</Button>
 								)}
 							</div>
-							<Button
-								variant="clear"
-								size="auto"
-								className={s.reportBtn}
-								onClick={() => console.log('Пожаловаться')}>
-								Пожаловаться на юриста
-							</Button>
+							<ReportButton
+								userId={lawyer.id}
+								role="lawyer"
+							/>
 						</div>
 					</div>
 				)}

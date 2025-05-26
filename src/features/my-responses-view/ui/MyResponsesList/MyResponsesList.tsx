@@ -9,6 +9,7 @@ import { Button, DescriptionText, ListLoader, UserBox } from '@/shared/ui-kit'
 
 import s from './MyResponsesList.module.scss'
 import { Status, useMyResponsesStore } from '../../model'
+import { ReportButton } from '@/features/report/ui/ReportButton'
 
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const { workOut, closeItem, workedOutIds } = useMyResponsesStore()
@@ -89,13 +90,10 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 													</Button>
 												)}
 
-												<Button
-													onClick={() => alert('Пожаловаться на клиента')}
-													className={s.reportBtn}
-													variant={'clear'}
-													size={'auto'}>
-													{t('reportClient')}
-												</Button>
+												<ReportButton
+													userId={item.user.id}
+													role="client"
+												/>
 											</div>
 										</div>
 									</motion.article>

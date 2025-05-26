@@ -15,6 +15,7 @@ import { formatPhoneNumber, scrollToSection, useAppContentData, useAuthStore, us
 import s from './Header.module.scss'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
+import { AppLink } from '@/shared/ui-kit/AppLink'
 
 export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant' }) => {
 	const router = useRouter()
@@ -143,18 +144,19 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 						</div>
 					) : (
 						<>
-							<Button
+							<AppLink
+								className={s.appLink}
 								variant={'primary'}
-								size={'auto'}
-								className={s.btn}>
-								<Link href={'/auth/login'}>{t('login')}</Link>
-							</Button>
-							<Button
-								variant="border"
-								size={'auto'}
-								className={s.btn}>
-								<Link href={'/auth/register/select-role'}>{t('register')}</Link>
-							</Button>
+								href={'/auth/login'}>
+								{t('login')}
+							</AppLink>
+
+							<AppLink
+								className={s.appLink}
+								variant={'border'}
+								href={'/auth/register/select-role'}>
+								{t('register')}
+							</AppLink>
 						</>
 					)}
 				</div>
