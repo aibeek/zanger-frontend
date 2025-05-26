@@ -1,7 +1,10 @@
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 
-import { profileApi, sharedApi, Tag } from '@/shared/api'
+import { authApi, profileApi, sharedApi, Tag } from '@/shared/api'
+import { UserProfile } from '@/shared/lib/types'
+import { useLoginStore } from '@/features/auth'
+import { mutate } from 'swr'
 
 interface ChangeSpecializationState {
 	isSubmitting: boolean
@@ -29,6 +32,12 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 			set({ success: true })
 
 			toast.success('Специализации успешно обновлены')
+
+			const updatedPersonalData = (await authApi.me()) as UserProfile
+			useLoginStore.setState({ personalData: updatedPersonalData })
+			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
+
+			mutate('/auth/me')
 		} catch (e: any) {
 			console.error(e)
 			toast.error('Произошла ошибка')

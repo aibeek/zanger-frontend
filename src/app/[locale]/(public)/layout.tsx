@@ -9,7 +9,7 @@ import { Footer } from '@/widgets/Footer'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
-	subsets: ['cyrillic'],
+	subsets: ['cyrillic', 'latin'],
 })
 
 export const metadata: Metadata = {

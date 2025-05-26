@@ -1,7 +1,10 @@
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 
-import { profileApi, UpdateConsultationPrice } from '@/shared/api'
+import { authApi, profileApi, UpdateConsultationPrice } from '@/shared/api'
+import { useLoginStore } from '@/features/auth'
+import { UserProfile } from '@/shared/lib/types'
+import { mutate } from 'swr'
 
 interface ConsultationPriceState {
 	isSubmitting: boolean
@@ -21,6 +24,11 @@ export const useConsultationPriceStore = create<ConsultationPriceState>((set) =>
 
 			set({ success: true })
 
+			const updatedPersonalData = (await authApi.me()) as UserProfile
+			useLoginStore.setState({ personalData: updatedPersonalData })
+			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
+
+			mutate('/auth/me')
 			toast.success('Цена успешно обновлена')
 		} catch (e: any) {
 			console.error(e)
