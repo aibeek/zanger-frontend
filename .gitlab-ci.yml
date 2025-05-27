@@ -53,8 +53,8 @@ deploy to prod server:
     #    - docker pull ${CI_REGISTRY_IMAGE}:${TAG}
     #    - docker stop ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}
     #    - docker rm ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
+    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
+    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
     - docker system prune -a -f
     - echo "# Deploy Stage end"
   only:
