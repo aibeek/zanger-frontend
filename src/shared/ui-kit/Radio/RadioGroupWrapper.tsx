@@ -7,11 +7,13 @@ interface Props {
 	value: string
 	onChange: (value: string) => void
 	children: ReactNode
+	className?: string
 }
 
-export const RadioGroupWrapper = ({ value, onChange, children }: Props) => {
+export const RadioGroupWrapper = ({ value, onChange, className, children }: Props) => {
 	return (
 		<RadioGroup
+			className={className}
 			value={value}
 			onChange={onChange}>
 			{children}

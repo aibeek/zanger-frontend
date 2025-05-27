@@ -1,19 +1,22 @@
 'use client'
 
+import clsx from 'clsx'
+import { IMaskInput } from 'react-imask'
 import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
-import clsx from 'clsx'
+
+import { Button, Input } from '@/shared/ui-kit'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useLoginStore } from '@/features/auth'
 import consultationIcon from '@/app/assets/icons/consultation-price.svg'
+import { profileConsultationPriceSchema, ProfileConsultationPriceSchema } from '@/shared/lib'
 
 import s from './ProfileConsultationPrice.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
-import { Button, Input } from '@/shared/ui-kit'
-import { Controller, useForm } from 'react-hook-form'
 import { useConsultationPriceStore } from '../../model/useConsultationPriceStore'
-import { profileConsultationPriceSchema, ProfileConsultationPriceSchema } from '@/shared/lib'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { IMaskInput } from 'react-imask'
+import { LawyerProfile, UserProfile } from '@/shared/lib/types'
 
 const OPTIONS = [
 	{ label: 'Бесплатно', value: 'free' },
@@ -24,7 +27,7 @@ export const ProfileConsultationPrice = () => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const t = useTranslations('profile.consultation_price')
 	const [selected, setSelected] = useState<'free' | 'paid'>('paid')
-
+	const personalData: UserProfile = useLoginStore((state) => state.personalData)
 	const { updateConsultationPrice, isSubmitting } = useConsultationPriceStore()
 
 	const {
@@ -101,7 +104,8 @@ export const ProfileConsultationPrice = () => {
 											onChange(parsed)
 										}}
 										onBlur={onBlur}
-										placeholder="4 500"
+										// @ts-expect-error fix it
+										placeholder={personalData.lawyer?.consultation_price}
 									/>
 								)}
 							/>
