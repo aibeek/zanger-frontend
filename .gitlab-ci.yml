@@ -1,5 +1,5 @@
 stages:
-  - deploy_dev_server
+  - deploy
 
 before_script:
   - export LAST_ROOT_NAMESPACE="$(echo $CI_PROJECT_NAMESPACE | rev | cut -d'/' -f1 | rev)"
@@ -10,7 +10,7 @@ before_script:
   - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
 
 deploy to dev server:
-  stage: deploy_dev_server
+  stage: deploy
   tags:
     - kulenkov
     - dev
@@ -35,7 +35,7 @@ deploy to dev server:
     - dev
 
 deploy to prod server:
-  stage: deploy_prod_server
+  stage: deploy
   tags:
     - lawyerplace
     - prod
