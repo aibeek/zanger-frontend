@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/shared/ui-kit'
-import { createApplicationSchema } from '@/shared/lib'
+import { createApplicationSchema, regionGroupBy, sortRegions } from '@/shared/lib'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useCreateApplicationStore, useTags } from '@/features/create-application'
 
@@ -41,6 +41,9 @@ export const CreateApplicationForm = () => {
 			console.error('Ошибка при отправке:', error)
 		}
 	}
+
+	const sortedRegions = sortRegions(regions)
+
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
@@ -55,15 +58,14 @@ export const CreateApplicationForm = () => {
 							render={({ field }) => (
 								<SearchSelect
 									className="search-select dashboard-select"
-									data={tags}
+									data={[...tags].sort((a, b) => a.name.localeCompare(b.name))}
 									loading={loadingTags}
 									value={tags.find((tag) => tag.id === field.value)}
+									// @ts-expect-error fix it
 									onChange={(tag) => field.onChange(tag?.id ?? null)}
 									getId={(item) => item.id ?? 'null'}
 									getLabel={(item) => item.name}
-									groupBy={(item) => item.name.charAt(0)}
-									renderGroupLabel={(groupName) => <span>{groupName}</span>}
-									placeholder="Выберите тип услуги"
+									placeholder="Выберите вид услуги"
 								/>
 							)}
 						/>
@@ -71,29 +73,28 @@ export const CreateApplicationForm = () => {
 					</div>
 
 					<div className={`${s.city} ${s.inputBox}`}>
-						<label className={s.label}>Выберите регион</label>
+						<label className={s.label}>Населенный пункт</label>
 						<Controller
 							name="region_id"
 							control={control}
 							render={({ field }) => {
-								const filteredRegions = regions.filter((region) => region.type.name !== 'Область')
+								const selectedRegions = Array.isArray(field.value)
+									? // @ts-expect-error fix it
+									  sortedRegions.filter((r) => field.value.includes(r.id))
+									: []
 
 								return (
 									<SearchSelect
 										className="search-select dashboard-select"
-										data={filteredRegions}
+										data={sortedRegions}
 										loading={loadingRegions}
-										value={filteredRegions.find((region) => region.id === field.value)}
+										value={selectedRegions.length > 0 ? selectedRegions : []}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}
-										groupBy={(item) => {
-											if (item.type.name === 'Город' && item.path !== item.name) return item.path
-											if (item.type.name === 'Город' && item.path === item.name) return 'Города'
-											return null
-										}}
-										renderGroupLabel={(name) => <span>{name}</span>}
-										placeholder="Выберите регион или город"
+										groupBy={regionGroupBy}
+										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+										placeholder="Выберите населенный пункт"
 									/>
 								)
 							}}

@@ -28,6 +28,7 @@
 }
 
 .question {
+	font-size: 14px;
 	font-weight: 400;
 	line-height: 140%;
 	color: rgba(0, 0, 0, 1);
@@ -42,7 +43,7 @@
 
 .answer {
 	color: $secondary-color;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 400;
 	line-height: 140%;
 	padding: 0 0 16px 30px;

@@ -87,9 +87,9 @@
 			"statusLabel": "Ваш статус",
 
 			"cityLabel": "Город",
-			"regionPlaceholder": "Выберите регион",
-			"regionRequired": "Выберите регион",
-			"regionLabel": "Ваш регион",
+			"regionPlaceholder": "Выберите населенный пункт",
+			"regionRequired": "Выберите населенный пункт",
+			"regionLabel": "Ваш населенный пункт",
 
 			"specializationLabel": "Специализация",
 			"specializationPlaceholder": "Выберите специализацию",
@@ -118,9 +118,10 @@
 
 		"servicing_cities": {
 			"title": "Обслуживаемая локация",
-			"panelTitle": "Настройте несколько городов",
+			"panelTitle": "Настройте несколько населенных пунктов",
 			"panelDescription": "Выберите несколько населённых пунктов, в которых будут приниматься заявки.",
-			"regionLabel": "Ваш регион",
+			"regionLabel": "Населенный пункт",
+			"placeholder": "Выберите населенный пункт",
 			"save": "Сохранить",
 			"oblasts": "Области",
 			"cities": "Города",
@@ -246,7 +247,8 @@
 		"googleplay": "Google Play",
 		"clients": "Для клиентов",
 		"lawyers": "Для юристов",
-		"faq": "Часто задаваемые вопросы"
+		"faq": "Часто задаваемые вопросы",
+		"payment": "Правила процедуры оплаты"
 	},
 
 	"auth": {
@@ -301,11 +303,11 @@
 			"iinPlaceholder": "Введите ИИН",
 			"iinRequired": "Укажите ИИН",
 			"cityLabel": "Город",
-			"regionRequired": "Выберите регион или город",
-			"regionPlaceholder": "Выберите регион или город",
-			"specializationLabel": "Ваша специальность",
+			"regionRequired": "Выберите населенный пункт",
+			"regionPlaceholder": "Выберите населенный пункт",
+			"specializationLabel": "Ваша категория",
 			"specializationRequired": "Выберите роль",
-			"specializationPlaceholder": "Выберите тип услуги",
+			"specializationPlaceholder": "Выберите категорию",
 			"passwordLabel": "Пароль",
 			"passwordPlaceholder": "Введите пароль",
 			"passwordDescr": "Пароль должен состоять минимум из 8 символов, содержать 1 строчную (a-z), 1 заглавную букву (A-Z), цифры и специальные символы (! ? $ % *)",

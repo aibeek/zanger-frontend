@@ -97,7 +97,7 @@ export const profileApi = {
 			body: JSON.stringify(data),
 		}),
 
-	getLawyerSpecializations: () =>
+	getSelectedLawyerSpecializations: () =>
 		httpClientWithAuth(`${API_URL}/profile/lawyers/specializations`, {
 			method: 'GET',
 		}),

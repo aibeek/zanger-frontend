@@ -3,7 +3,7 @@ import { httpClient, httpClientWithAuth } from './httpClient'
 
 export interface CityType {
 	id: number
-	name: 'Город' | 'Область'
+	name: 'Город' | 'Область' | 'Регион' | 'Село'
 }
 
 export interface Application {
@@ -41,16 +41,6 @@ export interface TagsResponse {
 }
 
 export const sharedApi = {
-	getCities: () =>
-		httpClient(`${API_URL}/regions/cities`, {
-			method: 'GET',
-		}),
-
-	regionsPaginated: (page = 1) =>
-		httpClient(`${API_URL}/regions/paginated?page=${page}`, {
-			method: 'GET',
-		}),
-
 	getAllRegions: () =>
 		httpClient(`${API_URL}/regions/all`, {
 			method: 'GET',

@@ -5,14 +5,15 @@ import { useEffect, useRef } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Button, Checkbox } from '@/shared/ui-kit'
-import { useRegions } from '@/features/auth'
-import personalDataIcon from '@/app/assets/icons/personal-data.svg'
+import { Button } from '@/shared/ui-kit'
+import MapLocationIcon from '@/app/assets/icons/location-blue.svg'
+
+import { SearchSelect, useRegions } from '@/features/auth'
 
 import s from './ProfileServicingCities.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useServicingRegions } from '../../model/useServicingRegions'
-import { ServicingCitiesForm, servicingCitiesSchema } from '@/shared/lib'
+import { regionGroupBy, ServicingCitiesForm, servicingCitiesSchema, sortRegions } from '@/shared/lib'
 
 export const ProfileServicingCities = () => {
 	const t = useTranslations()
@@ -47,73 +48,58 @@ export const ProfileServicingCities = () => {
 		await updateServicingRegions({ region_ids: data.region_ids })
 	}
 
-	const cities = regions.filter((r) => r.path === r.name)
-	const oblasts = regions.filter((r) => r.path !== r.name)
+	const sortedRegions = sortRegions(regions)
 
 	return (
 		<ProfileTabWrapper
 			title={t('profile.servicing_cities.title')}
-			imgSrc={personalDataIcon}
+			imgSrc={MapLocationIcon}
 			imgAlt="personalData"
 			panel_title={t('profile.servicing_cities.panelTitle')}
 			panel_descr={t('profile.servicing_cities.panelDescription')}
 			ref={disclosureBtnRef}>
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<Controller
-					control={control}
-					name="region_ids"
-					render={({ field }) => (
-						<div className={s.checkboxes}>
-							<h4 className={s.groupTitle}>{t('profile.servicing_cities.cities') || 'Города'}</h4>
-							{cities.map((region) => (
-								<Checkbox
-									className={s.checkbox}
-									key={region.id}
-									label={region.name}
-									checked={field.value.includes(region.id)}
-									onChange={(checked) => {
-										const newValue = checked
-											? [...field.value, region.id]
-											: field.value.filter((id) => id !== region.id)
-										field.onChange(newValue)
-									}}
-								/>
-							))}
+				<div className={`${s.selectBox} ${s.inputBox}`}>
+					<label className={s.label}>{t('profile.servicing_cities.regionLabel')}</label>
+					<Controller
+						control={control}
+						name="region_ids"
+						render={({ field }) => {
+							const selectedRegions = Array.isArray(field.value)
+								? sortedRegions.filter((r) => field.value.includes(r.id))
+								: []
 
-							<h4
-								style={{ marginTop: '20px' }}
-								className={s.groupTitle}>
-								{t('profile.servicing_cities.oblasts') || 'Области'}
-							</h4>
-							{oblasts.map((region) => (
-								<Checkbox
-									className={s.checkbox}
-									key={region.id}
-									label={region.name}
-									checked={field.value.includes(region.id)}
-									onChange={(checked) => {
-										const newValue = checked
-											? [...field.value, region.id]
-											: field.value.filter((id) => id !== region.id)
-										field.onChange(newValue)
+							return (
+								<SearchSelect
+									className="search-select"
+									data={sortedRegions}
+									value={selectedRegions.length > 0 ? selectedRegions : []}
+									onChange={(selected) => {
+										const ids = Array.isArray(selected) ? selected.map((r) => r.id) : []
+										field.onChange(ids)
 									}}
+									getId={(item) => item.id}
+									getLabel={(item) => item.name}
+									groupBy={regionGroupBy}
+									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+									multiple={true}
+									placeholder={t('profile.servicing_cities.placeholder')}
 								/>
-							))}
-						</div>
-					)}
-				/>
+							)
+						}}
+					/>
+				</div>
+
 				{errors.region_ids && <p className={s.error}>{errors.region_ids.message}</p>}
 
 				<Button
 					type="submit"
 					variant="primary"
 					size="auto"
-					style={{ padding: '8px 30px', marginTop: '-22px' }}
+					style={{ padding: '8px 30px', marginTop: '10px' }}
 					disabled={isSubmitting}
 					className={s.submitButton}>
-					{isSubmitting
-						? t('profile.servicing_cities.saving') ?? 'Сохранение...'
-						: t('profile.servicing_cities.save') ?? 'Сохранить'}
+					{isSubmitting ? t('profile.servicing_cities.saving') : t('profile.servicing_cities.save')}
 				</Button>
 			</form>
 		</ProfileTabWrapper>

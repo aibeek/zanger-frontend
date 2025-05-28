@@ -8,6 +8,7 @@ import { useRegions } from '@/features/auth'
 import { useProfileStatuses } from '../../model'
 import s from './ProfilePersonalData.module.scss'
 import { useTranslations } from 'next-intl'
+import { regionGroupBy, sortRegions } from '@/shared/lib'
 
 type Props = {
 	editableInputs: Record<string, boolean>
@@ -26,7 +27,7 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 	const { regions, loadingRegions } = useRegions()
 	const { statuses, loading: loadingStatuses } = useProfileStatuses()
 
-	const filteredRegions = regions.filter((region) => region.type.name !== 'Область')
+	const sortedRegions = sortRegions(regions)
 
 	return (
 		<>
@@ -36,26 +37,29 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 					<Controller
 						name="region_id"
 						control={control}
-						render={({ field }) => (
-							<SearchSelect
-								className="search-select dashboard-select"
-								data={filteredRegions}
-								loading={loadingRegions}
-								value={filteredRegions.find((r) => r.id === field.value)}
-								onChange={(r) => field.onChange(r?.id)}
-								getId={(item) => item.id}
-								getLabel={(item) => item.name}
-								groupBy={(item) => {
-									if (item.type.name === 'Город' && item.path !== item.name) return item.path
-									if (item.type.name === 'Город' && item.path === item.name) return 'Города'
-									return null
-								}}
-								renderGroupLabel={(name) => <span>{name}</span>}
-								placeholder="Выберите регион или город"
-								disabled={!editableInputs.region_id}
-							/>
-						)}
+						render={({ field }) => {
+							const selectedRegion = sortedRegions.find((r) => r.id === field.value)
+
+							return (
+								<SearchSelect
+									disabled={!editableInputs.region_id}
+									className="search-select dashboard-select"
+									data={sortedRegions}
+									loading={loadingRegions}
+									value={selectedRegion || null}
+									onChange={(item) => {
+										field.onChange(item ? item.id : null)
+									}}
+									getId={(item) => item.id}
+									getLabel={(item) => item.name}
+									groupBy={regionGroupBy}
+									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+									placeholder="Выберите населенный пункт"
+								/>
+							)
+						}}
 					/>
+
 					{editableInputs.region_id ? (
 						dirtyFields.region_id && (
 							<Button
@@ -90,21 +94,31 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 					<Controller
 						name="lawyer_type_id"
 						control={control}
-						render={({ field }) => (
-							<SearchSelect
-								className="search-select dashboard-select"
-								data={statuses}
-								loading={loadingStatuses}
-								value={statuses.find((s) => s.id === field.value)}
-								onChange={(s) => field.onChange(s?.id ?? null)}
-								getId={(item) => item.id}
-								getLabel={(item) => item.name}
-								groupBy={(item) => item.name.charAt(0)}
-								renderGroupLabel={(groupName) => <span>{groupName}</span>}
-								placeholder="Выберите свой статус"
-								disabled={!editableInputs.lawyer_type_id}
-							/>
-						)}
+						render={({ field }) => {
+							const selectedStatuses = statuses.filter((s) =>
+								Array.isArray(field.value) ? field.value.includes(s.id) : false,
+							)
+
+							return (
+								<SearchSelect
+									className="search-select dashboard-select"
+									data={statuses}
+									loading={loadingStatuses}
+									value={selectedStatuses.length > 0 ? selectedStatuses : undefined}
+									onChange={(selected) => {
+										const ids = Array.isArray(selected) ? selected.map((s) => s.id) : []
+										field.onChange(ids)
+									}}
+									getId={(item) => item.id}
+									getLabel={(item) => item.name}
+									groupBy={(item) => item.name.charAt(0)}
+									renderGroupLabel={(groupName) => <span>{groupName}</span>}
+									placeholder="Выберите свой статус"
+									disabled={!editableInputs.lawyer_type_id}
+									multiple={true}
+								/>
+							)
+						}}
 					/>
 					{editableInputs.lawyer_type_id ? (
 						dirtyFields.lawyer_type_id && (

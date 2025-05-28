@@ -11,15 +11,19 @@ interface ChangeSpecializationState {
 	success: boolean
 
 	specializations: Tag[]
+	selectedSpecs: Tag[]
 	loadingSpecializations: boolean
 	updateLawyerSpecializations: (data: { specialization_ids: number[] }) => Promise<void>
 	fetchSpecializations: () => Promise<void>
+	fetchSelectedSpecializations: () => Promise<void>
 }
 
 export const useChangeSpecializationStore = create<ChangeSpecializationState>((set) => ({
 	isSubmitting: false,
 	success: false,
 	specializations: [],
+	selectedSpecs: [],
+
 	loadingSpecializations: false,
 
 	updateLawyerSpecializations: async (data) => {
@@ -54,6 +58,19 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 			// const specializations = (await profileApi.getLawyerSpecializations()) as any
 
 			set({ specializations: specializations.data })
+		} catch (error) {
+			console.error('Ошибка при загрузке cпециализаций:', error)
+		} finally {
+			set({ loadingSpecializations: false })
+		}
+	},
+
+	fetchSelectedSpecializations: async () => {
+		set({ loadingSpecializations: true })
+		try {
+			const selectedSpecs = (await profileApi.getSelectedLawyerSpecializations()) as any
+
+			set({ selectedSpecs: selectedSpecs.data })
 		} catch (error) {
 			console.error('Ошибка при загрузке cпециализаций:', error)
 		} finally {

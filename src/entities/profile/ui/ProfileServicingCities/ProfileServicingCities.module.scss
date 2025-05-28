@@ -1,22 +1,6 @@
-.checkboxes {
-	display: flex;
-	flex-direction: column;
-	padding: 10px 16px;
-	margin-bottom: 8px;
-}
-
-.checkbox {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 14px 0;
-}
-
-.error {
-	color: $error-color;
+.label {
+	display: block;
+	margin-bottom: 6px;
 	font-size: 14px;
-	font-weight: 400;
-	line-height: 130%;
-	margin-top: 6px;
-	margin-bottom: 18px;
+	font-weight: 600;
 }

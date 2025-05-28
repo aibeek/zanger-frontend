@@ -11,22 +11,39 @@ import { useTranslations } from 'next-intl'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 
 export const ProfileChangeSpecialization = () => {
-	const { specializations, isSubmitting, fetchSpecializations, updateLawyerSpecializations } =
-		useChangeSpecializationStore()
+	const {
+		specializations,
+		isSubmitting,
+		fetchSpecializations,
+		fetchSelectedSpecializations,
+		updateLawyerSpecializations,
+		selectedSpecs,
+	} = useChangeSpecializationStore()
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const t = useTranslations('profile.change_specialization')
 	const {
 		control,
 		handleSubmit,
+		setValue,
 		formState: { errors },
 	} = useForm<SpecializationForm>({
 		resolver: zodResolver(specializationSchema),
-		defaultValues: { specializations: [] as number[] },
+		defaultValues: { specializations: [] },
 	})
 
 	useEffect(() => {
 		fetchSpecializations()
-	}, [fetchSpecializations])
+		fetchSelectedSpecializations()
+	}, [fetchSpecializations, fetchSelectedSpecializations])
+
+	useEffect(() => {
+		if (selectedSpecs?.length) {
+			const selectedIds = selectedSpecs.map((spec) => spec.id)
+			setValue('specializations', selectedIds)
+		} else {
+			setValue('specializations', [])
+		}
+	}, [selectedSpecs, setValue])
 
 	const onSubmit = async (data: SpecializationForm) => {
 		await updateLawyerSpecializations({ specialization_ids: data.specializations })
@@ -49,7 +66,7 @@ export const ProfileChangeSpecialization = () => {
 							{specializations.map((spec) => (
 								<Checkbox
 									className={s.checkbox}
-									key={spec.name}
+									key={spec.id}
 									label={spec.name}
 									checked={field.value.includes(spec.id)}
 									onChange={(checked) => {

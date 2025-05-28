@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import s from './SubscriptionView.module.scss'
 import Subscription from '@/app/assets/images/subscription.webp'
-import { Checkbox } from '@/shared/ui-kit'
 import { SubscriptionPlans } from './SubscriptionPlans'
 import { AutoRenewal } from './AutoRenewal'
 

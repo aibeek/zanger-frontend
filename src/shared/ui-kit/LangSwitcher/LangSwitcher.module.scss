@@ -16,9 +16,14 @@
 		text-transform: uppercase;
 		padding: 8px 16px;
 		border-radius: 8px;
-		font-size: 12px;
+		font-size: 14px;
 		background-color: white;
 		color: $primary-color;
 		box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
+	}
+}
+.hide {
+	@media (max-width: 1370px) {
+		display: none !important;
 	}
 }

@@ -47,18 +47,17 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	if (variant === 'lending-variant') {
 		return (
 			<header className={`${s.lendingHeader} ${isMenuOpen ? s.open : ''}`}>
+				<div className={s.logo}>
+					<Image
+						src="/logo.svg"
+						alt={t('logoAlt')}
+						width={100}
+						height={20}
+					/>
+				</div>
 				<div
 					onClick={open}
 					className={s.left}>
-					<div className={s.logo}>
-						<Image
-							src="/logo.svg"
-							alt={t('logoAlt')}
-							width={100}
-							height={20}
-						/>
-					</div>
-
 					<Disclosure
 						as="nav"
 						className={s.nav}>
@@ -102,20 +101,23 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										</Disclosure.Button>
 									</div>
 
-									<Disclosure.Panel className={s.mobileMenu}>
-										{headerMenuData.map(({ name, link }) => (
-											<Link
-												key={name}
-												href={link}
-												onClick={(e) => {
-													scrollToSection(e, link)
-													document.body.click()
-													close()
-												}}
-												className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-												{t(name)}
-											</Link>
-										))}
+									<Disclosure.Panel className={s.mobileMenuBox}>
+										<LangSwitcher />
+										<div className={s.mobileMenu}>
+											{headerMenuData.map(({ name, link }) => (
+												<Link
+													key={name}
+													href={link}
+													onClick={(e) => {
+														scrollToSection(e, link)
+														document.body.click()
+														close()
+													}}
+													className={`${s.link} ${isActive(link) ? s.active : ''}`}>
+													{t(name)}
+												</Link>
+											))}
+										</div>
 									</Disclosure.Panel>
 								</>
 							)
@@ -124,6 +126,8 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				</div>
 
 				<div className={s.authBtns}>
+					<LangSwitcher hide={true} />
+
 					{isAuthenticated && personalData ? (
 						<div className={s.user}>
 							<Link
@@ -186,7 +190,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							)}
 						</div>
 						<div className={s.right}>
-							<LangSwitcher />
+							<LangSwitcher hide={true} />
 
 							{isAuthenticated && personalData && (
 								<>
@@ -204,13 +208,17 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										/>
 									</Button>
 									<div className={s.user}>
-										<Image
-											style={{ borderRadius: '10px', objectFit: 'cover' }}
-											src={personalData.icon ?? avatar}
-											alt={t('avatarAlt')}
-											width={40}
-											height={40}
-										/>
+										<Link
+											style={{ cursor: 'pointer' }}
+											href={'/dashboard/profile'}>
+											<Image
+												style={{ borderRadius: '10px', objectFit: 'cover' }}
+												src={personalData.icon ?? avatar}
+												alt={t('avatarAlt')}
+												width={40}
+												height={40}
+											/>
+										</Link>
 										<div className={s.userInfo}>
 											<p className={s.userName}>{personalData.name}</p>
 											<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>

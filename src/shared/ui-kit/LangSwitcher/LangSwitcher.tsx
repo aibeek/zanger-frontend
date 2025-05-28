@@ -6,7 +6,7 @@ import { usePathname } from '@/i18n'
 import { routing, Link } from '@/i18n'
 import s from './LangSwitcher.module.scss'
 
-export function LangSwitcher() {
+export function LangSwitcher({ hide }: { hide?: boolean }) {
 	const pathname = usePathname()
 	const currentLocale = useLocale()
 
@@ -15,7 +15,7 @@ export function LangSwitcher() {
 	}
 
 	return (
-		<div className={s.wrapper}>
+		<div className={clsx(s.wrapper, { [s.hide]: hide })}>
 			{routing.locales.map((locale) => (
 				<Link
 					key={locale}

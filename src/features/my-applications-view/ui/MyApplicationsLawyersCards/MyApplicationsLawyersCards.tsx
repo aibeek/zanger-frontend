@@ -1,17 +1,21 @@
 'use client'
 
-import s from './MyApplicationsLawyersCards.module.scss'
+import Image from 'next/image'
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
-
-import avatar from '@/app/assets/icons/header-avatar.svg'
-
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useMyApplicationsStore } from '../../model'
+
 import { Button } from '@/shared/ui-kit'
 import { Application } from '@/shared/api'
-import { ReportButton } from '@/features/report/ui/ReportButton'
+import { ReportButton } from '@/features/report'
+import avatar from '@/app/assets/icons/header-avatar.svg'
+import whatsapp from '@/app/assets/icons/whatsapp.svg'
+import telegram from '@/app/assets/icons/telegram-square.svg'
+
+import { useMyApplicationsStore } from '../../model'
+import s from './MyApplicationsLawyersCards.module.scss'
+import { AppLink } from '@/shared/ui-kit/AppLink'
+import { getTelegramLink } from '@/shared/lib'
 
 interface MyApplicationsLawyersCardsProps {
 	data: Application
@@ -109,34 +113,84 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 									Специальность: <span>{detailedResponse?.specialization || 'не указано'}</span>
 								</li>
 								<li className={s.phone}>
-									Номер телефона:{' '}
-									<span>
-										{!response.is_accepted
-											? 'Скрыт'
-											: detailedResponse?.contacts?.phone === null
-											? 'Не указан'
-											: detailedResponse?.contacts?.phone}
-									</span>
+									<div className={s.left}>
+										Номер телефона:{' '}
+										<span>
+											{!response.is_accepted
+												? 'Скрыт'
+												: detailedResponse?.contacts?.phone === null
+												? 'Не указан'
+												: detailedResponse?.contacts?.phone}
+										</span>
+									</div>
+
+									{response.is_accepted && (
+										<div className={s.right}>
+											<Button
+												variant="clear"
+												size="sm"
+												className={s.callbackBtn}
+												onClick={() => window.open(`tel:${detailedResponse?.contacts?.phone}`)}>
+												Получить обратный звонок
+											</Button>
+										</div>
+									)}
 								</li>
 								<li className={s.phone}>
-									WhatsApp:{' '}
-									<span>
-										{!response.is_accepted
-											? 'Скрыт'
-											: detailedResponse?.contacts?.whatsapp === null
-											? 'Не указан'
-											: detailedResponse?.contacts?.whatsapp}
-									</span>
+									<div className={s.left}>
+										WhatsApp:{' '}
+										<span>
+											{!response.is_accepted
+												? 'Скрыт'
+												: detailedResponse?.contacts?.whatsapp === null
+												? 'Не указан'
+												: detailedResponse?.contacts?.whatsapp}
+										</span>
+									</div>
+									{response.is_accepted && detailedResponse?.contacts?.whatsapp && (
+										<div className={s.right}>
+											<AppLink
+												variant="clear"
+												size="auto"
+												href={`https://api.whatsapp.com/send/?phone=${detailedResponse?.contacts?.whatsapp}`}
+												target={'_blank'}>
+												<Image
+													src={whatsapp}
+													alt="whatsapp"
+													width={30}
+													height={30}
+												/>
+											</AppLink>
+										</div>
+									)}
 								</li>
 								<li className={s.phone}>
-									Telegram:{' '}
-									<span>
-										{!response.is_accepted
-											? 'Скрыт'
-											: detailedResponse?.contacts?.telegram === null
-											? 'Не указан'
-											: detailedResponse?.contacts?.telegram}
-									</span>
+									<div className={s.left}>
+										Telegram:{' '}
+										<span>
+											{!response.is_accepted
+												? 'Скрыт'
+												: detailedResponse?.contacts?.telegram === null
+												? 'Не указан'
+												: detailedResponse?.contacts?.telegram}
+										</span>
+									</div>
+									{response.is_accepted && detailedResponse?.contacts?.telegram && (
+										<div className={s.right}>
+											<AppLink
+												variant="clear"
+												size="auto"
+												href={getTelegramLink(detailedResponse?.contacts?.telegram)}
+												target={'_blank'}>
+												<Image
+													src={telegram}
+													alt="telegram"
+													width={30}
+													height={30}
+												/>
+											</AppLink>
+										</div>
+									)}
 								</li>
 							</ul>
 						</div>
@@ -144,7 +198,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 						<div className={s.cardDetaildBottom}>
 							<div className={s.btns}>
 								{!response.is_accepted ? (
-									<>
+									<div className={s.notAcceptedBtns}>
 										<Button
 											variant="primary"
 											className={s.agreeBtn}
@@ -157,7 +211,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 											onClick={() => handleReject(response.id)}>
 											Отказать
 										</Button>
-									</>
+									</div>
 								) : (
 									<Button
 										variant="primary"
@@ -177,8 +231,6 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 			</motion.article>
 		)
 	}
-
-	// if (!data.responses || data.responses.length === 0) return null
 
 	const isCardOpen = data.responses.some((r) => r.id === openCard)
 
@@ -211,10 +263,10 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 				{openResponse && renderResponseCard(data, openResponse, true)}
 
 				{openResponse && otherResponses.length > 0 && (
-					<>
+					<div className={s.othersBox}>
 						<p className={s.others}>Другие специалисты:</p>
 						{otherResponses.map((response) => renderResponseCard(data, response, false))}
-					</>
+					</div>
 				)}
 
 				{!openResponse &&

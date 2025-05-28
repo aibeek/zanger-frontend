@@ -48,7 +48,7 @@
 }
 
 .quantity {
-	font-size: 12px;
+	font-size: 14px;
 	color: $secondary-color;
 	margin-bottom: 12px;
 	display: flex;
@@ -62,7 +62,7 @@
 		border-radius: 50px;
 		background-color: $error-color;
 		color: white;
-		font-size: 10px;
+		font-size: 14px;
 		width: 16px;
 		height: 16px;
 	}
@@ -81,7 +81,7 @@
 
 .job {
 	color: rgba(156, 165, 172, 1);
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 400;
 }
 
@@ -158,14 +158,14 @@
 	}
 }
 
-.others {
+.othersBox {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 }
 
 .othersTitle {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 600;
 	padding-bottom: 16px;
 	color: $secondary-color;
@@ -177,7 +177,7 @@
 	align-items: center;
 	gap: 8px;
 	p {
-		font-size: 12px;
+		font-size: 10px;
 		color: $secondary-color;
 		line-height: 120%;
 		font-weight: 600;
@@ -185,7 +185,7 @@
 }
 
 .others {
-	font-size: 12px;
+	font-size: 14px;
 	color: $secondary-color;
 	line-height: 120%;
 	font-weight: 600;
@@ -205,4 +205,28 @@
 	padding: 4px;
 	min-width: 16px;
 	line-height: 130%;
+}
+
+.phone {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.notAcceptedBtns {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.callbackBtn {
+	color: white;
+	background-color: rgba(10, 117, 66, 1);
+	padding: 5px 10px;
+	border-radius: 10px;
+	font-size: 14px;
+	font-weight: 400;
+	&:hover {
+		background-color: rgb(9, 100, 56);
+	}
 }

@@ -60,7 +60,6 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 			useLoginStore.setState({ personalData: updatedPersonalData })
 			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
 
-			// можно также обновить ключ SWR, если ты его используешь:
 			mutate('/auth/me')
 
 			set({

@@ -50,7 +50,8 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			whatsapp: lawyerData?.whatsapp ?? '',
 			iin: lawyerData?.iin ?? '',
 			region_id: personalData.region.id ?? null,
-			lawyer_type_id: lawyerData?.lawyer_type.id ?? null,
+			// @ts-expect-error fix it
+			lawyer_type_id: personalData?.lawyer?.lawyer_type ? [personalData.lawyer.lawyer_type.id] : [],
 		},
 	})
 
@@ -88,9 +89,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		try {
 			await updateProfilePersonalData({ [field]: value }, role)
 			setEditableInputs((prev) => ({ ...prev, [field]: false }))
-		} catch (e) {
-			console.error('Ошибка при сохранении:', e)
-		}
+		} catch (e) {}
 	}
 
 	const fields: FieldConfig[] = [
@@ -166,7 +165,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 													id={field}
 													type="tel"
 													placeholder={placeholder}
-													disabled={!isEditing}
+													disabled={!editableInputs[field]}
 													hasError={hasError}
 													// @ts-expect-error fix it
 													as={IMaskInput}
@@ -184,7 +183,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											id={field}
 											type="text"
 											placeholder={placeholder}
-											disabled={!isEditing}
+											disabled={!editableInputs[field]}
 											{...register(field)}
 											className={`${s.input} ${hasError ? s.inputError : ''}`}
 										/>

@@ -8,7 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button, Input } from '@/shared/ui-kit'
 import { LawyerRegisterDto } from '@/shared/api'
-import { clientRegistrationSchema, formatPhoneNumber, lawyerRegistrationSchema } from '@/shared/lib'
+import {
+	clientRegistrationSchema,
+	formatPhoneNumber,
+	lawyerRegistrationSchema,
+	regionGroupBy,
+	sortRegions,
+} from '@/shared/lib'
 
 import s from './RegistrationFormStep.module.scss'
 import { SearchSelect } from '../SearchSelect'
@@ -69,6 +75,8 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 		setField('phone', phone)
 	}, [phone, setField])
 
+	const sortedRegions = sortRegions(regions)
+
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
@@ -126,23 +134,21 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 							control={control}
 							rules={{ required: t('auth.registration.regionRequired') }}
 							render={({ field }) => {
-								const filteredRegions = regions.filter((region) => region.type.name !== 'Область')
+								const selectedRegion = sortedRegions.find((r) => r.id === field.value)
 
 								return (
 									<SearchSelect
 										className="search-select"
-										data={filteredRegions}
+										data={sortedRegions}
 										loading={loadingRegions}
-										value={filteredRegions.find((region) => region.id === field.value)}
-										onChange={(region) => field.onChange(region?.id)}
+										value={selectedRegion || null}
+										onChange={(item) => {
+											field.onChange(item ? item.id : null)
+										}}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}
-										groupBy={(item) => {
-											if (item.type.name === 'Город' && item.path !== item.name) return item.path
-											if (item.type.name === 'Город' && item.path === item.name) return 'Города'
-											return null
-										}}
-										renderGroupLabel={(name) => <span>{name}</span>}
+										groupBy={regionGroupBy}
+										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 										placeholder={t('auth.registration.regionPlaceholder')}
 									/>
 								)
@@ -161,14 +167,13 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 								render={({ field }) => (
 									<SearchSelect
 										className={`search-select`}
-										data={lawyerTypes}
+										data={[...lawyerTypes].sort((a, b) => a.name.localeCompare(b.name))}
 										loading={loadingLawyerTypes}
 										value={lawyerTypes.find((item) => item.id === field.value)}
+										// @ts-expect-error fix it
 										onChange={(item) => field.onChange(item?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}
-										groupBy={(item) => item.name}
-										renderGroupLabel={(name) => <span>{name}</span>}
 										placeholder={t('auth.registration.specializationPlaceholder')}
 									/>
 								)}
