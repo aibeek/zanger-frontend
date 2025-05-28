@@ -58,4 +58,4 @@ deploy to prod server:
     - docker system prune -a -f
     - echo "# Deploy Stage end"
   only:
-    - main
+    - dev
