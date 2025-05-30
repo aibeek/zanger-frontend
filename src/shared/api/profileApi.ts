@@ -136,4 +136,9 @@ export const profileApi = {
 		httpClientWithAuth(`${API_URL}/profile/lawyers/documents/${id}`, {
 			method: 'DELETE',
 		}),
+
+	getSupportContacts: () =>
+		httpClientWithAuth(`${API_URL}/support-contacts`, {
+			method: 'GET',
+		}),
 }

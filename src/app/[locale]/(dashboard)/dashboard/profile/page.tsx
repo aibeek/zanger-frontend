@@ -14,10 +14,11 @@ import {
 	ProfileConsultationPrice,
 	ProfileSubscription,
 	ProfileServicingCities,
+	ProfileDocuments,
+	ProfileSupport,
 } from '@/entities/profile'
 
 import s from './page.module.scss'
-import { ProfileDocuments } from '@/entities/profile/ui/ProfileDocuments'
 
 export default function ProfileView() {
 	const personalData = useLoginStore((state) => state.personalData)
@@ -43,6 +44,7 @@ export default function ProfileView() {
 						{lawyer && <ProfileConsultationPrice />}
 						{lawyer && <ProfileChangeSpecialization />}
 						{lawyer && <ProfileSubscription />}
+						<ProfileSupport />
 						{lawyer && <ProfileServicingCities />}
 						<ProfileDelete />
 					</div>

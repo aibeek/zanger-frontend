@@ -53,6 +53,11 @@ export const Footer = ({ variant, id }: Props) => {
 							href={termsURL}>
 							{t('offer')}
 						</Link>
+						<Link
+							target={'_blank'}
+							href={paymentURL}>
+							{t('payment')}
+						</Link>
 					</div>
 				</div>
 			</div>
