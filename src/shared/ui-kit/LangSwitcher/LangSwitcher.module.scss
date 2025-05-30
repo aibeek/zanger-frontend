@@ -22,8 +22,9 @@
 		box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
 	}
 }
+
 .hide {
-	@media (max-width: 1370px) {
+	@media (max-width: 768px) {
 		display: none !important;
 	}
 }

@@ -107,7 +107,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 									Город: <span>{detailedResponse?.region || '—'}</span>
 								</li>
 								<li className={s.cost}>
-									Стоимость консультации: <span>{detailedResponse?.consultation_price || 'не указано'}</span>
+									Стоимость консультации: <span>{detailedResponse?.consultation_price + ' ₸' || 'не указано'}</span>
 								</li>
 								<li className={s.tag}>
 									Специальность: <span>{detailedResponse?.specialization || 'не указано'}</span>

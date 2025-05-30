@@ -3,17 +3,19 @@ import { create } from 'zustand'
 import toast from 'react-hot-toast'
 import { profileApi } from '@/shared/api'
 import type { LawyerDocument } from '@/shared/api'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface LawyerDocumentsState {
 	selectedFiles: File[]
 	selectedDocumentId: number | null
 	frontSide: 0 | 1 | null
+	isDoubleSided: boolean
 
 	setSelectedFiles: (files: File[]) => void
 	addSelectedFile: (file: File) => void
 	removeSelectedFile: (fileName: string) => void
 
-	setSelectedDocumentId: (id: number | null) => void
+	setSelectedDocument: (id: number | null, isDoubleSided: boolean) => void
 	setFrontSide: (side: 0 | 1) => void
 
 	uploadFiles: (mutate: () => void) => Promise<void>
@@ -24,24 +26,22 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 	selectedFiles: [],
 	selectedDocumentId: null,
 	frontSide: null,
+	isDoubleSided: false,
 
 	setSelectedFiles: (files) => set({ selectedFiles: files }),
-
-	addSelectedFile: (file) =>
-		set((state) => ({
-			selectedFiles: [...state.selectedFiles, file],
-		})),
-
+	addSelectedFile: (file) => set((state) => ({ selectedFiles: [...state.selectedFiles, file] })),
 	removeSelectedFile: (fileName) =>
 		set((state) => ({
 			selectedFiles: state.selectedFiles.filter((f) => f.name !== fileName),
 		})),
 
-	setSelectedDocumentId: (id) => set({ selectedDocumentId: id }),
+	setSelectedDocument: (id, isDoubleSided) =>
+		set({ selectedDocumentId: id, isDoubleSided, frontSide: isDoubleSided ? null : 0 }),
+
 	setFrontSide: (side) => set({ frontSide: side }),
 
 	uploadFiles: async (mutate) => {
-		const { selectedFiles, selectedDocumentId, setSelectedFiles } = get()
+		const { selectedFiles, selectedDocumentId, frontSide, isDoubleSided, setSelectedFiles } = get()
 
 		if (!selectedDocumentId) {
 			toast.error('Документ не выбран')
@@ -53,18 +53,24 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 			return
 		}
 
+		if (isDoubleSided && frontSide === null) {
+			toast.error('Выберите сторону документа')
+			return
+		}
+
 		try {
 			for (const file of selectedFiles) {
 				const formData = new FormData()
 				formData.append('document_id', selectedDocumentId.toString())
-				formData.append('front_side', '0')
+				formData.append('front_side', isDoubleSided ? String(frontSide) : '0')
 				formData.append('file', new Blob([file], { type: file.type }), file.name)
-				mutate()
 				await profileApi.uploadDocument(formData)
 			}
-			mutate()
 			toast.success('Документ(ы) успешно загружены')
 			setSelectedFiles([])
+
+			await refreshUser()
+			mutate()
 		} catch (e) {
 			console.error('Ошибка при загрузке документа', e)
 			toast.error('Ошибка при загрузке документа')
@@ -81,6 +87,7 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 			await profileApi.deleteDocument(idToDelete)
 			toast.success('Документ удалён')
 			mutate()
+			await refreshUser()
 		} catch (e) {
 			console.error('Ошибка при удалении документа', e)
 			toast.error('Ошибка при удалении документа')
@@ -91,7 +98,7 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 export const fetchDocuments = async (): Promise<LawyerDocument[]> => {
 	const res = await profileApi.myDocuments()
 
-	// @ts-expect-error — если нужно временно, но лучше пофиксить типизацию profileApi
+	// @ts-expect-error — fix it
 	return res
 }
 

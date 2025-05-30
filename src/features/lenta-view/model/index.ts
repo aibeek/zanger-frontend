@@ -1,2 +1,2 @@
-// export * from './lentaStore'
+export * from './lentaStore'
 export * from './useLentaInfinite'

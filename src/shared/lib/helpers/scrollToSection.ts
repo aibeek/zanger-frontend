@@ -1,4 +1,4 @@
-export const scrollToSection = (e: React.MouseEvent, href: string) => {
+export const scrollToSection = (e: React.MouseEvent | any, href: string) => {
 	if (href.startsWith('#')) {
 		e.preventDefault()
 		const el = document.querySelector(href)

@@ -1,3 +1,2 @@
 export * from './shared'
-export * from './client'
-export * from './lawyer'
+export * from './profile'

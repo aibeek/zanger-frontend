@@ -35,8 +35,6 @@ const OPTIONS = [
 export const SubscriptionPlans = () => {
 	const [selected, setSelected] = useState('free')
 
-	console.log(selected)
-
 	return (
 		<RadioGroup
 			className={s.wrapper}

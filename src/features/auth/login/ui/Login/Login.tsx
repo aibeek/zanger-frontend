@@ -36,7 +36,6 @@ export const Login = () => {
 	useEffect(() => {
 		if (!personalData) return
 
-		// @ts-expect-error fix it
 		const role = personalData?.role_id.code as Role
 
 		if (role === 'client') {

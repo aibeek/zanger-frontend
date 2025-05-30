@@ -11,7 +11,7 @@ export const DocumentsList = ({ mutate }: { mutate: () => void }) => {
 	const { deleteDocumentById } = useLawyerDocumentsStore()
 	const { documents } = useDocuments()
 
-	const handleDelete = async (id_to_delete: number) => {
+	const handleDelete = async (id_to_delete: number, mutate) => {
 		await deleteDocumentById(id_to_delete, mutate)
 	}
 
@@ -43,7 +43,7 @@ export const DocumentsList = ({ mutate }: { mutate: () => void }) => {
 									<Button
 										variant="clear"
 										size="sm"
-										onClick={() => handleDelete(doc.id_to_delete)}>
+										onClick={() => handleDelete(doc.id_to_delete, mutate)}>
 										<TrashIcon
 											width={16}
 											height={16}

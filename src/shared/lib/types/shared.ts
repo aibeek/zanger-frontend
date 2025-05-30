@@ -1,6 +1,3 @@
-import { ClientProfile } from './client'
-import { LawyerProfile } from './lawyer'
-
 export type RegionType = {
 	id: number
 	name: string
@@ -18,5 +15,3 @@ export type Role = {
 	name: string
 	code: string
 }
-
-export type UserProfile = ClientProfile | LawyerProfile

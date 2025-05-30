@@ -38,7 +38,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 
 	const isLawyer = role === 'lawyer'
-	const lawyerData = isLawyer ? (personalData as LawyerProfile).lawyer : null
+	const lawyerData = isLawyer ? personalData.lawyer : null
 
 	const methods = useForm<ProfilePersonalDataFormValues>({
 		resolver: zodResolver(profilePersonalDataSchema),

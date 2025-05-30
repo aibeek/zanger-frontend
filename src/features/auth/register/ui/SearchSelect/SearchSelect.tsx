@@ -83,7 +83,7 @@ export function SearchSelect<T>({
 						const id = getId(v)
 						return id !== undefined && id !== null ? id.toString() : null
 					})
-					.filter(Boolean) // убираем null и undefined
+					.filter(Boolean)
 			: undefined
 		: value
 		? (() => {

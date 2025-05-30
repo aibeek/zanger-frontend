@@ -5,6 +5,7 @@ import { authApi, profileApi, sharedApi, Tag } from '@/shared/api'
 import { UserProfile } from '@/shared/lib/types'
 import { useLoginStore } from '@/features/auth'
 import { mutate } from 'swr'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface ChangeSpecializationState {
 	isSubmitting: boolean
@@ -37,11 +38,7 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 
 			toast.success('Специализации успешно обновлены')
 
-			const updatedPersonalData = (await authApi.me()) as UserProfile
-			useLoginStore.setState({ personalData: updatedPersonalData })
-			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
-
-			mutate('/auth/me')
+			await refreshUser()
 		} catch (e: any) {
 			console.error(e)
 			toast.error('Произошла ошибка')

@@ -15,13 +15,14 @@ type Props = {
 	panel_descr?: string
 	children: React.ReactNode
 	ref?: any
+	defaultOpen?: boolean
 }
 
 export const ProfileTabWrapper = (props: Props) => {
-	const { title, imgSrc, imgAlt, panel_title, panel_descr, children, ref } = props
+	const { title, imgSrc, imgAlt, panel_title, panel_descr, defaultOpen = false, children, ref } = props
 
 	return (
-		<Disclosure>
+		<Disclosure defaultOpen={defaultOpen}>
 			{({ open }) => (
 				<div className={s.accordion}>
 					<DisclosureButton

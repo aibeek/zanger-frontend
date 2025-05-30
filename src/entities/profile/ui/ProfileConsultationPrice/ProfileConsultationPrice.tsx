@@ -104,8 +104,7 @@ export const ProfileConsultationPrice = () => {
 											onChange(parsed)
 										}}
 										onBlur={onBlur}
-										// @ts-expect-error fix it
-										placeholder={personalData.lawyer?.consultation_price}
+										placeholder={String(personalData.lawyer?.consultation_price)}
 									/>
 								)}
 							/>

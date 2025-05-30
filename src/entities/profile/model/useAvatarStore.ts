@@ -4,6 +4,7 @@ import { useLoginStore } from '@/features/auth'
 import { UserProfile } from '@/shared/lib/types'
 import toast from 'react-hot-toast'
 import { mutate } from 'swr'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface UploadAvatarState {
 	file: File | null
@@ -56,11 +57,7 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 			await profileApi.updateAvatar({ icon: uploadedUrl })
 			toast.success('Аватар успешно обновлён')
 
-			const updatedPersonalData = (await authApi.me()) as UserProfile
-			useLoginStore.setState({ personalData: updatedPersonalData })
-			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
-
-			mutate('/auth/me')
+			await refreshUser()
 
 			set({
 				file: null,
