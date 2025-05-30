@@ -35,6 +35,7 @@ export default async function RootLayout({
 		<html lang={locale}>
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
+					<AppToaster />
 					<DeviceGuard>
 						{children}
 						<Footer
