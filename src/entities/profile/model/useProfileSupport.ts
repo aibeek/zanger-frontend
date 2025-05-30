@@ -21,7 +21,6 @@ export const useProfileSupport = create<ProfileSupportState>((set) => ({
 			const contact = (await profileApi.getSupportContacts()) as SupportContact
 
 			set({ phone_number: contact.value })
-			console.log(contact)
 
 			return contact
 		} catch (error) {

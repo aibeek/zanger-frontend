@@ -6,6 +6,8 @@ import { Open_Sans } from 'next/font/google'
 
 import '@/app/styles/index.scss'
 import { Footer } from '@/widgets/Footer'
+import { DeviceGuard } from '@/shared/lib/DeviceGuard'
+import { AppToaster } from '@/shared/ui-kit'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -33,11 +35,13 @@ export default async function RootLayout({
 		<html lang={locale}>
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
-					{children}
-					<Footer
-						id={'footer'}
-						variant={'lending-variant'}
-					/>
+					<DeviceGuard>
+						{children}
+						<Footer
+							id={'footer'}
+							variant={'lending-variant'}
+						/>
+					</DeviceGuard>
 				</NextIntlClientProvider>
 			</body>
 		</html>

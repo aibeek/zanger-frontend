@@ -11,6 +11,7 @@ import { Footer } from '@/widgets/Footer'
 import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { SWRConfig } from 'swr'
+import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -39,16 +40,18 @@ export default async function DashboardLayout({
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
 					<AuthGuard>
-						<SWRConfig value={{ shouldRetryOnError: false }}>
-							<div className="authed-wrapper">
-								<div className="dashboard-top">
-									<Header variant="user-variant" />
-									{children}
-									<AppToaster />
+						<DeviceGuard>
+							<SWRConfig value={{ shouldRetryOnError: false }}>
+								<div className="authed-wrapper">
+									<div className="dashboard-top">
+										<Header variant="user-variant" />
+										{children}
+										<AppToaster />
+									</div>
+									<Footer variant="user-variant" />
 								</div>
-								<Footer variant="user-variant" />
-							</div>
-						</SWRConfig>
+							</SWRConfig>
+						</DeviceGuard>
 					</AuthGuard>
 				</NextIntlClientProvider>
 			</body>

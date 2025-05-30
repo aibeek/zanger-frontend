@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import React, { ReactNode } from 'react'
+import React from 'react'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
 import { Open_Sans } from 'next/font/google'
@@ -12,6 +12,7 @@ import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { SWRConfig } from 'swr'
+import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -39,24 +40,23 @@ export default async function DashboardLayout({
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
 					<AuthGuard>
-						<SWRConfig value={{ shouldRetryOnError: false }}>
-							<div className="authed-wrapper">
-								<div className="dashboard-top">
-									<Header variant="user-variant" />
-									<DashboardWrapper>
-										{children}
-										<AppToaster />
-									</DashboardWrapper>
+						<DeviceGuard>
+							<SWRConfig value={{ shouldRetryOnError: false }}>
+								<div className="authed-wrapper">
+									<div className="dashboard-top">
+										<Header variant="user-variant" />
+										<DashboardWrapper>
+											{children}
+											<AppToaster />
+										</DashboardWrapper>
+									</div>
+									<Footer variant="user-variant" />
 								</div>
-								<Footer variant="user-variant" />
-							</div>
-						</SWRConfig>
+							</SWRConfig>
+						</DeviceGuard>
 					</AuthGuard>
 				</NextIntlClientProvider>
 			</body>
 		</html>
 	)
-}
-{
-	/* <SWRConfig value={{ shouldRetryOnError: false }}> */
 }

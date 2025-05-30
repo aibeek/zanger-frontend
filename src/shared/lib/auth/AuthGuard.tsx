@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, ReactNode } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState, ReactNode } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 
 import { Loader } from '@/shared/ui-kit'
-
 import { useAuthStore } from './authStore'
+import toast from 'react-hot-toast'
+import { isMobileOrTablet } from '../helpers'
 
 interface AuthGuardProps {
 	children: ReactNode
@@ -13,17 +14,30 @@ interface AuthGuardProps {
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
 	const { isAuthenticated, authChecked, checkAuth } = useAuthStore()
+	const [isMobile, setIsMobile] = useState(false)
 	const router = useRouter()
+	const pathname = usePathname()
 
 	useEffect(() => {
 		checkAuth()
 	}, [checkAuth])
 
 	useEffect(() => {
+		setIsMobile(isMobileOrTablet())
+	}, [])
+
+	useEffect(() => {
 		if (authChecked && !isAuthenticated) {
-			router.push(`/auth/login`)
+			router.push('/auth/login')
 		}
 	}, [authChecked, isAuthenticated, router])
+
+	useEffect(() => {
+		if (authChecked && isAuthenticated && isMobile && pathname !== '/') {
+			router.push('/')
+			toast.error('Скачайте приложение для взаимодействия')
+		}
+	}, [authChecked, isAuthenticated, isMobile, pathname, router])
 
 	if (!authChecked) {
 		return <Loader />

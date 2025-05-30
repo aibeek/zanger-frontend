@@ -22,8 +22,6 @@ export const ProfileSupport = () => {
 		fetchSupportNumber()
 	}, [])
 
-	console.log(phone_number)
-
 	return (
 		<ProfileTabWrapper
 			title={t('profile.support.title')}

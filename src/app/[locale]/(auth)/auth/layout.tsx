@@ -9,6 +9,7 @@ import { routing } from '@/i18n/routing'
 import { Header } from '@/widgets/Header'
 import { Footer } from '@/widgets/Footer'
 import { SWRConfig } from 'swr'
+import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -36,11 +37,13 @@ export default async function AuthLayout({
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
 					<SWRConfig value={{ shouldRetryOnError: false }}>
-						<div className="authed-wrapper">
-							<Header variant={'user-variant'} />
-							<section>{children}</section>
-							<Footer variant={'user-variant'} />
-						</div>
+						<DeviceGuard>
+							<div className="authed-wrapper">
+								<Header variant={'user-variant'} />
+								<section>{children}</section>
+								<Footer variant={'user-variant'} />
+							</div>
+						</DeviceGuard>
 					</SWRConfig>
 				</NextIntlClientProvider>
 			</body>
