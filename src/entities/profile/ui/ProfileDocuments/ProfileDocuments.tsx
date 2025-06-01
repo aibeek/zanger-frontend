@@ -15,7 +15,6 @@ import toast from 'react-hot-toast'
 import { DocumentsList } from './DocumentsList'
 import { useLoginStore } from '@/features/auth'
 import { useSearchParams } from 'next/navigation'
-import { scrollToSection } from '@/shared/lib'
 
 const { Dragger } = Upload
 const { Option } = Select
@@ -42,12 +41,20 @@ export const ProfileDocuments = () => {
 	const { mutate, documents } = useDocuments()
 	const { open, close, isOpen } = useModal()
 	const personalData = useLoginStore((state) => state.personalData)
+	const fetchPersonalData = useLoginStore((state) => state.getPersonalDataByToken)
+
 	const needDocs = personalData.lawyer?.need_to_access[0].need
 	const searchParams = useSearchParams()
 	const tab = searchParams.get('tab')
 	const shouldOpen = useMemo(() => tab === 'documents', [tab])
+	const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png']
 
 	const handleBeforeUpload = (file: File) => {
+		if (!allowedTypes.includes(file.type)) {
+			toast.error('Неподдерживаемый формат файла')
+			return
+		}
+
 		if (!selectedDocumentId) {
 			toast.error('Сначала выберите тип документа')
 			return Upload.LIST_IGNORE
@@ -55,14 +62,6 @@ export const ProfileDocuments = () => {
 
 		if (isDoubleSided && frontSide === null) {
 			toast.error('Выберите сторону документа')
-			return Upload.LIST_IGNORE
-		}
-
-		const isImage = file.type.startsWith('image/')
-		const isPdf = file.type === 'application/pdf'
-
-		if (!isImage && !isPdf) {
-			toast.error('Поддерживаемые форматы: jpg, jpeg, png, pdf')
 			return Upload.LIST_IGNORE
 		}
 
@@ -76,6 +75,8 @@ export const ProfileDocuments = () => {
 
 	const handleUpload = async (mutate) => {
 		await uploadFiles(mutate)
+		await fetchPersonalData()
+		setSelectedDocument(null, false)
 		close()
 	}
 
@@ -128,16 +129,21 @@ export const ProfileDocuments = () => {
 				panel_title={t('profile.documents.panelTitle')}
 				panel_descr={t('profile.documents.panelDescription')}>
 				<div id="documents-section">
-					<Button
-						className={s.openModalBtn}
-						variant="primary"
-						size="md"
-						onClick={open}>
-						Загрузить документы
-					</Button>
+					{needDocsList.length > 0 && (
+						<Button
+							className={s.openModalBtn}
+							variant="primary"
+							size="md"
+							onClick={open}>
+							Загрузить документы
+						</Button>
+					)}
 
 					{documents.filter((doc) => doc.link).length > 0 ? (
-						<DocumentsList mutate={mutate} />
+						<DocumentsList
+							mutate={mutate}
+							documents={documents}
+						/>
 					) : (
 						<p className={s.noDocuments}>Нет загруженных документов</p>
 					)}
@@ -215,7 +221,7 @@ export const ProfileDocuments = () => {
 						size="md"
 						style={{ marginTop: 20 }}
 						disabled={selectedFiles.length === 0 || frontSide === null || !selectedDocumentId}
-						onClick={handleUpload}>
+						onClick={() => handleUpload(mutate)}>
 						Загрузить документы
 					</Button>
 				</div>

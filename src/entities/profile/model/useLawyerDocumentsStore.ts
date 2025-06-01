@@ -63,16 +63,14 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 				const formData = new FormData()
 				formData.append('document_id', selectedDocumentId.toString())
 				formData.append('front_side', isDoubleSided ? String(frontSide) : '0')
-				formData.append('file', new Blob([file], { type: file.type }), file.name)
+				formData.append('file', file)
 				await profileApi.uploadDocument(formData)
 			}
-			toast.success('Документ(ы) успешно загружены')
+			toast.success('Документ успешно загружен')
 			setSelectedFiles([])
-
 			await refreshUser()
 			mutate()
 		} catch (e) {
-			console.error('Ошибка при загрузке документа', e)
 			toast.error('Ошибка при загрузке документа')
 		}
 	},
@@ -89,7 +87,6 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 			mutate()
 			await refreshUser()
 		} catch (e) {
-			console.error('Ошибка при удалении документа', e)
 			toast.error('Ошибка при удалении документа')
 		}
 	},

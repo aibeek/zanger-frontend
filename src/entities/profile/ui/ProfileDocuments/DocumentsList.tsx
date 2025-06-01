@@ -4,15 +4,20 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import s from './DocumentsList.module.scss'
 import { Button } from '@/shared/ui-kit'
-import { useDocuments, useLawyerDocumentsStore } from '../../model'
+import { useLawyerDocumentsStore } from '../../model'
 import { TrashIcon } from '@heroicons/react/20/solid'
-export const DocumentsList = ({ mutate }: { mutate: () => void }) => {
+import { LawyerDocument } from '@/shared/api'
+
+type Props = {
+	documents: LawyerDocument[]
+	mutate: () => void
+}
+export const DocumentsList = ({ documents, mutate }: Props) => {
 	const t = useTranslations()
 	const { deleteDocumentById } = useLawyerDocumentsStore()
-	const { documents } = useDocuments()
 
-	const handleDelete = async (id_to_delete: number, mutate) => {
-		await deleteDocumentById(id_to_delete, mutate)
+	const handleDelete = async (id: number, mutate: () => void) => {
+		await deleteDocumentById(id, mutate)
 	}
 
 	return (

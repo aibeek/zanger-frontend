@@ -1,4 +1,4 @@
-import { mutate } from 'swr'
+import { mutate as mutateSWR } from 'swr'
 import toast from 'react-hot-toast'
 
 import { authApi } from '@/shared/api'
@@ -13,7 +13,7 @@ export const refreshUser = async (): Promise<UserProfile | null> => {
 		useLoginStore.setState({ personalData: updatedPersonalData })
 		localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
 
-		mutate('/auth/me')
+		mutateSWR('/auth/me')
 
 		return updatedPersonalData
 	} catch (error) {

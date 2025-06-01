@@ -66,7 +66,6 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 				uploadProgress: 100,
 			})
 		} catch (error) {
-			console.error(error)
 			toast.error('Ошибка загрузки аватара')
 			set({ isUploading: false, uploadProgress: 0 })
 		}
