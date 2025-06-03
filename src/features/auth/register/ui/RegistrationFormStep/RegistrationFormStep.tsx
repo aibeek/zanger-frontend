@@ -35,8 +35,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const clientVariant = variant === 'client'
 	const lawyerVariant = variant === 'lawyer'
 
-	const { optionsForSelect } = useRegionsUtils(regions, [], t)
-	const sortedRegions = sortRegions(regions)
+	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [], t)
 
 	const {
 		register,
@@ -137,14 +136,12 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 							control={control}
 							rules={{ required: t('auth.registration.regionRequired') }}
 							render={({ field }) => {
-								const selected = sortedRegions.find((r) => r.id === field.value) || null
-
 								return (
 									<SearchSelect
 										className="search-select"
 										data={optionsForSelect}
-										searchData={sortedRegions}
-										value={selected}
+										searchData={allOptions}
+										value={optionsForSelect.find((r) => r.id === field.value) || null}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}

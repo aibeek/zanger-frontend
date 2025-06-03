@@ -17,8 +17,7 @@ export const CreateApplicationForm = () => {
 	const { regions } = useRegions()
 	const { submit, success, resetSuccess } = useCreateApplicationStore()
 	const t = useTranslations()
-	const { optionsForSelect } = useRegionsUtils(regions, [], t)
-	const sortedRegions = sortRegions(regions)
+	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [], t)
 
 	const {
 		handleSubmit,
@@ -83,7 +82,7 @@ export const CreateApplicationForm = () => {
 									<SearchSelect
 										className="search-select dashboard-select"
 										data={optionsForSelect}
-										searchData={sortedRegions}
+										searchData={allOptions}
 										value={optionsForSelect.find((r) => r.id === field.value) || null}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
