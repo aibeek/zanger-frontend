@@ -1,10 +1,7 @@
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 
-import { authApi, profileApi, UpdateConsultationPrice } from '@/shared/api'
-import { useLoginStore } from '@/features/auth'
-import { UserProfile } from '@/shared/lib/types'
-import { mutate } from 'swr'
+import { profileApi, UpdateConsultationPrice } from '@/shared/api'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface ConsultationPriceState {

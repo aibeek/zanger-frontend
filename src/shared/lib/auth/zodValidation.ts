@@ -141,8 +141,20 @@ export const profilePersonalDataSchema = z.object({
 		.string()
 		.regex(/^\d{12}$/, { message: 'validation.iin_invalid' })
 		.optional(),
-	lawyer_type_id: z.number().optional(),
-	region_id: z.number().optional(),
+
+	lawyer_type_ids: z
+		.array(z.number(), {
+			required_error: 'validation.status_required',
+			invalid_type_error: 'validation.status_required',
+		})
+		.min(1, { message: 'validation.status_required' }),
+
+	region_id: z
+		.number({
+			required_error: 'validation.region_required',
+			invalid_type_error: 'validation.region_required',
+		})
+		.refine((val) => val !== null, { message: 'validation.region_required' }),
 })
 
 export const profileConsultationPriceSchema = z

@@ -2,12 +2,13 @@ import { useLoginStore } from '@/features/auth'
 
 export const useLentaAccessStatus = () => {
 	const personalData = useLoginStore((store) => store.personalData)
-	const accessItems = personalData.lawyer.need_to_access
+	const accessItems = personalData.lawyer?.need_to_access
 
 	const result = {
 		hasAccess: true,
 		needsDocuments: false,
 		needsSubscription: false,
+		hasModerationDocs: false,
 	}
 
 	if (!personalData?.lawyer || !Array.isArray(accessItems)) {
@@ -19,6 +20,15 @@ export const useLentaAccessStatus = () => {
 			const docs = item.need
 			if (Array.isArray(docs)) {
 				const hasMissingDocs = docs.some((doc) => !doc.is_uploaded)
+				// @ts-expect-error fix it
+				const hasDocsOnModeration = docs.some((doc) => doc.status?.type === 'moderation')
+
+				if (hasDocsOnModeration) {
+					result.hasModerationDocs = true
+					result.hasAccess = false
+					break
+				}
+
 				if (hasMissingDocs) {
 					result.needsDocuments = true
 					result.hasAccess = false

@@ -1,12 +1,11 @@
 import { create } from 'zustand'
-
-import { Role } from '../consts'
+import { RoleVariant } from '../consts'
 
 export type StepKey = 'phone' | 'code' | 'clientRegistrationForm' | 'lawyerRegistrationForm' | 'newPassword' | 'success'
 
 type Mode = 'register' | 'resetPassword'
 
-const registerStepsConfig: Record<Role, StepKey[]> = {
+const registerStepsConfig: Record<RoleVariant, StepKey[]> = {
 	client: ['phone', 'code', 'clientRegistrationForm'],
 	lawyer: ['phone', 'code', 'lawyerRegistrationForm'],
 }
@@ -14,14 +13,14 @@ const registerStepsConfig: Record<Role, StepKey[]> = {
 const resetPasswordStepsConfig: StepKey[] = ['phone', 'code', 'newPassword', 'success']
 
 interface StepMarcherStore {
-	role: Role | null
+	role: RoleVariant | null
 	mode: Mode | null
 	currentStepIndex: number
 	isInitialized: boolean
 
-	setRole: (role: Role) => void
+	setRole: (role: RoleVariant) => void
 	initResetPasswordFlow: () => void
-	forceSetRole: (role: Role) => void
+	forceSetRole: (role: RoleVariant) => void
 	nextStep: () => void
 	prevStep: () => void
 	getCurrentStep: () => StepKey | null
@@ -34,10 +33,9 @@ export const useStepMarcher = create<StepMarcherStore>((set, get) => ({
 	isInitialized: false,
 	currentStepIndex: 0,
 
-	setRole: (role: Role) => set({ role, mode: 'register', currentStepIndex: 0, isInitialized: true }),
+	setRole: (role: RoleVariant) => set({ role, mode: 'register', currentStepIndex: 0, isInitialized: true }),
 
-	// 👇 Новый метод — сбрасывает и устанавливает роль
-	forceSetRole: (role: Role) => {
+	forceSetRole: (role: RoleVariant) => {
 		set({
 			role,
 			mode: 'register',
@@ -50,7 +48,7 @@ export const useStepMarcher = create<StepMarcherStore>((set, get) => ({
 
 	nextStep: () => {
 		const { role, mode, currentStepIndex } = get()
-		const steps = mode === 'register' ? registerStepsConfig[role as Role] : resetPasswordStepsConfig
+		const steps = mode === 'register' ? registerStepsConfig[role as RoleVariant] : resetPasswordStepsConfig
 		if (currentStepIndex < steps.length - 1) {
 			set({ currentStepIndex: currentStepIndex + 1 })
 		}
@@ -66,7 +64,7 @@ export const useStepMarcher = create<StepMarcherStore>((set, get) => ({
 	getCurrentStep: () => {
 		const { role, mode, currentStepIndex } = get()
 		if (!mode) return null
-		const steps = mode === 'register' ? registerStepsConfig[role as Role] : resetPasswordStepsConfig
+		const steps = mode === 'register' ? registerStepsConfig[role as RoleVariant] : resetPasswordStepsConfig
 		return steps[currentStepIndex] ?? null
 	},
 

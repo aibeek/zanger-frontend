@@ -13,13 +13,15 @@ import { SearchSelect, useRegions } from '@/features/auth'
 import s from './ProfileServicingCities.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useServicingRegions } from '../../model/useServicingRegions'
-import { regionGroupBy, ServicingCitiesForm, servicingCitiesSchema, sortRegions } from '@/shared/lib'
+import { regionGroupBy, ServicingCitiesForm, servicingCitiesSchema, useRegionsUtils } from '@/shared/lib'
 
 export const ProfileServicingCities = () => {
 	const t = useTranslations()
 	const { regions } = useRegions()
-	const { updateServicingRegions, servicingCities, fetchServicingRegions, isSubmitting } = useServicingRegions()
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
+	const { servicingCities, isLoaded, load, updateServicingRegions, isSubmitting } = useServicingRegions()
+
+	const { allOptions, optionsForSelect } = useRegionsUtils(regions, servicingCities, t)
 
 	const {
 		control,
@@ -32,23 +34,21 @@ export const ProfileServicingCities = () => {
 	})
 
 	useEffect(() => {
-		fetchServicingRegions()
-	}, [])
+		load()
+	}, [load])
 
 	useEffect(() => {
-		if (servicingCities?.length) {
+		if (isLoaded && servicingCities.length) {
 			setValue(
 				'region_ids',
-				servicingCities.map((region) => region.id),
+				servicingCities.map((r) => r.id),
 			)
 		}
-	}, [servicingCities, setValue])
+	}, [isLoaded, servicingCities, setValue])
 
 	const onSubmit = async (data: ServicingCitiesForm) => {
 		await updateServicingRegions({ region_ids: data.region_ids })
 	}
-
-	const sortedRegions = sortRegions(regions)
 
 	return (
 		<ProfileTabWrapper
@@ -65,25 +65,24 @@ export const ProfileServicingCities = () => {
 						control={control}
 						name="region_ids"
 						render={({ field }) => {
-							const selectedRegions = Array.isArray(field.value)
-								? sortedRegions.filter((r) => field.value.includes(r.id))
-								: []
+							const selected = allOptions.filter((r) => field.value.includes(r.id))
 
 							return (
 								<SearchSelect
 									className="search-select"
-									data={sortedRegions}
-									value={selectedRegions.length > 0 ? selectedRegions : []}
-									onChange={(selected) => {
-										const ids = Array.isArray(selected) ? selected.map((r) => r.id) : []
+									value={selected}
+									onChange={(selectedItems) => {
+										const ids = Array.isArray(selectedItems) ? selectedItems.map((item) => item.id) : []
 										field.onChange(ids)
 									}}
 									getId={(item) => item.id}
 									getLabel={(item) => item.name}
 									groupBy={regionGroupBy}
 									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
-									multiple={true}
+									multiple
 									placeholder={t('profile.servicing_cities.placeholder')}
+									data={optionsForSelect}
+									searchData={allOptions}
 								/>
 							)
 						}}

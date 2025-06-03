@@ -26,7 +26,8 @@ export interface ClientRegisterDto {
 
 export interface LawyerRegisterDto extends ClientRegisterDto {
 	iin: string
-	lawyer_type_id: number
+	lawyer_type_id?: number
+	lawyer_type_ids?: [number]
 }
 
 export type RegisterDto = ClientRegisterDto | ((LawyerRegisterDto & { role: 'lawyer' }) & { role: 'client' })

@@ -43,7 +43,7 @@ export const ProfileDocuments = () => {
 	const personalData = useLoginStore((state) => state.personalData)
 	const fetchPersonalData = useLoginStore((state) => state.getPersonalDataByToken)
 
-	const needDocs = personalData.lawyer?.need_to_access[0].need
+	const needDocs = personalData.lawyer?.need_to_access.find((item) => item.type === 'documents')?.need ?? []
 	const searchParams = useSearchParams()
 	const tab = searchParams.get('tab')
 	const shouldOpen = useMemo(() => tab === 'documents', [tab])

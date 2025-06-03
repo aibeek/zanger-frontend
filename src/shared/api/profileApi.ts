@@ -7,7 +7,7 @@ export type UpdateClientData = {
 	telegram?: string | null
 	whatsapp?: string | null
 	iin?: string
-	lawyer_type_id?: number
+	lawyer_type_ids?: [number]
 	region_id?: number
 }
 
@@ -22,7 +22,7 @@ export type UpdateAvatarDto = {
 }
 
 export type UpdateLanguageDto = {
-	language: 'ru' | 'kz'
+	language: string
 }
 
 export type UpdateRegionDto = {

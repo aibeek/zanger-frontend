@@ -1,6 +1,5 @@
-import { useLoginStore } from '@/features/auth'
-import { authApi, profileApi, UpdateClientData } from '@/shared/api'
-import { UserProfile } from '@/shared/lib/types'
+import { profileApi, UpdateClientData } from '@/shared/api'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 
@@ -21,17 +20,11 @@ export const useEditPersonalDataStore = create<EditPersonalDataState>((set) => (
 			await profileApi.updateProfilePersonalData(data, role)
 
 			await new Promise((resolve) => setTimeout(resolve, 2000))
-
-			const updatedPersonalData = (await authApi.me()) as UserProfile
-
-			useLoginStore.setState({ personalData: updatedPersonalData })
-			localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
-
 			set({ success: true })
+			await refreshUser()
 
 			toast.success('Данные успешно обновлены')
 		} catch (e: any) {
-			console.error(e)
 			toast.error('Произошла ошибка')
 		} finally {
 			set({ isSubmitting: false })

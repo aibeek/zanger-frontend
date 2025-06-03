@@ -41,18 +41,3 @@ export const useMyResponsesStore = create<MyResponsesStore>((set, get) => ({
 			workedOutIds: [...state.workedOutIds, id],
 		})),
 }))
-
-// const fetchResponses = async () => {
-// 	const role = Cookies.get('role')
-// 	if (role !== 'lawyer') return []
-
-// 	try {
-// 		const response = await lawyerApi.getResponses()
-
-// 		// @ts-expect-error fix it
-// 		return response.data
-// 	} catch (error) {
-// 		console.error('Ошибка при получении откликов:', error)
-// 		return []
-// 	}
-// }

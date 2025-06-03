@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import toast from 'react-hot-toast'
 import { sharedApi } from '@/shared/api'
+import { RoleVariant } from '@/shared/lib'
 
 interface ReportState {
 	reportedIds: number[]
-	report: (id: number, role: 'client' | 'lawyer', content: string) => void
+	report: (id: number, role: RoleVariant, content: string) => void
 }
 
 export const useReport = create<ReportState>((set, get) => ({

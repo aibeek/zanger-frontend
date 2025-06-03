@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/shared/ui-kit'
-import { createApplicationSchema, regionGroupBy, sortRegions } from '@/shared/lib'
+import { createApplicationSchema, regionGroupBy, sortRegions, useRegionsUtils } from '@/shared/lib'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useCreateApplicationStore, useTags } from '@/features/create-application'
 
@@ -14,9 +14,12 @@ import { useTranslations } from 'next-intl'
 
 export const CreateApplicationForm = () => {
 	const { tags, loadingTags } = useTags()
-	const { regions, loadingRegions } = useRegions()
+	const { regions } = useRegions()
 	const { submit, success, resetSuccess } = useCreateApplicationStore()
 	const t = useTranslations()
+	const { optionsForSelect } = useRegionsUtils(regions, [], t)
+	const sortedRegions = sortRegions(regions)
+
 	const {
 		handleSubmit,
 		control,
@@ -41,8 +44,6 @@ export const CreateApplicationForm = () => {
 			console.error('Ошибка при отправке:', error)
 		}
 	}
-
-	const sortedRegions = sortRegions(regions)
 
 	return (
 		<div className={s.wrapper}>
@@ -78,17 +79,12 @@ export const CreateApplicationForm = () => {
 							name="region_id"
 							control={control}
 							render={({ field }) => {
-								const selectedRegions = Array.isArray(field.value)
-									? // @ts-expect-error fix it
-									  sortedRegions.filter((r) => field.value.includes(r.id))
-									: []
-
 								return (
 									<SearchSelect
 										className="search-select dashboard-select"
-										data={sortedRegions}
-										loading={loadingRegions}
-										value={selectedRegions.length > 0 ? selectedRegions : []}
+										data={optionsForSelect}
+										searchData={sortedRegions}
+										value={optionsForSelect.find((r) => r.id === field.value) || null}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}

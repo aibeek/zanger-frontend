@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-import { parseError } from '@/shared/lib'
+import { parseError, RoleVariant } from '@/shared/lib'
 import { authApi, LoginDto, tokenService } from '@/shared/api'
 
 export const authService = {
@@ -31,7 +31,7 @@ export const authService = {
 		return tokenService.getToken()
 	},
 
-	async getRole(): Promise<'client' | 'lawyer' | null> {
+	async getRole(): Promise<RoleVariant | null> {
 		const token = tokenService.getToken()
 		if (!token) return null
 
@@ -46,7 +46,7 @@ export const authService = {
 
 			localStorage.setItem('personalData', JSON.stringify(personalData))
 			// @ts-expect-error fix it
-			return personalData.role_id.code as 'client' | 'lawyer'
+			return personalData.role_id.code as RoleVariant
 		} catch (error) {
 			console.error('Ошибка при получении роли:', error)
 			return null

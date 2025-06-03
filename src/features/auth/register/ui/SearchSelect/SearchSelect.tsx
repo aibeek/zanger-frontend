@@ -1,10 +1,15 @@
+'use client'
+
 import { Select } from 'antd'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 
 const { Option, OptGroup } = Select
 
 interface GroupedSelectProps<T> {
 	data: T[]
+	searchData?: T[]
+	searchFn?: (searchTerm: string, item: T) => boolean
+
 	value?: T | T[] | null
 	onChange?: (value: T | T[] | null) => void
 	getId: (item: T) => string | number
@@ -20,6 +25,9 @@ interface GroupedSelectProps<T> {
 
 export function SearchSelect<T>({
 	data,
+	searchData,
+	searchFn = (searchTerm, item) => getLabel(item).toLowerCase().includes(searchTerm.toLowerCase()),
+
 	value,
 	onChange,
 	getId,
@@ -32,17 +40,27 @@ export function SearchSelect<T>({
 	disabled,
 	multiple = false,
 }: GroupedSelectProps<T>) {
-	const actualData = Array.isArray(data) ? data : []
+	const [searchTerm, setSearchTerm] = useState('')
+	const [filtered, setFiltered] = useState<T[]>(data)
 
-	const sortedData = [
-		...actualData
-			.filter((item) => getLabel(item) !== 'Другое')
-			.sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'ru', { sensitivity: 'base' })),
-		...actualData.filter((item) => getLabel(item) === 'Другое'),
-	]
+	const sourceData = searchTerm ? searchData || data : data
+
+	useEffect(() => {
+		if (!searchTerm) {
+			setFiltered(data)
+		} else {
+			setFiltered(sourceData.filter((item) => searchFn(searchTerm, item)))
+		}
+	}, [searchTerm, searchData, data])
 
 	const grouped: Record<string, T[]> = {}
 	const ungrouped: T[] = []
+
+	const sortedData = useMemo(() => {
+		const withName = filtered.filter((item) => getLabel(item) !== 'Другое')
+		const other = filtered.filter((item) => getLabel(item) === 'Другое')
+		return [...withName.sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'ru', { sensitivity: 'base' })), ...other]
+	}, [filtered])
 
 	if (groupBy) {
 		sortedData.forEach((item) => {
@@ -61,50 +79,38 @@ export function SearchSelect<T>({
 	const handleChange = (ids: string[] | string) => {
 		if (multiple) {
 			if (!Array.isArray(ids)) return onChange?.(null)
-			const selected = actualData.filter((item) => {
-				const id = getId(item)
-				return id !== undefined && id !== null && ids.includes(id.toString())
-			})
+			const selected = (searchData || data).filter((item) => ids.includes(getId(item).toString()))
 			onChange?.(selected.length ? selected : null)
 		} else {
 			if (typeof ids !== 'string') return onChange?.(null)
-			const selected = actualData.find((item) => {
-				const id = getId(item)
-				return id !== undefined && id !== null && id.toString() === ids
-			})
+			const selected = (searchData || data).find((item) => getId(item).toString() === ids)
 			onChange?.(selected ?? null)
 		}
 	}
 
 	const currentValue = multiple
-		? Array.isArray(value) && value.length > 0
-			? value
-					.map((v) => {
-						const id = getId(v)
-						return id !== undefined && id !== null ? id.toString() : null
-					})
-					.filter(Boolean)
+		? Array.isArray(value)
+			? value.map((v) => getId(v)?.toString()).filter(Boolean)
 			: undefined
 		: value
-		? (() => {
-				const id = getId(value as T)
-				return id !== undefined && id !== null ? id.toString() : undefined
-		  })()
+		? // @ts-expect-error fix it
+		  getId(value)?.toString()
 		: undefined
 
 	return (
 		<Select
 			showSearch
+			onSearch={(val) => setSearchTerm(val)}
+			filterOption={false}
 			mode={multiple ? 'multiple' : undefined}
 			placeholder={placeholder}
 			onChange={handleChange}
 			loading={loading}
 			disabled={disabled}
-			optionFilterProp="label"
 			value={currentValue}
-			className={className}
+			optionFilterProp="label"
 			optionLabelProp="label"
-			filterOption={(input, option) => option?.label?.toString().toLowerCase().includes(input.toLowerCase())}>
+			className={className}>
 			{ungrouped.map((item) => (
 				<Option
 					key={getId(item)}
@@ -115,9 +121,7 @@ export function SearchSelect<T>({
 			))}
 
 			{Object.entries(grouped)
-				.sort(([a], [b]) => {
-					return b.localeCompare(a, 'ru', { sensitivity: 'base' })
-				})
+				.sort(([a], [b]) => b.localeCompare(a, 'ru', { sensitivity: 'base' }))
 				.map(([groupName, items]) => (
 					<OptGroup
 						key={groupName}

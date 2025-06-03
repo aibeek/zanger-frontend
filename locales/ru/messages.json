@@ -352,7 +352,8 @@
 		"region_or_city_required": "Укажите регион или город",
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
-		"only_digits": "Введите только цифры"
+		"only_digits": "Введите только цифры",
+		"status_required": "Выберите хотя бы один статус"
 	},
 
 	"errors": {
@@ -366,5 +367,28 @@
 		"genericError": "Произошла ошибка"
 	},
 	"Required": "Заполните поле",
-	"published": "Опубликовано"
+	"published": "Опубликовано",
+
+	"regions": {
+		"astana": "Астана",
+		"almaty": "Алматы",
+		"shymkent": "Шымкент",
+		"semei": "Семей",
+		"kokshetau": "Кокшетау",
+		"akhtobe": "Актобе",
+		"konaev": "Конаев",
+		"atyrau": "Атырау",
+		"uskemen": "Усть-Каменогорск",
+		"taraz": "Тараз",
+		"taldykorgan": "Талдыкорган",
+		"oral": "Уральск",
+		"karaganda": "Караганда",
+		"kostanay": "Костанай",
+		"kyzylorda": "Кызылорда",
+		"aktau": "Актау",
+		"pavlodar": "Павлодар",
+		"petropavl": "Петропавловск",
+		"turkistan": "Туркестан",
+		"zhezkazgan": "Жезказган"
+	}
 }

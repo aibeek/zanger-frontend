@@ -10,10 +10,16 @@ import { useTranslations } from 'next-intl'
 
 import { Button, Input } from '@/shared/ui-kit'
 import { useEnterPhone, useLoginStore } from '@/features/auth'
-import { defaultClientTab, defaultLawyerTab, loginSchema, LoginSchemaType, Role } from '@/shared/lib'
+import {
+	defaultClientTab,
+	defaultLawyerTab,
+	loginSchema,
+	LoginSchemaType,
+	RoleVariant,
+	useBrowserLang,
+} from '@/shared/lib'
 
 import s from './Login.module.scss'
-import { useBrowserLang } from '@/shared/lib/hooks/useBrowserLang'
 
 export const Login = () => {
 	const router = useRouter()
@@ -36,7 +42,7 @@ export const Login = () => {
 	useEffect(() => {
 		if (!personalData) return
 
-		const role = personalData?.role_id.code as Role
+		const role = personalData?.role_id.code as RoleVariant
 
 		if (role === 'client') {
 			router.push(`/${locale}/${defaultClientTab}`)

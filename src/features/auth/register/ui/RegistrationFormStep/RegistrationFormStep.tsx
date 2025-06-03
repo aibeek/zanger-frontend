@@ -13,7 +13,9 @@ import {
 	formatPhoneNumber,
 	lawyerRegistrationSchema,
 	regionGroupBy,
+	RoleVariant,
 	sortRegions,
+	useRegionsUtils,
 } from '@/shared/lib'
 
 import s from './RegistrationFormStep.module.scss'
@@ -22,16 +24,19 @@ import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegion
 import { useTranslations } from 'next-intl'
 import { policyURL } from '@/shared/lib/consts/urls'
 
-export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer' }) => {
+export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const t = useTranslations()
 	const router = useRouter()
 	const { phone } = useEnterPhone()
-	const { regions, loadingRegions } = useRegions()
+	const { regions } = useRegions()
 	const { setField, sendData, resetState, loading } = useRegisterFormByVariant(variant)
 	const { lawyerTypes, fetchLawyerTypes, loadingLawyerTypes } = useLawyerTypesStore()
 
 	const clientVariant = variant === 'client'
 	const lawyerVariant = variant === 'lawyer'
+
+	const { optionsForSelect } = useRegionsUtils(regions, [], t)
+	const sortedRegions = sortRegions(regions)
 
 	const {
 		register,
@@ -74,8 +79,6 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 	useEffect(() => {
 		setField('phone', phone)
 	}, [phone, setField])
-
-	const sortedRegions = sortRegions(regions)
 
 	return (
 		<div className={s.wrapper}>
@@ -134,17 +137,15 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 							control={control}
 							rules={{ required: t('auth.registration.regionRequired') }}
 							render={({ field }) => {
-								const selectedRegion = sortedRegions.find((r) => r.id === field.value)
+								const selected = sortedRegions.find((r) => r.id === field.value) || null
 
 								return (
 									<SearchSelect
 										className="search-select"
-										data={sortedRegions}
-										loading={loadingRegions}
-										value={selectedRegion || null}
-										onChange={(item) => {
-											field.onChange(item ? item.id : null)
-										}}
+										data={optionsForSelect}
+										searchData={sortedRegions}
+										value={selected}
+										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}
 										groupBy={regionGroupBy}
@@ -169,9 +170,12 @@ export const RegistrationFormStep = ({ variant }: { variant: 'client' | 'lawyer'
 										className={`search-select`}
 										data={[...lawyerTypes].sort((a, b) => a.name.localeCompare(b.name))}
 										loading={loadingLawyerTypes}
-										value={lawyerTypes.find((item) => item.id === field.value)}
-										// @ts-expect-error fix it
-										onChange={(item) => field.onChange(item?.id)}
+										value={lawyerTypes.find((item) => item.id === field.value) || null}
+										onChange={(item) => {
+											// @ts-expect-error fix it
+											const id = item?.id ?? 0
+											field.onChange(id)
+										}}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}
 										placeholder={t('auth.registration.specializationPlaceholder')}

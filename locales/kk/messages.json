@@ -66,83 +66,83 @@
 		},
 
 		"personal_data": {
-			"title": "Личные данные",
-			"panelTitle": "Настройте личные данные",
-			"panelDescription": "Редактирование личных данных",
+			"title": "Жеке деректер",
+			"panelTitle": "Жеке деректерді орнатыңыз",
+			"panelDescription": "Жеке деректерді өңдеу",
 
-			"nameLabel": "ФИО",
-			"namePlaceholder": "Введите ФИО",
+			"nameLabel": "Аты-жөні",
+			"namePlaceholder": "Аты-жөніңізді енгізіңіз",
 
 			"phoneLabel": "Телефон",
-			"phonePlaceholder": "Введите номер телефона",
+			"phonePlaceholder": "Телефон нөміріңізді енгізіңіз",
 
 			"telegramLabel": "Telegram",
-			"telegramPlaceholder": "Введите Telegram",
+			"telegramPlaceholder": "Telegram аккаунтыңызды енгізіңіз",
 
 			"whatsappLabel": "WhatsApp",
-			"whatsappPlaceholder": "Введите WhatsApp",
+			"whatsappPlaceholder": "WhatsApp аккаунтыңызды енгізіңіз",
 
-			"iinLabel": "ИИН",
-			"iinPlaceholder": "Введите ИИН",
+			"iinLabel": "ЖСН",
+			"iinPlaceholder": "ЖСН енгізіңіз",
 
-			"cityLabel": "Город",
-			"regionPlaceholder": "Выберите населенный пункт",
-			"regionRequired": "Выберите населенный пункт",
-			"statusLabel": "Ваш статус",
-			"regionLabel": "Ваш регион",
+			"cityLabel": "Қала",
+			"regionPlaceholder": "Елді мекенді таңдаңыз",
+			"regionRequired": "Елді мекенді таңдаңыз",
+			"statusLabel": "Сіздің мәртебеңіз",
+			"regionLabel": "Сіздің аймағыңыз",
 
-			"specializationLabel": "Специализация",
-			"specializationPlaceholder": "Выберите специализацию",
-			"specializationRequired": "Выберите специализацию",
-			"save": "Сохранить",
-			"Required": "Обязательное поле"
+			"specializationLabel": "Мамандану",
+			"specializationPlaceholder": "Мамандануды таңдаңыз",
+			"specializationRequired": "Мамандануды таңдаңыз",
+			"save": "Сақтау",
+			"Required": "Міндетті өріс"
 		},
 
 		"consultation_price": {
-			"title": "Стоимость консультации",
-			"panelTitle": "Сообщите цену за консультацию для клиентов",
-			"panelDescription": "Контролируйте цены на консультации и добавьте стоимость"
+			"title": "Кеңес құны",
+			"panelTitle": "Клиенттер үшін кеңес бағасын көрсетіңіз",
+			"panelDescription": "Кеңес бағасын басқарыңыз және құнын қосыңыз"
 		},
 
 		"change_specialization": {
-			"title": "Ваша специализация",
-			"panelTitle": "Изменение профиля деятельности",
-			"panelDescription": "Выберите свою специальность, чтобы получить больше предложений о работе"
+			"title": "Сіздің мамандануыңыз",
+			"panelTitle": "Қызмет бағытын өзгерту",
+			"panelDescription": "Жұмыс ұсыныстарын көбірек алу үшін өз мамандығыңызды таңдаңыз"
 		},
 
 		"change_status": {
-			"title": "Ваш статус",
-			"panelTitle": "Смена вашего статуса",
-			"panelDescription": "Чтобы внести изменения, выберите ваш статус"
+			"title": "Сіздің мәртебеңіз",
+			"panelTitle": "Мәртебеңізді өзгерту",
+			"panelDescription": "Өзгерістер енгізу үшін мәртебеңізді таңдаңыз"
 		},
 
 		"servicing_cities": {
-			"title": "Обслуживаемая локация",
-			"panelTitle": "Настройте несколько населенных пунктов",
-			"panelDescription": "Выберите несколько населённых пунктов, в которых будут приниматься заявки.",
-			"regionLabel": "Населенный пункт",
-			"placeholder": "Выберите населенный пункт",
-			"save": "Сохранить",
-			"oblasts": "Области",
-			"cities": "Города",
-			"saving": "Сохранение..."
+			"title": "Қызмет көрсетілетін орындар",
+			"panelTitle": "Бірнеше елді мекендерді орнатыңыз",
+			"panelDescription": "Өтініштер қабылданатын бірнеше елді мекендерді таңдаңыз.",
+			"regionLabel": "Елді мекен",
+			"placeholder": "Елді мекенді таңдаңыз",
+			"save": "Сақтау",
+			"oblasts": "Облыстар",
+			"cities": "Қалалар",
+			"saving": "Сақталуда..."
 		},
 
 		"subscription": {
-			"title": "Ваша подписка"
+			"title": "Сіздің жазылымыңыз"
 		},
 
 		"documents": {
-			"title": "Документы",
-			"panelTitle": "Ваши документы",
-			"panelDescription": "Все файлы доступны для редактирования и добавления новых"
+			"title": "Құжаттар",
+			"panelTitle": "Сіздің құжаттарыңыз",
+			"panelDescription": "Барлық файлдарды өңдеуге және жаңаларын қосуға болады"
 		},
 
 		"support": {
-			"title": "Служба поддержки",
-			"panelTitle": "Обратиться в Службу поддержки",
-			"panelDescription": "Если у вас возникли вопросы, обратитесь в службу поддержки",
-			"text": "Написать на WhatsApp"
+			"title": "Қолдау қызметі",
+			"panelTitle": "Қолдау қызметіне жүгіну",
+			"panelDescription": "Сұрақтарыңыз болса, қолдау қызметіне хабарласыңыз",
+			"text": "WhatsApp арқылы жазу"
 		}
 	},
 
@@ -347,7 +347,9 @@
 		"region_or_city_required": "Өңірді немесе қаланы көрсетіңіз",
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
-		"only_digits": "Введите только цифры"
+		"only_digits": "Введите только цифры",
+
+		"status_required": "Выберите хотя бы один статус"
 	},
 
 	"errors": {
@@ -362,5 +364,28 @@
 	},
 
 	"Required": "Бұл өрісті толтырыңыз",
-	"published": "Жарияланды"
+	"published": "Жарияланды",
+
+	"regions": {
+		"astana": "Астана",
+		"almaty": "Алматы",
+		"shymkent": "Шымкент",
+		"semei": "Семей",
+		"kokshetau": "Көкшетау",
+		"akhtobe": "Ақтөбе",
+		"konaev": "Қонаев",
+		"atyrau": "Атырау",
+		"uskemen": "Өскемен",
+		"taraz": "Тараз",
+		"taldykorgan": "Талдықорған",
+		"oral": "Орал",
+		"karaganda": "Қарағанды",
+		"kostanay": "Қостанай",
+		"kyzylorda": "Қызылорда",
+		"aktau": "Ақтау",
+		"pavlodar": "Павлодар",
+		"petropavl": "Петропавл",
+		"turkistan": "Түркістан",
+		"zhezkazgan": "Жезқазған"
+	}
 }

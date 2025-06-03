@@ -11,12 +11,22 @@ import s from './LentaTab.module.scss'
 import { useLentaInfinite, useLentaStore } from '../../model'
 
 export const LentaTab = () => {
-	const { hasAccess, needsDocuments, needsSubscription } = useLentaAccessStatus()
+	const { hasAccess, needsDocuments, needsSubscription, hasModerationDocs } = useLentaAccessStatus()
 	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useLentaInfinite()
 	const { applyToRequest } = useLentaStore()
+
 	const onlyDocuments = needsDocuments && !needsSubscription
 	const onlySubscription = needsSubscription && !needsDocuments
 	const needsAll = needsDocuments && needsSubscription
+
+	if (hasModerationDocs) {
+		return (
+			<div className={s.needToAccess}>
+				<h3>Доступ к ленте ограничен</h3>
+				<p>Ваши документы находятся на модерации. Пожалуйста, дождитесь подтверждения.</p>
+			</div>
+		)
+	}
 
 	if (!hasAccess) {
 		return (
@@ -24,14 +34,14 @@ export const LentaTab = () => {
 				<h3>Доступ к ленте ограничен</h3>
 				{onlyDocuments && (
 					<AppLink
-						size={'md'}
+						size="md"
 						href="/dashboard/profile?tab=documents">
 						Загрузить документы
 					</AppLink>
 				)}
 				{onlySubscription && (
 					<AppLink
-						size={'md'}
+						size="md"
 						href="/subscription">
 						Оформить подписку
 					</AppLink>
@@ -40,12 +50,12 @@ export const LentaTab = () => {
 					<>
 						<p>Оформите подписку и загрузите документы</p>
 						<AppLink
-							size={'md'}
+							size="md"
 							href="/dashboard/profile?tab=documents">
 							Загрузить документы
 						</AppLink>
 						<AppLink
-							size={'md'}
+							size="md"
 							href="/subscription">
 							Оформить подписку
 						</AppLink>

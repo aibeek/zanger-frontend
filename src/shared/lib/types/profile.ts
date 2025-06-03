@@ -1,4 +1,4 @@
-import { Role } from '../consts'
+import { RoleVariant } from '../consts'
 import { Region } from './shared'
 
 type BaseProfile = {
@@ -9,10 +9,10 @@ type BaseProfile = {
 	language: string
 	onboarded: boolean
 	region: Region
-	role_id: Role
+	role_id: RoleVariant
 }
 
-type LawyerType = {
+type LawyerTypes = {
 	code: string
 	id: number
 	name: string
@@ -50,7 +50,7 @@ export type LawyerProfile = BaseProfile & {
 	lawyer: {
 		id: number
 		iin: string
-		lawyer_type: LawyerType
+		lawyer_types: LawyerTypes[]
 		consultation_price: number | null
 		has_access_to_orders: boolean
 		telegram: string | null

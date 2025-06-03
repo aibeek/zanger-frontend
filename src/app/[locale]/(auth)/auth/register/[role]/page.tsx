@@ -6,7 +6,7 @@ import { redirect, useParams } from 'next/navigation'
 import { RegistrationFormStep } from '@/features/auth/register'
 import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
 import { PhoneVerificationStep } from '@/widgets/PhoneVerificationStep'
-import { arrRoles, Role, useStepMarcher } from '@/shared/lib'
+import { arrRoles, RoleVariant, useStepMarcher } from '@/shared/lib'
 import { Loader } from '@/shared/ui-kit'
 
 const stepComponents = {
@@ -23,12 +23,12 @@ export default function RegisterPage() {
 	const step = getCurrentStep()
 
 	useEffect(() => {
-		if (!arrRoles.includes(role as Role)) {
+		if (!arrRoles.includes(role as RoleVariant)) {
 			redirect(`/`)
 		}
 
 		if (!isInitialized || role !== currentRoleFromStore) {
-			forceSetRole(role as Role)
+			forceSetRole(role as RoleVariant)
 		}
 	}, [role, isInitialized])
 

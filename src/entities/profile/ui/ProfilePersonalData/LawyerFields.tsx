@@ -8,26 +8,24 @@ import { useRegions } from '@/features/auth'
 import { useProfileStatuses } from '../../model'
 import s from './ProfilePersonalData.module.scss'
 import { useTranslations } from 'next-intl'
-import { regionGroupBy, sortRegions } from '@/shared/lib'
+import { regionGroupBy, useRegionsUtils } from '@/shared/lib'
+
+type DirtyFields = Partial<Record<string, boolean | Record<number, boolean>>>
 
 type Props = {
 	editableInputs: Record<string, boolean>
 	setEditableInputs: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
-	dirtyFields: Partial<Record<string, boolean>>
+	dirtyFields: DirtyFields
 	onSave: (field: any) => void
 	t: ReturnType<typeof useTranslations>
 }
 
 export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, onSave, t }: Props) => {
-	const {
-		control,
-		formState: { errors },
-	} = useFormContext()
+	const { control } = useFormContext()
+	const { regions } = useRegions()
+	const { statuses } = useProfileStatuses()
 
-	const { regions, loadingRegions } = useRegions()
-	const { statuses, loading: loadingStatuses } = useProfileStatuses()
-
-	const sortedRegions = sortRegions(regions)
+	const { optionsForSelect } = useRegionsUtils(regions, [], t)
 
 	return (
 		<>
@@ -38,28 +36,24 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 						name="region_id"
 						control={control}
 						render={({ field }) => {
-							const selectedRegion = sortedRegions.find((r) => r.id === field.value)
+							const selected = optionsForSelect.find((r) => r.id === field.value) || null
 
 							return (
 								<SearchSelect
-									disabled={!editableInputs.region_id}
 									className="search-select dashboard-select"
-									data={sortedRegions}
-									loading={loadingRegions}
-									value={selectedRegion || null}
-									onChange={(item) => {
-										field.onChange(item ? item.id : null)
-									}}
+									data={optionsForSelect}
+									value={selected}
+									onChange={(region) => field.onChange(region?.id)}
 									getId={(item) => item.id}
 									getLabel={(item) => item.name}
 									groupBy={regionGroupBy}
 									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
-									placeholder="Выберите населенный пункт"
+									placeholder={t('profile.personal_data.regionPlaceholder')}
+									disabled={!editableInputs.region_id}
 								/>
 							)
 						}}
 					/>
-
 					{editableInputs.region_id ? (
 						dirtyFields.region_id && (
 							<Button
@@ -92,7 +86,7 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 				<label className={s.label}>{t('profile.personal_data.statusLabel')}</label>
 				<div className={s.searchSelect}>
 					<Controller
-						name="lawyer_type_id"
+						name="lawyer_type_ids"
 						control={control}
 						render={({ field }) => {
 							const selectedStatuses = statuses.filter((s) =>
@@ -103,37 +97,37 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 								<SearchSelect
 									className="search-select dashboard-select"
 									data={statuses}
-									loading={loadingStatuses}
-									value={selectedStatuses.length > 0 ? selectedStatuses : undefined}
+									value={selectedStatuses}
 									onChange={(selected) => {
 										const ids = Array.isArray(selected) ? selected.map((s) => s.id) : []
 										field.onChange(ids)
 									}}
 									getId={(item) => item.id}
 									getLabel={(item) => item.name}
-									groupBy={(item) => item.name.charAt(0)}
-									renderGroupLabel={(groupName) => <span>{groupName}</span>}
 									placeholder="Выберите свой статус"
-									disabled={!editableInputs.lawyer_type_id}
+									disabled={!editableInputs.lawyer_type_ids}
 									multiple={true}
 								/>
 							)
 						}}
 					/>
-					{editableInputs.lawyer_type_id ? (
-						dirtyFields.lawyer_type_id && (
-							<Button
-								onClick={() => onSave('lawyer_type_id')}
-								type="button"
-								variant="clear"
-								size="sm"
-								className={s.saveBtn}>
-								{t('profile.personal_data.save')}
-							</Button>
-						)
+					{editableInputs.lawyer_type_ids && dirtyFields.lawyer_type_ids ? (
+						<Button
+							onClick={() => onSave('lawyer_type_ids')}
+							type="button"
+							variant="clear"
+							size="sm"
+							className={s.saveBtn}>
+							{t('profile.personal_data.save')}
+						</Button>
 					) : (
 						<Button
-							onClick={() => setEditableInputs((prev) => ({ ...prev, lawyer_type_id: true }))}
+							onClick={() =>
+								setEditableInputs((prev) => ({
+									...prev,
+									lawyer_type_ids: true,
+								}))
+							}
 							type="button"
 							variant="clear"
 							className={s.editBtn}>

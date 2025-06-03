@@ -93,18 +93,19 @@ export const ProfileConsultationPrice = () => {
 										as={IMaskInput}
 										inputRef={ref}
 										mask={Number}
-										scale={0}
-										thousandsSeparator=" "
-										radix="."
-										mapToRadix={[]}
-										unmask={true}
 										value={value}
 										onAccept={(val: string) => {
 											const parsed = val.replace(/\s/g, '')
 											onChange(parsed)
 										}}
 										onBlur={onBlur}
-										placeholder={String(personalData.lawyer?.consultation_price)}
+										placeholder={
+											personalData.lawyer?.consultation_price === null
+												? 'Не указана'
+												: Number(personalData.lawyer.consultation_price) === 0
+												? 'Бесплатно'
+												: String(personalData.lawyer.consultation_price)
+										}
 									/>
 								)}
 							/>

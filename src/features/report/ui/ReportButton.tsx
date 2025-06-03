@@ -3,10 +3,11 @@ import { Button, Modal } from '@/shared/ui-kit'
 import s from './ReportButton.module.scss'
 import { useReport } from '../model'
 import { Textarea } from '@headlessui/react'
+import { RoleVariant } from '@/shared/lib'
 
 interface ComplainButtonProps {
 	userId: number
-	role: 'client' | 'lawyer'
+	role: RoleVariant
 }
 
 export const ReportButton = ({ userId, role }: ComplainButtonProps) => {

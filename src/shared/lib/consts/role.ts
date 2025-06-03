@@ -4,11 +4,11 @@ import MainIcon from '@/app/assets/icons/user-tabs/main.svg'
 import ProfileIcon from '@/app/assets/icons/user-tabs/profile.svg'
 import ResponsesIcon from '@/app/assets/icons/user-tabs/responses-and-orders.svg'
 
-export type Role = 'client' | 'lawyer'
+export type RoleVariant = 'client' | 'lawyer'
 
-export const arrRoles: Role[] = ['client', 'lawyer']
+export const arrRoles: RoleVariant[] = ['client', 'lawyer']
 
-export const defaultTabByRole: Record<'client' | 'lawyer', string> = {
+export const defaultTabByRole: Record<RoleVariant, string> = {
 	client: 'main',
 	lawyer: 'lenta',
 }

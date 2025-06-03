@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 import HiIcon from '@/app/assets/icons/hi.png'
 import { useLoginStore } from '@/features/auth/login'
 import { DashboardTabs } from '@/widgets/DashboardTabs'
-import { allTabs, defaultTabByRole } from '@/shared/lib'
+import { allTabs, defaultTabByRole, RoleVariant } from '@/shared/lib'
 
 import s from './DashboardWrapper.module.scss'
 
@@ -25,7 +25,7 @@ export const DashboardWrapper = ({ children }: { children: React.ReactNode }) =>
 		return null
 	}
 
-	const role = personalData.role_id.code as 'client' | 'lawyer'
+	const role = personalData.role_id.code as RoleVariant
 	//  @ts-expect-error fix it
 	const tabs = allTabs.filter((tab) => !tab.onlyFor || tab.onlyFor === role)
 	const defaultTab = defaultTabByRole[role]

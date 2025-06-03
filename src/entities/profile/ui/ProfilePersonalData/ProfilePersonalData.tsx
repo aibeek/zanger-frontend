@@ -38,7 +38,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 
 	const isLawyer = role === 'lawyer'
-	const lawyerData = isLawyer ? personalData.lawyer : null
+	const lawyerData = isLawyer ? (personalData as LawyerProfile).lawyer : null
 
 	const methods = useForm<ProfilePersonalDataFormValues>({
 		resolver: zodResolver(profilePersonalDataSchema),
@@ -50,15 +50,13 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			whatsapp: lawyerData?.whatsapp ?? '',
 			iin: lawyerData?.iin ?? '',
 			region_id: personalData.region.id ?? null,
-			// @ts-expect-error fix it
-			lawyer_type_id: personalData?.lawyer?.lawyer_type ? [personalData.lawyer.lawyer_type.id] : [],
+			lawyer_type_ids: lawyerData?.lawyer_types?.map((type) => type.id) ?? [],
 		},
 	})
 
 	const {
 		register,
 		control,
-		handleSubmit,
 		watch,
 		setFocus,
 		formState: { errors, dirtyFields },
@@ -71,7 +69,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		whatsapp: false,
 		iin: false,
 		region_id: false,
-		lawyer_type_id: false,
+		lawyer_type_ids: false,
 	}))
 
 	useEffect(() => {
@@ -89,7 +87,9 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		try {
 			await updateProfilePersonalData({ [field]: value }, role)
 			setEditableInputs((prev) => ({ ...prev, [field]: false }))
-		} catch (e) {}
+		} catch (e) {
+			console.error('Ошибка при сохранении:', e)
+		}
 	}
 
 	const fields: FieldConfig[] = [
@@ -165,11 +165,12 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 													id={field}
 													type="tel"
 													placeholder={placeholder}
-													disabled={!editableInputs[field]}
+													disabled={!isEditing}
 													hasError={hasError}
 													// @ts-expect-error fix it
 													as={IMaskInput}
 													mask={mask}
+													// @ts-expect-error fix it
 													value={value}
 													onAccept={(val: string) => onChange(val)}
 													onBlur={onBlur}
@@ -183,7 +184,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											id={field}
 											type="text"
 											placeholder={placeholder}
-											disabled={!editableInputs[field]}
+											disabled={!isEditing}
 											{...register(field)}
 											className={`${s.input} ${hasError ? s.inputError : ''}`}
 										/>

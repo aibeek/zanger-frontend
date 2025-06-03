@@ -1,10 +1,7 @@
 import toast from 'react-hot-toast'
 import { create } from 'zustand'
 
-import { authApi, profileApi, sharedApi, Tag } from '@/shared/api'
-import { UserProfile } from '@/shared/lib/types'
-import { useLoginStore } from '@/features/auth'
-import { mutate } from 'swr'
+import { profileApi, sharedApi, Tag } from '@/shared/api'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface ChangeSpecializationState {

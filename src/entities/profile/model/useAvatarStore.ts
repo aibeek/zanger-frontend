@@ -1,9 +1,6 @@
 import { create } from 'zustand'
-import { profileApi, authApi } from '@/shared/api'
-import { useLoginStore } from '@/features/auth'
-import { UserProfile } from '@/shared/lib/types'
+import { profileApi } from '@/shared/api'
 import toast from 'react-hot-toast'
-import { mutate } from 'swr'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface UploadAvatarState {
