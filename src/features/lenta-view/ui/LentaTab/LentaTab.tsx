@@ -19,51 +19,51 @@ export const LentaTab = () => {
 	const onlySubscription = needsSubscription && !needsDocuments
 	const needsAll = needsDocuments && needsSubscription
 
-	if (hasModerationDocs) {
-		return (
-			<div className={s.needToAccess}>
-				<h3>Доступ к ленте ограничен</h3>
-				<p>Ваши документы находятся на модерации. Пожалуйста, дождитесь подтверждения.</p>
-			</div>
-		)
-	}
+	// if (hasModerationDocs) {
+	// 	return (
+	// 		<div className={s.needToAccess}>
+	// 			<h3>Доступ к ленте ограничен</h3>
+	// 			<p>Ваши документы находятся на модерации. Пожалуйста, дождитесь подтверждения.</p>
+	// 		</div>
+	// 	)
+	// }
 
-	if (!hasAccess) {
-		return (
-			<div className={s.needToAccess}>
-				<h3>Доступ к ленте ограничен</h3>
-				{onlyDocuments && (
-					<AppLink
-						size="md"
-						href="/dashboard/profile?tab=documents">
-						Загрузить документы
-					</AppLink>
-				)}
-				{onlySubscription && (
-					<AppLink
-						size="md"
-						href="/subscription">
-						Оформить подписку
-					</AppLink>
-				)}
-				{needsAll && (
-					<>
-						<p>Оформите подписку и загрузите документы</p>
-						<AppLink
-							size="md"
-							href="/dashboard/profile?tab=documents">
-							Загрузить документы
-						</AppLink>
-						<AppLink
-							size="md"
-							href="/subscription">
-							Оформить подписку
-						</AppLink>
-					</>
-				)}
-			</div>
-		)
-	}
+	// if (!hasAccess) {
+	// 	return (
+	// 		<div className={s.needToAccess}>
+	// 			<h3>Доступ к ленте ограничен</h3>
+	// 			{onlyDocuments && (
+	// 				<AppLink
+	// 					size="md"
+	// 					href="/dashboard/profile?tab=documents">
+	// 					Загрузить документы
+	// 				</AppLink>
+	// 			)}
+	// 			{onlySubscription && (
+	// 				<AppLink
+	// 					size="md"
+	// 					href="/subscription">
+	// 					Оформить подписку
+	// 				</AppLink>
+	// 			)}
+	// 			{needsAll && (
+	// 				<>
+	// 					<p>Оформите подписку и загрузите документы</p>
+	// 					<AppLink
+	// 						size="md"
+	// 						href="/dashboard/profile?tab=documents">
+	// 						Загрузить документы
+	// 					</AppLink>
+	// 					<AppLink
+	// 						size="md"
+	// 						href="/subscription">
+	// 						Оформить подписку
+	// 					</AppLink>
+	// 				</>
+	// 			)}
+	// 		</div>
+	// 	)
+	// }
 
 	if (size === 0) return <Loader />
 

@@ -19,13 +19,14 @@ import { useSearchParams } from 'next/navigation'
 const { Dragger } = Upload
 const { Option } = Select
 
-const FRONT_SIDE_OPTIONS = [
-	{ value: 0, label: 'Передняя часть документа' },
-	{ value: 1, label: 'Задняя часть документа' },
-]
-
 export const ProfileDocuments = () => {
 	const t = useTranslations()
+
+	const FRONT_SIDE_OPTIONS = [
+		{ value: 0, label: t('profile.documents.frontSide') },
+		{ value: 1, label: t('profile.documents.backSide') },
+	]
+
 	const {
 		selectedFiles,
 		selectedDocumentId,
@@ -135,7 +136,7 @@ export const ProfileDocuments = () => {
 							variant="primary"
 							size="md"
 							onClick={open}>
-							Загрузить документы
+							{t('profile.documents.uploadBtn')}
 						</Button>
 					)}
 
@@ -145,7 +146,7 @@ export const ProfileDocuments = () => {
 							documents={documents}
 						/>
 					) : (
-						<p className={s.noDocuments}>Нет загруженных документов</p>
+						<p className={s.noDocuments}>{t('profile.documents.noDocs')}</p>
 					)}
 				</div>
 			</ProfileTabWrapper>
@@ -154,14 +155,15 @@ export const ProfileDocuments = () => {
 				isOpen={isOpen}
 				onClose={close}
 				closeButton
-				title="Загрузить документ">
+				title={t('profile.documents.modalTitle')}>
 				<div className={s.upload}>
 					<div className={s.top}>
+						{/* тянуть с другого места и сделать проверку для удоса */}
 						<Select
 							value={selectedDocumentId ?? undefined}
 							onChange={handleSelectDocument}
 							style={{ width: 250, marginBottom: 16 }}
-							placeholder="Выберите тип документа">
+							placeholder={t('profile.documents.selectDocType')}>
 							{needDocsList.map((type) => (
 								<Option
 									key={type.id}
@@ -176,7 +178,7 @@ export const ProfileDocuments = () => {
 								value={frontSide ?? undefined}
 								onChange={setFrontSide}
 								style={{ width: 250, marginBottom: 16 }}
-								placeholder="Выберите сторону документа">
+								placeholder={t('profile.documents.selectSide')}>
 								{FRONT_SIDE_OPTIONS.map((option) => (
 									<Option
 										key={option.value}
@@ -203,7 +205,7 @@ export const ProfileDocuments = () => {
 									height={60}
 								/>
 							</p>
-							<p className={s.text}>Перетащите или выберите файл(ы)</p>
+							<p className={s.text}>{t('profile.documents.dragText')}</p>
 						</div>
 					</Dragger>
 
@@ -222,7 +224,7 @@ export const ProfileDocuments = () => {
 						style={{ marginTop: 20 }}
 						disabled={selectedFiles.length === 0 || frontSide === null || !selectedDocumentId}
 						onClick={() => handleUpload(mutate)}>
-						Загрузить документы
+						{t('profile.documents.uploadBtn')}
 					</Button>
 				</div>
 			</Modal>

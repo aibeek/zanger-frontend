@@ -1,5 +1,4 @@
 export * from './useUpdatePassword'
-export * from './useNotificationsStore'
 export * from './useDeleteAccountStore'
 export * from './useAvatarStore'
 export * from './useChangeSpecializationStore'

@@ -8,7 +8,6 @@ import burger from '@/app/assets/icons/burger.svg'
 import closeIcon from '@/app/assets/icons/close.svg'
 import LogoutIcon from '@/app/assets/icons/logout.svg'
 import avatar from '@/app/assets/icons/header-avatar.svg'
-import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
 import { Button, LangSwitcher, Modal, useModal } from '@/shared/ui-kit'
 import { formatPhoneNumber, scrollToSection, useAppContentData, useAuthStore, useSectionScroll } from '@/shared/lib'
 
@@ -16,6 +15,7 @@ import s from './Header.module.scss'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { AppLink } from '@/shared/ui-kit/AppLink'
+import { NotificationsDropdown } from '@/entities/notifications'
 
 export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant' }) => {
 	const router = useRouter()
@@ -194,19 +194,9 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 
 							{isAuthenticated && personalData && (
 								<>
-									<Button
-										// onClick={handleNotifications}
-										className={s.notifications}
-										size={'auto'}
-										variant={'clear'}>
-										<Image
-											style={{ borderRadius: '10px', objectFit: 'cover' }}
-											src={NotificationsIcon}
-											alt={t('notificationsAlt')}
-											width={24}
-											height={24}
-										/>
-									</Button>
+									<div className={s.notifications}>
+										<NotificationsDropdown />
+									</div>
 									<div className={s.user}>
 										<Link
 											style={{ cursor: 'pointer' }}

@@ -5,7 +5,6 @@ import { Switch } from '@headlessui/react'
 import bell from '@/app/assets/icons/bell.svg'
 
 import s from './ProfileNotifications.module.scss'
-import { useNotificationsStore } from '../../model'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useTranslations } from 'next-intl'
 
@@ -16,7 +15,6 @@ const NOTIFICATIONS = [
 ] as const
 
 export const ProfileNotifications = () => {
-	const store = useNotificationsStore()
 	const t = useTranslations('profile.notifications')
 
 	return (
@@ -32,12 +30,12 @@ export const ProfileNotifications = () => {
 						key={key}
 						className={s.row}>
 						<span className={s.label}>{t(label)}</span>
-						<Switch
+						{/* <Switch
 							checked={store[key]}
 							onChange={(value) => store.setField(key, value)}
 							className={`${s.switch} ${store[key] ? s.switchChecked : ''}`}>
 							<span className={`${s.thumb} ${store[key] ? s.thumbChecked : ''}`} />
-						</Switch>
+						</Switch> */}
 					</div>
 				))}
 			</div>

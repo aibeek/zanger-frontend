@@ -62,7 +62,16 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	updateNotifications: ({ generalNotifications, lawyerReplies, appUpdates }) => console.log('updateNotifications'),
+	getNotifications: () =>
+		httpClientWithAuth(`${API_URL}/notifications?get-all=true`, {
+			method: 'GET',
+		}),
+
+	setReadNotification: (data, id: number) =>
+		httpClientWithAuth(`${API_URL}/notifications/${id}/set-read`, {
+			method: 'PATCH',
+			body: JSON.stringify(data),
+		}),
 
 	deleteAccount: () =>
 		httpClientWithAuth(`${API_URL}/profile/delete`, {

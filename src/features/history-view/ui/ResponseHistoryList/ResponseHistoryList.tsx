@@ -6,11 +6,13 @@ import { DescriptionText } from '@/shared/ui-kit'
 import { ListLoader } from '@/shared/ui-kit/ListLoader'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { useInfiniteScroll } from '@/shared/lib/hooks/useInfiniteScroll'
+import { useTranslations } from 'next-intl'
 
 import s from './ResponseHistoryList.module.scss'
 
 export const ResponseHistoryList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const loadMoreRef = useRef(null)
+	const t = useTranslations('history')
 
 	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
 
@@ -29,7 +31,7 @@ export const ResponseHistoryList = ({ items, loadMore, isLoadingMore, isReaching
 								<DescriptionText>{item.order.description}</DescriptionText>
 							</div>
 							<div className={s.bottom}>
-								<p>Статус:</p>
+								<p>{t('statusLabel')}:</p>
 								<span className={s.status}>{item.status}</span>
 							</div>
 						</article>

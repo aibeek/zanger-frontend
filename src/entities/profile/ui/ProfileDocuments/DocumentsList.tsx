@@ -12,8 +12,9 @@ type Props = {
 	documents: LawyerDocument[]
 	mutate: () => void
 }
+
 export const DocumentsList = ({ documents, mutate }: Props) => {
-	const t = useTranslations()
+	const t = useTranslations('profile.documents')
 	const { deleteDocumentById } = useLawyerDocumentsStore()
 
 	const handleDelete = async (id: number, mutate: () => void) => {
@@ -59,7 +60,7 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 								</div>
 
 								<p className={s.docStatus}>
-									Статус: <span className={s[doc.status?.type || '']}>{doc.status?.title || 'Статус отсутствует'}</span>
+									{t('status')}: <span className={s[doc.status?.type || '']}>{doc.status?.title || t('noStatus')}</span>
 								</p>
 							</div>
 						</div>

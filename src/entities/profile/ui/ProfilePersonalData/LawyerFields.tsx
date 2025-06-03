@@ -104,7 +104,7 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, dirtyFields, o
 									}}
 									getId={(item) => item.id}
 									getLabel={(item) => item.name}
-									placeholder="Выберите свой статус"
+									placeholder={t('profile.personal_data.chooseStatus')}
 									disabled={!editableInputs.lawyer_type_ids}
 									multiple={true}
 								/>

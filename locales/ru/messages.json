@@ -95,7 +95,8 @@
 			"specializationPlaceholder": "Выберите специализацию",
 			"specializationRequired": "Выберите специализацию",
 			"save": "Сохранить",
-			"Required": "Обязательное поле"
+			"Required": "Обязательное поле",
+			"chooseStatus": "statusPlaceholder"
 		},
 
 		"consultation_price": {
@@ -135,7 +136,20 @@
 		"documents": {
 			"title": "Документы",
 			"panelTitle": "Ваши документы",
-			"panelDescription": "Все файлы доступны для редактирования и добавления новых"
+			"panelDescription": "Все файлы доступны для редактирования и добавления новых",
+			"status": "Статус",
+			"noStatus": "Статус отсутствует",
+			"uploadBtn": "Загрузить документы",
+			"modalTitle": "Загрузить документ",
+			"selectDocType": "Выберите тип документа",
+			"selectSide": "Выберите сторону документа",
+			"dragText": "Перетащите или выберите файл(ы)",
+			"frontSide": "Передняя часть документа",
+			"backSide": "Задняя часть документа",
+			"noDocs": "Нет загруженных документов",
+			"unsupportedFormat": "Неподдерживаемый формат файла",
+			"selectDocFirst": "Сначала выберите тип документа",
+			"selectSideFirst": "Выберите сторону документа"
 		},
 
 		"support": {
@@ -353,7 +367,10 @@
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
 		"only_digits": "Введите только цифры",
-		"status_required": "Выберите хотя бы один статус"
+		"status_required": "Выберите хотя бы один статус",
+		"specialization_required_": "Выберите хотя бы одну специализацию",
+		"status_required_": "Выберите свой статус",
+		"location_required_": "Выберите хотя бы одну локацию"
 	},
 
 	"errors": {
@@ -390,5 +407,21 @@
 		"petropavl": "Петропавловск",
 		"turkistan": "Туркестан",
 		"zhezkazgan": "Жезказган"
+	},
+
+	"lenta": {
+		"respond": "Откликнуться"
+	},
+
+	"report": {
+		"report": "Пожаловаться",
+		"alreadyReported": "Жалоба отправлена",
+		"modalTitle": "Оставить жалобу",
+		"placeholder": "Опишите причину жалобы",
+		"submit": "Отправить жалобу"
+	},
+
+	"history": {
+		"statusLabel": "Статус"
 	}
 }

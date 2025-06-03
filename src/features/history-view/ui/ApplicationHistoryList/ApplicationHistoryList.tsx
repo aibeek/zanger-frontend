@@ -8,9 +8,11 @@ import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { useInfiniteScroll } from '@/shared/lib/hooks/useInfiniteScroll'
 
 import s from './ApplicationHistoryList.module.scss'
+import { useTranslations } from 'next-intl'
 
 export const ApplicationHistoryList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const loadMoreRef = useRef(null)
+	const t = useTranslations('history')
 
 	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
 
@@ -29,7 +31,7 @@ export const ApplicationHistoryList = ({ items, loadMore, isLoadingMore, isReach
 								<DescriptionText>{item.description}</DescriptionText>
 							</div>
 							<div className={s.bottom}>
-								<p>Статус:</p>
+								<p>{t('statusLabel')}:</p>
 								<span className={s.status}>{item.status}</span>
 							</div>
 						</article>

@@ -177,25 +177,25 @@ export const profileConsultationPriceSchema = z
 export const specializationSchema = z.object({
 	specializations: z
 		.array(z.number(), {
-			required_error: 'Выберите хотя бы одну специализацию',
+			required_error: 'validation.specialization_required_',
 		})
-		.min(1, 'Выберите хотя бы одну специализацию'),
+		.min(1, { message: 'validation.specialization_required_' }),
 })
 
 export const statusesSchema = z.object({
 	statuses: z
 		.array(z.number(), {
-			required_error: 'Выберите статус',
+			required_error: 'validation.status_required_',
 		})
-		.min(1, 'Выберите свой статус'),
+		.min(1, { message: 'validation.status_required_' }),
 })
 
 export const servicingCitiesSchema = z.object({
 	region_ids: z
 		.array(z.number(), {
-			required_error: 'Выберите хотя бы одну локацию',
+			required_error: 'validation.location_required_',
 		})
-		.min(1, 'Выберите хотя бы одну локацию'),
+		.min(1, { message: 'validation.location_required_' }),
 })
 
 export type ServicingCitiesForm = z.infer<typeof servicingCitiesSchema>

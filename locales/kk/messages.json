@@ -95,7 +95,9 @@
 			"specializationPlaceholder": "Мамандануды таңдаңыз",
 			"specializationRequired": "Мамандануды таңдаңыз",
 			"save": "Сақтау",
-			"Required": "Міндетті өріс"
+			"Required": "Міндетті өріс",
+
+			"chooseStatus": "Өз мәртебеңізді таңдаңыз"
 		},
 
 		"consultation_price": {
@@ -135,7 +137,20 @@
 		"documents": {
 			"title": "Құжаттар",
 			"panelTitle": "Сіздің құжаттарыңыз",
-			"panelDescription": "Барлық файлдарды өңдеуге және жаңаларын қосуға болады"
+			"panelDescription": "Барлық файлдарды өңдеуге және жаңаларын қосуға болады",
+			"status": "Мәртебе",
+			"noStatus": "Мәртебе жоқ",
+			"uploadBtn": "Құжаттарды жүктеу",
+			"modalTitle": "Құжатты жүктеу",
+			"selectDocType": "Құжат түрін таңдаңыз",
+			"selectSide": "Құжаттың жағын таңдаңыз",
+			"dragText": "Файл(дарды) сүйреңіз немесе таңдаңыз",
+			"frontSide": "Құжаттың алдыңғы жағы",
+			"backSide": "Құжаттың артқы жағы",
+			"noDocs": "Жүктелген құжаттар жоқ",
+			"unsupportedFormat": "Қолдау көрсетілмейтін файл пішімі",
+			"selectDocFirst": "Алдымен құжат түрін таңдаңыз",
+			"selectSideFirst": "Құжаттың жағын таңдаңыз"
 		},
 
 		"support": {
@@ -348,8 +363,10 @@
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
 		"only_digits": "Введите только цифры",
-
-		"status_required": "Выберите хотя бы один статус"
+		"status_required": "Выберите хотя бы один статус",
+		"specialization_required_": "Кем дегенде бір мамандықты таңдаңыз",
+		"status_required_": "Өз мәртебеңізді таңдаңыз",
+		"location_required_": "Кем дегенде бір орынды таңдаңыз"
 	},
 
 	"errors": {
@@ -387,5 +404,21 @@
 		"petropavl": "Петропавл",
 		"turkistan": "Түркістан",
 		"zhezkazgan": "Жезқазған"
+	},
+
+	"lenta": {
+		"respond": "Жауап беру"
+	},
+
+	"report": {
+		"report": "Шағымдану",
+		"alreadyReported": "Шағым жіберілді",
+		"modalTitle": "Шағым қалдыру",
+		"placeholder": "Шағым себебін сипаттаңыз",
+		"submit": "Шағым жіберу"
+	},
+
+	"history": {
+		"statusLabel": "Күйі"
 	}
 }

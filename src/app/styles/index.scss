@@ -4,7 +4,6 @@
 	position: absolute;
 	inset: 0;
 }
-
 .ant-select-selection-search-input {
 	min-width: 200px !important;
 }
@@ -112,4 +111,10 @@ body {
 	.ant-select-selection-placeholder {
 		color: $primary-color !important;
 	}
+}
+
+.ant-list-items {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
 }

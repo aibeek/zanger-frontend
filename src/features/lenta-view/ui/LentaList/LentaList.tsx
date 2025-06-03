@@ -8,10 +8,11 @@ import { Button, DescriptionText, ListLoader, UserBox } from '@/shared/ui-kit'
 
 import s from './LentaList.module.scss'
 import { ReportButton } from '@/features/report/ui/ReportButton'
+import { useTranslations } from 'next-intl'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
 	const loadMoreRef = useRef(null)
-
+	const t = useTranslations('lenta')
 	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
 
 	return (
@@ -48,7 +49,7 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 											variant="primary"
 											size="sm"
 											onClick={() => applyToRequest({ order_id: item.id })}>
-											Откликнуться
+											{t('respond')}
 										</Button>
 
 										<ReportButton
