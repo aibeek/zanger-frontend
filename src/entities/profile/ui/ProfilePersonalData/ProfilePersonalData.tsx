@@ -1,22 +1,23 @@
 'use client'
 
 import { IMaskInput } from 'react-imask'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { PencilIcon } from '@heroicons/react/20/solid'
 
-import { useLoginStore } from '@/features/auth'
+import { useRegions } from '@/features/auth'
 import { Button, Input } from '@/shared/ui-kit'
+import { SearchSelect, useLoginStore } from '@/features/auth'
 import { LawyerProfile, UserProfile } from '@/shared/lib/types'
 import personalDataIcon from '@/app/assets/icons/personal-data.svg'
-import { ProfilePersonalDataFormValues, profilePersonalDataSchema } from '@/shared/lib'
+import { regionGroupBy, useRegionsUtils, ProfilePersonalDataFormValues, profilePersonalDataSchema } from '@/shared/lib'
 
 import s from './ProfilePersonalData.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
-import { useEditPersonalDataStore } from '../../model/useEditPersonalData'
 import { LawyerFields } from './LawyerFields'
+import { useEditPersonalDataStore } from '../../model/useEditPersonalData'
 
 type FieldKey = keyof ProfilePersonalDataFormValues
 
@@ -39,6 +40,8 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 
 	const isLawyer = role === 'lawyer'
 	const lawyerData = isLawyer ? (personalData as LawyerProfile).lawyer : null
+	const { regions } = useRegions()
+	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 
 	const methods = useForm<ProfilePersonalDataFormValues>({
 		resolver: zodResolver(profilePersonalDataSchema),
@@ -81,7 +84,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 	}, [editableInputs, setFocus])
 
 	const onSave = async (field: keyof ProfilePersonalDataFormValues) => {
-		let value = watch(field)
+		let value = field === 'name' ? methods.getValues('name') : watch(field)
 		if (value === 'Не указан') value = null
 
 		try {
@@ -105,6 +108,12 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			placeholder: t('profile.personal_data.phonePlaceholder'),
 			isMasked: true,
 			mask: phoneMask,
+		},
+		{
+			field: 'region_id',
+			label: t('profile.personal_data.regionLabel'),
+			placeholder: t('profile.personal_data.regionPlaceholder'),
+			isMasked: false,
 		},
 		...(isLawyer
 			? [
@@ -143,6 +152,73 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 					{fields.map(({ field, label, placeholder, mask, isMasked }) => {
 						const isEditing = editableInputs[field]
 						const hasError = !!errors[field]
+
+						if (field === 'region_id') {
+							return (
+								<div
+									key={field}
+									className={s.inputWrapper}>
+									<div className={s.inputHeader}>
+										<label
+											htmlFor={field}
+											className={s.label}>
+											{label}
+										</label>
+									</div>
+									<div className={s.inputBox}>
+										<Controller
+											name="region_id"
+											control={control}
+											render={({ field }) => {
+												const selected = allOptions.find((r) => String(r.id) === String(field.value)) || null
+
+												return (
+													<SearchSelect
+														className="search-select dashboard-select custom-select"
+														data={optionsForSelect}
+														value={selected}
+														onChange={(region) => field.onChange(region?.id)}
+														getId={(item) => item.id}
+														getLabel={(item) => item.name}
+														groupBy={regionGroupBy}
+														renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+														placeholder={placeholder}
+														disabled={!editableInputs.region_id}
+														searchData={allOptions}
+													/>
+												)
+											}}
+										/>
+										{editableInputs.region_id ? (
+											dirtyFields.region_id && (
+												<Button
+													onClick={() => onSave('region_id')}
+													type="button"
+													variant="clear"
+													size="sm"
+													className={s.saveBtn}>
+													{t('profile.personal_data.save')}
+												</Button>
+											)
+										) : (
+											<Button
+												onClick={() => setEditableInputs((prev) => ({ ...prev, region_id: true }))}
+												type="button"
+												variant="clear"
+												className={s.editBtn}>
+												<PencilIcon
+													className={s.editIcon}
+													width={16}
+													height={16}
+													color="rgba(156,155,153,1)"
+												/>
+											</Button>
+										)}
+										{errors.region_id && <p className={s.error}>{t(errors.region_id.message || '')}</p>}
+									</div>
+								</div>
+							)
+						}
 
 						return (
 							<div
@@ -216,7 +292,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 												className={s.editIcon}
 												width={16}
 												height={16}
-												color={'rgba(156, 155, 153, 1)'}
+												color="rgba(156, 155, 153, 1)"
 											/>
 										</Button>
 									)}
@@ -230,7 +306,6 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 						<LawyerFields
 							editableInputs={editableInputs}
 							setEditableInputs={setEditableInputs}
-							dirtyFields={dirtyFields}
 							onSave={onSave}
 							t={t}
 						/>

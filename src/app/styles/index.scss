@@ -118,3 +118,11 @@ body {
 	flex-direction: column;
 	gap: 5px;
 }
+
+.custom-select {
+	border: 1px solid rgb(204, 229, 255);
+	border-radius: 10px;
+	.ant-select-arrow {
+		display: none;
+	}
+}

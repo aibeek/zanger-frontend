@@ -96,7 +96,7 @@
 			"specializationRequired": "Выберите специализацию",
 			"save": "Сохранить",
 			"Required": "Обязательное поле",
-			"chooseStatus": "statusPlaceholder"
+			"chooseStatus": "Выберите ваш статус"
 		},
 
 		"consultation_price": {

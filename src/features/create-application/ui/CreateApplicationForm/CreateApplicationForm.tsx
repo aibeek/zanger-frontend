@@ -17,7 +17,7 @@ export const CreateApplicationForm = () => {
 	const { regions } = useRegions()
 	const { submit, success, resetSuccess } = useCreateApplicationStore()
 	const t = useTranslations()
-	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [], t)
+	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 
 	const {
 		handleSubmit,
@@ -83,7 +83,7 @@ export const CreateApplicationForm = () => {
 										className="search-select dashboard-select"
 										data={optionsForSelect}
 										searchData={allOptions}
-										value={optionsForSelect.find((r) => r.id === field.value) || null}
+										value={allOptions.find((r) => r.id === field.value) || null}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => item.name}

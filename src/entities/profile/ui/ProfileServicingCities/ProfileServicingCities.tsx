@@ -21,7 +21,7 @@ export const ProfileServicingCities = () => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const { servicingCities, isLoaded, load, updateServicingRegions, isSubmitting } = useServicingRegions()
 
-	const { allOptions, optionsForSelect } = useRegionsUtils(regions, servicingCities, t)
+	const { allOptions, optionsForSelect } = useRegionsUtils(regions, servicingCities)
 
 	const {
 		control,
@@ -70,6 +70,7 @@ export const ProfileServicingCities = () => {
 							return (
 								<SearchSelect
 									className="search-select"
+									data={optionsForSelect}
 									value={selected}
 									onChange={(selectedItems) => {
 										const ids = Array.isArray(selectedItems) ? selectedItems.map((item) => item.id) : []
@@ -81,7 +82,6 @@ export const ProfileServicingCities = () => {
 									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 									multiple
 									placeholder={t('profile.servicing_cities.placeholder')}
-									data={optionsForSelect}
 									searchData={allOptions}
 								/>
 							)

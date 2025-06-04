@@ -26,8 +26,7 @@ interface GroupedSelectProps<T> {
 export function SearchSelect<T>({
 	data,
 	searchData,
-	searchFn = (searchTerm, item) => getLabel(item).toLowerCase().includes(searchTerm.toLowerCase()),
-
+	searchFn = (searchTerm, item) => getLabel(item)?.toLowerCase().includes(searchTerm.toLowerCase()),
 	value,
 	onChange,
 	getId,
@@ -76,27 +75,34 @@ export function SearchSelect<T>({
 		ungrouped.push(...sortedData)
 	}
 
-	const handleChange = (ids: string[] | string) => {
+	const handleChange = (val: any) => {
 		if (multiple) {
-			if (!Array.isArray(ids)) return onChange?.(null)
-			const selected = (searchData || data).filter((item) => ids.includes(getId(item).toString()))
+			if (!Array.isArray(val)) return onChange?.(null)
+			const selected = (searchData || data).filter((item) => val.includes(getId(item).toString()))
 			onChange?.(selected.length ? selected : null)
 		} else {
-			if (typeof ids !== 'string') return onChange?.(null)
-			const selected = (searchData || data).find((item) => getId(item).toString() === ids)
+			if (typeof val !== 'object' || val === null) return onChange?.(null)
+			const id = val.value
+			const selected = (searchData || data).find((item) => getId(item).toString() === id)
 			onChange?.(selected ?? null)
 		}
 	}
 
 	const currentValue = multiple
 		? Array.isArray(value)
-			? value.map((v) => getId(v)?.toString()).filter(Boolean)
-			: undefined
+			? value.map((v) => ({
+					value: getId(v)?.toString(),
+					label: getLabel(v),
+			  }))
+			: []
 		: value
-		? // @ts-expect-error fix it
-		  getId(value)?.toString()
+		? {
+				// @ts-expect-error fix it
+				value: getId(value)?.toString(),
+				// @ts-expect-error fix it
+				label: getLabel(value),
+		  }
 		: undefined
-
 	return (
 		<Select
 			showSearch
@@ -110,7 +116,8 @@ export function SearchSelect<T>({
 			value={currentValue}
 			optionFilterProp="label"
 			optionLabelProp="label"
-			className={className}>
+			className={className}
+			labelInValue={!multiple}>
 			{ungrouped.map((item) => (
 				<Option
 					key={getId(item)}

@@ -35,7 +35,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const clientVariant = variant === 'client'
 	const lawyerVariant = variant === 'lawyer'
 
-	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [], t)
+	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 
 	const {
 		register,
