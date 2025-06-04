@@ -21,7 +21,7 @@ export const useCreateApplicationStore = create<CreateApplicationState>((set) =>
 		try {
 			await clientApi.createApplication(data)
 
-			toast.success('Ваша заявка отправлена модератору на проверку', {
+			toast.success('Заявка успешно создана', {
 				position: 'top-right',
 			})
 
@@ -31,7 +31,7 @@ export const useCreateApplicationStore = create<CreateApplicationState>((set) =>
 
 			setTimeout(() => set({ success: false }), 5000)
 		} catch (error) {
-			toast.error('Произошла ошибка при отправке заявки', {
+			toast.error('Произошла ошибка при создании заявки', {
 				position: 'top-right',
 			})
 		}

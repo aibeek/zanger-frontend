@@ -112,7 +112,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 										{/* @ts-expect-error fix it */}
 										{detailedResponse?.consultation_price === '0.00'
 											? 'Бесплатно'
-											: detailedResponse?.consultation_price + ' ₸' || 'не указано'}
+											: Number(detailedResponse?.consultation_price) + ' ₸' || 'не указано'}
 									</span>
 								</li>
 								<li className={s.tag}>

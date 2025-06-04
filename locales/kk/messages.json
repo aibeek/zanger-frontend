@@ -420,5 +420,23 @@
 
 	"history": {
 		"statusLabel": "Күйі"
+	},
+
+	"myApplications": {
+		"modal": {
+			"title": "Өтініштен бас тарту себебі"
+		},
+		"customReason": {
+			"placeholder": "Өтініштен бас тарту себебін енгізіңіз",
+			"confirm": "Растау",
+			"canceling": "Бас тарту..."
+		},
+		"cancelReasons": {
+			"resolve": "Мәселе шешілді",
+			"non_actual": "Қажет емес болды",
+			"didnt_help": "Маған көмектеспеді",
+			"other": "Өз себебімді көрсету"
+		},
+		"cancelButton": "Өтініштен бас тарту"
 	}
 }

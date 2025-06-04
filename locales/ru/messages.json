@@ -423,5 +423,23 @@
 
 	"history": {
 		"statusLabel": "Статус"
+	},
+
+	"myApplications": {
+		"modal": {
+			"title": "Причина отзыва заявки"
+		},
+		"customReason": {
+			"placeholder": "Введите причину отзыва заявки",
+			"confirm": "Подтвердить",
+			"canceling": "Отмена..."
+		},
+		"cancelReasons": {
+			"resolve": "Проблема решена",
+			"non_actual": "Больше не актуально",
+			"didnt_help": "Мне не помогли",
+			"other": "Указать свою причину"
+		},
+		"cancelButton": "Отменить заявку"
 	}
 }

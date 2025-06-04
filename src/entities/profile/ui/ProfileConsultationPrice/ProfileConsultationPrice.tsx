@@ -99,12 +99,13 @@ export const ProfileConsultationPrice = () => {
 											onChange(parsed)
 										}}
 										onBlur={onBlur}
+										// @ts-expect-error fix it
 										placeholder={
 											personalData.lawyer?.consultation_price === null
 												? 'Не указана'
 												: Number(personalData.lawyer.consultation_price) === 0
 												? 'Бесплатно'
-												: String(personalData.lawyer.consultation_price)
+												: Number(personalData.lawyer.consultation_price)
 										}
 									/>
 								)}
