@@ -171,6 +171,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											control={control}
 											render={({ field }) => {
 												const selected = allOptions.find((r) => String(r.id) === String(field.value)) || null
+												console.log(allOptions)
 
 												return (
 													<SearchSelect
@@ -179,7 +180,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 														value={selected}
 														onChange={(region) => field.onChange(region?.id)}
 														getId={(item) => item.id}
-														getLabel={(item) => item.name}
+														getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
 														groupBy={regionGroupBy}
 														renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 														placeholder={placeholder}

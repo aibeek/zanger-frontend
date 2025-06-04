@@ -77,7 +77,7 @@ export const ProfileServicingCities = () => {
 										field.onChange(ids)
 									}}
 									getId={(item) => item.id}
-									getLabel={(item) => item.name}
+									getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
 									groupBy={regionGroupBy}
 									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 									multiple
