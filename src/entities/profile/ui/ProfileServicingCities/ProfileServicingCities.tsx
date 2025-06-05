@@ -13,7 +13,7 @@ import { SearchSelect, useRegions } from '@/features/auth'
 import s from './ProfileServicingCities.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useServicingRegions } from '../../model/useServicingRegions'
-import { regionGroupBy, ServicingCitiesForm, servicingCitiesSchema, useRegionsUtils } from '@/shared/lib'
+import { ServicingCitiesForm, servicingCitiesSchema, useRegionsUtils } from '@/shared/lib'
 
 export const ProfileServicingCities = () => {
 	const t = useTranslations()
@@ -78,7 +78,6 @@ export const ProfileServicingCities = () => {
 									}}
 									getId={(item) => item.id}
 									getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-									groupBy={regionGroupBy}
 									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 									multiple
 									placeholder={t('profile.servicing_cities.placeholder')}

@@ -12,9 +12,7 @@ import {
 	clientRegistrationSchema,
 	formatPhoneNumber,
 	lawyerRegistrationSchema,
-	regionGroupBy,
 	RoleVariant,
-	sortRegions,
 	useRegionsUtils,
 } from '@/shared/lib'
 
@@ -141,11 +139,11 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 										className="search-select"
 										data={optionsForSelect}
 										searchData={allOptions}
+										// @ts-expect-error fix it
 										value={optionsForSelect.find((r) => r.id === field.value) || null}
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-										groupBy={regionGroupBy}
 										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 										placeholder={t('auth.registration.regionPlaceholder')}
 									/>

@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '@/shared/ui-kit'
-import { createApplicationSchema, regionGroupBy, sortRegions, useRegionsUtils } from '@/shared/lib'
+import { createApplicationSchema, useRegionsUtils } from '@/shared/lib'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useCreateApplicationStore, useTags } from '@/features/create-application'
 
@@ -87,7 +87,6 @@ export const CreateApplicationForm = () => {
 										onChange={(region) => field.onChange(region?.id)}
 										getId={(item) => item.id}
 										getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-										groupBy={regionGroupBy}
 										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 										placeholder="Выберите населенный пункт"
 									/>

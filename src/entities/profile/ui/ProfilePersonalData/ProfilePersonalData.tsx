@@ -12,7 +12,7 @@ import { Button, Input } from '@/shared/ui-kit'
 import { SearchSelect, useLoginStore } from '@/features/auth'
 import { LawyerProfile, UserProfile } from '@/shared/lib/types'
 import personalDataIcon from '@/app/assets/icons/personal-data.svg'
-import { regionGroupBy, useRegionsUtils, ProfilePersonalDataFormValues, profilePersonalDataSchema } from '@/shared/lib'
+import { useRegionsUtils, ProfilePersonalDataFormValues, profilePersonalDataSchema } from '@/shared/lib'
 
 import s from './ProfilePersonalData.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
@@ -181,7 +181,6 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 														onChange={(region) => field.onChange(region?.id)}
 														getId={(item) => item.id}
 														getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-														groupBy={regionGroupBy}
 														renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 														placeholder={placeholder}
 														disabled={!editableInputs.region_id}
