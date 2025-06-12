@@ -191,7 +191,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 						</div>
 						<div className={s.right}>
 							<LangSwitcher hide={true} />
-
+							
 							{isAuthenticated && personalData && (
 								<>
 									<div className={s.notifications}>

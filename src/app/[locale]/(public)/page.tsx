@@ -11,6 +11,7 @@ export default function Home() {
 
 	return (
 		<div className={s.page}>
+	
 			<MainSection />
 			<CardsSection
 				title={t('cardsSection.clientsTitle')}

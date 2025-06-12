@@ -9,6 +9,7 @@ import MainBgMobile from '@/app/assets/images/main-bg-mobile.webp'
 
 import s from './MainSection.module.scss'
 import { useMediaQuery } from '@/shared/lib'
+import { PhoneIcon } from '@heroicons/react/20/solid'
 
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
@@ -27,7 +28,15 @@ export const MainSection = () => {
 							/>
 							<p className="lending-descr">{t('description')}</p>
 						</div>
-
+						<div className={s.phoneNumber}>
+				<div className={s.top}>
+					<PhoneIcon color={'rgba(2, 125, 255, 1)'} width={16} hanging={16} />
+					<span>1515</span>
+				</div>
+				<div className={s.bottom}>
+					<p>с номеров всех операторов</p>
+				</div>
+			</div>
 						<div className={s.bg}>
 							{isMobile ? (
 								<Image

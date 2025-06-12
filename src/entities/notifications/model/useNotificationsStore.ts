@@ -2,17 +2,20 @@ import { sharedApi } from '@/shared/api'
 import useSWR from 'swr'
 import { create } from 'zustand'
 
-type Notification = {
+export interface NotificationItem {
 	id: number
 	title: string
 	is_read: boolean
 	created_at: string
-	// добавь другие поля при необходимости
-}
+	image?: string
+	hasButton: boolean
+	buttonText: string
+	buttonLink: string
 
+}
 type NotificationsStore = {
-	notifications: Notification[] | any
-	setNotifications: (data: Notification[]) => void
+	notifications: NotificationItem[] 
+	setNotifications: (data: NotificationItem[]) => void
 	markAsRead: (id: number) => void
 	clearAll: () => void
 }
@@ -20,10 +23,15 @@ type NotificationsStore = {
 export const useNotificationsStore = create<NotificationsStore>((set) => ({
 	notifications: [],
 	setNotifications: (data) => set({ notifications: data }),
-	markAsRead: (id) =>
+	markAsRead: (id: number) => {
 		set((state) => ({
-			notifications: state.notifications.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
-		})),
+			notifications: state.notifications.map((n) =>
+				n.id === id ? { ...n, is_read: true } : n
+			),
+		}))
+		sharedApi.setReadNotification({} ,id).catch(() => {
+		})
+	},	
 	clearAll: () => set({ notifications: [] }),
 }))
 
