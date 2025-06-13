@@ -114,3 +114,11 @@
 .chevron {
 	transition: transform 0.3s ease;
 }
+
+.answerList {
+	list-style: inside !important;
+
+	li {
+		list-style: inside !important;
+	}
+}

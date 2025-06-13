@@ -42,6 +42,9 @@ export type FaqCategory = {
 export const useAppContentData = () => {
 	const t = useTranslations('lending')
 
+	const client = t.raw('client') as { name: string; faq: { question: string; answer: string }[] }
+	const lawyer = t.raw('lawyer') as { name: string; faq: { question: string; answer: string }[] }
+
 	const clientsValueCards = [
 		{
 			imgUrl: bank,
@@ -160,20 +163,8 @@ export const useAppContentData = () => {
 	]
 
 	const faqData: FaqCategory[] = [
-		{
-			name: 'Для клиентов',
-			faq: new Array(5).fill({
-				question: 'Будет вопрос, а пока просто прочитать этот текст?',
-				answer: 'Мы собираем лучшие вакансии в отрасли...',
-			}),
-		},
-		{
-			name: 'Для юристов',
-			faq: new Array(5).fill({
-				question: 'Будет вопрос, а пока просто прочитать этот текст?',
-				answer: 'Мы собираем лучшие вакансии в отрасли...',
-			}),
-		},
+		{ name: client.name, faq: client.faq },
+		{ name: lawyer.name, faq: lawyer.faq },
 	]
 
 	const clientFaqData = new Array(3).fill({

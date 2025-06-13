@@ -187,8 +187,8 @@ export const Footer = ({ variant, id }: Props) => {
 									<Link
 										className={s.link}
 										target={'_blank'}
-										href={'https://api.whatsapp.com/send/?phone=77770090000'}>
-										+7 777 009 0000
+										href={'https://api.whatsapp.com/send/?phone=77009375505'}>
+										+7 700 937 55 05
 									</Link>
 								</li>
 								<li className={s.columnItem}>
@@ -198,8 +198,8 @@ export const Footer = ({ variant, id }: Props) => {
 									/>
 									<Link
 										className={s.link}
-										href={'mailto:zanger@info.com'}>
-										zanger@info.com
+										href={'mailto:support@zanger-app.kz'}>
+										support@zanger-app.kz
 									</Link>
 								</li>
 

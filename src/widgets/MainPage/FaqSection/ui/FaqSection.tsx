@@ -58,7 +58,20 @@ export const FaqSection = ({ id }: { id: string }) => {
 																<ChevronDownIcon className={`${s.chevron} ${open ? s.chevronOpen : ''}`} />
 															</DisclosureButton>
 															<DisclosurePanel>
-																<p className={s.answer}>{answer}</p>
+																{typeof answer === 'string' ? (
+																	<p className={s.answer}>{answer}</p>
+																) : (
+																	<ul className={s.answerList}>
+																		{Object.values(answer).map((item, i) => (
+																			<li
+																				className={s.answer}
+																				key={i}>
+																				{/* @ts-expect-error fix it */}
+																				{item}
+																			</li>
+																		))}
+																	</ul>
+																)}
 															</DisclosurePanel>
 														</>
 													)}

@@ -29,14 +29,18 @@ export const MainSection = () => {
 							<p className="lending-descr">{t('description')}</p>
 						</div>
 						<div className={s.phoneNumber}>
-				<div className={s.top}>
-					<PhoneIcon color={'rgba(2, 125, 255, 1)'} width={16} hanging={16} />
-					<span>1515</span>
-				</div>
-				<div className={s.bottom}>
-					<p>с номеров всех операторов</p>
-				</div>
-			</div>
+							<div className={s.top}>
+								<PhoneIcon
+									color={'rgba(2, 125, 255, 1)'}
+									width={16}
+									hanging={16}
+								/>
+								<span>5510</span>
+							</div>
+							<div className={s.bottom}>
+								<p>с номеров всех операторов</p>
+							</div>
+						</div>
 						<div className={s.bg}>
 							{isMobile ? (
 								<Image
