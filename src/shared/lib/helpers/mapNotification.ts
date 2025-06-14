@@ -1,4 +1,4 @@
-import { NotificationItem } from "@/entities/notifications"
+import { NotificationItem } from '@/entities/notifications'
 
 export const mapNotification = (notification: any) => {
 	const base: NotificationItem = {
@@ -15,10 +15,10 @@ export const mapNotification = (notification: any) => {
 		case 'response_accepted':
 			return {
 				...base,
-				image: notification.data?.user?.icon ,
+				image: notification.data?.user?.icon,
 				buttonText: 'Посмотреть отклик',
 				hasButton: true,
-				buttonLink: `/dashboard/responses`
+				buttonLink: `/dashboard/responses`,
 			}
 
 		case 'documents':
@@ -27,7 +27,7 @@ export const mapNotification = (notification: any) => {
 				image: '/document-icon.png',
 				buttonText: 'Документ на модерации',
 				hasButton: true,
-				buttonLink: '/dashboard/profile'
+				buttonLink: '/dashboard/profile?tab=documents',
 			}
 
 		default:

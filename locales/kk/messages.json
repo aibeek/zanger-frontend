@@ -17,7 +17,9 @@
 			"noName": "Аты жоқ",
 			"workedOut": "Жұмыс істеді",
 			"close": "Жабу",
-			"reportClient": "Клиентке шағымдану"
+			"reportClient": "Клиентке шағымдану",
+			"load_more": "Загрузить еще",
+			"loading": "Загружаем..."
 		}
 	},
 
@@ -325,7 +327,8 @@
 		"clients": "Клиенттер үшін",
 		"lawyers": "Заңгерлер үшін",
 		"faq": "Жиі қойылатын сұрақтар",
-		"payment": "Правила оплаты"
+		"payment": "Правила оплаты",
+		"canselSubscription": "Правила отмены подписки"
 	},
 
 	"auth": {
@@ -467,7 +470,9 @@
 	},
 
 	"lenta": {
-		"respond": "Жауап беру"
+		"respond": "Жауап беру",
+		"load_more": "Загрузить еще",
+		"loading": "Загружаем..."
 	},
 
 	"report": {
@@ -479,7 +484,9 @@
 	},
 
 	"history": {
-		"statusLabel": "Күйі"
+		"statusLabel": "Күйі",
+		"load_more": "Загрузить еще",
+		"loading": "Загружаем..."
 	},
 
 	"myApplications": {

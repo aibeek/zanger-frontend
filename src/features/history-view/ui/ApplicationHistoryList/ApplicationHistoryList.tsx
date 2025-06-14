@@ -1,26 +1,19 @@
 'use client'
 
-import { useRef } from 'react'
-
-import { DescriptionText } from '@/shared/ui-kit'
-import { ListLoader } from '@/shared/ui-kit/ListLoader'
+import { Button, DescriptionText } from '@/shared/ui-kit'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
-import { useInfiniteScroll } from '@/shared/lib/hooks/useInfiniteScroll'
 
 import s from './ApplicationHistoryList.module.scss'
 import { useTranslations } from 'next-intl'
 
 export const ApplicationHistoryList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
-	const loadMoreRef = useRef(null)
 	const t = useTranslations('history')
-
-	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
 
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.items}>
-					{items.map((item) => (
+					{items.map((item: any) => (
 						<article
 							className={s.item}
 							key={Math.random()}>
@@ -36,10 +29,17 @@ export const ApplicationHistoryList = ({ items, loadMore, isLoadingMore, isReach
 							</div>
 						</article>
 					))}
-					<ListLoader
-						ref={loadMoreRef}
-						isLoadingMore={isLoadingMore}
-					/>
+					{!isReachingEnd && (
+						<div className={s.loadMoreWrapper}>
+							<Button
+								variant="primary"
+								size={'full'}
+								disabled={isLoadingMore}
+								onClick={loadMore}>
+								{isLoadingMore ? t('loading') : t('load_more')}
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

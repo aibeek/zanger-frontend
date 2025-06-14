@@ -1,11 +1,9 @@
 'use client'
 
-import { useRef } from 'react'
 import { useTranslations } from 'use-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { useInfiniteScroll } from '@/shared/lib'
-import { Button, DescriptionText, ListLoader, UserBox } from '@/shared/ui-kit'
+import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
 
 import s from './MyResponsesList.module.scss'
 import { Status, useMyResponsesStore } from '../../model'
@@ -14,11 +12,8 @@ import { ReportButton } from '@/features/report/ui/ReportButton'
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const { workOut, closeItem, workedOutIds } = useMyResponsesStore()
 	const t = useTranslations('tabs.responsesList')
-	const loadMoreRef = useRef(null)
 
-	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
-
-	const statusMap = items.reduce((acc, item) => {
+	const statusMap = items.reduce((acc: any, item: any) => {
 		acc[item.id] = Object.fromEntries(item.status.map((st: Status) => [st.title, st.is_active]))
 		return acc
 	}, {})
@@ -102,10 +97,17 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 						})}
 					</AnimatePresence>
 
-					<ListLoader
-						ref={loadMoreRef}
-						isLoadingMore={isLoadingMore}
-					/>
+					{!isReachingEnd && (
+						<div className={s.loadMoreWrapper}>
+							<Button
+								variant="primary"
+								size={'full'}
+								disabled={isLoadingMore}
+								onClick={loadMore}>
+								{isLoadingMore ? t('loading') : t('load_more')}
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

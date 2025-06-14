@@ -1,19 +1,15 @@
 'use client'
 
-import { useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { useInfiniteScroll } from '@/shared/lib'
-import { Button, DescriptionText, ListLoader, UserBox } from '@/shared/ui-kit'
+import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
 
 import s from './LentaList.module.scss'
 import { ReportButton } from '@/features/report/ui/ReportButton'
 import { useTranslations } from 'next-intl'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
-	const loadMoreRef = useRef(null)
 	const t = useTranslations('lenta')
-	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
 
 	return (
 		<div className={s.wrapper}>
@@ -61,10 +57,17 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 							)
 						})}
 					</AnimatePresence>
-					<ListLoader
-						ref={loadMoreRef}
-						isLoadingMore={isLoadingMore}
-					/>
+					{!isReachingEnd && (
+						<div className={s.loadMoreWrapper}>
+							<Button
+								variant="primary"
+								size={'full'}
+								disabled={isLoadingMore}
+								onClick={loadMore}>
+								{isLoadingMore ? t('loading') : t('load_more')}
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

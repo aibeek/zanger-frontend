@@ -18,20 +18,20 @@ export const useLentaAccessStatus = () => {
 	for (const item of accessItems) {
 		if (item.type === 'documents') {
 			const docs = item.need
+
 			if (Array.isArray(docs)) {
 				const hasMissingDocs = docs.some((doc) => !doc.is_uploaded)
-				// @ts-expect-error fix it
-				const hasDocsOnModeration = docs.some((doc) => doc.status?.type === 'moderation')
-
-				if (hasDocsOnModeration) {
-					result.hasModerationDocs = true
-					result.hasAccess = false
-					break
-				}
 
 				if (hasMissingDocs) {
 					result.needsDocuments = true
 					result.hasAccess = false
+				} else {
+					// @ts-expect-error fix it
+					const allOnModeration = docs.every((doc) => doc.status?.type === 'moderation')
+					if (allOnModeration) {
+						result.hasModerationDocs = true
+						result.hasAccess = false
+					}
 				}
 			}
 		}

@@ -12,9 +12,8 @@ import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import Image from 'next/image'
 import { useDocuments, useLawyerDocumentsStore } from '../../model'
 import toast from 'react-hot-toast'
-import { DocumentsList } from './DocumentsList'
-import { useLoginStore } from '@/features/auth'
 import { useSearchParams } from 'next/navigation'
+import { DocumentsList } from './DocumentsList'
 
 const { Dragger } = Upload
 const { Option } = Select
@@ -41,10 +40,6 @@ export const ProfileDocuments = () => {
 
 	const { mutate, documents } = useDocuments()
 	const { open, close, isOpen } = useModal()
-	const personalData = useLoginStore((state) => state.personalData)
-	const fetchPersonalData = useLoginStore((state) => state.getPersonalDataByToken)
-
-	const needDocs = personalData.lawyer?.need_to_access.find((item) => item.type === 'documents')?.need ?? []
 	const searchParams = useSearchParams()
 	const tab = searchParams.get('tab')
 	const shouldOpen = useMemo(() => tab === 'documents', [tab])
@@ -53,7 +48,7 @@ export const ProfileDocuments = () => {
 	const handleBeforeUpload = (file: File) => {
 		if (!allowedTypes.includes(file.type)) {
 			toast.error('Неподдерживаемый формат файла')
-			return
+			return Upload.LIST_IGNORE
 		}
 
 		if (!selectedDocumentId) {
@@ -76,7 +71,7 @@ export const ProfileDocuments = () => {
 
 	const handleUpload = async (mutate) => {
 		await uploadFiles(mutate)
-		await fetchPersonalData()
+		await mutate()
 		setSelectedDocument(null, false)
 		close()
 	}
@@ -93,19 +88,54 @@ export const ProfileDocuments = () => {
 		status: 'done',
 	}))
 
-	const needDocsList = Array.isArray(needDocs)
-		? needDocs
-				.filter((doc) => {
-					if (doc.sides && Array.isArray(doc.sides)) {
-						return doc.sides.some((side) => side.link === null)
-					}
-					return doc.link === null
-				})
-				.map((doc) => ({
-					id: doc.id,
-					name: doc.name,
-				}))
-		: []
+	const needDocsList = useMemo(() => {
+		return Array.isArray(documents)
+			? documents
+					.filter((doc) => {
+						if (doc.is_double_sided && Array.isArray(doc.sides)) {
+							// @ts-expect-error fix it
+							return doc.sides.some((side) => !side.link)
+						}
+						return !doc.link
+					})
+					.map((doc) => ({
+						id: doc.id,
+						name: doc.name,
+					}))
+			: []
+	}, [documents])
+
+	const currentDoc = useMemo(() => documents.find((d) => d.id === selectedDocumentId), [documents, selectedDocumentId])
+
+	const availableSides = useMemo(() => {
+		if (!currentDoc || !currentDoc.is_double_sided || !currentDoc.sides) return FRONT_SIDE_OPTIONS
+		// @ts-expect-error fix it
+		const hasFront = currentDoc.sides.some((s) => s.is_front_side && s.link)
+		// @ts-expect-error fix it
+		const hasBack = currentDoc.sides.some((s) => !s.is_front_side && s.link)
+
+		return FRONT_SIDE_OPTIONS.filter((opt) => {
+			if (opt.value === 0) return !hasFront
+			if (opt.value === 1) return !hasBack
+			return true
+		})
+	}, [currentDoc])
+
+	const isCurrentDocFullyUploaded = useMemo(() => {
+		if (!currentDoc) return false
+		if (currentDoc.is_double_sided && Array.isArray(currentDoc.sides)) {
+			// @ts-expect-error fix it
+			return currentDoc.sides.every((s) => s.link)
+		}
+		return !!currentDoc.link
+	}, [currentDoc])
+
+	const hasUploadedDocs = useMemo(() => {
+		return documents.some((doc) =>
+			// @ts-expect-error fix it
+			doc.is_double_sided && Array.isArray(doc.sides) ? doc.sides.some((side) => !!side.link) : !!doc.link,
+		)
+	}, [documents])
 
 	useEffect(() => {
 		if (shouldOpen) {
@@ -140,16 +170,17 @@ export const ProfileDocuments = () => {
 						</Button>
 					)}
 
-					{documents.filter((doc) => doc.link).length > 0 ? (
+					{hasUploadedDocs ? (
 						<DocumentsList
-							mutate={mutate}
 							documents={documents}
+							mutate={mutate}
 						/>
 					) : (
 						<p className={s.noDocuments}>{t('profile.documents.noDocs')}</p>
 					)}
 				</div>
 			</ProfileTabWrapper>
+
 			<Modal
 				className={s.modal}
 				isOpen={isOpen}
@@ -158,7 +189,6 @@ export const ProfileDocuments = () => {
 				title={t('profile.documents.modalTitle')}>
 				<div className={s.upload}>
 					<div className={s.top}>
-						{/* тянуть с другого места и сделать проверку для удоса */}
 						<Select
 							value={selectedDocumentId ?? undefined}
 							onChange={handleSelectDocument}
@@ -179,7 +209,7 @@ export const ProfileDocuments = () => {
 								onChange={setFrontSide}
 								style={{ width: 250, marginBottom: 16 }}
 								placeholder={t('profile.documents.selectSide')}>
-								{FRONT_SIDE_OPTIONS.map((option) => (
+								{availableSides.map((option) => (
 									<Option
 										key={option.value}
 										value={option.value}>
@@ -193,7 +223,7 @@ export const ProfileDocuments = () => {
 					<Dragger
 						beforeUpload={handleBeforeUpload}
 						multiple={false}
-						disabled={!selectedDocumentId || (selectedDocumentId === 1 && frontSide === null)}
+						disabled={isCurrentDocFullyUploaded || !selectedDocumentId || (isDoubleSided && frontSide === null)}
 						showUploadList={false}
 						className={s.dragger}>
 						<div className={s.topDragger}>
@@ -222,7 +252,12 @@ export const ProfileDocuments = () => {
 						variant="primary"
 						size="md"
 						style={{ marginTop: 20 }}
-						disabled={selectedFiles.length === 0 || frontSide === null || !selectedDocumentId}
+						disabled={
+							isCurrentDocFullyUploaded ||
+							selectedFiles.length === 0 ||
+							(isDoubleSided && frontSide === null) ||
+							!selectedDocumentId
+						}
 						onClick={() => handleUpload(mutate)}>
 						{t('profile.documents.uploadBtn')}
 					</Button>

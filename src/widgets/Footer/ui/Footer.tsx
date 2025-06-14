@@ -19,7 +19,7 @@ import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/l
 import s from './Footer.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
-import { paymentURL, policyURL, termsURL } from '@/shared/lib/consts/urls'
+import { canselSubscriptionURL, paymentURL, policyURL, termsURL } from '@/shared/lib/consts/urls'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -57,6 +57,11 @@ export const Footer = ({ variant, id }: Props) => {
 							target={'_blank'}
 							href={paymentURL}>
 							{t('payment')}
+						</Link>
+						<Link
+							target={'_blank'}
+							href={canselSubscriptionURL}>
+							{t('canselSubscription')}
 						</Link>
 					</div>
 				</div>
@@ -239,6 +244,11 @@ export const Footer = ({ variant, id }: Props) => {
 								target={'_blank'}
 								href={paymentURL}>
 								{t('payment')}
+							</Link>
+							<Link
+								target={'_blank'}
+								href={canselSubscriptionURL}>
+								{t('canselSubscription')}
 							</Link>
 						</div>
 					</div>
