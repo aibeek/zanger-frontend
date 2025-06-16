@@ -6,6 +6,8 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	border-radius: 10px;
 	padding: 16px;
+min-height: 200px;
+
 }
 
 .item {
@@ -59,7 +61,10 @@
 }
 
 .empty {
-	text-align: center;
 	color: #999;
 	padding: 20px 0;
+	min-height: inherit;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

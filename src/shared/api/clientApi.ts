@@ -58,4 +58,10 @@ export const clientApi = {
 		httpClientWithAuth(`${API_URL}/clients/orders/responses/${id}`, {
 			method: 'GET',
 		}),
+
+
+		createCallback: ({ id }: { id: number }) =>
+			httpClientWithAuth(`${API_URL}/clients/orders/responses/${id}/call-request`, {
+				method: 'POST',
+			}),
 }

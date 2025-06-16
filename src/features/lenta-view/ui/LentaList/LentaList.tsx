@@ -1,15 +1,17 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-
+import toast from 'react-hot-toast'
 import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
 
 import s from './LentaList.module.scss'
 import { ReportButton } from '@/features/report/ui/ReportButton'
 import { useTranslations } from 'next-intl'
+import { useLentaAccessStatus } from '@/shared/lib'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
 	const t = useTranslations('lenta')
+	const { needsSubscription, } = useLentaAccessStatus()
 
 	return (
 		<div className={s.wrapper}>
@@ -41,10 +43,17 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 									<div className={s.bottom}>
 										<Button
 											style={{ padding: '8px 30px' }}
-											className={s.apply}
+											className={s.btn}
 											variant="primary"
 											size="sm"
-											onClick={() => applyToRequest({ order_id: item.id })}>
+											onClick={() => {
+												if (needsSubscription) {
+													toast.error(t('subscribe_required'))  
+													return
+												}
+												applyToRequest({ order_id: item.id })
+											}}	
+																			>
 											{t('respond')}
 										</Button>
 

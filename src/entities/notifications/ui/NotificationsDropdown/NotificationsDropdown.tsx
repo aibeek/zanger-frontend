@@ -10,6 +10,7 @@ import { AppLink } from '@/shared/ui-kit/AppLink'
 import { formatPublishedDate } from '@/shared/lib'
 import { mapNotification } from '@/shared/lib/helpers/mapNotification'
 import { useState } from 'react'
+import { Loader } from '@/shared/ui-kit'
 
 
 export const NotificationsDropdown = () => {
@@ -26,7 +27,7 @@ export const NotificationsDropdown = () => {
 	const items = (
 		<div className={s.dropdownContent}>
 			{isLoading ? (
-				<Spin size="small" />
+				<Loader />
 			) : data.length === 0 ? (
 				<p className={s.empty}>Нет уведомлений</p>
 			) : (
@@ -38,7 +39,9 @@ export const NotificationsDropdown = () => {
 						renderItem={(item) => (
 							<List.Item className={`${s.item} ${!item.is_read ? s.unread : ''}`}>
 								<div className={s.content}>
-									<div className={s.image}>
+								{/* {
+									item.image && (
+										<div className={s.image}>
 										<Image
 											src={item.image}
 											alt="notification"
@@ -46,6 +49,8 @@ export const NotificationsDropdown = () => {
 											height={40}
 										/>
 									</div>
+									)
+								} */}
 									<div className={s.text}>
 										<div className={s.name}>{item.title}</div>
 										{item.hasButton && (

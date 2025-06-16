@@ -229,4 +229,8 @@
 	&:hover {
 		background-color: rgb(9, 100, 56);
 	}
+	&:disabled{
+		background-color: $light-gray-color;
+		cursor: not-allowed;
+	}
 }

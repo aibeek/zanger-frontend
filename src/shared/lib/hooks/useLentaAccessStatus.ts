@@ -21,24 +21,23 @@ export const useLentaAccessStatus = () => {
 
 			if (Array.isArray(docs)) {
 				const hasMissingDocs = docs.some((doc) => !doc.is_uploaded)
-
+				// @ts-expect-error fix it
+				const someOnModeration = docs.some((doc) => doc.status?.type === 'moderation')
+			
 				if (hasMissingDocs) {
 					result.needsDocuments = true
 					result.hasAccess = false
-				} else {
-					// @ts-expect-error fix it
-					const allOnModeration = docs.every((doc) => doc.status?.type === 'moderation')
-					if (allOnModeration) {
-						result.hasModerationDocs = true
-						result.hasAccess = false
-					}
+				} else if (someOnModeration) {
+					result.hasModerationDocs = true
+					result.hasAccess = false
 				}
 			}
+			
 		}
 
 		if (item.type === 'subscription' && item.need === true) {
 			result.needsSubscription = true
-			result.hasAccess = false
+			// result.hasAccess = false
 		}
 	}
 

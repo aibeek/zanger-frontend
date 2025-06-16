@@ -16,8 +16,6 @@ export const LentaTab = () => {
 	const { applyToRequest } = useLentaStore()
 
 	const onlyDocuments = needsDocuments && !needsSubscription
-	const onlySubscription = needsSubscription && !needsDocuments
-	const needsAll = needsDocuments && needsSubscription
 
 	if (hasModerationDocs) {
 		return (
@@ -39,28 +37,13 @@ export const LentaTab = () => {
 						Загрузить документы
 					</AppLink>
 				)}
-				{onlySubscription && (
-					<AppLink
-						size="md"
-						href="/subscription">
-						Оформить подписку
-					</AppLink>
-				)}
-				{needsAll && (
-					<>
-						<p>Оформите подписку и загрузите документы</p>
+		
 						<AppLink
 							size="md"
 							href="/dashboard/profile?tab=documents">
 							Загрузить документы
 						</AppLink>
-						<AppLink
-							size="md"
-							href="/subscription">
-							Оформить подписку
-						</AppLink>
-					</>
-				)}
+				
 			</div>
 		)
 	}

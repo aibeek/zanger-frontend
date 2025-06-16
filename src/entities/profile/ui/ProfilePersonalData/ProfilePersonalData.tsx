@@ -171,7 +171,6 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											control={control}
 											render={({ field }) => {
 												const selected = allOptions.find((r) => String(r.id) === String(field.value)) || null
-												console.log(allOptions)
 
 												return (
 													<SearchSelect

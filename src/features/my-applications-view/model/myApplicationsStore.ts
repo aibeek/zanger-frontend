@@ -31,6 +31,7 @@ interface MyApplicationsStore {
 	rejectResponse: (responseId: number, mutate: () => Promise<void>) => Promise<void>
 	getDetailedResponse: (responseId: number) => Promise<void>
 	loadingDetailed: boolean
+	createCallback: (id: number) => Promise<void>
 }
 
 export const useMyApplicationsStore = create<MyApplicationsStore>((set) => ({
@@ -83,6 +84,16 @@ export const useMyApplicationsStore = create<MyApplicationsStore>((set) => ({
 			toast.error('Ошибка при получении деталей отклика')
 		} finally {
 			set({ loadingDetailed: false })
+		}
+	},
+
+
+	createCallback: async (id: number) => {
+		try {
+			await clientApi.createCallback({ id: id })
+			toast.success('Вызов успешно отправлен')
+		} catch (error) {
+			toast.error('Ошибка при отправке вызова')
 		}
 	},
 }))

@@ -25,8 +25,10 @@ interface MyApplicationsLawyersCardsProps {
 export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawyersCardsProps) => {
 	const t = useTranslations()
 	const [openCard, setOpenCard] = useState<number | null>(null)
+	const [calledResponses, setCalledResponses] = useState<number[]>([])
 
-	const { acceptResponse, rejectResponse, getDetailedResponse, detailedResponse } = useMyApplicationsStore()
+
+	const { acceptResponse, rejectResponse, getDetailedResponse, detailedResponse, createCallback } = useMyApplicationsStore()
 
 	const toggleCard = async (responseId: number) => {
 		if (openCard === responseId) {
@@ -45,6 +47,11 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 	const handleAccept = async (responseId: number) => {
 		await acceptResponse(responseId, mutate)
 		await getDetailedResponse(responseId)
+	}
+
+	const handleCallback = async (id: number) => {
+		await createCallback(id)
+		setCalledResponses((prev) => [...prev, id])
 	}
 
 	const renderResponseCard = (application: any, response: any, isOpen: boolean) => {
@@ -132,13 +139,17 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 
 									{response.is_accepted && (
 										<div className={s.right}>
-											<Button
-												variant="clear"
-												size="sm"
-												className={s.callbackBtn}
-												onClick={() => window.open(`tel:${detailedResponse?.contacts?.phone}`)}>
-												Получить обратный звонок
-											</Button>
+										<Button
+						variant="clear"
+						size="sm"
+						className={s.callbackBtn}
+						disabled={calledResponses.includes(response.id)}
+						onClick={() => handleCallback(response.id)}
+					>
+						{calledResponses.includes(response.id)
+							? 'Обратный звонок получен'
+							: 'Получить обратный звонок'}
+					</Button>
 										</div>
 									)}
 								</li>
