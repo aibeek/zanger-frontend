@@ -79,6 +79,7 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 							<div className={s.documentInfo}>
 								<p className={s.docName}>{doc.name}</p>
 								<div className={s.featuresDoc}>
+
 									<a
 										href={doc.link}
 										target="_blank"
@@ -86,6 +87,7 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 										className={s.docLink}>
 										{fileName}
 									</a>
+
 									<Button
 										variant="clear"
 										size="sm"

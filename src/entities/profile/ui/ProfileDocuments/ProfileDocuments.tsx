@@ -22,8 +22,8 @@ export const ProfileDocuments = () => {
 	const t = useTranslations()
 
 	const FRONT_SIDE_OPTIONS = [
-		{ value: 0, label: t('profile.documents.frontSide') },
-		{ value: 1, label: t('profile.documents.backSide') },
+		{ value: 1, label: t('profile.documents.frontSide') },
+		{ value: 0, label: t('profile.documents.backSide') },
 	]
 
 	const {
@@ -58,6 +58,11 @@ export const ProfileDocuments = () => {
 
 		if (isDoubleSided && frontSide === null) {
 			toast.error('Выберите сторону документа')
+			return Upload.LIST_IGNORE
+		}
+
+		if(selectedFiles.length >= 1) {
+			toast.error('Вы можете загрузить только один документ')
 			return Upload.LIST_IGNORE
 		}
 
@@ -115,8 +120,8 @@ export const ProfileDocuments = () => {
 		const hasBack = currentDoc.sides.some((s) => !s.is_front_side && s.link)
 
 		return FRONT_SIDE_OPTIONS.filter((opt) => {
-			if (opt.value === 0) return !hasFront
-			if (opt.value === 1) return !hasBack
+			if (opt.value === 1) return !hasFront
+			if (opt.value === 0) return !hasBack
 			return true
 		})
 	}, [currentDoc])

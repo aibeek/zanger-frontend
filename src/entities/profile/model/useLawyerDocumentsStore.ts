@@ -62,7 +62,7 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 			for (const file of selectedFiles) {
 				const formData = new FormData()
 				formData.append('document_id', selectedDocumentId.toString())
-				formData.append('front_side', isDoubleSided ? String(frontSide) : '0')
+				formData.append('front_side', isDoubleSided ? String(frontSide === 1 ? 1 : 0) : '0')
 				formData.append('file', file)
 				await profileApi.uploadDocument(formData)
 			}
