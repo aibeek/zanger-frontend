@@ -66,7 +66,7 @@ export const lawyerApi = {
 			body: JSON.stringify(data),
 		}),
 
-	getOrders: (params?: Record<string, string | number>) => {
+	getOrders: (params?: Record<string, string | number | boolean>) => {
 		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/orders${query}`
 

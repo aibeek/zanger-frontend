@@ -1,0 +1,44 @@
+.alert {
+	background-color: #d9edff;
+	padding: 16px;
+	border-radius: 10px;
+	position: relative;
+	margin: 8px 0;
+}
+
+.title {
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 130%;
+}
+
+.descr {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 130%;
+	color: #373737;
+}
+
+.icon {
+	width: 60px;
+	height: 60px;
+	object-fit: contain;
+}
+
+.content {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.right {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.close {
+	position: absolute;
+	right: 16px;
+	top: 16px;
+}

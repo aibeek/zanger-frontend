@@ -1,8 +1,71 @@
 .needToAccess {
+	background-color: #d9edff;
+	padding: 32px 16px;
+	border-radius: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	align-items: center;
+	h3 {
+		font-size: 20px;
+		font-weight: 600;
+	}
+	p {
+		font-weight: 400;
+	}
+}
+
+.docsList {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	height: 500px;
-	gap: 20px;
+	gap: 4px;
+	margin-top: 20px;
+}
+
+.docsItem {
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.switch {
+	display: inline-flex;
+	align-items: center;
+	width: 44px;
+	height: 24px;
+	border-radius: 9999px;
+	background-color: #e5e7eb;
+	transition: background-color 0.2s;
+	border: none;
+
+	&.switchChecked {
+		background-color: $blue-color;
+	}
+}
+
+.thumb {
+	width: 16px;
+	height: 16px;
+	background-color: white;
+	border-radius: 9999px;
+	transform: translateX(4px);
+	transition: transform 0.2s;
+
+	&.thumbChecked {
+		transform: translateX(22px);
+	}
+}
+
+.switchText {
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.switchWrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 20px;
+	margin-top: -10px;
+	flex-flow: row-reverse;
 }
