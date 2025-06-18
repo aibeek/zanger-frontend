@@ -9,13 +9,28 @@ import { DashboarEmptyLenta } from '@/widgets/DashboarEmptyLenta'
 import { LentaList } from '../LentaList'
 import s from './LentaTab.module.scss'
 import { useLentaInfinite, useLentaStore } from '../../model'
+import { useEffect } from 'react'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 export const LentaTab = () => {
-	const { hasAccess, needsDocuments, needsSubscription, hasModerationDocs } = useLentaAccessStatus()
+	const {
+		hasAccess,
+		needsDocuments,
+		needsSubscription,
+		hasModerationDocs,
+		documentStatuses,
+	} = useLentaAccessStatus()
+
 	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useLentaInfinite()
 	const { applyToRequest } = useLentaStore()
 
-	const onlyDocuments = needsDocuments && !needsSubscription
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refreshUser()
+		}, 10000) // каждые 10 сек
+	
+		return () => clearInterval(interval)
+	}, [])
 
 	if (hasModerationDocs) {
 		return (
@@ -30,20 +45,37 @@ export const LentaTab = () => {
 		return (
 			<div className={s.needToAccess}>
 				<h3>Доступ к ленте ограничен</h3>
-				{onlyDocuments && (
-					<AppLink
-						size="md"
-						href="/dashboard/profile?tab=documents">
-						Загрузить документы
-					</AppLink>
-				)}
-		
-						<AppLink
-							size="md"
-							href="/dashboard/profile?tab=documents">
+
+				{needsDocuments && (
+					<>
+						<p>Пожалуйста, загрузите необходимые документы:</p>
+						<ul className={s.statusList}>
+							{documentStatuses.map((doc) => (
+								<li key={doc.id}>
+									{doc.name}: {doc.status === 'fully_uploaded'
+										? '✅ Загружен'
+										: doc.status === 'partially_uploaded'
+										? '⚠️ Частично'
+										: '❌ Не загружен'}
+									{doc.moderation && ' ⏳ На модерации'}
+								</li>
+							))}
+						</ul>
+
+						<AppLink size="md" href="/dashboard/profile?tab=documents">
 							Загрузить документы
 						</AppLink>
-				
+					</>
+				)}
+
+				{needsSubscription && (
+					<>
+						<p>Для доступа также необходимо оформить подписку.</p>
+						<AppLink size="md" href="/dashboard/profile?tab=subscription">
+							Оформить подписку
+						</AppLink>
+					</>
+				)}
 			</div>
 		)
 	}

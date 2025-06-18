@@ -68,8 +68,8 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 			}
 			toast.success('Документ успешно загружен')
 			setSelectedFiles([])
+			await mutate()
 			await refreshUser()
-			mutate()
 		} catch (e) {
 			toast.error('Ошибка при загрузке документа')
 		}

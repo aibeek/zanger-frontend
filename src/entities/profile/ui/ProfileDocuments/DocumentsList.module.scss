@@ -36,12 +36,12 @@
 	color: orange;
 }
 
-.approved {
-	color: green;
+.accepted {
+	color: #09cb09;
 }
 
-.rejected {
-	color: red;
+.canceled {
+	color: $error-color;
 }
 
 //

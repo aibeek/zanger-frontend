@@ -1,4 +1,5 @@
-import { useLoginStore } from '@/features/auth'
+import { getUploadStatus } from "@/entities/profile/ui/ProfileDocuments/getUploadStatus"
+import { useLoginStore } from "@/features/auth"
 
 export const useLentaAccessStatus = () => {
 	const personalData = useLoginStore((store) => store.personalData)
@@ -9,6 +10,12 @@ export const useLentaAccessStatus = () => {
 		needsDocuments: false,
 		needsSubscription: false,
 		hasModerationDocs: false,
+		documentStatuses: [] as {
+			id: number
+			name: string
+			status: 'not_uploaded' | 'partially_uploaded' | 'fully_uploaded'
+			moderation: boolean
+		}[],
 	}
 
 	if (!personalData?.lawyer || !Array.isArray(accessItems)) {
@@ -20,10 +27,37 @@ export const useLentaAccessStatus = () => {
 			const docs = item.need
 
 			if (Array.isArray(docs)) {
-				const hasMissingDocs = docs.some((doc) => !doc.is_uploaded)
-				// @ts-expect-error fix it
-				const someOnModeration = docs.some((doc) => doc.status?.type === 'moderation')
-			
+				let hasMissingDocs = false
+				let someOnModeration = false
+
+				for (const doc of docs) {
+					// @ts-expect-error fix it
+					const status = getUploadStatus(doc)
+
+					if (status !== 'fully_uploaded') {
+						hasMissingDocs = true
+					}
+
+					// Модерация: либо общий статус, либо у сторон
+					const moderation =
+					// @ts-expect-error fix it
+						doc.status?.type === 'moderation' ||
+						// @ts-expect-error fix it
+						doc.sides?.some((side) => side.status?.type === 'moderation') ||
+						false
+
+					if (moderation) {
+						someOnModeration = true
+					}
+
+					result.documentStatuses.push({
+						id: doc.id,
+						name: doc.name,
+						status,
+						moderation,
+					})
+				}
+
 				if (hasMissingDocs) {
 					result.needsDocuments = true
 					result.hasAccess = false
@@ -32,11 +66,11 @@ export const useLentaAccessStatus = () => {
 					result.hasAccess = false
 				}
 			}
-			
 		}
 
 		if (item.type === 'subscription' && item.need === true) {
 			result.needsSubscription = true
+			// возможно, тоже стоит заблокировать:
 			// result.hasAccess = false
 		}
 	}

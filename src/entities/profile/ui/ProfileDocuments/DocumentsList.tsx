@@ -7,6 +7,7 @@ import { Button } from '@/shared/ui-kit'
 import { useLawyerDocumentsStore } from '../../model'
 import { TrashIcon } from '@heroicons/react/20/solid'
 import { LawyerDocument } from '@/shared/api'
+import { getUploadStatus } from './getUploadStatus'
 
 type Props = {
 	documents: LawyerDocument[]
@@ -26,7 +27,9 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 			style={{ marginTop: 24 }}
 			className={s.documentsList}>
 			{documents.flatMap((doc) => {
+				
 				if (doc.is_double_sided && Array.isArray(doc.sides)) {
+
 					// @ts-expect-error fix it
 					return doc.sides
 						.filter((side) => !!side.link)
