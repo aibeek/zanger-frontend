@@ -1,6 +1,6 @@
 'use client'
 
-import { Dropdown, Badge, List, Spin } from 'antd'
+import { Dropdown, Badge, List } from 'antd'
 import s from './NotificationsDropdown.module.scss'
 import { useNotifications, useNotificationsStore } from '../../model'
 import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
@@ -12,17 +12,16 @@ import { mapNotification } from '@/shared/lib/helpers/mapNotification'
 import { useState } from 'react'
 import { Loader } from '@/shared/ui-kit'
 
-
 export const NotificationsDropdown = () => {
 	const t = useTranslations('header')
 	const { notifications, markAsRead } = useNotificationsStore()
 	const { isLoading } = useNotifications()
 	const [open, setOpen] = useState(false)
+	console.log(notifications)
 
-	const data = notifications.length > 0
-	? notifications.map(mapNotification)
-	: []
-		const unreadCount = data.filter((n: any) => !n.is_read).length
+	const data = notifications.length > 0 ? notifications.map(mapNotification) : []
+	const unreadCount = data.filter((n: any) => !n.is_read).length
+	console.log(data)
 
 	const items = (
 		<div className={s.dropdownContent}>
@@ -39,41 +38,39 @@ export const NotificationsDropdown = () => {
 						renderItem={(item) => (
 							<List.Item className={`${s.item} ${!item.is_read ? s.unread : ''}`}>
 								<div className={s.content}>
-								{/* {
-									item.image && (
+									{item.image && item.type && (
 										<div className={s.image}>
-										<Image
-											src={item.image}
-											alt="notification"
-											width={40}
-											height={40}
-										/>
-									</div>
-									)
-								} */}
+											<Image
+												src={item.image}
+												alt="img"
+												width={40}
+												height={40}
+											/>
+										</div>
+									)}
 									<div className={s.text}>
 										<div className={s.name}>{item.title}</div>
 										{item.hasButton && (
-														<div
-															onClick={() => {
-																markAsRead(item.id)
-																setOpen(false)
-															}}>
-															<AppLink
-																variant="clear"
-																size="auto"
-																href={item.buttonLink}
-																className={s.link}>
-																{item.buttonText}
-															</AppLink>
-														</div>
-													)}
+											<div
+												onClick={() => {
+													markAsRead(item.id)
+													setOpen(false)
+												}}>
+												{item.name && <div className={s.subname}>{item.name}</div>}
+												<AppLink
+													variant="clear"
+													size="auto"
+													href={item.buttonLink}
+													className={s.link}>
+													{item.buttonText}
+												</AppLink>
+											</div>
+										)}
 										<p className={s.date}>{formatPublishedDate(item.created_at)}</p>
 									</div>
 								</div>
 							</List.Item>
 						)}
-						
 					/>
 				</>
 			)}
@@ -82,11 +79,11 @@ export const NotificationsDropdown = () => {
 
 	return (
 		<Dropdown
-		open={open}
-		onOpenChange={setOpen}
-		overlay={items}
-		placement="bottomRight"
-		trigger={['click']}>
+			open={open}
+			onOpenChange={setOpen}
+			overlay={items}
+			placement="bottomRight"
+			trigger={['click']}>
 			<Badge
 				count={unreadCount}
 				size="small">

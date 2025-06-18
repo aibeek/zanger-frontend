@@ -4,6 +4,7 @@
 	position: absolute;
 	inset: 0;
 }
+
 .ant-select-selection-search-input {
 	min-width: 200px !important;
 }
@@ -130,4 +131,8 @@ body {
 	.ant-select-arrow {
 		display: none;
 	}
+}
+
+:where(.css-dev-only-do-not-override-1m2bkf9).ant-list .ant-list-item {
+	padding: 6px 0 !important;
 }

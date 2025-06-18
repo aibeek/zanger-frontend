@@ -11,10 +11,11 @@ export interface NotificationItem {
 	hasButton: boolean
 	buttonText: string
 	buttonLink: string
-
+	name: string
+	type: string
 }
 type NotificationsStore = {
-	notifications: NotificationItem[] 
+	notifications: NotificationItem[]
 	setNotifications: (data: NotificationItem[]) => void
 	markAsRead: (id: number) => void
 	clearAll: () => void
@@ -25,13 +26,10 @@ export const useNotificationsStore = create<NotificationsStore>((set) => ({
 	setNotifications: (data) => set({ notifications: data }),
 	markAsRead: (id: number) => {
 		set((state) => ({
-			notifications: state.notifications.map((n) =>
-				n.id === id ? { ...n, is_read: true } : n
-			),
+			notifications: state.notifications.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
 		}))
-		sharedApi.setReadNotification({} ,id).catch(() => {
-		})
-	},	
+		sharedApi.setReadNotification({}, id).catch(() => {})
+	},
 	clearAll: () => set({ notifications: [] }),
 }))
 

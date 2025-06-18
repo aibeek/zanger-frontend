@@ -1,4 +1,5 @@
 import { NotificationItem } from '@/entities/notifications'
+import docIcon from '@/app/assets/icons/need-to-access-docs.svg'
 
 export const mapNotification = (notification: any) => {
 	const base: NotificationItem = {
@@ -9,14 +10,18 @@ export const mapNotification = (notification: any) => {
 		hasButton: false,
 		buttonText: '',
 		buttonLink: '#',
+		name: '',
+		type: notification.type,
 	}
 
 	switch (notification.type) {
 		case 'response_accepted':
+		case 'response_rejected':
 			return {
 				...base,
 				image: notification.data?.user?.icon,
-				buttonText: 'Посмотреть отклик',
+				name: notification.data?.user?.name || '',
+				buttonText: 'Посмотреть',
 				hasButton: true,
 				buttonLink: `/dashboard/responses`,
 			}
@@ -24,8 +29,9 @@ export const mapNotification = (notification: any) => {
 		case 'documents':
 			return {
 				...base,
-				image: '/document-icon.png',
-				buttonText: 'Документ на модерации',
+				image: docIcon,
+				name: `${notification.data?.document?.name_ru || ''} (${notification.data?.status.title})`,
+				buttonText: 'Посмотреть',
 				hasButton: true,
 				buttonLink: '/dashboard/profile?tab=documents',
 			}
