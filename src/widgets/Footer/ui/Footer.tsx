@@ -134,7 +134,7 @@ export const Footer = ({ variant, id }: Props) => {
 							</div>
 						</div>
 
-						<div className={s.column}>
+						<div className={s.columnAddress}>
 							<h6 className={s.columnTitle}>{t('address')}</h6>
 
 							<ul className={s.columnList}>
@@ -144,17 +144,6 @@ export const Footer = ({ variant, id }: Props) => {
 										alt={'метка'}
 									/>
 									{t('location')}
-								</li>
-								<li className={s.columnItem}>
-									<Image
-										src={phone}
-										alt={'телефон'}
-									/>
-									<Link
-										className={s.link}
-										href={'tel:7770090000'}>
-										+7 777 009 0000
-									</Link>
 								</li>
 							</ul>
 						</div>

@@ -5,119 +5,192 @@
 	}
 }
 
-.inner {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	background-image: url('../../../../app/assets/images/download-app-bg.webp');
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
-	padding: 40px;
-	border-radius: 20px;
-
-	@media (max-width: 1170px) {
-		flex-direction: column-reverse;
-
-		.qr {
-			display: none;
-		}
-	}
-
-	@media (max-width: 1170px) {
-		height: 600px;
-	}
+.title {
+	margin-bottom: 90px;
 
 	@media (max-width: 768px) {
-		height: 520px;
-		padding: 24px;
+		margin-bottom: 30px;
+		font-weight: 24px;
+		font-weight: 600;
 	}
 }
 
-.title {
-	font-weight: 600;
-	font-size: 40px;
-	line-height: 140%;
-}
-
-.left {
+.content {
 	display: flex;
-	flex-direction: column;
-	gap: 36px;
+	align-items: start;
+	justify-content: space-between;
+	gap: 50px;
+	color: black;
+
 	@media (max-width: 1170px) {
+		flex-direction: column;
 		align-items: center;
 	}
 }
 
+.left,
 .right {
-	position: relative;
-	width: 480px;
-	height: 300px;
-
-	@media (max-width: 1170px) {
-		height: 100%;
-		width: 100%;
-	}
-}
-.doubleIphones {
-	position: absolute;
-	top: -150px;
-	right: 20px;
-
-	@media (max-width: 1170px) {
-		right: 50%;
-		transform: translateX(50%);
-		height: 450px;
-		width: 100%;
-		object-fit: contain;
-	}
-
-	@media (max-width: 768px) {
-		width: 310px;
-		height: 380px;
-		top: -80px;
-	}
-
-	@media (max-width: 480px) {
-		width: 260px;
-		height: 320px;
-		top: -40px;
-	}
-}
-
-@media (max-width: 1170px) {
-	.leftTop {
-		text-align: center;
-
-		@media (max-width: 768px) {
-			text-align: start;
-			p {
-				font-size: 14px;
-			}
-		}
-	}
-
-	.title {
-		font-size: 32px;
-		line-height: 120%;
-
-		@media (max-width: 768px) {
-			font-size: 20px;
-		}
-	}
-}
-
-.leftBottom {
-	display: flex;
-	align-items: center;
-	gap: 18px;
-}
-.downloadLinks {
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: 24px;
+}
 
-	@media (max-width: 1170px) {
-		flex-direction: row;
+.subtitle {
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 120%;
+}
+
+.text {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 120%;
+}
+
+.subText {
+	font-size: 14px;
+	font-weight: 300;
+	line-height: 120%;
+}
+
+.downloadLinks {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.center {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	width: 400px;
+	min-width: 400px;
+
+	@media (max-width: 768px) {
+		min-width: 320px;
+		width: 320px;
 	}
 }
+.microTitle {
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 120%;
+	text-align: center;
+}
+
+// .inner {
+// 	display: flex;
+// 	align-items: center;
+// 	justify-content: space-between;
+// 	background-image: url('../../../../app/assets/images/download-app-bg.webp');
+// 	background-repeat: no-repeat;
+// 	background-size: cover;
+// 	background-position: center;
+// 	padding: 40px;
+// 	border-radius: 20px;
+
+// 	@media (max-width: 1170px) {
+// 		flex-direction: column-reverse;
+
+// 		.qr {
+// 			display: none;
+// 		}
+// 	}
+
+// 	@media (max-width: 1170px) {
+// 		height: 600px;
+// 	}
+
+// 	@media (max-width: 768px) {
+// 		height: 520px;
+// 		padding: 24px;
+// 	}
+// }
+
+// .title {
+// 	font-weight: 600;
+// 	font-size: 40px;
+// 	line-height: 140%;
+// }
+
+// .left {
+// 	display: flex;
+// 	flex-direction: column;
+// 	gap: 36px;
+// 	@media (max-width: 1170px) {
+// 		align-items: center;
+// 	}
+// }
+
+// .right {
+// 	position: relative;
+// 	width: 480px;
+// 	height: 300px;
+
+// 	@media (max-width: 1170px) {
+// 		height: 100%;
+// 		width: 100%;
+// 	}
+// }
+// .doubleIphones {
+// 	position: absolute;
+// 	top: -150px;
+// 	right: 20px;
+
+// 	@media (max-width: 1170px) {
+// 		right: 50%;
+// 		transform: translateX(50%);
+// 		height: 450px;
+// 		width: 100%;
+// 		object-fit: contain;
+// 	}
+
+// 	@media (max-width: 768px) {
+// 		width: 310px;
+// 		height: 380px;
+// 		top: -80px;
+// 	}
+
+// 	@media (max-width: 480px) {
+// 		width: 260px;
+// 		height: 320px;
+// 		top: -40px;
+// 	}
+// }
+
+// @media (max-width: 1170px) {
+// 	.leftTop {
+// 		text-align: center;
+
+// 		@media (max-width: 768px) {
+// 			text-align: start;
+// 			p {
+// 				font-size: 14px;
+// 			}
+// 		}
+// 	}
+
+// 	.title {
+// 		font-size: 32px;
+// 		line-height: 120%;
+
+// 		@media (max-width: 768px) {
+// 			font-size: 20px;
+// 		}
+// 	}
+// }
+
+// .leftBottom {
+// 	display: flex;
+// 	align-items: center;
+// 	gap: 18px;
+// }
+// .downloadLinks {
+// 	display: flex;
+// 	flex-direction: column;
+// 	gap: 8px;
+
+// 	@media (max-width: 1170px) {
+// 		flex-direction: row;
+// 	}
+// }
