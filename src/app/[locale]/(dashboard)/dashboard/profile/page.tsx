@@ -39,7 +39,7 @@ export default function ProfileView() {
 					<div className={s.bottom}>
 						<ProfilePersonalData role={role} />
 						<ProfileChangePassword />
-						<ProfileNotifications />
+						{/* <ProfileNotifications /> */}
 						{lawyer && <ProfileDocuments />}
 						{lawyer && <ProfileConsultationPrice />}
 						{lawyer && <ProfileChangeSpecialization />}

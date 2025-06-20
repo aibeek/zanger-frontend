@@ -1,7 +1,5 @@
 'use client'
 
-import { Switch } from '@headlessui/react'
-
 import bell from '@/app/assets/icons/bell.svg'
 
 import s from './ProfileNotifications.module.scss'

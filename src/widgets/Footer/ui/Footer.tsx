@@ -145,6 +145,8 @@ export const Footer = ({ variant, id }: Props) => {
 									/>
 									{t('location')}
 								</li>
+								<li className={s.columnItem}>{t('too')}</li>
+								<li className={s.columnItem}>{t('bin')}</li>
 							</ul>
 						</div>
 						<div className={s.column}>
