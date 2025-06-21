@@ -10,18 +10,17 @@ import { AppLink } from '@/shared/ui-kit/AppLink'
 import { formatPublishedDate } from '@/shared/lib'
 import { mapNotification } from '@/shared/lib/helpers/mapNotification'
 import { useState } from 'react'
-import { Loader } from '@/shared/ui-kit'
+import { Button, Loader } from '@/shared/ui-kit'
 
 export const NotificationsDropdown = () => {
 	const t = useTranslations('header')
-	const { notifications, markAsRead } = useNotificationsStore()
+	const { notifications, markAsRead, markAllAsRead } = useNotificationsStore()
 	const { isLoading } = useNotifications()
 	const [open, setOpen] = useState(false)
 	console.log(notifications)
 
 	const data = notifications.length > 0 ? notifications.map(mapNotification) : []
 	const unreadCount = data.filter((n: any) => !n.is_read).length
-	console.log(data)
 
 	const items = (
 		<div className={s.dropdownContent}>
@@ -72,6 +71,29 @@ export const NotificationsDropdown = () => {
 							</List.Item>
 						)}
 					/>
+					{/* <button
+						className={s.clearButton}
+						onClick={clearAll}
+						aria-label="Очистить уведомления"
+						title="Очистить уведомления">
+						<Image
+							src={ClearIcon}
+							alt="Clear"
+							width={16}
+							height={16}
+						/>
+					</button> */}
+					{unreadCount > 0 && (
+						<Button
+							variant="primary"
+							size={'full'}
+							className={s.markAllButton}
+							onClick={() => {
+								markAllAsRead()
+							}}>
+							Прочитать все
+						</Button>
+					)}
 				</>
 			)}
 		</div>

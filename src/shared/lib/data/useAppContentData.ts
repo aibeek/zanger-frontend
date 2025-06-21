@@ -86,7 +86,11 @@ export const useAppContentData = () => {
 				title: 'title',
 				descr: 'descr',
 				faq: [
-					{ icon: 'hourglass', question: 'Что такое “Вид услуги”', answer: 'Если вы войдёте в мой профиль...' },
+					{
+						icon: 'hourglass',
+						question: 'Что такое “Вид услуги”',
+						answer: 'Если вы войдёте в мой профиль...',
+					},
 					{
 						icon: 'document',
 						question: 'Как корректно сформулировать проблему/ задачу?',
@@ -107,8 +111,16 @@ export const useAppContentData = () => {
 				title: 'title',
 				descr: 'descr',
 				faq: [
-					{ icon: 'people', question: 'Как принимать отклики от юристов', answer: 'Если вы войдёте в мой профиль...' },
-					{ icon: 'hourglass', question: 'Как можно отозвать отзыв ?', answer: 'Если вы войдёте в мой профиль...' },
+					{
+						icon: 'people',
+						question: 'Как принимать отклики от юристов',
+						answer: 'Если вы войдёте в мой профиль...',
+					},
+					{
+						icon: 'hourglass',
+						question: 'Как можно отозвать отзыв ?',
+						answer: 'Если вы войдёте в мой профиль...',
+					},
 					{
 						icon: 'document',
 						question: 'Возможно ли нанять нескольких юристов одновременно?',
@@ -127,7 +139,11 @@ export const useAppContentData = () => {
 				title: 'Принимайте вопросы от настоящих клиентов о законах',
 				descr: 'Принимайте заявки, отвечайте на них и получайте доход, предоставляя консультации клиентам',
 				faq: [
-					{ icon: 'hourglass', question: 'Как посмотреть заявку?', answer: 'Если вы войдёте в мой профиль...' },
+					{
+						icon: 'hourglass',
+						question: 'Как посмотреть заявку?',
+						answer: 'Если вы войдёте в мой профиль...',
+					},
 					{
 						icon: 'document',
 						question: 'Как связаться с клиентом и задать вопрос?',
@@ -149,7 +165,11 @@ export const useAppContentData = () => {
 				descr: 'Вы можете отслеживать статус заявок: какие из них были одобрены, а какие отклонены.',
 				faq: [
 					{ icon: 'people', question: 'Как закрыть заявку от клиента?', answer: 'В случае если...' },
-					{ icon: 'hourglass', question: 'Что означают статусы?', answer: 'Если вы войдёте в мой профиль...' },
+					{
+						icon: 'hourglass',
+						question: 'Что означают статусы?',
+						answer: 'Если вы войдёте в мой профиль...',
+					},
 					{
 						icon: 'document',
 						question: 'Есть ли возможность ответить на несколько заявок?',
@@ -167,10 +187,7 @@ export const useAppContentData = () => {
 		{ name: lawyer.name, faq: lawyer.faq },
 	]
 
-	const clientFaqData = new Array(3).fill({
-		question: 'Будет вопрос, а пока просто прочитать этот текст?',
-		answer: 'Мы собираем лучшие вакансии в отрасли...',
-	})
+	const lawyerFaqData: FaqCategory[] = [{ name: lawyer.name, faq: lawyer.faq }]
 
 	const headerMenuData = [
 		{ name: 'main', link: '/' },
@@ -192,8 +209,8 @@ export const useAppContentData = () => {
 		advantageData,
 		valueData,
 		faqData,
-		clientFaqData,
 		headerMenuData,
 		footerMenuData,
+		lawyerFaqData,
 	}
 }

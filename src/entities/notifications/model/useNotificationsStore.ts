@@ -18,10 +18,11 @@ type NotificationsStore = {
 	notifications: NotificationItem[]
 	setNotifications: (data: NotificationItem[]) => void
 	markAsRead: (id: number) => void
+	markAllAsRead: () => void
 	clearAll: () => void
 }
 
-export const useNotificationsStore = create<NotificationsStore>((set) => ({
+export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
 	notifications: [],
 	setNotifications: (data) => set({ notifications: data }),
 	markAsRead: (id: number) => {
@@ -29,6 +30,17 @@ export const useNotificationsStore = create<NotificationsStore>((set) => ({
 			notifications: state.notifications.map((n) => (n.id === id ? { ...n, is_read: true } : n)),
 		}))
 		sharedApi.setReadNotification({}, id).catch(() => {})
+	},
+	markAllAsRead: () => {
+		const { notifications } = get()
+		set({
+			notifications: notifications.map((n) => ({ ...n, is_read: true })),
+		})
+		notifications.forEach((n) => {
+			if (!n.is_read) {
+				sharedApi.setReadNotification({}, n.id).catch(() => {})
+			}
+		})
 	},
 	clearAll: () => set({ notifications: [] }),
 }))

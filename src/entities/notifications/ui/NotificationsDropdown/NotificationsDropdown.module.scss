@@ -8,6 +8,14 @@
 	padding: 16px;
 	min-height: 200px;
 	font-family: 'Open Sans', sans-serif;
+	position: relative;
+
+	.markAllButton {
+		position: sticky;
+		bottom: 0;
+		right: 0;
+		left: 0;
+	}
 }
 
 .item {
