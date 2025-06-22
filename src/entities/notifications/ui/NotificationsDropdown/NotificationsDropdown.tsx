@@ -1,25 +1,26 @@
 'use client'
 
 import { Dropdown, Badge, List } from 'antd'
-import s from './NotificationsDropdown.module.scss'
-import { useNotifications, useNotificationsStore } from '../../model'
-import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
-import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 import Image from 'next/image'
-import { AppLink } from '@/shared/ui-kit/AppLink'
+import { useTranslations } from 'next-intl'
+
+import s from './NotificationsDropdown.module.scss'
+import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
+
+import { useNotifications, useNotificationsStore } from '../../model'
+import { AppLink, Button, Loader } from '@/shared/ui-kit'
 import { formatPublishedDate } from '@/shared/lib'
 import { mapNotification } from '@/shared/lib/helpers/mapNotification'
-import { useState } from 'react'
-import { Button, Loader } from '@/shared/ui-kit'
 
 export const NotificationsDropdown = () => {
-	const t = useTranslations('header')
+	const t = useTranslations('notifications')
 	const { notifications, markAsRead, markAllAsRead, clearAll, hiddenIds } = useNotificationsStore()
 	const { isLoading } = useNotifications()
 	const [open, setOpen] = useState(false)
 
 	const visibleNotifications = notifications.filter((n) => !hiddenIds.includes(n.id))
-	const data = visibleNotifications.length > 0 ? visibleNotifications.map(mapNotification) : []
+	const data = visibleNotifications.length > 0 ? visibleNotifications.map((n) => mapNotification(n, t)) : []
 	const unreadCount = data.filter((n) => !n.is_read).length
 
 	const items = (
@@ -27,10 +28,10 @@ export const NotificationsDropdown = () => {
 			{isLoading ? (
 				<Loader />
 			) : data.length === 0 ? (
-				<p className={s.empty}>Нет уведомлений</p>
+				<p className={s.empty}>{t('empty')}</p>
 			) : (
 				<>
-					<h4 className={s.title}>Ваши уведомления</h4>
+					<h4 className={s.title}>{t('title')}</h4>
 					<List
 						className={s.list}
 						dataSource={data}
@@ -71,24 +72,26 @@ export const NotificationsDropdown = () => {
 							</List.Item>
 						)}
 					/>
-					<Button
-						variant="clear"
-						size="auto"
-						className={s.clearButton}
-						onClick={clearAll}
-						aria-label="Очистить уведомления"
-						title="Очистить уведомления">
-						Очистить все уведомления
-					</Button>
-					{unreadCount > 0 && (
+					<div className={s.btns}>
+						{unreadCount > 0 && (
+							<Button
+								variant="primary"
+								size="full"
+								className={s.markAllButton}
+								onClick={markAllAsRead}>
+								{t('markAll')}
+							</Button>
+						)}
 						<Button
-							variant="primary"
+							variant="danger"
 							size="full"
-							className={s.markAllButton}
-							onClick={markAllAsRead}>
-							Прочитать все
+							className={s.clearButton}
+							onClick={clearAll}
+							aria-label={t('clearAll')}
+							title={t('clearAll')}>
+							{t('clearAll')}
 						</Button>
-					)}
+					</div>
 				</>
 			)}
 		</div>
@@ -107,7 +110,7 @@ export const NotificationsDropdown = () => {
 				<Image
 					style={{ cursor: 'pointer', borderRadius: '10px', objectFit: 'cover' }}
 					src={NotificationsIcon}
-					alt={t('notificationsAlt')}
+					alt={t('alt')}
 					width={24}
 					height={24}
 				/>

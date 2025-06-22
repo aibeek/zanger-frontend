@@ -86,7 +86,7 @@ export const ProfileChangeSpecialization = () => {
 					style={{ padding: '8px 30px', marginTop: '-22px' }}
 					disabled={isSubmitting}
 					className={s.submitButton}>
-					{isSubmitting ? 'Сохранение...' : 'Сохранить'}
+					{isSubmitting ? t('saving') : t('save')}
 				</Button>
 			</form>
 		</ProfileTabWrapper>

@@ -16,12 +16,7 @@ import { profileConsultationPriceSchema, ProfileConsultationPriceSchema } from '
 import s from './ProfileConsultationPrice.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useConsultationPriceStore } from '../../model/useConsultationPriceStore'
-import { LawyerProfile, UserProfile } from '@/shared/lib/types'
-
-const OPTIONS = [
-	{ label: 'Бесплатно', value: 'free' },
-	{ label: 'Указать цену', value: 'paid' },
-]
+import { UserProfile } from '@/shared/lib/types'
 
 export const ProfileConsultationPrice = () => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
@@ -47,14 +42,19 @@ export const ProfileConsultationPrice = () => {
 		await updateConsultationPrice(payload)
 		reset()
 		setSelected('paid')
-		disclosureBtnRef.current.click()
+		disclosureBtnRef.current?.click()
 	}
+
+	const OPTIONS = [
+		{ label: t('optionFree'), value: 'free' },
+		{ label: t('optionPaid'), value: 'paid' },
+	]
 
 	return (
 		<ProfileTabWrapper
 			title={t('title')}
 			imgSrc={consultationIcon}
-			imgAlt="personalData"
+			imgAlt={t('imgAlt')}
 			panel_title={t('panelTitle')}
 			panel_descr={t('panelDescription')}
 			ref={disclosureBtnRef}>
@@ -82,7 +82,7 @@ export const ProfileConsultationPrice = () => {
 
 				{selected === 'paid' && (
 					<div className={s.inputGroup}>
-						<label className={s.label}>Укажите стоимость консультации</label>
+						<label className={s.label}>{t('inputLabel')}</label>
 						<div className={s.inputWrapper}>
 							<Controller
 								name="consultation_price"
@@ -99,21 +99,19 @@ export const ProfileConsultationPrice = () => {
 											onChange(parsed)
 										}}
 										onBlur={onBlur}
-										// @ts-expect-error fix it
 										placeholder={
 											personalData.lawyer?.consultation_price === null
-												? 'Не указана'
+												? t('notProvided')
 												: Number(personalData.lawyer.consultation_price) === 0
-												? 'Бесплатно'
-												: Number(personalData.lawyer.consultation_price)
+													? t('free')
+													: Number(personalData.lawyer.consultation_price).toString()
 										}
 									/>
 								)}
 							/>
-
 							<span className={s.currency}>₸</span>
 						</div>
-						{errors.consultation_price && <p style={{ color: 'red' }}>{errors.consultation_price.message}</p>}
+						{errors.consultation_price && <p style={{ color: 'red' }}>{t(errors.consultation_price.message)}</p>}
 					</div>
 				)}
 
@@ -124,7 +122,7 @@ export const ProfileConsultationPrice = () => {
 					style={{ padding: '8px 30px', marginTop: '-22px' }}
 					disabled={isSubmitting}
 					className={s.submitButton}>
-					{isSubmitting ? 'Сохранение...' : 'Сохранить'}
+					{isSubmitting ? t('saving') : t('save')}
 				</Button>
 			</form>
 		</ProfileTabWrapper>

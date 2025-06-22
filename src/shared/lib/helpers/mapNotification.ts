@@ -1,10 +1,10 @@
 import { NotificationItem } from '@/entities/notifications'
 import docIcon from '@/app/assets/icons/need-to-access-docs.svg'
 
-export const mapNotification = (notification: any) => {
+export const mapNotification = (notification: any, t: ReturnType<any>): NotificationItem => {
 	const base: NotificationItem = {
 		id: notification.id,
-		title: notification.title,
+		title: t(`types.${notification.type}`),
 		is_read: notification.is_read,
 		created_at: notification.created_at,
 		hasButton: false,
@@ -21,7 +21,7 @@ export const mapNotification = (notification: any) => {
 				...base,
 				image: notification.data?.user?.icon,
 				name: notification.data?.user?.name || '',
-				buttonText: 'Посмотреть',
+				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/responses`,
 			}
@@ -31,7 +31,7 @@ export const mapNotification = (notification: any) => {
 				...base,
 				image: docIcon,
 				name: `${notification.data?.document?.name_ru || ''} (${notification.data?.status.title})`,
-				buttonText: 'Посмотреть',
+				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: '/dashboard/profile?tab=documents',
 			}
@@ -40,8 +40,7 @@ export const mapNotification = (notification: any) => {
 			return {
 				...base,
 				image: notification.data?.response?.lawyer?.icon,
-				// name: notification.data?.response?.lawyer?.name || '',
-				buttonText: 'Посмотреть',
+				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/applications`,
 			}
@@ -49,7 +48,7 @@ export const mapNotification = (notification: any) => {
 		case 'order_archived':
 			return {
 				...base,
-				buttonText: 'Посмотреть',
+				buttonText: t('buttons.view'),
 				image: docIcon,
 				hasButton: true,
 				buttonLink: `/dashboard/history`,

@@ -10,19 +10,15 @@
 	font-family: 'Open Sans', sans-serif;
 	position: relative;
 
-	.markAllButton {
+	.btns {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		background-color: white;
 		position: sticky;
 		bottom: 0;
 		right: 0;
 		left: 0;
-	}
-
-	.clearButton {
-		color: $error-color;
-		position: absolute;
-		right: 16px;
-		bottom: 16px;
-		font-size: 14px;
 	}
 }
 
