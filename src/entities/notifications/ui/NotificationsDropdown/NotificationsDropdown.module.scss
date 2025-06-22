@@ -16,6 +16,18 @@
 		right: 0;
 		left: 0;
 	}
+
+	.clearButton {
+		color: $error-color;
+		position: absolute;
+		right: 16px;
+		bottom: 16px;
+		font-size: 14px;
+	}
+}
+
+.list {
+	margin-bottom: 20px;
 }
 
 .item {

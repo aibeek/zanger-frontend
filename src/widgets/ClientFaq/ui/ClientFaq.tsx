@@ -13,7 +13,7 @@ export const ClientFaq = () => {
 		<section className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.top}>
-					<h2 className={s.faqTitle}>Часто задаваемые вопросы</h2>
+					<h2 className={s.faqTitle}>F.A.Q.</h2>
 
 					<div className={s.faqBox}>
 						<TabGroup>
@@ -31,9 +31,7 @@ export const ClientFaq = () => {
 													<>
 														<DisclosureButton className={s.faq}>
 															<p className={s.question}>{question}</p>
-															<ChevronDownIcon
-																className={`${s.chevron} ${open ? s.chevronOpen : ''}`}
-															/>
+															<ChevronDownIcon className={`${s.chevron} ${open ? s.chevronOpen : ''}`} />
 														</DisclosureButton>
 														<DisclosurePanel>
 															{typeof answer === 'string' ? (

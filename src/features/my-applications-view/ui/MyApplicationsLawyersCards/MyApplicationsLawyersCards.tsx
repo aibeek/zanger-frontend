@@ -23,12 +23,12 @@ interface MyApplicationsLawyersCardsProps {
 }
 
 export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawyersCardsProps) => {
-	const t = useTranslations()
+	const t = useTranslations('myApplications.lawyersCard')
 	const [openCard, setOpenCard] = useState<number | null>(null)
 	const [calledResponses, setCalledResponses] = useState<number[]>([])
 
-
-	const { acceptResponse, rejectResponse, getDetailedResponse, detailedResponse, createCallback } = useMyApplicationsStore()
+	const { acceptResponse, rejectResponse, getDetailedResponse, detailedResponse, createCallback } =
+		useMyApplicationsStore()
 
 	const toggleCard = async (responseId: number) => {
 		if (openCard === responseId) {
@@ -76,8 +76,8 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 						/>
 
 						<div className={s.userName}>
-							<p className={s.name}>{lawyer?.name || 'Без имени'}</p>
-							<p className={s.job}>{application.tag?.name || 'Без специализации'}</p>
+							<p className={s.name}>{lawyer?.name || t('noName')}</p>
+							<p className={s.job}>{application.tag?.name || t('noSpec')}</p>
 						</div>
 					</div>
 
@@ -89,7 +89,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 								size="md"
 								className={s.toggleBtn}
 								onClick={() => toggleCard(response.id)}>
-								Посмотреть
+								{t('view')}
 							</Button>
 
 							{!rejectResponse && (
@@ -99,7 +99,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 									size="md"
 									className={s.denyBtn}
 									onClick={() => handleReject(response.id)}>
-									Отклонить
+									{t('reject')}
 								</Button>
 							)}
 						</div>
@@ -111,57 +111,47 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 						<div className={s.cardDetails}>
 							<ul className={`${s.cardDetailsList} ${isOpen ? s.open : ''}`}>
 								<li className={s.city}>
-									Город: <span>{detailedResponse?.region || '—'}</span>
+									{t('city')}: <span>{detailedResponse?.region || '—'}</span>
 								</li>
 								<li className={s.cost}>
-									Стоимость консультации:{' '}
+									{t('price')}:{' '}
 									<span>
 										{/* @ts-expect-error fix it */}
 										{detailedResponse?.consultation_price === '0.00'
-											? 'Бесплатно'
-											: Number(detailedResponse?.consultation_price) + ' ₸' || 'не указано'}
+											? t('free')
+											: Number(detailedResponse?.consultation_price) + ' ₸' || t('notProvided')}
 									</span>
 								</li>
 								<li className={s.tag}>
-									Специальность: <span>{detailedResponse?.specialization || 'не указано'}</span>
+									{t('specialization')}: <span>{detailedResponse?.specialization || t('notProvided')}</span>
 								</li>
 								<li className={s.phone}>
 									<div className={s.left}>
-										Номер телефона:{' '}
+										{t('phone')}:{' '}
 										<span>
-											{!response.is_accepted
-												? 'Скрыт'
-												: detailedResponse?.contacts?.phone === null
-												? 'Не указан'
-												: detailedResponse?.contacts?.phone}
+											{!response.is_accepted ? t('hidden') : (detailedResponse?.contacts?.phone ?? t('notSpecified'))}
 										</span>
 									</div>
-
 									{response.is_accepted && (
 										<div className={s.right}>
-										<Button
-						variant="clear"
-						size="sm"
-						className={s.callbackBtn}
-						disabled={calledResponses.includes(response.id)}
-						onClick={() => handleCallback(response.id)}
-					>
-						{calledResponses.includes(response.id)
-							? 'Обратный звонок получен'
-							: 'Получить обратный звонок'}
-					</Button>
+											<Button
+												variant="clear"
+												size="sm"
+												className={s.callbackBtn}
+												disabled={calledResponses.includes(response.id)}
+												onClick={() => handleCallback(response.id)}>
+												{calledResponses.includes(response.id) ? t('callbackReceived') : t('callbackRequest')}
+											</Button>
 										</div>
 									)}
 								</li>
 								<li className={s.phone}>
 									<div className={s.left}>
-										WhatsApp:{' '}
+										{t('whatsapp')}:{' '}
 										<span>
 											{!response.is_accepted
-												? 'Скрыт'
-												: detailedResponse?.contacts?.whatsapp === null
-												? 'Не указан'
-												: detailedResponse?.contacts?.whatsapp}
+												? t('hidden')
+												: (detailedResponse?.contacts?.whatsapp ?? t('notSpecified'))}
 										</span>
 									</div>
 									{response.is_accepted && detailedResponse?.contacts?.whatsapp && (
@@ -169,8 +159,8 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 											<AppLink
 												variant="clear"
 												size="auto"
-												href={`https://api.whatsapp.com/send/?phone=${detailedResponse?.contacts?.whatsapp}`}
-												target={'_blank'}>
+												href={`https://api.whatsapp.com/send/?phone=${detailedResponse.contacts.whatsapp}`}
+												target="_blank">
 												<Image
 													src={whatsapp}
 													alt="whatsapp"
@@ -183,13 +173,11 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 								</li>
 								<li className={s.phone}>
 									<div className={s.left}>
-										Telegram:{' '}
+										{t('telegram')}:{' '}
 										<span>
 											{!response.is_accepted
-												? 'Скрыт'
-												: detailedResponse?.contacts?.telegram === null
-												? 'Не указан'
-												: detailedResponse?.contacts?.telegram}
+												? t('hidden')
+												: (detailedResponse?.contacts?.telegram ?? t('notSpecified'))}
 										</span>
 									</div>
 									{response.is_accepted && detailedResponse?.contacts?.telegram && (
@@ -197,8 +185,8 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 											<AppLink
 												variant="clear"
 												size="auto"
-												href={getTelegramLink(detailedResponse?.contacts?.telegram)}
-												target={'_blank'}>
+												href={getTelegramLink(detailedResponse.contacts.telegram)}
+												target="_blank">
 												<Image
 													src={telegram}
 													alt="telegram"
@@ -220,13 +208,13 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 											variant="primary"
 											className={s.agreeBtn}
 											onClick={() => handleAccept(response.id)}>
-											Принять
+											{t('accept')}
 										</Button>
 										<Button
 											variant="danger"
 											className={s.denyRedBtn}
 											onClick={() => handleReject(response.id)}>
-											Отказать
+											{t('deny')}
 										</Button>
 									</div>
 								) : (
@@ -234,7 +222,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 										variant="primary"
 										className={s.agreeBtn}
 										onClick={() => toggleCard(response.id)}>
-										Свернуть
+										{t('collapse')}
 									</Button>
 								)}
 							</div>
@@ -249,9 +237,8 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 		)
 	}
 
-	const isCardOpen = data.responses.some((r) => r.id === openCard)
-
 	let responsesToRender = []
+	const isCardOpen = data.responses.some((r) => r.id === openCard)
 
 	if (isCardOpen) {
 		responsesToRender = [
@@ -269,7 +256,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 		<section className={s.cards}>
 			{data.responses.filter((r) => !r.is_rejected && !r.is_accepted).length > 0 && (
 				<div className={s.notificationsBox}>
-					<p>Отклики юристов:</p>
+					<p>{t('responsesFromLawyers')}</p>
 					<span className={s.notification}>
 						{data.responses.filter((r) => !r.is_rejected && !r.is_accepted).length}
 					</span>
@@ -281,7 +268,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 
 				{openResponse && otherResponses.length > 0 && (
 					<div className={s.othersBox}>
-						<p className={s.others}>Другие специалисты:</p>
+						<p className={s.others}>{t('otherSpecialists')}</p>
 						{otherResponses.map((response) => renderResponseCard(data, response, false))}
 					</div>
 				)}

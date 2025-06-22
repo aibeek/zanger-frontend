@@ -1,6 +1,6 @@
 'use client'
 
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { Loader } from '@/shared/ui-kit'
 import { defaultClientTab } from '@/shared/lib'
@@ -11,6 +11,7 @@ import { useMyApplicationsInfinite } from '../../model'
 export const MyApplicationsTab = () => {
 	const locale = useLocale()
 	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useMyApplicationsInfinite()
+	const t = useTranslations('myApplications')
 
 	if (size === 0) {
 		return <Loader />
@@ -20,8 +21,8 @@ export const MyApplicationsTab = () => {
 		return (
 			<EmptyApplicationsAndResponses
 				redirectUrl={`/${locale}/${defaultClientTab}`}
-				buttonContent="Создать заявку"
-				descr="Заявок пока нет"
+				buttonContent={t('createRequest')}
+				descr={t('noRequests')}
 			/>
 		)
 	}

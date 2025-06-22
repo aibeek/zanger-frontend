@@ -62,7 +62,7 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	getNotifications: () =>
+	getAllNotifications: () =>
 		httpClientWithAuth(`${API_URL}/notifications?get-all=true`, {
 			method: 'GET',
 		}),

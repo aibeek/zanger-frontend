@@ -1,4 +1,5 @@
 import { sharedApi } from '@/shared/api'
+import toast from 'react-hot-toast'
 import useSWR from 'swr'
 import { create } from 'zustand'
 
@@ -14,16 +15,36 @@ export interface NotificationItem {
 	name: string
 	type: string
 }
+
 type NotificationsStore = {
 	notifications: NotificationItem[]
 	setNotifications: (data: NotificationItem[]) => void
 	markAsRead: (id: number) => void
 	markAllAsRead: () => void
+	hiddenIds: number[]
 	clearAll: () => void
 }
 
+const getHiddenIdsFromStorage = (): number[] => {
+	if (typeof window === 'undefined') return []
+	const raw = localStorage.getItem(HIDDEN_IDS_KEY)
+	try {
+		return raw ? JSON.parse(raw) : []
+	} catch {
+		return []
+	}
+}
+
+const setHiddenIdsToStorage = (ids: number[]) => {
+	localStorage.setItem(HIDDEN_IDS_KEY, JSON.stringify(ids))
+}
+
+const HIDDEN_IDS_KEY = 'hidden_notification_ids'
+
 export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
 	notifications: [],
+	hiddenIds: getHiddenIdsFromStorage(),
+
 	setNotifications: (data) => set({ notifications: data }),
 	markAsRead: (id: number) => {
 		set((state) => ({
@@ -42,16 +63,21 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
 			}
 		})
 	},
-	clearAll: () => set({ notifications: [] }),
+	clearAll: () => {
+		const allIds = get().notifications.map((n) => n.id)
+		set({ notifications: [], hiddenIds: allIds })
+		setHiddenIdsToStorage(allIds)
+		toast.success('Уведомления успешно удалены')
+	},
 }))
 
 export const useNotifications = () => {
 	const { setNotifications } = useNotificationsStore()
 
 	const { data, error, isLoading, mutate } = useSWR(
-		'/notifications',
+		'/notifications/all',
 		async () => {
-			const res = await sharedApi.getNotifications()
+			const res = await sharedApi.getAllNotifications()
 			// @ts-expect-error fix it
 			return res.data
 		},

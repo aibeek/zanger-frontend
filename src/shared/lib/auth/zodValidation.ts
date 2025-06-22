@@ -96,14 +96,14 @@ export const loginSchema = z.object({
 export const createApplicationSchema = z.object({
 	description: z
 		.string({
-			required_error: 'validation.description_required',
-			invalid_type_error: 'validation.description_required',
+			required_error: 'createApplications.form.validation.description_required',
+			invalid_type_error: 'createApplications.form.validation.description_required',
 		})
 		.min(10, { message: 'validation.description_too_short' }),
 	tag_id: z.union([z.number(), z.null()]).optional(),
 	region_id: z.number({
-		required_error: 'validation.region_or_city_required',
-		invalid_type_error: 'validation.region_or_city_required',
+		required_error: 'createApplications.form.validation.region_or_city_required',
+		invalid_type_error: 'createApplications.form.validation.region_or_city_required',
 	}),
 })
 

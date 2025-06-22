@@ -36,6 +36,25 @@ export const mapNotification = (notification: any) => {
 				buttonLink: '/dashboard/profile?tab=documents',
 			}
 
+		case 'new_order_response':
+			return {
+				...base,
+				image: notification.data?.response?.lawyer?.icon,
+				// name: notification.data?.response?.lawyer?.name || '',
+				buttonText: 'Посмотреть',
+				hasButton: true,
+				buttonLink: `/dashboard/applications`,
+			}
+
+		case 'order_archived':
+			return {
+				...base,
+				buttonText: 'Посмотреть',
+				image: docIcon,
+				hasButton: true,
+				buttonLink: `/dashboard/history`,
+			}
+
 		default:
 			return base
 	}

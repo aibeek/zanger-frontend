@@ -14,13 +14,13 @@ import { Button, Loader } from '@/shared/ui-kit'
 
 export const NotificationsDropdown = () => {
 	const t = useTranslations('header')
-	const { notifications, markAsRead, markAllAsRead } = useNotificationsStore()
+	const { notifications, markAsRead, markAllAsRead, clearAll, hiddenIds } = useNotificationsStore()
 	const { isLoading } = useNotifications()
 	const [open, setOpen] = useState(false)
-	console.log(notifications)
 
-	const data = notifications.length > 0 ? notifications.map(mapNotification) : []
-	const unreadCount = data.filter((n: any) => !n.is_read).length
+	const visibleNotifications = notifications.filter((n) => !hiddenIds.includes(n.id))
+	const data = visibleNotifications.length > 0 ? visibleNotifications.map(mapNotification) : []
+	const unreadCount = data.filter((n) => !n.is_read).length
 
 	const items = (
 		<div className={s.dropdownContent}>
@@ -71,26 +71,21 @@ export const NotificationsDropdown = () => {
 							</List.Item>
 						)}
 					/>
-					{/* <button
+					<Button
+						variant="clear"
+						size="auto"
 						className={s.clearButton}
 						onClick={clearAll}
 						aria-label="Очистить уведомления"
 						title="Очистить уведомления">
-						<Image
-							src={ClearIcon}
-							alt="Clear"
-							width={16}
-							height={16}
-						/>
-					</button> */}
+						Очистить все уведомления
+					</Button>
 					{unreadCount > 0 && (
 						<Button
 							variant="primary"
-							size={'full'}
+							size="full"
 							className={s.markAllButton}
-							onClick={() => {
-								markAllAsRead()
-							}}>
+							onClick={markAllAsRead}>
 							Прочитать все
 						</Button>
 					)}
@@ -102,7 +97,7 @@ export const NotificationsDropdown = () => {
 	return (
 		<Dropdown
 			open={open}
-			onOpenChange={setOpen}
+			onOpenChange={(state) => setOpen(state)}
 			overlay={items}
 			placement="bottomRight"
 			trigger={['click']}>

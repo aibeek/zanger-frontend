@@ -13,10 +13,10 @@ import s from './CreateApplicationForm.module.scss'
 import { useTranslations } from 'next-intl'
 
 export const CreateApplicationForm = () => {
+	const t = useTranslations('createApplications.form')
 	const { tags, loadingTags } = useTags()
 	const { regions } = useRegions()
 	const { submit, success, resetSuccess } = useCreateApplicationStore()
-	const t = useTranslations()
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 
 	const {
@@ -51,7 +51,7 @@ export const CreateApplicationForm = () => {
 					className={s.form}
 					onSubmit={handleSubmit(onSubmit)}>
 					<div className={`${s.tags} ${s.inputBox}`}>
-						<label className={s.label}>Вид услуги</label>
+						<label className={s.label}>{t('tagLabel')}</label>
 						<Controller
 							name="tag_id"
 							control={control}
@@ -65,7 +65,7 @@ export const CreateApplicationForm = () => {
 									onChange={(tag) => field.onChange(tag?.id ?? null)}
 									getId={(item) => item.id ?? 'null'}
 									getLabel={(item) => item.name}
-									placeholder="Выберите вид услуги"
+									placeholder={t('tagPlaceholder')}
 								/>
 							)}
 						/>
@@ -73,31 +73,29 @@ export const CreateApplicationForm = () => {
 					</div>
 
 					<div className={`${s.city} ${s.inputBox}`}>
-						<label className={s.label}>Населенный пункт</label>
+						<label className={s.label}>{t('regionLabel')}</label>
 						<Controller
 							name="region_id"
 							control={control}
-							render={({ field }) => {
-								return (
-									<SearchSelect
-										className="search-select dashboard-select"
-										data={optionsForSelect}
-										searchData={allOptions}
-										value={allOptions.find((r) => r.id === field.value) || null}
-										onChange={(region) => field.onChange(region?.id)}
-										getId={(item) => item.id}
-										getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
-										placeholder="Выберите населенный пункт"
-									/>
-								)
-							}}
+							render={({ field }) => (
+								<SearchSelect
+									className="search-select dashboard-select"
+									data={optionsForSelect}
+									searchData={allOptions}
+									value={allOptions.find((r) => r.id === field.value) || null}
+									onChange={(region) => field.onChange(region?.id)}
+									getId={(item) => item.id}
+									getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
+									renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+									placeholder={t('regionPlaceholder')}
+								/>
+							)}
 						/>
 						{errors.region_id && <p className={s.error}>{t(errors.region_id.message)}</p>}
 					</div>
 
 					<div className={`${s.description} ${s.inputBox}`}>
-						<label className={s.label}>Описание</label>
+						<label className={s.label}>{t('descriptionLabel')}</label>
 						<Controller
 							name="description"
 							control={control}
@@ -107,7 +105,7 @@ export const CreateApplicationForm = () => {
 									value={field.value ?? ''}
 									onChange={field.onChange}
 									className={s.textarea}
-									placeholder="Введите описание"
+									placeholder={t('descriptionPlaceholder')}
 								/>
 							)}
 						/>
@@ -120,7 +118,7 @@ export const CreateApplicationForm = () => {
 						size="lg"
 						type="submit"
 						disabled={success}>
-						{success ? 'Заявка отправлена' : 'Подать заявку'}
+						{success ? t('success') : t('submit')}
 					</Button>
 				</form>
 			</div>
