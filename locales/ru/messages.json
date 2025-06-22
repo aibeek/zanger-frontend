@@ -478,29 +478,6 @@
 	"Required": "Заполните поле",
 	"published": "Опубликовано",
 
-	"regions": {
-		"astana": "Астана",
-		"almaty": "Алматы",
-		"shymkent": "Шымкент",
-		"semei": "Семей",
-		"kokshetau": "Кокшетау",
-		"akhtobe": "Актобе",
-		"konaev": "Конаев",
-		"atyrau": "Атырау",
-		"uskemen": "Усть-Каменогорск",
-		"taraz": "Тараз",
-		"taldykorgan": "Талдыкорган",
-		"oral": "Уральск",
-		"karaganda": "Караганда",
-		"kostanay": "Костанай",
-		"kyzylorda": "Кызылорда",
-		"aktau": "Актау",
-		"pavlodar": "Павлодар",
-		"petropavl": "Петропавловск",
-		"turkistan": "Туркестан",
-		"zhezkazgan": "Жезказган"
-	},
-
 	"lenta": {
 		"respond": "Откликнуться",
 		"load_more": "Загрузить еще",
