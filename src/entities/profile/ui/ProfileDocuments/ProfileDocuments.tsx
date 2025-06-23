@@ -10,10 +10,10 @@ import A4 from '@/app/assets/icons/a4.svg'
 import s from './ProfileDocuments.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import Image from 'next/image'
-import { useDocuments, useLawyerDocumentsStore } from '../../model'
 import toast from 'react-hot-toast'
 import { useSearchParams } from 'next/navigation'
 import { DocumentsList } from './DocumentsList'
+import { useDocuments, useLawyerDocumentsStore } from '../../model'
 
 const { Dragger } = Upload
 const { Option } = Select
@@ -47,22 +47,22 @@ export const ProfileDocuments = () => {
 
 	const handleBeforeUpload = (file: File) => {
 		if (!allowedTypes.includes(file.type)) {
-			toast.error('Неподдерживаемый формат файла')
+			toast.error(t('profile.documents.unsupportedFormat'))
 			return Upload.LIST_IGNORE
 		}
 
 		if (!selectedDocumentId) {
-			toast.error('Сначала выберите тип документа')
+			toast.error(t('profile.documents.selectDocFirst'))
 			return Upload.LIST_IGNORE
 		}
 
 		if (isDoubleSided && frontSide === null) {
-			toast.error('Выберите сторону документа')
+			toast.error(t('profile.documents.selectSideFirst'))
 			return Upload.LIST_IGNORE
 		}
 
-		if(selectedFiles.length >= 1) {
-			toast.error('Вы можете загрузить только один документ')
+		if (selectedFiles.length >= 1) {
+			toast.error(t('profile.documents.tooManyFiles'))
 			return Upload.LIST_IGNORE
 		}
 
@@ -75,7 +75,7 @@ export const ProfileDocuments = () => {
 	}
 
 	const handleUpload = async (mutate) => {
-		await uploadFiles(mutate)
+		await uploadFiles(mutate, t)
 		await mutate()
 		setSelectedDocument(null, false)
 		close()

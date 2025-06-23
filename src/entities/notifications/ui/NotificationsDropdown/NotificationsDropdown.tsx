@@ -88,7 +88,7 @@ export const NotificationsDropdown = () => {
 							variant="danger"
 							size="full"
 							className={s.clearButton}
-							onClick={clearAll}
+							onClick={() => clearAll(t)}
 							aria-label={t('clearAll')}
 							title={t('clearAll')}>
 							{t('clearAll')}

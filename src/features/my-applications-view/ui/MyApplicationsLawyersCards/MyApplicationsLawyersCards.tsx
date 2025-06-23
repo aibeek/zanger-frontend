@@ -34,23 +34,23 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 		if (openCard === responseId) {
 			setOpenCard(null)
 		} else {
-			await getDetailedResponse(responseId)
+			await getDetailedResponse(responseId, t)
 			setOpenCard(responseId)
 		}
 	}
 
 	const handleReject = async (responseId: number) => {
-		await rejectResponse(responseId, mutate)
+		await rejectResponse(responseId, mutate, t)
 		setOpenCard(null)
 	}
 
 	const handleAccept = async (responseId: number) => {
-		await acceptResponse(responseId, mutate)
-		await getDetailedResponse(responseId)
+		await acceptResponse(responseId, mutate, t)
+		await getDetailedResponse(responseId, t)
 	}
 
 	const handleCallback = async (id: number) => {
-		await createCallback(id)
+		await createCallback(id, t)
 		setCalledResponses((prev) => [...prev, id])
 	}
 

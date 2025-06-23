@@ -7,7 +7,6 @@ import { Button } from '@/shared/ui-kit'
 import { useLawyerDocumentsStore } from '../../model'
 import { TrashIcon } from '@heroicons/react/20/solid'
 import { LawyerDocument } from '@/shared/api'
-import { getUploadStatus } from './getUploadStatus'
 
 type Props = {
 	documents: LawyerDocument[]
@@ -19,7 +18,7 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 	const { deleteDocumentById } = useLawyerDocumentsStore()
 
 	const handleDelete = async (id: number, mutate: () => void) => {
-		await deleteDocumentById(id, mutate)
+		await deleteDocumentById(id, mutate, t)
 	}
 
 	return (
@@ -27,9 +26,7 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 			style={{ marginTop: 24 }}
 			className={s.documentsList}>
 			{documents.flatMap((doc) => {
-				
 				if (doc.is_double_sided && Array.isArray(doc.sides)) {
-
 					// @ts-expect-error fix it
 					return doc.sides
 						.filter((side) => !!side.link)
@@ -82,7 +79,6 @@ export const DocumentsList = ({ documents, mutate }: Props) => {
 							<div className={s.documentInfo}>
 								<p className={s.docName}>{doc.name}</p>
 								<div className={s.featuresDoc}>
-
 									<a
 										href={doc.link}
 										target="_blank"

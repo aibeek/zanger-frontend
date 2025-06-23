@@ -144,10 +144,10 @@ export const profilePersonalDataSchema = z.object({
 
 	lawyer_type_ids: z
 		.array(z.number(), {
-			required_error: 'validation.status_required',
-			invalid_type_error: 'validation.status_required',
+			required_error: 'Выберите хотя бы один статус',
+			invalid_type_error: 'Выберите хотя бы один статус',
 		})
-		.min(1, { message: 'validation.status_required' }),
+		.min(1, { message: 'Выберите хотя бы один статус' }),
 
 	region_id: z
 		.number({
@@ -177,25 +177,25 @@ export const profileConsultationPriceSchema = z
 export const specializationSchema = z.object({
 	specializations: z
 		.array(z.number(), {
-			required_error: 'validation.specialization_required_',
+			required_error: 'Выберите хотя бы одну специализацию',
 		})
-		.min(1, { message: 'validation.specialization_required_' }),
+		.min(1, { message: 'Выберите хотя бы одну специализацию' }),
 })
 
 export const statusesSchema = z.object({
 	statuses: z
 		.array(z.number(), {
-			required_error: 'validation.status_required_',
+			required_error: 'Выберите свой статус',
 		})
-		.min(1, { message: 'validation.status_required_' }),
+		.min(1, { message: 'Выберите свой статус' }),
 })
 
 export const servicingCitiesSchema = z.object({
 	region_ids: z
 		.array(z.number(), {
-			required_error: 'validation.location_required_',
+			required_error: 'Выберите хотя бы одну локацию',
 		})
-		.min(1, { message: 'validation.location_required_' }),
+		.min(1, { message: 'Выберите хотя бы одну локацию' }),
 })
 
 export type ServicingCitiesForm = z.infer<typeof servicingCitiesSchema>

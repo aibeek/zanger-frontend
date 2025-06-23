@@ -5,7 +5,7 @@ import { clientApi, CreateApplicationType } from '@/shared/api'
 
 interface CreateApplicationState {
 	success: boolean
-	submit: (data: CreateApplicationType) => Promise<void>
+	submit: (data: CreateApplicationType, t) => Promise<void>
 	setSuccess: (val: boolean) => void
 	resetSuccess: () => void
 }
@@ -17,21 +17,19 @@ export const useCreateApplicationStore = create<CreateApplicationState>((set) =>
 
 	resetSuccess: () => set({ success: false }),
 
-	submit: async (data) => {
+	submit: async (data, t) => {
 		try {
 			await clientApi.createApplication(data)
 
-			toast.success('Заявка успешно создана', {
+			toast.success(t('successStore'), {
 				position: 'top-right',
 			})
 
-			set({
-				success: true,
-			})
+			set({ success: true })
 
 			setTimeout(() => set({ success: false }), 5000)
 		} catch (error) {
-			toast.error('Произошла ошибка при создании заявки', {
+			toast.error(t('errorStore'), {
 				position: 'top-right',
 			})
 		}

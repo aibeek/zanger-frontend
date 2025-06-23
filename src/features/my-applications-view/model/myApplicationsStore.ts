@@ -26,12 +26,16 @@ interface MyApplicationsStore {
 	filteredApplications: Application[]
 	setCancellingApplication: (value: boolean) => void
 	setFilteredApplications: (applications: Application[]) => void
-	cancelTheApplication: (data: CancelApplicationType, mutate: () => Promise<void>) => Promise<void>
-	acceptResponse: (responseId: number, mutate: () => Promise<void>) => Promise<void>
-	rejectResponse: (responseId: number, mutate: () => Promise<void>) => Promise<void>
-	getDetailedResponse: (responseId: number) => Promise<void>
+	cancelTheApplication: (
+		data: CancelApplicationType,
+		mutate: () => Promise<void>,
+		t: (key: string) => string,
+	) => Promise<void>
+	acceptResponse: (responseId: number, mutate: () => Promise<void>, t: (key: string) => string) => Promise<void>
+	rejectResponse: (responseId: number, mutate: () => Promise<void>, t: (key: string) => string) => Promise<void>
+	getDetailedResponse: (responseId: number, t: (key: string) => string) => Promise<void>
 	loadingDetailed: boolean
-	createCallback: (id: number) => Promise<void>
+	createCallback: (id: number, t: (key: string) => string) => Promise<void>
 }
 
 export const useMyApplicationsStore = create<MyApplicationsStore>((set) => ({
@@ -39,61 +43,61 @@ export const useMyApplicationsStore = create<MyApplicationsStore>((set) => ({
 	isCancellingApplication: false,
 	filteredApplications: [],
 	loadingDetailed: false,
+
 	setCancellingApplication: (value) => set({ isCancellingApplication: value }),
 	setFilteredApplications: (applications) => set({ filteredApplications: applications }),
 
-	cancelTheApplication: async (data, mutate) => {
+	cancelTheApplication: async (data, mutate, t) => {
 		set({ isCancellingApplication: true })
 		try {
 			await clientApi.cancelApplication(data)
-			toast.success('Заявка успешно отменена')
+			toast.success(t('cancelSuccess'))
 			await mutate()
 		} catch (error) {
-			toast.error('Ошибка при отмене заявки')
+			toast.error(t('cancelError'))
 		} finally {
 			set({ isCancellingApplication: false })
 		}
 	},
 
-	acceptResponse: async (responseId, mutate) => {
+	acceptResponse: async (responseId, mutate, t) => {
 		try {
 			await clientApi.acceptResponse({ id: responseId })
-			toast.success('Отклик успешно принят')
+			toast.success(t('acceptSuccess'))
 			await mutate()
 		} catch (error) {
-			toast.error('Ошибка при принятии отклика')
+			toast.error(t('acceptError'))
 		}
 	},
 
-	rejectResponse: async (responseId, mutate) => {
+	rejectResponse: async (responseId, mutate, t) => {
 		try {
 			await clientApi.rejectResponse({ id: responseId })
-			toast.success('Отклик отклонён')
+			toast.success(t('rejectSuccess'))
 			await mutate()
 		} catch (error) {
-			toast.error('Ошибка при отклонении отклика')
+			toast.error(t('rejectError'))
 		}
 	},
 
-	getDetailedResponse: async (responseId: number) => {
+	getDetailedResponse: async (responseId, t) => {
 		set({ loadingDetailed: true })
 		try {
 			const response = (await clientApi.detailedResponse({ id: responseId })) as DetailedLawyerResponse
 			set({ detailedResponse: response })
 		} catch (error) {
-			toast.error('Ошибка при получении деталей отклика')
+			toast.error(t('detailError'))
 		} finally {
 			set({ loadingDetailed: false })
 		}
 	},
 
-
-	createCallback: async (id: number) => {
+	createCallback: async (id, t) => {
 		try {
-			await clientApi.createCallback({ id: id })
-			toast.success('Вызов успешно отправлен')
+			await clientApi.createCallback({ id })
+			toast.success(t('callbackSuccess'))
 		} catch (error) {
-			toast.error('Ошибка при отправке вызова')
+			toast.error(t('callbackError'))
 		}
 	},
 }))

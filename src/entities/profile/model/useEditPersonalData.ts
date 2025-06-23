@@ -6,14 +6,14 @@ import { create } from 'zustand'
 interface EditPersonalDataState {
 	isSubmitting: boolean
 	success: boolean
-	updateProfilePersonalData: (data: UpdateClientData, role: string) => Promise<void>
+	updateProfilePersonalData: (data: UpdateClientData, role: string, t: (key: string) => string) => Promise<void>
 }
 
 export const useEditPersonalDataStore = create<EditPersonalDataState>((set) => ({
 	isSubmitting: false,
 	success: false,
 
-	updateProfilePersonalData: async (data, role) => {
+	updateProfilePersonalData: async (data, role, t) => {
 		set({ isSubmitting: true, success: false })
 
 		try {
@@ -23,9 +23,9 @@ export const useEditPersonalDataStore = create<EditPersonalDataState>((set) => (
 			set({ success: true })
 			await refreshUser()
 
-			toast.success('Данные успешно обновлены')
+			toast.success(t('profile.personal_data.success'))
 		} catch (e: any) {
-			toast.error('Произошла ошибка')
+			toast.error(t('profile.personal_data.error'))
 		} finally {
 			set({ isSubmitting: false })
 		}

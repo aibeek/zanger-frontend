@@ -46,7 +46,7 @@ export const ProfileChangeSpecialization = () => {
 	}, [selectedSpecs, setValue])
 
 	const onSubmit = async (data: SpecializationForm) => {
-		await updateLawyerSpecializations({ specialization_ids: data.specializations })
+		await updateLawyerSpecializations({ specialization_ids: data.specializations }, t)
 	}
 
 	return (

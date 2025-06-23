@@ -11,7 +11,9 @@ interface ChangeSpecializationState {
 	specializations: Tag[]
 	selectedSpecs: Tag[]
 	loadingSpecializations: boolean
-	updateLawyerSpecializations: (data: { specialization_ids: number[] }) => Promise<void>
+
+	updateLawyerSpecializations: (data: { specialization_ids: number[] }, t: (key: string) => string) => Promise<void>
+
 	fetchSpecializations: () => Promise<void>
 	fetchSelectedSpecializations: () => Promise<void>
 }
@@ -24,7 +26,7 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 
 	loadingSpecializations: false,
 
-	updateLawyerSpecializations: async (data) => {
+	updateLawyerSpecializations: async (data, t) => {
 		set({ isSubmitting: true, success: false })
 
 		try {
@@ -32,13 +34,12 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 			await profileApi.updateLawyerSpecializations(data)
 
 			set({ success: true })
-
-			toast.success('Специализации успешно обновлены')
+			toast.success(t('success'))
 
 			await refreshUser()
 		} catch (e: any) {
 			console.error(e)
-			toast.error('Произошла ошибка')
+			toast.error(t('error'))
 		} finally {
 			set({ isSubmitting: false })
 		}
@@ -48,12 +49,9 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 		set({ loadingSpecializations: true })
 		try {
 			const specializations = (await sharedApi.getAllSpecializations()) as any
-
-			// const specializations = (await profileApi.getLawyerSpecializations()) as any
-
 			set({ specializations: specializations.data })
 		} catch (error) {
-			console.error('Ошибка при загрузке cпециализаций:', error)
+			console.error('Ошибка при загрузке специализаций:', error)
 		} finally {
 			set({ loadingSpecializations: false })
 		}
@@ -63,10 +61,9 @@ export const useChangeSpecializationStore = create<ChangeSpecializationState>((s
 		set({ loadingSpecializations: true })
 		try {
 			const selectedSpecs = (await profileApi.getSelectedLawyerSpecializations()) as any
-
 			set({ selectedSpecs: selectedSpecs.data })
 		} catch (error) {
-			console.error('Ошибка при загрузке cпециализаций:', error)
+			console.error('Ошибка при загрузке выбранных специализаций:', error)
 		} finally {
 			set({ loadingSpecializations: false })
 		}

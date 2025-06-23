@@ -47,7 +47,7 @@ export const ProfileServicingCities = () => {
 	}, [isLoaded, servicingCities, setValue])
 
 	const onSubmit = async (data: ServicingCitiesForm) => {
-		await updateServicingRegions({ region_ids: data.region_ids })
+		await updateServicingRegions({ region_ids: data.region_ids }, t)
 	}
 
 	return (

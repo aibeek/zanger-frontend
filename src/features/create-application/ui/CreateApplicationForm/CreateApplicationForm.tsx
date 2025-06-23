@@ -36,7 +36,7 @@ export const CreateApplicationForm = () => {
 				tag_id: data.tag_id || null,
 			}
 
-			await submit(modifiedData)
+			await submit(modifiedData, t)
 			reset()
 			resetSuccess()
 		} catch (error) {

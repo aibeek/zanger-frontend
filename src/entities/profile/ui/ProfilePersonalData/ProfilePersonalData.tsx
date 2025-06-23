@@ -88,7 +88,8 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		if (value === 'Не указан') value = null
 
 		try {
-			await updateProfilePersonalData({ [field]: value }, role)
+			await updateProfilePersonalData({ [field]: value }, role, t)
+
 			setEditableInputs((prev) => ({ ...prev, [field]: false }))
 		} catch (e) {
 			console.error('Ошибка при сохранении:', e)
@@ -135,7 +136,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 						placeholder: t('profile.personal_data.iinPlaceholder'),
 						isMasked: false,
 					},
-			  ]
+				]
 			: []),
 	]
 

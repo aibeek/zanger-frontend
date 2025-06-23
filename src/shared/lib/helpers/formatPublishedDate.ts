@@ -21,8 +21,10 @@ export const formatPublishedDate = (dateString?: string): string => {
 	const localeMap = { ru, kk }
 	const selectedLocale = localeMap[locale] || ru
 
-	if (isToday(date)) return locale === 'ru' ? 'сегодня' : 'бүгін'
-	if (isYesterday(date)) return locale === 'ru' ? 'вчера' : 'кеше'
+	const time = format(date, 'HH:mm')
+
+	if (isToday(date)) return locale === 'ru' ? `сегодня ${time}` : `бүгін ${time}`
+	if (isYesterday(date)) return locale === 'ru' ? `вчера ${time}` : `кеше ${time}`
 
 	return format(date, 'd MMM yyyy / HH:mm', { locale: selectedLocale })
 }

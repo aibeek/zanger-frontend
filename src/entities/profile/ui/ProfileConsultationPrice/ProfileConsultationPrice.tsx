@@ -39,7 +39,7 @@ export const ProfileConsultationPrice = () => {
 			consultation_price: selected === 'free' ? 0 : Number(data.consultation_price?.replace(/\s/g, '')),
 		}
 
-		await updateConsultationPrice(payload)
+		await updateConsultationPrice(payload, t)
 		reset()
 		setSelected('paid')
 		disclosureBtnRef.current?.click()

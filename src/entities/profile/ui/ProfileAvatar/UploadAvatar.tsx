@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import A4 from '@/app/assets/icons/a4.svg'
 import { Upload, message } from 'antd'
@@ -5,6 +7,7 @@ import Image from 'next/image'
 import { Button } from '@/shared/ui-kit'
 import s from './UploadAvatar.module.scss'
 import { useUploadAvatarStore } from '../../model'
+import { useTranslations } from 'next-intl'
 
 const { Dragger } = Upload
 
@@ -15,15 +18,17 @@ interface UploadAvatarProps {
 export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
 	const { setFile, avatarPreviewUrl, uploadAvatar, isUploading, clearFile, uploadProgress } = useUploadAvatarStore()
 	const [showUploadUI, setShowUploadUI] = useState(false)
+	const t = useTranslations('uploadAvatar')
 
 	const handleBeforeUpload = (file: File) => {
 		setFile(file)
-		message.loading({ content: 'Изображение загружается...', key: 'upload-preview' })
+		message.loading({ content: t('imageLoading'), key: 'upload-preview' })
 		setShowUploadUI(true)
 		return false
 	}
+
 	const handleUpload = async () => {
-		await uploadAvatar()
+		await uploadAvatar(t)
 		if (onClose) onClose()
 	}
 
@@ -39,12 +44,12 @@ export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
 						<p className={s.icon}>
 							<Image
 								src={A4}
-								alt="иконка"
+								alt="icon"
 								width={50}
 								height={60}
 							/>
 						</p>
-						<p className={s.text}>Пожалуйста, предоставьте изображение для создания вашей аватарки.</p>
+						<p className={s.text}>{t('uploadPrompt')}</p>
 					</div>
 				</Dragger>
 			)}
@@ -89,7 +94,7 @@ export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
 					className={s.btn}
 					disabled={!avatarPreviewUrl || isUploading}
 					onClick={handleUpload}>
-					{isUploading ? 'Загрузка...' : 'Загрузить'}
+					{isUploading ? t('loading') : t('submit')}
 				</Button>
 			</div>
 		</>

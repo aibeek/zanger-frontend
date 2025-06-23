@@ -18,9 +18,11 @@ import { LentaList } from '../LentaList'
 import s from './LentaTab.module.scss'
 import { RegionSwitch } from './RegionSwitch'
 import { useLentaInfinite, useLentaStore } from '../../model'
+import { useTranslations } from 'next-intl'
 
 export const LentaTab = () => {
 	const { hasAccess, needsDocuments, needsSubscription, hasModerationDocs, documentStatuses } = useLentaAccessStatus()
+	const t = useTranslations('lenta')
 
 	const { applyToRequest } = useLentaStore()
 	const [allRegions, setAllRegions] = useState(false)
@@ -38,8 +40,8 @@ export const LentaTab = () => {
 	if (hasModerationDocs) {
 		return (
 			<div className={s.needToAccess}>
-				<h3>Доступ к ленте ограничен</h3>
-				<p>Ваши документы находятся на модерации.</p>
+				<h3>{t('accessRestricted')}</h3>
+				<p>{t('documentsModeration')}</p>
 
 				<Image
 					src={DocsIcon}
@@ -54,21 +56,19 @@ export const LentaTab = () => {
 	if (!hasAccess) {
 		return (
 			<div className={s.needToAccess}>
-				<h3>Доступ к ленте ограничен</h3>
+				<h3>{t('accessRestricted')}</h3>
 
 				{needsDocuments && (
 					<>
-						<p>Пожалуйста, загрузите необходимые документы</p>
+						<p>{t('uploadDocsPrompt')}</p>
 
 						<ul className={s.docsList}>
 							{documentStatuses.map((doc) => (
 								<li
-									style={
-										doc.status === 'fully_uploaded' ? { color: '#09cb09' } : { color: 'ff5b5bfa' }
-									}
+									style={doc.status === 'fully_uploaded' ? { color: '#09cb09' } : { color: 'ff5b5bfa' }}
 									className={s.docsItem}
 									key={doc.id}>
-									{doc.name}: {doc.status === 'fully_uploaded' ? 'Загружен' : 'Не загружен'}
+									{doc.name}: {doc.status === 'fully_uploaded' ? t('uploaded') : t('notUploaded')}
 								</li>
 							))}
 						</ul>
@@ -81,7 +81,7 @@ export const LentaTab = () => {
 						<AppLink
 							size="md"
 							href="/dashboard/profile?tab=documents">
-							Загрузить документы
+							{t('uploadDocs')}
 						</AppLink>
 					</>
 				)}
@@ -119,17 +119,17 @@ export const LentaTab = () => {
 			{needsSubscription && (
 				<Alert
 					icon={SheetAlertIcon}
-					title="Оформите подписку"
-					description={'Чтобы откликаться на заявки, необходимо оформить подписку'}
-					link={{ href: '/subscription', label: 'Оформить подписку' }}
+					title={t('subscriptionTitle')}
+					description={t('subscriptionDescription')}
+					link={{ href: '/subscription', label: t('subscribe') }}
 				/>
 			)}
 			{needsDocuments && (
 				<Alert
 					icon={AlarmAlertIcon}
-					title="Вы не заполнили анкету!"
-					description={'Чтобы получать заявки от клиентов, необходимо заполнить анкету и пройти верификацию'}
-					link={{ href: '/dashboard/profile?tab=documents', label: 'Заполнить анкету' }}
+					title={t('formNotFilled')}
+					description={t('formDescription')}
+					link={{ href: '/dashboard/profile?tab=documents', label: t('fillForm') }}
 				/>
 			)}
 
@@ -138,7 +138,7 @@ export const LentaTab = () => {
 				loadMore={() => setSize((s) => s + 1)}
 				isLoadingMore={isLoadingMore}
 				isReachingEnd={isReachingEnd}
-				applyToRequest={(params: any) => applyToRequest({ ...params, mutate })}
+				applyToRequest={(params: any) => applyToRequest({ ...params, mutate }, t)}
 			/>
 		</>
 	)

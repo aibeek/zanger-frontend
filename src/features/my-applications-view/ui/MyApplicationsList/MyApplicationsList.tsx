@@ -51,7 +51,7 @@ export const MyApplicationsList = ({ items, loadMore, isLoadingMore, isReachingE
 
 		if (selectedApplicationId !== null) {
 			setCancellingApplication(true)
-			await cancelTheApplication({ application_id: selectedApplicationId, cancel_reason }, mutate)
+			await cancelTheApplication({ application_id: selectedApplicationId, cancel_reason }, mutate, t)
 			handleClose()
 		}
 	}
@@ -60,7 +60,7 @@ export const MyApplicationsList = ({ items, loadMore, isLoadingMore, isReachingE
 		if (!customReason) return
 
 		setCancellingApplication(true)
-		await cancelTheApplication({ application_id: selectedApplicationId, cancel_reason: customReason }, mutate)
+		await cancelTheApplication({ application_id: selectedApplicationId, cancel_reason: customReason }, mutate, t)
 		handleClose()
 	}
 

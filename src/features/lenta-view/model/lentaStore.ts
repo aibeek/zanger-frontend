@@ -7,9 +7,17 @@ interface LentaStore {
 	respondedIds: number[]
 	addRespondedId: (id: number) => void
 	removeRespondedId: (id: number) => void
-	applyToRequest: ({ order_id, mutate }: { order_id: number; mutate: any }) => Promise<void>
+	applyToRequest: (
+		{
+			order_id,
+			mutate,
+		}: {
+			order_id: number
+			mutate: any
+		},
+		t,
+	) => Promise<void>
 }
-
 export const useLentaStore = create<LentaStore>((set, get) => ({
 	respondedIds: [],
 	addRespondedId: (id) =>
@@ -20,11 +28,11 @@ export const useLentaStore = create<LentaStore>((set, get) => ({
 		set((state) => ({
 			respondedIds: state.respondedIds.filter((itemId) => itemId !== id),
 		})),
-	applyToRequest: async ({ order_id, mutate }) => {
+	applyToRequest: async ({ order_id, mutate }, t) => {
 		try {
 			await lawyerApi.applyToOrder({ application_id: order_id })
 			get().addRespondedId(order_id)
-			toast.success('Вы успешно откликнулись')
+			toast.success(t('success'))
 
 			mutate((prevData) => {
 				if (!prevData) return prevData
@@ -32,7 +40,7 @@ export const useLentaStore = create<LentaStore>((set, get) => ({
 				return newPages
 			}, false)
 		} catch (error) {
-			toast.error('Не удалось откликнуться')
+			toast.error(t('error'))
 		}
 	},
 }))

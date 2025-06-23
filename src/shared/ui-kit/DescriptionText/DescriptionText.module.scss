@@ -1,8 +1,31 @@
 .descr {
 	color: rgba(156, 165, 172, 1);
-	min-height: 50px;
-	font-size: 14px;
+	height: 60px;
+	font-size: 15px;
 	font-weight: 400;
 	word-wrap: break-word;
 	padding-bottom: 10px;
+	text-align: justify;
+
+	line-height: 130%;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: all 0.3s ease;
+}
+
+.btn {
+	margin-left: auto;
+	display: flex;
+	padding: 0;
+	margin-bottom: 12px;
+	font-size: 14px;
+}
+
+.expanded {
+	-webkit-line-clamp: unset;
+	overflow: visible;
+	height: 100%;
 }

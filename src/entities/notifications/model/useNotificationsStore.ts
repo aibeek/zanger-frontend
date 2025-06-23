@@ -22,7 +22,7 @@ type NotificationsStore = {
 	markAsRead: (id: number) => void
 	markAllAsRead: () => void
 	hiddenIds: number[]
-	clearAll: () => void
+	clearAll: (t: (key: string) => string) => void
 }
 
 const getHiddenIdsFromStorage = (): number[] => {
@@ -63,11 +63,11 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
 			}
 		})
 	},
-	clearAll: () => {
+	clearAll: (t) => {
 		const allIds = get().notifications.map((n) => n.id)
 		set({ notifications: [], hiddenIds: allIds })
 		setHiddenIdsToStorage(allIds)
-		toast.success('Уведомления успешно удалены')
+		toast.success(t('cleared'))
 	},
 }))
 

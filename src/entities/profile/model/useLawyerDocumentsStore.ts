@@ -18,8 +18,8 @@ interface LawyerDocumentsState {
 	setSelectedDocument: (id: number | null, isDoubleSided: boolean) => void
 	setFrontSide: (side: 0 | 1) => void
 
-	uploadFiles: (mutate: () => void) => Promise<void>
-	deleteDocumentById: (id: number, mutate: () => void) => Promise<void>
+	uploadFiles: (mutate: () => void, t) => Promise<void>
+	deleteDocumentById: (id: number, mutate: () => void, t) => Promise<void>
 }
 
 export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) => ({
@@ -40,21 +40,21 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 
 	setFrontSide: (side) => set({ frontSide: side }),
 
-	uploadFiles: async (mutate) => {
+	uploadFiles: async (mutate, t) => {
 		const { selectedFiles, selectedDocumentId, frontSide, isDoubleSided, setSelectedFiles } = get()
 
 		if (!selectedDocumentId) {
-			toast.error('Документ не выбран')
+			toast.error(t('profile.documents.errors.noDocument'))
 			return
 		}
 
 		if (selectedFiles.length === 0) {
-			toast.error('Файлы не выбраны')
+			toast.error(t('profile.documents.errors.noFiles'))
 			return
 		}
 
 		if (isDoubleSided && frontSide === null) {
-			toast.error('Выберите сторону документа')
+			toast.error(t('profile.documents.errors.noSide'))
 			return
 		}
 
@@ -66,28 +66,28 @@ export const useLawyerDocumentsStore = create<LawyerDocumentsState>((set, get) =
 				formData.append('file', file)
 				await profileApi.uploadDocument(formData)
 			}
-			toast.success('Документ успешно загружен')
+			toast.success(t('profile.documents.uploadSuccess'))
 			setSelectedFiles([])
 			await mutate()
 			await refreshUser()
 		} catch (e) {
-			toast.error('Ошибка при загрузке документа')
+			toast.error(t('profile.documents.uploadError'))
 		}
 	},
 
-	deleteDocumentById: async (idToDelete, mutate) => {
+	deleteDocumentById: async (idToDelete, mutate, t) => {
 		if (!idToDelete) {
-			toast.error('Документ нельзя удалить — отсутствует id')
+			toast.error(t('profile.documents.errors.invalidDeleteId'))
 			return
 		}
 
 		try {
 			await profileApi.deleteDocument(idToDelete)
-			toast.success('Документ удалён')
+			toast.success(t('deleteSuccess'))
 			mutate()
 			await refreshUser()
 		} catch (e) {
-			toast.error('Ошибка при удалении документа')
+			toast.error(t('deleteError'))
 		}
 	},
 }))

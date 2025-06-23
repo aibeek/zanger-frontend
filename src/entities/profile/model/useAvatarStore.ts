@@ -10,7 +10,7 @@ interface UploadAvatarState {
 	uploadProgress: number
 	setFile: (file: File) => void
 	clearFile: () => void
-	uploadAvatar: () => Promise<void>
+	uploadAvatar: (t: (key: string) => string) => Promise<void>
 }
 
 export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
@@ -28,10 +28,10 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 		set({ file: null, avatarPreviewUrl: null, uploadProgress: 0 })
 	},
 
-	uploadAvatar: async () => {
+	uploadAvatar: async (t) => {
 		const { file } = get()
 		if (!file) {
-			toast.error('Сначала выберите файл')
+			toast.error(t('noFileSelected'))
 			return
 		}
 
@@ -52,7 +52,7 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 			}
 
 			await profileApi.updateAvatar({ icon: uploadedUrl })
-			toast.success('Аватар успешно обновлён')
+			toast.success(t('success'))
 
 			await refreshUser()
 
@@ -63,7 +63,7 @@ export const useUploadAvatarStore = create<UploadAvatarState>((set, get) => ({
 				uploadProgress: 100,
 			})
 		} catch (error) {
-			toast.error('Ошибка загрузки аватара')
+			toast.error(t('error'))
 			set({ isUploading: false, uploadProgress: 0 })
 		}
 	},
