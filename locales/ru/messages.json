@@ -559,7 +559,9 @@
 			"descriptionLabel": "Описание",
 			"descriptionPlaceholder": "Введите описание",
 			"submit": "Подать заявку",
-			"success": "Заявка отправлена"
+			"success": "Заявка отправлена",
+			"description_required": "Опишите заявку",
+			"region_or_city_required": "Укажите регион или город"
 		}
 	},
 
@@ -578,6 +580,8 @@
 			"response_accepted": "Ваш отклик принят",
 			"response_rejected": "Ваш отклик отклонён",
 			"documents": "Обновление документа",
+			"call_request": "Запрос на звонок",
+			"new_order": "Новая заявка",
 			"new_order_response": "Новый отклик на заявку",
 			"order_archived": "Заявка перемещена в архив"
 		}

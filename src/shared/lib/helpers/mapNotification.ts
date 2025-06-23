@@ -1,5 +1,6 @@
 import { NotificationItem } from '@/entities/notifications'
 import docIcon from '@/app/assets/icons/need-to-access-docs.svg'
+import { formatPhoneNumber } from './formatPhoneNumber'
 
 export const mapNotification = (notification: any, t: ReturnType<any>): NotificationItem => {
 	const base: NotificationItem = {
@@ -43,6 +44,26 @@ export const mapNotification = (notification: any, t: ReturnType<any>): Notifica
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/applications`,
+			}
+
+		case 'new_order':
+			return {
+				...base,
+				name: notification.data?.tag?.name || '',
+				buttonText: t('buttons.view'),
+				hasButton: true,
+				buttonLink: `/dashboard/responses`,
+				image: docIcon,
+			}
+
+		case 'call_request':
+			return {
+				...base,
+				image: notification.data?.user?.icon,
+				name: `${notification.data?.user?.name} ${formatPhoneNumber(notification.data?.user?.phone)}`,
+				buttonText: t('buttons.view'),
+				hasButton: true,
+				buttonLink: `/dashboard/responses`,
 			}
 
 		case 'order_archived':

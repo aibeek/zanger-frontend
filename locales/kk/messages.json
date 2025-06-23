@@ -558,7 +558,9 @@
 			"descriptionLabel": "Сипаттама",
 			"descriptionPlaceholder": "Сипаттаманы енгізіңіз",
 			"submit": "Өтініш беру",
-			"success": "Өтініш жіберілді"
+			"success": "Өтініш жіберілді",
+			"description_required": "Өтінішті сипаттаңыз",
+			"region_or_city_required": "Өңірді немесе қаланы көрсетіңіз"
 		}
 	},
 
@@ -576,7 +578,9 @@
 		"types": {
 			"response_accepted": "Сіздің жауап қабылданды",
 			"response_rejected": "Сіздің жауап қабылданбады",
+			"call_request": "Қоңырау шалуға сұраныс",
 			"documents": "Құжаттар жаңартылды",
+			"new_order": "Жаңа өтінім",
 			"new_order_response": "Жаңа жауап",
 			"order_archived": "Өтінім архивке жіберілді"
 		}

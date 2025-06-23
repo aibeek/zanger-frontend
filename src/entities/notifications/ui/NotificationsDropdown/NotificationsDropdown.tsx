@@ -75,6 +75,7 @@ export const NotificationsDropdown = () => {
 					<div className={s.btns}>
 						{unreadCount > 0 && (
 							<Button
+								style={{ fontSize: '14px' }}
 								variant="primary"
 								size="full"
 								className={s.markAllButton}
@@ -83,6 +84,7 @@ export const NotificationsDropdown = () => {
 							</Button>
 						)}
 						<Button
+							style={{ fontSize: '14px' }}
 							variant="danger"
 							size="full"
 							className={s.clearButton}

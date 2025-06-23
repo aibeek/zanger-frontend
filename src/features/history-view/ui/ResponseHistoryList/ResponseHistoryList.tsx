@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, DescriptionText } from '@/shared/ui-kit'
+import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { useTranslations } from 'next-intl'
 
@@ -18,7 +18,7 @@ export const ResponseHistoryList = ({ items, loadMore, isLoadingMore, isReaching
 							className={s.item}
 							key={item.id}>
 							<div className={s.top}>
-								<DateComponent date={item.order.created_at} />
+								<UserBox data={item} />
 
 								{item.order && <span className={s.tag}>{item.order.tag.name}</span>}
 								<DescriptionText>{item.order.description}</DescriptionText>
