@@ -135,9 +135,19 @@ export const Footer = ({ variant, id }: Props) => {
 						</div>
 
 						<div className={s.columnAddress}>
-							<h6 className={s.columnTitle}>{t('address')}</h6>
-
 							<ul className={s.columnList}>
+								<li className={s.columnItem}>{t('bin')}</li>
+								<li
+									style={{ marginBottom: '10px' }}
+									className={s.columnItem}>
+									{t('too')}
+								</li>
+								<h6
+									style={{ marginBottom: '0' }}
+									className={s.columnTitle}>
+									{t('address')}
+								</h6>
+
 								<li className={s.columnItem}>
 									<Image
 										src={location}
@@ -145,8 +155,6 @@ export const Footer = ({ variant, id }: Props) => {
 									/>
 									{t('location')}
 								</li>
-								<li className={s.columnItem}>{t('too')}</li>
-								<li className={s.columnItem}>{t('bin')}</li>
 							</ul>
 						</div>
 						<div className={s.column}>

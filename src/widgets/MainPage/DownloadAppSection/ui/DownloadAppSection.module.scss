@@ -35,6 +35,13 @@
 	gap: 24px;
 	text-align: justify;
 	width: 33%;
+
+	@media (max-width: 1170px) {
+		width: 55%;
+	}
+	@media (max-width: 768px) {
+		width: 90%;
+	}
 }
 
 .subtitle {
