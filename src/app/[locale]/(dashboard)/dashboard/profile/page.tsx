@@ -7,7 +7,6 @@ import { useLoginStore } from '@/features/auth/login'
 import {
 	ProfileAvatar,
 	ProfileChangePassword,
-	ProfileNotifications,
 	ProfileDelete,
 	ProfilePersonalData,
 	ProfileChangeSpecialization,
@@ -16,6 +15,7 @@ import {
 	ProfileServicingCities,
 	ProfileDocuments,
 	ProfileSupport,
+	ProfilePaymentMethod,
 } from '@/entities/profile'
 
 import s from './page.module.scss'
@@ -39,11 +39,11 @@ export default function ProfileView() {
 					<div className={s.bottom}>
 						<ProfilePersonalData role={role} />
 						<ProfileChangePassword />
-						{/* <ProfileNotifications /> */}
 						{lawyer && <ProfileDocuments />}
 						{lawyer && <ProfileConsultationPrice />}
 						{lawyer && <ProfileChangeSpecialization />}
 						{lawyer && <ProfileSubscription />}
+						{lawyer && <ProfilePaymentMethod />}
 						<ProfileSupport />
 						{lawyer && <ProfileServicingCities />}
 						<ProfileDelete />

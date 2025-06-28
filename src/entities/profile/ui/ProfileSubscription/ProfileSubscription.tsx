@@ -7,7 +7,7 @@ export const ProfileSubscription = () => {
 	return (
 		<div className={s.item}>
 			<h6 className={s.title}>{t('title')}</h6>
-			<span className={s.plan}>Бесплатно</span>
+			<span className={s.plan}>Отсутствует</span>
 		</div>
 	)
 }

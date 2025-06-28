@@ -61,6 +61,14 @@
 			font-size: 12px !important;
 		}
 	}
+
+	.subLink {
+		color: rgba(156, 165, 172, 1);
+		font-size: 14px;
+		padding: 8px 12px;
+		border-color: $light-blue-color;
+		font-weight: 600;
+	}
 }
 
 .lendingHeader {

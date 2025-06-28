@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Disclosure } from '@headlessui/react'
 import Image from 'next/image'
 import { authService, useLoginStore } from '@/features/auth'
@@ -26,6 +26,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const { headerMenuData } = useAppContentData()
 	const t = useTranslations('header')
 	const { isAuthenticated, checkAuth } = useAuthStore()
+	const pathname = usePathname()
 
 	useEffect(() => {
 		checkAuth()
@@ -190,8 +191,18 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							)}
 						</div>
 						<div className={s.right}>
+							{isAuthenticated && personalData && !pathname.includes('/subscription') && (
+								<div className={s.subscription}>
+									<AppLink
+										className={s.subLink}
+										variant={'border'}
+										href={'/subscription'}>
+										{t('subscription')}
+									</AppLink>
+								</div>
+							)}
 							<LangSwitcher hide={true} />
-							
+
 							{isAuthenticated && personalData && (
 								<>
 									<div className={s.notifications}>

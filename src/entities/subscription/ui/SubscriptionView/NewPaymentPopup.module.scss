@@ -1,0 +1,94 @@
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	max-width: 400px;
+	padding: 0 16px 16px 16px;
+}
+
+.title {
+	font-size: 20px;
+	font-weight: 600;
+	margin-bottom: 12px;
+}
+
+.label {
+	font-size: 14px;
+	margin-bottom: 4px;
+	display: block;
+}
+
+.input {
+	border: 1px solid $light-blue-color;
+	border-radius: 8px;
+	padding: 12px;
+	background: #fff;
+	color: $primary-color;
+}
+
+.row {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.row > div {
+	flex: 1;
+}
+
+.note {
+	font-size: 12px;
+	color: $light-gray-color;
+	line-height: 1.4;
+	text-align: center;
+	margin-bottom: 16px;
+	font-weight: 400;
+}
+
+.switchLabel {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.switchRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+// switch
+
+.switch {
+	display: inline-flex;
+	align-items: center;
+	width: 44px;
+	height: 24px;
+	border-radius: 9999px;
+	background-color: #e5e7eb;
+	transition: background-color 0.2s;
+	border: none;
+
+	&Checked {
+		background-color: $blue-color;
+	}
+}
+
+.thumb {
+	width: 16px;
+	height: 16px;
+	background-color: white;
+	border-radius: 9999px;
+	transform: translateX(4px);
+	transition: transform 0.2s;
+
+	&Checked {
+		transform: translateX(22px);
+	}
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}

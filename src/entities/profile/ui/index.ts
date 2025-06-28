@@ -1,6 +1,6 @@
 export * from './ProfileAvatar'
 export * from './ProfileChangePassword'
-export * from './ProfileNotifications'
+export * from './ProfilePaymentMethod'
 export * from './ProfileTabWrapper'
 export * from './ProfileDelete'
 export * from './ProfilePersonalData'

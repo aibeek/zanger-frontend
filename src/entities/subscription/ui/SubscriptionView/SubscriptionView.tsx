@@ -5,8 +5,14 @@ import s from './SubscriptionView.module.scss'
 import Subscription from '@/app/assets/images/subscription.webp'
 import { SubscriptionPlans } from './SubscriptionPlans'
 import { AutoRenewal } from './AutoRenewal'
+import { StripeWrapper } from '@/shared/ui-kit/StripeWrapper'
+import { NewPaymentPopup } from './NewPaymentPopup'
+import { Button, useModal } from '@/shared/ui-kit'
 
 export const SubscriptionView = () => {
+	// const t = useTranslations('subscription')
+	const { open, isOpen, close } = useModal()
+
 	return (
 		<section>
 			<div className="little-container">
@@ -29,6 +35,20 @@ export const SubscriptionView = () => {
 					</div>
 
 					<SubscriptionPlans />
+					<div className={s.buy}>
+						<Button
+							style={{ marginBottom: '20px' }}
+							onClick={open}
+							size={'full'}>
+							Оформить подписку
+						</Button>
+						<StripeWrapper>
+							<NewPaymentPopup
+								isOpen={isOpen}
+								close={close}
+							/>
+						</StripeWrapper>
+					</div>
 					<AutoRenewal />
 				</div>
 			</div>
