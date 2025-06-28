@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
 	},
 
 	images: {
-		domains: ['api.lawyerplace.kulenkov-group.kz'],
+		domains: ['api.lawyerplace.kulenkov-group.kz', 'api.zanger-app.kz'],
 	},
 }
 
