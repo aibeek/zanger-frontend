@@ -10,6 +10,8 @@ import { Button } from '@/shared/ui-kit'
 
 import s from './NewPaymentPopup.module.scss'
 import { Modal, useModal } from '@/shared/ui-kit'
+import { useSubscriptionStore } from '../../model'
+import { lawyerApi } from '@/shared/api'
 
 export const NewPaymentPopup = ({ isOpen, close }: { isOpen: boolean; close: () => void }) => {
 	const t = useTranslations('newPaymentPopup')
@@ -18,27 +20,33 @@ export const NewPaymentPopup = ({ isOpen, close }: { isOpen: boolean; close: () 
 	const [loading, setLoading] = useState(false)
 	const [saveCard, setSaveCard] = useState(false)
 
+	const planId = useSubscriptionStore((state) => state.planId)
+	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		if (!stripe || !elements) return
-
 		setLoading(true)
 
 		const card = elements.getElement(CardNumberElement)
-		const { error, paymentMethod } = await stripe.createPaymentMethod({
-			type: 'card',
-			card,
-		})
+		const { error, paymentMethod } = await stripe.createPaymentMethod({ type: 'card', card })
 
 		if (error) {
 			toast.error(error.message)
 		} else {
 			console.log('Created payment method:', paymentMethod)
-			console.log('Save card for future:', saveCard)
+			try {
+				await lawyerApi.subscribe(planId, isAutoRenew)
+				toast.success('Подписка успешно оформлена!')
+				close()
+			} catch (e) {
+				toast.error('Ошибка при оформлении подписки')
+			}
 		}
 
 		setLoading(false)
 	}
+
 	return (
 		<Modal
 			className={s.modal}

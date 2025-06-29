@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
 import { Switch } from '@headlessui/react'
 import s from './AutoRenewal.module.scss'
+import { useSubscriptionStore } from '../../model'
 
 export const AutoRenewal = () => {
-	const [enabled, setEnabled] = useState(false)
+	const enabled = useSubscriptionStore((state) => state.isAutoRenew)
+	const setEnabled = useSubscriptionStore((state) => state.setAutoRenew)
 
 	return (
 		<div className={s.autoRenewalBtn}>

@@ -1,5 +1,5 @@
 import { loadStripe } from '@stripe/stripe-js'
 
-import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '@/shared/config'
-
-export const stripePromise = loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+export const stripePromise = loadStripe(
+	'pk_test_51ReycSCXxMPBGc6D3U6AJbgfqqjs4qlxNa5OVVKBFqLGCTguIKYQL8n5Syd8CYKEcBOZRt5Rq80ldRZXOxYMbadA00aI21FVsY',
+)

@@ -102,4 +102,10 @@ export const lawyerApi = {
 		httpClientWithAuth(`${API_URL}/lawyers/responses/${id}/work-out`, {
 			method: 'POST',
 		}),
+
+	subscribe: (plan_id: number, is_auto_renew: boolean) =>
+		httpClientWithAuth(`${API_URL}/profile/lawyers/subscribe`, {
+			method: 'POST',
+			body: JSON.stringify({ plan_id, is_auto_renew }),
+		}),
 }

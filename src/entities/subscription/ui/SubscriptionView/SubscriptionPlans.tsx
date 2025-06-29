@@ -4,27 +4,32 @@ import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 import s from './SubscriptionPlans.module.scss'
+import { useSubscriptionStore } from '../../model'
 
 const OPTIONS = [
 	{
+		planId: 1,
 		label: '1 месяц',
 		value: 'free',
 		price: 'БЕСПЛАТНО',
 		description: 'В течение первого месяца приложение бесплатно',
 	},
 	{
+		planId: 2,
 		label: 'Следующий месяц',
 		value: 'next',
 		price: '2 300 ₸',
 		description: 'Пожалуйста, произведите оплату, привязав карту',
 	},
 	{
+		planId: 3,
 		label: '6 месяцев',
 		value: '6',
 		price: '13 800 ₸',
 		description: 'Пожалуйста, произведите оплату, привязав карту',
 	},
 	{
+		planId: 4,
 		label: '12 месяцев',
 		value: '12',
 		price: '27 600 ₸',
@@ -34,12 +39,19 @@ const OPTIONS = [
 
 export const SubscriptionPlans = () => {
 	const [selected, setSelected] = useState('free')
+	const setPlanId = useSubscriptionStore((state) => state.setPlanId)
+
+	const handleChange = (value: string) => {
+		setSelected(value)
+		const selectedPlan = OPTIONS.find((o) => o.value === value)
+		if (selectedPlan) setPlanId(selectedPlan.planId)
+	}
 
 	return (
 		<RadioGroup
 			className={s.wrapper}
 			value={selected}
-			onChange={setSelected}>
+			onChange={handleChange}>
 			<div className={s.subPlans}>
 				{OPTIONS.map((option) => (
 					<RadioGroup.Option
