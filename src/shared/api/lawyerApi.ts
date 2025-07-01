@@ -59,6 +59,20 @@ export interface MyResponse {
 	user: User
 }
 
+export interface SubscriptionPlanRaw {
+	id: number
+	name: string
+	description: string | null
+	duration_months: number
+	price: string
+	discount_percentage: number
+}
+
+export interface SubscribeResponse {
+	link: string
+	message: string
+}
+
 export const lawyerApi = {
 	applyToOrder: (data: any) =>
 		httpClientWithAuth(`${API_URL}/lawyers/orders/${data.application_id}`, {
@@ -103,7 +117,13 @@ export const lawyerApi = {
 			method: 'POST',
 		}),
 
-	subscribe: (plan_id: number, is_auto_renew: boolean) =>
+	getAllSubscriptionPlans: (): Promise<{ data: SubscriptionPlanRaw[] }> => {
+		return httpClientWithAuth(`${API_URL}/plans`, {
+			method: 'GET',
+		})
+	},
+
+	subscribe: (plan_id: number, is_auto_renew: boolean): Promise<SubscribeResponse> =>
 		httpClientWithAuth(`${API_URL}/profile/lawyers/subscribe`, {
 			method: 'POST',
 			body: JSON.stringify({ plan_id, is_auto_renew }),

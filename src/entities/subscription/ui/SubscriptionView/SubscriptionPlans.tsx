@@ -1,49 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import clsx from 'clsx'
 import s from './SubscriptionPlans.module.scss'
 import { useSubscriptionStore } from '../../model'
-
-const OPTIONS = [
-	{
-		planId: 1,
-		label: '1 месяц',
-		value: 'free',
-		price: 'БЕСПЛАТНО',
-		description: 'В течение первого месяца приложение бесплатно',
-	},
-	{
-		planId: 2,
-		label: 'Следующий месяц',
-		value: 'next',
-		price: '2 300 ₸',
-		description: 'Пожалуйста, произведите оплату, привязав карту',
-	},
-	{
-		planId: 3,
-		label: '6 месяцев',
-		value: '6',
-		price: '13 800 ₸',
-		description: 'Пожалуйста, произведите оплату, привязав карту',
-	},
-	{
-		planId: 4,
-		label: '12 месяцев',
-		value: '12',
-		price: '27 600 ₸',
-		description: 'Пожалуйста, произведите оплату, привязав карту',
-	},
-]
+import { Loader } from '@/shared/ui-kit'
 
 export const SubscriptionPlans = () => {
-	const [selected, setSelected] = useState('free')
-	const setPlanId = useSubscriptionStore((state) => state.setPlanId)
+	const { plans, fetchPlans, loading, setPlanId } = useSubscriptionStore()
+	const [selected, setSelected] = useState(plans[0]?.value)
+
+	useEffect(() => {
+		fetchPlans()
+	}, [fetchPlans])
+
+	useEffect(() => {
+		if (plans.length > 0 && !selected) {
+			setSelected(plans[0].value)
+			setPlanId(plans[0].planId)
+		}
+	}, [plans, selected])
+
+	if (loading) return <Loader />
 
 	const handleChange = (value: string) => {
 		setSelected(value)
-		const selectedPlan = OPTIONS.find((o) => o.value === value)
+		const selectedPlan = plans.find((o) => o.value === value)
 		if (selectedPlan) setPlanId(selectedPlan.planId)
 	}
 
@@ -53,7 +36,7 @@ export const SubscriptionPlans = () => {
 			value={selected}
 			onChange={handleChange}>
 			<div className={s.subPlans}>
-				{OPTIONS.map((option) => (
+				{plans.map((option) => (
 					<RadioGroup.Option
 						key={option.value}
 						value={option.value}>
@@ -65,7 +48,7 @@ export const SubscriptionPlans = () => {
 								<div className={s.top}>
 									<span className={clsx(s.circle, { [s.filled]: checked })} />
 									<span className={s.title}>{option.label}</span>
-									<span className={s.price}>{option.price}</span>
+									<span className={s.price}>{option.price.startsWith('0') ? 'Бесплатно' : option.price}</span>
 								</div>
 								<p className={s.descr}>{option.description}</p>
 							</article>

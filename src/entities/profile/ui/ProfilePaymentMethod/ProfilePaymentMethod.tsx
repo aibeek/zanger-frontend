@@ -10,7 +10,6 @@ import kaspiIcon from '@/app/assets/icons/kaspi.png'
 
 import s from './ProfilePaymentMethod.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
-import { NewPaymentPopup } from '@/entities/subscription'
 import { useModal } from '@/shared/ui-kit'
 import { StripeWrapper } from '@/shared/ui-kit/StripeWrapper'
 import { PlusIcon } from '@heroicons/react/20/solid'
@@ -80,13 +79,13 @@ export const ProfilePaymentMethod = () => {
 					))}
 				</div>
 			</RadioGroup>
-
-			<StripeWrapper>
+			{/* 
+		 <StripeWrapper>
 				<NewPaymentPopup
 					isOpen={isOpen}
 					close={close}
-				/>
-			</StripeWrapper>
+				/> 
+			</StripeWrapper> */}
 		</ProfileTabWrapper>
 	)
 }

@@ -24,27 +24,16 @@ export const NewPaymentPopup = ({ isOpen, close }: { isOpen: boolean; close: () 
 	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
 
 	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault()
-		if (!stripe || !elements) return
 		setLoading(true)
 
-		const card = elements.getElement(CardNumberElement)
-		const { error, paymentMethod } = await stripe.createPaymentMethod({ type: 'card', card })
-
-		if (error) {
-			toast.error(error.message)
-		} else {
-			console.log('Created payment method:', paymentMethod)
-			try {
-				await lawyerApi.subscribe(planId, isAutoRenew)
-				toast.success('Подписка успешно оформлена!')
-				close()
-			} catch (e) {
-				toast.error('Ошибка при оформлении подписки')
-			}
+		try {
+			const { link } = await lawyerApi.subscribe(planId, isAutoRenew)
+			window.location.href = link
+		} catch (e) {
+			console.error(e)
+			toast.error('Ошибка при оформлении подписки')
+			setLoading(false)
 		}
-
-		setLoading(false)
 	}
 
 	return (
