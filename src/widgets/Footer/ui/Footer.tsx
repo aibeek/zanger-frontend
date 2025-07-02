@@ -136,11 +136,11 @@ export const Footer = ({ variant, id }: Props) => {
 
 						<div className={s.columnAddress}>
 							<ul className={s.columnList}>
-								<li className={s.columnItem}>{t('bin')}</li>
+								<li className={s.columnItem}>{t('too')}</li>
 								<li
 									style={{ marginBottom: '10px' }}
 									className={s.columnItem}>
-									{t('too')}
+									{t('bin')}
 								</li>
 								<h6
 									style={{ marginBottom: '0' }}

@@ -11,7 +11,7 @@ import kaspiIcon from '@/app/assets/icons/kaspi.png'
 import s from './ProfilePaymentMethod.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useModal } from '@/shared/ui-kit'
-import { StripeWrapper } from '@/shared/ui-kit/StripeWrapper'
+// import { StripeWrapper } from '@/shared/ui-kit/StripeWrapper'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Image from 'next/image'
 

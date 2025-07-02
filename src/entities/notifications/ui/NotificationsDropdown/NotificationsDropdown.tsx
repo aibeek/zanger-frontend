@@ -12,15 +12,20 @@ import { useNotifications, useNotificationsStore } from '../../model'
 import { AppLink, Button, Loader } from '@/shared/ui-kit'
 import { formatPublishedDate } from '@/shared/lib'
 import { mapNotification } from '@/shared/lib/helpers/mapNotification'
+import { useLoginStore } from '@/features/auth'
 
 export const NotificationsDropdown = () => {
 	const t = useTranslations('notifications')
 	const { notifications, markAsRead, markAllAsRead, clearAll, hiddenIds } = useNotificationsStore()
+	const { personalData } = useLoginStore()
 	const { isLoading } = useNotifications()
 	const [open, setOpen] = useState(false)
 
 	const visibleNotifications = notifications.filter((n) => !hiddenIds.includes(n.id))
-	const data = visibleNotifications.length > 0 ? visibleNotifications.map((n) => mapNotification(n, t)) : []
+	const data =
+		visibleNotifications.length > 0
+			? visibleNotifications.map((n) => mapNotification(n, t, personalData.language))
+			: []
 	const unreadCount = data.filter((n) => !n.is_read).length
 
 	const items = (

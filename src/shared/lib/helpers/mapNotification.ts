@@ -2,7 +2,7 @@ import { NotificationItem } from '@/entities/notifications'
 import docIcon from '@/app/assets/icons/need-to-access-docs.svg'
 import { formatPhoneNumber } from './formatPhoneNumber'
 
-export const mapNotification = (notification: any, t: ReturnType<any>): NotificationItem => {
+export const mapNotification = (notification: any, t: ReturnType<any>, lang: string): NotificationItem => {
 	const base: NotificationItem = {
 		id: notification.id,
 		title: t(`types.${notification.type}`),
@@ -46,15 +46,19 @@ export const mapNotification = (notification: any, t: ReturnType<any>): Notifica
 				buttonLink: `/dashboard/applications`,
 			}
 
-		case 'new_order':
+		case 'new_order': {
+			const rawTagName = notification.data?.tag?.name
+			const tagName = typeof rawTagName === 'object' ? rawTagName[lang] || rawTagName.ru || '' : rawTagName || ''
+
 			return {
 				...base,
-				name: notification.data?.tag?.name || '',
+				name: tagName,
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/responses`,
 				image: docIcon,
 			}
+		}
 
 		case 'call_request':
 			return {

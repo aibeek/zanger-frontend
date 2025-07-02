@@ -11,8 +11,9 @@ export const refreshUser = async (): Promise<UserProfile | null> => {
 		const updatedPersonalData = (await authApi.me()) as UserProfile
 
 		useLoginStore.setState({ personalData: updatedPersonalData })
-		localStorage.setItem('personalData', JSON.stringify(updatedPersonalData))
-
+		localStorage.removeItem('personalData')
+		const fresh = await authApi.me()
+		localStorage.setItem('personalData', JSON.stringify(fresh))
 		mutateSWR('/auth/me')
 
 		return updatedPersonalData
