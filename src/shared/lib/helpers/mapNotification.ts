@@ -17,25 +17,34 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 
 	switch (notification.type) {
 		case 'response_accepted':
-		case 'response_rejected':
+		case 'response_rejected': {
+			const rawName = notification.data?.user.name
+			const name = typeof rawName === 'object' ? rawName[lang] || rawName.ru || '' : rawName || ''
+
 			return {
 				...base,
 				image: notification.data?.user?.icon,
-				name: notification.data?.user?.name || '',
+				name,
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/responses`,
 			}
-
-		case 'documents':
+		}
+		case 'documents': {
+			const rawDocName = notification.data?.document?.name
+			const rawTitleName = notification.data?.status.title
+			const docName = typeof rawDocName === 'object' ? rawDocName[lang] || rawDocName.ru || '' : rawDocName || ''
+			const titleName =
+				typeof rawTitleName === 'object' ? rawTitleName[lang] || rawTitleName.ru || '' : rawTitleName || ''
 			return {
 				...base,
 				image: docIcon,
-				name: `${notification.data?.document?.name_ru || ''} (${notification.data?.status.title})`,
+				name: `${docName} (${titleName})`,
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: '/dashboard/profile?tab=documents',
 			}
+		}
 
 		case 'new_order_response':
 			return {

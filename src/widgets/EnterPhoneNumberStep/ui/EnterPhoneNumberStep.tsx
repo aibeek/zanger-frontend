@@ -12,7 +12,8 @@ import { useEnterPhone } from '@/features/auth/register'
 import { useStepMarcher, phoneSchema, PhoneSchemaType, useFormError } from '@/shared/lib'
 
 import s from './EnterPhoneNumberStep.module.scss'
-import { termsURL } from '@/shared/lib/consts/urls'
+import { termsKzURL, termsURL } from '@/shared/lib/consts/urls'
+import { usePathname } from 'next/navigation'
 
 type Props = { warning?: boolean; variant: PhoneAuthVariant }
 
@@ -20,6 +21,7 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 	const t = useTranslations()
 	const { phone, sendPhoneNumber, loading, error, setPhone, disableAfterError, resetState } = useEnterPhone()
 	const { nextStep } = useStepMarcher()
+	const pathname = usePathname()
 
 	const {
 		control,
@@ -94,7 +96,7 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 							<Link
 								className={s.link}
 								target="_blank"
-								href={termsURL}>
+								href={pathname.includes('kz') ? termsKzURL : termsURL}>
 								{' '}
 								{t('auth.enterPhone.linkText')}
 							</Link>

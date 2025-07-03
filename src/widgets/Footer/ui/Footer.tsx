@@ -19,7 +19,17 @@ import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/l
 import s from './Footer.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
-import { canselSubscriptionURL, paymentURL, policyURL, termsURL } from '@/shared/lib/consts/urls'
+import {
+	canselSubscriptionKzURL,
+	canselSubscriptionURL,
+	paymentKzURL,
+	paymentURL,
+	policyKzURL,
+	policyURL,
+	termsKzURL,
+	termsURL,
+} from '@/shared/lib/consts/urls'
+import { usePathname } from 'next/navigation'
 
 interface Props {
 	variant?: 'user-variant' | 'lending-variant'
@@ -31,6 +41,12 @@ export const Footer = ({ variant, id }: Props) => {
 	const { footerMenuData } = useAppContentData()
 	const t = useTranslations('footer')
 	const isActive = (link: string) => activeSection === link
+	const pathname = usePathname()
+
+	const termsHref = pathname.includes('kz') ? termsKzURL : termsURL
+	const canselSubscriptionHref = pathname.includes('kz') ? canselSubscriptionKzURL : canselSubscriptionURL
+	const policyHref = pathname.includes('kz') ? policyKzURL : policyURL
+	const paymentHref = pathname.includes('kz') ? paymentKzURL : paymentURL
 
 	return variant === 'user-variant' ? (
 		<footer
@@ -45,22 +61,22 @@ export const Footer = ({ variant, id }: Props) => {
 					<div className={s.right}>
 						<Link
 							target={'_blank'}
-							href={policyURL}>
+							href={policyHref}>
 							{t('privacy')}
 						</Link>
 						<Link
 							target={'_blank'}
-							href={termsURL}>
+							href={termsHref}>
 							{t('offer')}
 						</Link>
 						<Link
 							target={'_blank'}
-							href={paymentURL}>
+							href={paymentHref}>
 							{t('payment')}
 						</Link>
 						<Link
 							target={'_blank'}
-							href={canselSubscriptionURL}>
+							href={canselSubscriptionHref}>
 							{t('canselSubscription')}
 						</Link>
 					</div>
@@ -231,22 +247,22 @@ export const Footer = ({ variant, id }: Props) => {
 						<div className={s.lendingBottomRight}>
 							<Link
 								target={'_blank'}
-								href={policyURL}>
+								href={policyHref}>
 								{t('privacy')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={termsURL}>
+								href={termsHref}>
 								{t('offer')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={paymentURL}>
+								href={paymentHref}>
 								{t('payment')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={canselSubscriptionURL}>
+								href={canselSubscriptionHref}>
 								{t('canselSubscription')}
 							</Link>
 						</div>

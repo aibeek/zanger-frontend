@@ -11,10 +11,15 @@ import { useSubscriptionStore } from '../../model'
 import { useState } from 'react'
 import { lawyerApi } from '@/shared/api'
 import toast from 'react-hot-toast'
+import { useLoginStore } from '@/features/auth'
 
 export const SubscriptionView = () => {
 	const planId = useSubscriptionStore((state) => state.planId)
 	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
+	const { personalData } = useLoginStore()
+
+	// @ts-expect-error fix it
+	const ends_at = personalData?.lawyer?.subscription?.ends_at ?? ''
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		try {
@@ -41,9 +46,9 @@ export const SubscriptionView = () => {
 						/>
 						<h3 className={s.subtitle}>Пробный период со скидкой 90%</h3>
 						<p className={s.descr}>
-							По окончании пробного периода, который закончится 12 мая 2025 года, с вашего счёта будет
-							списана плата за подписку. Мы уведомим вас о продлении подписки за три дня до этого события.
-							Вы можете отказаться от подписки в любой момент.
+							По окончании пробного периода, который закончится {ends_at}, с вашего счёта будет списана плата за
+							подписку. Мы уведомим вас о продлении подписки за три дня до этого события. Вы можете отказаться от
+							подписки в любой момент.
 						</p>
 					</div>
 

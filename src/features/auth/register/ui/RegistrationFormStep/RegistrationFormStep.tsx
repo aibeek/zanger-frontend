@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -20,7 +20,7 @@ import s from './RegistrationFormStep.module.scss'
 import { SearchSelect } from '../SearchSelect'
 import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegions } from '../../model'
 import { useTranslations } from 'next-intl'
-import { policyURL } from '@/shared/lib/consts/urls'
+import { policyKzURL, policyURL } from '@/shared/lib/consts/urls'
 
 export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const t = useTranslations()
@@ -29,7 +29,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const { regions } = useRegions()
 	const { setField, sendData, resetState, loading } = useRegisterFormByVariant(variant)
 	const { lawyerTypes, fetchLawyerTypes, loadingLawyerTypes } = useLawyerTypesStore()
-
+	const pathname = usePathname()
 	const clientVariant = variant === 'client'
 	const lawyerVariant = variant === 'lawyer'
 
@@ -219,7 +219,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 					<p>{t('auth.registration.warningText')}</p>
 					<Link
 						target={'_blank'}
-						href={policyURL}>
+						href={pathname.includes('kz') ? policyKzURL : policyURL}>
 						{t('auth.registration.privacyPolicy')}
 					</Link>
 				</div>
