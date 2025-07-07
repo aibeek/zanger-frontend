@@ -56,6 +56,12 @@ export type LawyerProfile = BaseProfile & {
 		telegram: string | null
 		whatsapp: string | null
 		need_to_access: NeedToAccessItem[]
+		subscription: {
+			plan: {
+				name: string
+			}
+			ends_at: string
+		}
 	}
 }
 
