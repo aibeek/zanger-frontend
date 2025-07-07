@@ -8,6 +8,7 @@ import s from './DashboardTabs.module.scss'
 import Image from 'next/image'
 import { useMyResponsesInfinite } from '@/features/my-responses-view'
 import { useMyApplicationsInfinite } from '@/features/my-applications-view/model'
+import { useLoginStore } from '@/features/auth'
 
 type Tab = {
 	name: string
@@ -28,7 +29,7 @@ export const DashboardTabs = ({ tabs, defaultTab }: Props) => {
 	const t = useTranslations('tabs')
 	const { items: myApplications } = useMyApplicationsInfinite()
 	const { items: myResponses } = useMyResponsesInfinite()
-
+	const { personalData } = useLoginStore()
 	const activeTab = pathname.split('/').pop() || defaultTab
 
 	return (
@@ -44,7 +45,10 @@ export const DashboardTabs = ({ tabs, defaultTab }: Props) => {
 						className={clsx(s.tab, {
 							[s.active]: isActive,
 						})}
-						onClick={() => router.push(`/dashboard/${tab.route}`)}>
+						onClick={() => {
+							const cleanPath = `/${personalData.language}/dashboard/${tab.route}`
+							router.push(cleanPath)
+						}}>
 						<div className={s.left}>
 							<Image
 								src={tab.icon}
