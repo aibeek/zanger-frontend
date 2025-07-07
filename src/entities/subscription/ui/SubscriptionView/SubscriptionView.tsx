@@ -18,8 +18,7 @@ export const SubscriptionView = () => {
 	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
 	const { personalData } = useLoginStore()
 
-	// @ts-expect-error fix it
-	const ends_at = personalData?.lawyer?.subscription?.ends_at ?? ''
+	const ends_at = personalData.lawyer.subscription.ends_at ?? ''
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		try {

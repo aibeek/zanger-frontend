@@ -7,7 +7,7 @@ export const ProfileSubscription = () => {
 	const personalData = useLoginStore((state) => state.personalData)
 	const subscription =
 		personalData.lawyer.subscription !== null ? personalData.lawyer.subscription.plan.name : 'Отсутствует'
-	const end_at = personalData.lawyer.subscription.ends_at
+	const end_at = personalData.lawyer.subscription.ends_at ?? ''
 
 	return (
 		<div className={s.item}>
