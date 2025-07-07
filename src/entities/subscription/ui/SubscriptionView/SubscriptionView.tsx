@@ -18,7 +18,7 @@ export const SubscriptionView = () => {
 	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
 	const { personalData } = useLoginStore()
 
-	const ends_at = personalData.lawyer.subscription?.ends_at ?? ''
+	const ends_at = personalData?.lawyer?.subscription?.ends_at ?? ''
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		try {
@@ -43,12 +43,12 @@ export const SubscriptionView = () => {
 							width={440}
 							height={360}
 						/>
-						<h3 className={s.subtitle}>Пробный период со скидкой 90%</h3>
-						<p className={s.descr}>
+						{/* <h3 className={s.subtitle}>Пробный период со скидкой 90%</h3> */}
+						{/* <p className={s.descr}>
 							По окончании пробного периода, который закончится {ends_at}, с вашего счёта будет списана плата за
 							подписку. Мы уведомим вас о продлении подписки за три дня до этого события. Вы можете отказаться от
 							подписки в любой момент.
-						</p>
+						</p> */}
 					</div>
 
 					<SubscriptionPlans />

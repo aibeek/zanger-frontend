@@ -12,7 +12,7 @@ export const ProfileSubscription = () => {
 		<div className={s.item}>
 			<h6 className={s.title}>{t('title')}</h6>
 			<span className={s.plan}>
-				{subscriptionPlan} - Активна до {end_at}
+				{subscriptionPlan} {personalData.lawyer.subscription?.plan && <span>- Активна до {end_at}</span>}
 			</span>
 		</div>
 	)
