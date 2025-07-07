@@ -23,9 +23,7 @@ export const NotificationsDropdown = () => {
 
 	const visibleNotifications = notifications.filter((n) => !hiddenIds.includes(n.id))
 	const data =
-		visibleNotifications.length > 0
-			? visibleNotifications.map((n) => mapNotification(n, t, personalData.language))
-			: []
+		visibleNotifications.length > 0 ? visibleNotifications.map((n) => mapNotification(n, t, personalData.language)) : []
 	const unreadCount = data.filter((n) => !n.is_read).length
 
 	const items = (
@@ -62,6 +60,7 @@ export const NotificationsDropdown = () => {
 													setOpen(false)
 												}}>
 												{item.name && <div className={s.subname}>{item.name}</div>}
+												{item.cancel_reason && <div className={s.subname}>{item.cancel_reason}</div>}
 												<AppLink
 													variant="clear"
 													size="auto"

@@ -46,7 +46,7 @@ export const DashboardTabs = ({ tabs, defaultTab }: Props) => {
 							[s.active]: isActive,
 						})}
 						onClick={() => {
-							const cleanPath = `/${personalData.language}/dashboard/${tab.route}`
+							const cleanPath: string = `/${personalData.language}/dashboard/${tab.route}`
 							router.push(cleanPath)
 						}}>
 						<div className={s.left}>

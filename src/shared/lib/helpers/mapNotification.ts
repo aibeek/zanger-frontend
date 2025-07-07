@@ -36,10 +36,13 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 			const docName = typeof rawDocName === 'object' ? rawDocName[lang] || rawDocName.ru || '' : rawDocName || ''
 			const titleName =
 				typeof rawTitleName === 'object' ? rawTitleName[lang] || rawTitleName.ru || '' : rawTitleName || ''
+
+			const cancelReason = notification.data?.cancel_reason
 			return {
 				...base,
 				image: docIcon,
 				name: `${docName} (${titleName})`,
+				cancel_reason: cancelReason,
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: '/dashboard/profile?tab=documents',

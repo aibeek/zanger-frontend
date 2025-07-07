@@ -14,6 +14,7 @@ export interface NotificationItem {
 	buttonLink: string
 	name: string
 	type: string
+	cancel_reason?: string
 }
 
 type NotificationsStore = {

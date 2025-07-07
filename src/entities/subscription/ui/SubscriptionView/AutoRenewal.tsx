@@ -3,15 +3,17 @@
 import { Switch } from '@headlessui/react'
 import s from './AutoRenewal.module.scss'
 import { useSubscriptionStore } from '../../model'
+import { useTranslations } from 'next-intl'
 
 export const AutoRenewal = () => {
 	const enabled = useSubscriptionStore((state) => state.isAutoRenew)
 	const setEnabled = useSubscriptionStore((state) => state.setAutoRenew)
+	const t = useTranslations('subscriptionView')
 
 	return (
 		<div className={s.autoRenewalBtn}>
 			<div className={s.row}>
-				<span className={s.label}>Автоматическое продление</span>
+				<span className={s.label}>{t('autoRenewal')}</span>
 				<Switch
 					checked={enabled}
 					onChange={setEnabled}

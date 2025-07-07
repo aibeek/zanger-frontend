@@ -133,7 +133,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 						<div className={s.user}>
 							<Link
 								style={{ cursor: 'pointer' }}
-								href={'/dashboard/profile'}>
+								href={`/${personalData.language}/dashboard/profile`}>
 								<Image
 									style={{ borderRadius: '10px' }}
 									src={personalData.icon ?? avatar}
@@ -211,7 +211,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									<div className={s.user}>
 										<Link
 											style={{ cursor: 'pointer' }}
-											href={'/dashboard/profile'}>
+											href={`/${personalData.language}/dashboard/profile`}>
 											<Image
 												style={{ borderRadius: '10px', objectFit: 'cover' }}
 												src={personalData.icon ?? avatar}

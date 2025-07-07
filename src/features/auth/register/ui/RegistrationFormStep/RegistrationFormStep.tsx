@@ -55,7 +55,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 		if (lawyerVariant) fetchLawyerTypes()
 	}, [])
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async () => {
 		await sendData(async () => {
 			resetState()
 			router.push(`/auth/login`)
