@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { useSearchParams } from 'next/navigation'
 import { DocumentsList } from './DocumentsList'
 import { useDocuments, useLawyerDocumentsStore } from '../../model'
+import { useNotificationsInfinite } from '@/entities/notifications/model/useNotificationsInfinite'
 
 const { Dragger } = Upload
 const { Option } = Select
@@ -37,6 +38,7 @@ export const ProfileDocuments = () => {
 		setFrontSide,
 		uploadFiles,
 	} = useLawyerDocumentsStore()
+	const { mutate: mutateNotifications } = useNotificationsInfinite()
 
 	const { mutate, documents } = useDocuments()
 	const { open, close, isOpen } = useModal()
@@ -77,6 +79,7 @@ export const ProfileDocuments = () => {
 	const handleUpload = async (mutate) => {
 		await uploadFiles(mutate, t)
 		await mutate()
+		await mutateNotifications()
 		setSelectedDocument(null, false)
 		close()
 	}
@@ -110,7 +113,10 @@ export const ProfileDocuments = () => {
 			: []
 	}, [documents])
 
-	const currentDoc = useMemo(() => documents.find((d) => d.id === selectedDocumentId), [documents, selectedDocumentId])
+	const currentDoc = useMemo(
+		() => documents.find((d) => d.id === selectedDocumentId),
+		[documents, selectedDocumentId],
+	)
 
 	const availableSides = useMemo(() => {
 		if (!currentDoc || !currentDoc.is_double_sided || !currentDoc.sides) return FRONT_SIDE_OPTIONS
@@ -228,7 +234,9 @@ export const ProfileDocuments = () => {
 					<Dragger
 						beforeUpload={handleBeforeUpload}
 						multiple={false}
-						disabled={isCurrentDocFullyUploaded || !selectedDocumentId || (isDoubleSided && frontSide === null)}
+						disabled={
+							isCurrentDocFullyUploaded || !selectedDocumentId || (isDoubleSided && frontSide === null)
+						}
 						showUploadList={false}
 						className={s.dragger}>
 						<div className={s.topDragger}>

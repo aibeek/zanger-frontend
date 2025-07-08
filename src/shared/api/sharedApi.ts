@@ -1,4 +1,5 @@
 import { API_URL } from '../config'
+import { createNotificationsQuery } from '../lib'
 import { httpClient, httpClientWithAuth } from './httpClient'
 
 export interface CityType {
@@ -62,10 +63,19 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	getAllNotifications: () =>
-		httpClientWithAuth(`${API_URL}/notifications?get-all=true`, {
+	getAllNotifications: (params?: { page?: number; per_page?: number }) => {
+		const baseUrl = `${API_URL}/notifications`
+		const query = new URLSearchParams({ 'get-all': 'true' })
+
+		if (params?.page) query.set('page', String(params.page))
+		if (params?.per_page) query.set('per_page', String(params.per_page))
+
+		const url = `${baseUrl}?${query.toString()}`
+
+		return httpClientWithAuth(url, {
 			method: 'GET',
-		}),
+		})
+	},
 
 	setReadNotification: (data, id: number) =>
 		httpClientWithAuth(`${API_URL}/notifications/${id}/set-read`, {

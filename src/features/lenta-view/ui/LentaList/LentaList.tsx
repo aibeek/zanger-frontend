@@ -8,10 +8,12 @@ import s from './LentaList.module.scss'
 import { ReportButton } from '@/features/report/ui/ReportButton'
 import { useTranslations } from 'next-intl'
 import { useLentaAccessStatus } from '@/shared/lib'
+import { useMyResponsesInfinite } from '@/features/my-responses-view'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
 	const t = useTranslations('lenta')
 	const { needsSubscription } = useLentaAccessStatus()
+	const { mutate: mutateMyResponses } = useMyResponsesInfinite()
 
 	return (
 		<div className={s.wrapper}>
@@ -33,7 +35,9 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 										<div className={s.title}>
 											{item.tag && (
 												<>
-													<span className={s.specialization}>{item.tag.specialization.name}</span>
+													<span className={s.specialization}>
+														{item.tag.specialization.name}
+													</span>
 													<span className={s.tag}>{item.tag.name}</span>
 												</>
 											)}
@@ -51,6 +55,7 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 													toast.error(t('subscribe_required'))
 													return
 												}
+												mutateMyResponses()
 												applyToRequest({ order_id: item.id })
 											}}>
 											{t('respond')}

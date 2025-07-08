@@ -8,27 +8,30 @@ import { useTranslations } from 'next-intl'
 import s from './NotificationsDropdown.module.scss'
 import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
 
-import { useNotifications, useNotificationsStore } from '../../model'
+import { useNotificationsStore } from '../../model'
 import { AppLink, Button, Loader } from '@/shared/ui-kit'
 import { formatPublishedDate } from '@/shared/lib'
 import { mapNotification } from '@/shared/lib/helpers/mapNotification'
 import { useLoginStore } from '@/features/auth'
+import { useNotificationsInfinite } from '../../model/useNotificationsInfinite'
 
 export const NotificationsDropdown = () => {
 	const t = useTranslations('notifications')
-	const { notifications, markAsRead, markAllAsRead, clearAll, hiddenIds } = useNotificationsStore()
+	const { markAsRead } = useNotificationsStore()
 	const { personalData } = useLoginStore()
-	const { isLoading } = useNotifications()
+	const { items: paginatedNotifications, isLoadingMore, setSize, isReachingEnd, mutate } = useNotificationsInfinite()
 	const [open, setOpen] = useState(false)
 
-	const visibleNotifications = notifications.filter((n) => !hiddenIds.includes(n.id))
+	const visibleNotifications = paginatedNotifications
 	const data =
-		visibleNotifications.length > 0 ? visibleNotifications.map((n) => mapNotification(n, t, personalData.language)) : []
+		visibleNotifications.length > 0
+			? visibleNotifications.map((n) => mapNotification(n, t, personalData.language))
+			: []
 	const unreadCount = data.filter((n) => !n.is_read).length
 
 	const items = (
 		<div className={s.dropdownContent}>
-			{isLoading ? (
+			{isLoadingMore ? (
 				<Loader />
 			) : data.length === 0 ? (
 				<p className={s.empty}>{t('empty')}</p>
@@ -57,10 +60,13 @@ export const NotificationsDropdown = () => {
 											<div
 												onClick={() => {
 													markAsRead(item.id)
+													mutate()
 													setOpen(false)
 												}}>
 												{item.name && <div className={s.subname}>{item.name}</div>}
-												{item.cancel_reason && <div className={s.subname}>{item.cancel_reason}</div>}
+												{item.cancel_reason && (
+													<div className={s.subname}>{item.cancel_reason}</div>
+												)}
 												<AppLink
 													variant="clear"
 													size="auto"
@@ -77,26 +83,18 @@ export const NotificationsDropdown = () => {
 						)}
 					/>
 					<div className={s.btns}>
-						{unreadCount > 0 && (
-							<Button
-								style={{ fontSize: '14px' }}
-								variant="primary"
-								size="full"
-								className={s.markAllButton}
-								onClick={markAllAsRead}>
-								{t('markAll')}
-							</Button>
+						{!isReachingEnd && (
+							<div className={s.loadMoreWrapper}>
+								<Button
+									style={{ fontSize: '14px' }}
+									variant="primary"
+									size="full"
+									onClick={() => setSize((prev) => prev + 1)}
+									disabled={isLoadingMore}>
+									{isLoadingMore ? t('buttons.loading') : t('buttons.load_more')}
+								</Button>
+							</div>
 						)}
-						<Button
-							style={{ fontSize: '14px' }}
-							variant="danger"
-							size="full"
-							className={s.clearButton}
-							onClick={() => clearAll(t)}
-							aria-label={t('clearAll')}
-							title={t('clearAll')}>
-							{t('clearAll')}
-						</Button>
 					</div>
 				</>
 			)}
