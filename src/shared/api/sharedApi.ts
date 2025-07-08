@@ -1,5 +1,4 @@
 import { API_URL } from '../config'
-import { createNotificationsQuery } from '../lib'
 import { httpClient, httpClientWithAuth } from './httpClient'
 
 export interface CityType {

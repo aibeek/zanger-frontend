@@ -24,6 +24,7 @@ import { Modal, useModal } from '@/shared/ui-kit'
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { SubscriptionPopupStates } from '@/entities/profile/ui/ProfileSubscription/SubscriptionPopupStates'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 export default function ProfileView() {
 	const personalData = useLoginStore((state) => state.personalData)
@@ -34,19 +35,24 @@ export default function ProfileView() {
 	const router = useRouter()
 	const pathname = usePathname()
 
-	const { isOpen, close, open } = useModal()
+	const { close, open, isOpen } = useModal()
 	const [subscriptionStatus, setSubscriptionStatus] = useState<'success' | 'failed' | null>(null)
 
 	useEffect(() => {
-		const status = searchParams.get('subscription')
-		if (status === 'success' || status === 'failed') {
-			setSubscriptionStatus(status)
-			open()
+		const checkSubscriptionStatus = async () => {
+			const status = searchParams.get('subscription')
+			if (status === 'success' || status === 'failed') {
+				setSubscriptionStatus(status)
+				open()
+				await refreshUser()
 
-			const newParams = new URLSearchParams(searchParams.toString())
-			newParams.delete('subscription')
-			router.replace(`${pathname}?${newParams.toString()}`, { scroll: false })
+				const newParams = new URLSearchParams(searchParams.toString())
+				newParams.delete('subscription')
+				router.replace(`${pathname}?${newParams.toString()}`, { scroll: false })
+			}
 		}
+
+		checkSubscriptionStatus()
 	}, [searchParams, pathname, open, router])
 
 	const lawyer = role === 'lawyer'
@@ -82,8 +88,7 @@ export default function ProfileView() {
 					close()
 					setSubscriptionStatus(null)
 				}}
-				closeButton={true}
-				title={subscriptionStatus ? t(`profile.subscription.${subscriptionStatus}.title`) : ''}>
+				closeButton={true}>
 				<SubscriptionPopupStates status={subscriptionStatus} />
 			</Modal>
 		</>

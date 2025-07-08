@@ -1,28 +1,25 @@
 import { useLoginStore } from '@/features/auth'
 import s from './ProfileSubscription.module.scss'
 import { useTranslations } from 'next-intl'
-import { useEffect } from 'react'
-import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 export const ProfileSubscription = () => {
 	const t = useTranslations('profile.subscription')
 	const personalData = useLoginStore((state) => state.personalData)
-	const subscriptionPlan = personalData.lawyer.subscription?.plan?.name ?? 'Отсутствует'
+
+	const subscriptionPlan = personalData.lawyer.subscription?.plan?.name ?? t('none')
+
 	const end_at = personalData.lawyer.subscription?.ends_at ?? ''
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			refreshUser()
-		}, 30000)
-
-		return () => clearInterval(interval)
-	}, [])
 
 	return (
 		<div className={s.item}>
 			<h6 className={s.title}>{t('title')}</h6>
 			<span className={s.plan}>
-				{subscriptionPlan} {personalData.lawyer.subscription?.plan && <span>- Активна до {end_at}</span>}
+				{subscriptionPlan}{' '}
+				{personalData.lawyer.subscription?.plan && (
+					<span>
+						- {t('active_until')} {end_at}
+					</span>
+				)}
 			</span>
 		</div>
 	)
