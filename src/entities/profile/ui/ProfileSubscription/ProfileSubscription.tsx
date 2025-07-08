@@ -1,12 +1,22 @@
 import { useLoginStore } from '@/features/auth'
 import s from './ProfileSubscription.module.scss'
 import { useTranslations } from 'next-intl'
+import { useEffect } from 'react'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 export const ProfileSubscription = () => {
 	const t = useTranslations('profile.subscription')
 	const personalData = useLoginStore((state) => state.personalData)
 	const subscriptionPlan = personalData.lawyer.subscription?.plan?.name ?? 'Отсутствует'
 	const end_at = personalData.lawyer.subscription?.ends_at ?? ''
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refreshUser()
+		}, 30000)
+
+		return () => clearInterval(interval)
+	}, [])
 
 	return (
 		<div className={s.item}>

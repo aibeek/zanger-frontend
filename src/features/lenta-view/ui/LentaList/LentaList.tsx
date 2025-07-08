@@ -11,7 +11,7 @@ import { useLentaAccessStatus } from '@/shared/lib'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
 	const t = useTranslations('lenta')
-	const { needsSubscription, } = useLentaAccessStatus()
+	const { needsSubscription } = useLentaAccessStatus()
 
 	return (
 		<div className={s.wrapper}>
@@ -48,12 +48,11 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 											size="sm"
 											onClick={() => {
 												if (needsSubscription) {
-													toast.error(t('subscribe_required'))  
+													toast.error(t('subscribe_required'))
 													return
 												}
 												applyToRequest({ order_id: item.id })
-											}}	
-																			>
+											}}>
 											{t('respond')}
 										</Button>
 
