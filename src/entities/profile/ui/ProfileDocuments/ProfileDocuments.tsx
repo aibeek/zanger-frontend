@@ -15,6 +15,7 @@ import { useSearchParams } from 'next/navigation'
 import { DocumentsList } from './DocumentsList'
 import { useDocuments, useLawyerDocumentsStore } from '../../model'
 import { useNotificationsInfinite } from '@/entities/notifications/model/useNotificationsInfinite'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 const { Dragger } = Upload
 const { Option } = Select
@@ -82,6 +83,7 @@ export const ProfileDocuments = () => {
 		await mutateNotifications()
 		setSelectedDocument(null, false)
 		close()
+		await refreshUser()
 	}
 
 	const handleSelectDocument = (id: number) => {
@@ -113,10 +115,7 @@ export const ProfileDocuments = () => {
 			: []
 	}, [documents])
 
-	const currentDoc = useMemo(
-		() => documents.find((d) => d.id === selectedDocumentId),
-		[documents, selectedDocumentId],
-	)
+	const currentDoc = useMemo(() => documents.find((d) => d.id === selectedDocumentId), [documents, selectedDocumentId])
 
 	const availableSides = useMemo(() => {
 		if (!currentDoc || !currentDoc.is_double_sided || !currentDoc.sides) return FRONT_SIDE_OPTIONS
@@ -234,9 +233,7 @@ export const ProfileDocuments = () => {
 					<Dragger
 						beforeUpload={handleBeforeUpload}
 						multiple={false}
-						disabled={
-							isCurrentDocFullyUploaded || !selectedDocumentId || (isDoubleSided && frontSide === null)
-						}
+						disabled={isCurrentDocFullyUploaded || !selectedDocumentId || (isDoubleSided && frontSide === null)}
 						showUploadList={false}
 						className={s.dragger}>
 						<div className={s.topDragger}>

@@ -1,5 +1,5 @@
-import { getUploadStatus } from "@/entities/profile/ui/ProfileDocuments/getUploadStatus"
-import { useLoginStore } from "@/features/auth"
+import { getUploadStatus } from '@/entities/profile/ui/ProfileDocuments/getUploadStatus'
+import { useLoginStore } from '@/features/auth'
 
 export const useLentaAccessStatus = () => {
 	const personalData = useLoginStore((store) => store.personalData)
@@ -40,7 +40,7 @@ export const useLentaAccessStatus = () => {
 
 					// Модерация: либо общий статус, либо у сторон
 					const moderation =
-					// @ts-expect-error fix it
+						// @ts-expect-error fix it
 						doc.status?.type === 'moderation' ||
 						// @ts-expect-error fix it
 						doc.sides?.some((side) => side.status?.type === 'moderation') ||

@@ -191,16 +191,6 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							)}
 						</div>
 						<div className={s.right}>
-							{isAuthenticated && personalData && !pathname.includes('/subscription') && (
-								<div className={s.subscription}>
-									<AppLink
-										className={s.subLink}
-										variant={'border'}
-										href={'/subscription'}>
-										{t('subscription')}
-									</AppLink>
-								</div>
-							)}
 							<LangSwitcher hide={true} />
 
 							{isAuthenticated && personalData && (
@@ -209,6 +199,19 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										<NotificationsDropdown />
 									</div>
 									<div className={s.user}>
+										{personalData.role_id.code === 'lawyer' &&
+											isAuthenticated &&
+											personalData &&
+											!pathname.includes('/subscription') && (
+												<div className={s.subscription}>
+													<AppLink
+														className={s.subLink}
+														variant={'border'}
+														href={'/subscription'}>
+														{t('subscription')}
+													</AppLink>
+												</div>
+											)}
 										<Link
 											style={{ cursor: 'pointer' }}
 											href={`/${personalData.language}/dashboard/profile`}>

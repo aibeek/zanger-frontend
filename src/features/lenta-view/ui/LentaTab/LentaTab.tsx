@@ -32,7 +32,7 @@ export const LentaTab = () => {
 	useEffect(() => {
 		const interval = setInterval(() => {
 			refreshUser()
-		}, 30000)
+		}, 15000)
 
 		return () => clearInterval(interval)
 	}, [])
@@ -65,9 +65,7 @@ export const LentaTab = () => {
 						<ul className={s.docsList}>
 							{documentStatuses.map((doc) => (
 								<li
-									style={
-										doc.status === 'fully_uploaded' ? { color: '#09cb09' } : { color: 'ff5b5bfa' }
-									}
+									style={doc.status === 'fully_uploaded' ? { color: '#09cb09' } : { color: 'ff5b5bfa' }}
 									className={s.docsItem}
 									key={doc.id}>
 									{doc.name}: {doc.status === 'fully_uploaded' ? t('uploaded') : t('notUploaded')}
