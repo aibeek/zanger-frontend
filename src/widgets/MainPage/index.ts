@@ -1,5 +1,3 @@
-export * from './BenefitShowcase'
-export * from './CardsSection'
 export * from './DownloadAppSection'
-export * from './FaqSection'
+export * from './DescriptionSection'
 export * from './MainSection'

@@ -1,61 +1,69 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
-import { Header } from '@/widgets/Header'
-import MainBgDesk from '@/app/assets/images/main-bg-desk.webp'
-import MainBgMobile from '@/app/assets/images/main-bg-mobile.webp'
-
+import tik_tok from '@/app/assets/icons/tik_tok.svg'
+import facebook from '@/app/assets/icons/facebook.svg'
+import telegram from '@/app/assets/icons/telegram.svg'
+import instagram from '@/app/assets/icons/instagram.svg'
+import mainBgPhone from '@/app/assets/icons/main-bg-phone.svg'
 import s from './MainSection.module.scss'
-import { useMediaQuery } from '@/shared/lib'
-import { PhoneIcon } from '@heroicons/react/20/solid'
 
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
-	const isMobile = useMediaQuery('(max-width: 768px)')
 
 	return (
 		<section className={s.wrapper}>
-			<div className={s.decor}>
-				<div className="container-middle">
-					<Header variant="lending-variant" />
-					<div className={s.inner}>
-						<div className={s.topContent}>
-							<h1
-								className={s.title}
-								dangerouslySetInnerHTML={{ __html: t('title') }}
-							/>
-							<p className="lending-descr">{t('description')}</p>
-						</div>
-						<div className={s.phoneNumber}>
-							<div className={s.top}>
-								<PhoneIcon
-									color={'rgba(2, 125, 255, 1)'}
-									width={16}
-									hanging={16}
-								/>
-								<span>5510</span>
-							</div>
-							<div className={s.bottom}>
-								<p>с номеров всех операторов</p>
-							</div>
-						</div>
-						<div className={s.bg}>
-							{isMobile ? (
-								<Image
-									src={MainBgMobile}
-									alt="изображение телефонов"
-									priority
-								/>
-							) : (
-								<Image
-									src={MainBgDesk}
-									alt="изображение телефонов"
-									priority
-								/>
-							)}
-						</div>
+			<div className={s.middle}>
+				<div className={s.socials}>
+					<Link href={'/'}>
+						<Image
+							src={telegram}
+							alt="telegram"
+						/>
+					</Link>
+					<Link href={'/'}>
+						<Image
+							src={facebook}
+							alt="facebook"
+						/>
+					</Link>
+					<Link href={'/'}>
+						<Image
+							src={tik_tok}
+							alt="tik tok"
+						/>
+					</Link>
+					<Link href={'/'}>
+						<Image
+							src={instagram}
+							alt="instagram"
+						/>
+					</Link>
+				</div>
+				<div className={s.middleContent}>
+					<div className={s.text}>
+						<h1 className={s.title}>{t('title')}</h1>
+						<p className={s.descr}>{t('description')}</p>
+					</div>
+				</div>
+			</div>
+
+			<div className={s.bottom}>
+				<div className={s.bottomContent}>
+					<Link
+						href={'tel:+5510'}
+						className={s.phone}>
+						<Image
+							src={mainBgPhone}
+							alt="phone"
+						/>
+					</Link>
+					<div className={s.bottomText}>
+						<p className={s.number}>5510</p>
+						<p className={s.bottomDescr}>{t('freeCalls')}</p>
 					</div>
 				</div>
 			</div>

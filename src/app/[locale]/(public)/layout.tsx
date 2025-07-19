@@ -8,6 +8,7 @@ import '@/app/styles/index.scss'
 import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
+import { Header } from '@/widgets/Header'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -37,11 +38,14 @@ export default async function RootLayout({
 				<NextIntlClientProvider>
 					<AppToaster />
 					<DeviceGuard>
-						{children}
-						<Footer
-							id={'footer'}
-							variant={'lending-variant'}
-						/>
+						<div className="lending-layout">
+							<Header variant={'lending-variant'} />
+							{children}
+							<Footer
+								id={'footer'}
+								variant={'lending-variant'}
+							/>
+						</div>
 					</DeviceGuard>
 				</NextIntlClientProvider>
 			</body>

@@ -2,10 +2,9 @@
 
 import Image from 'next/image'
 
-import vk from '@/app/assets/icons/vk.svg'
+import tik_tok from '@/app/assets/icons/tik_tok.svg'
 import phone from '@/app/assets/icons/phone.svg'
 import letter from '@/app/assets/icons/letter.svg'
-import Logo from '@/app/assets/icons/footer-logo.svg'
 import facebook from '@/app/assets/icons/facebook.svg'
 import appstore from '@/app/assets/icons/appstore.webp'
 import location from '@/app/assets/icons/location.svg'
@@ -13,9 +12,6 @@ import telegram from '@/app/assets/icons/telegram.svg'
 import instagram from '@/app/assets/icons/instagram.svg'
 import googleplay from '@/app/assets/icons/googleplay.webp'
 import card from '@/app/assets/icons/visa-mc.webp'
-
-import { scrollToSection, useAppContentData, useSectionScroll } from '@/shared/lib'
-
 import s from './Footer.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
@@ -37,10 +33,7 @@ interface Props {
 }
 
 export const Footer = ({ variant, id }: Props) => {
-	const { activeSection } = useSectionScroll()
-	const { footerMenuData } = useAppContentData()
 	const t = useTranslations('footer')
-	const isActive = (link: string) => activeSection === link
 	const pathname = usePathname()
 
 	const termsHref = pathname.includes('kz') ? termsKzURL : termsURL
@@ -62,22 +55,22 @@ export const Footer = ({ variant, id }: Props) => {
 						<Link
 							target={'_blank'}
 							href={policyHref}>
-							{t('privacy')}
+							{'privacy'}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={termsHref}>
-							{t('offer')}
+							{'offer'}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={paymentHref}>
-							{t('payment')}
+							{'payment'}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={canselSubscriptionHref}>
-							{t('canselSubscription')}
+							{'canselSubscription'}
 						</Link>
 					</div>
 				</div>
@@ -91,10 +84,10 @@ export const Footer = ({ variant, id }: Props) => {
 				<div className={s.lengingInner}>
 					<div className={s.lendingTop}>
 						<Image
-							src={Logo}
+							src={'/logo.svg'}
 							alt={'логотип'}
-							width={96}
-							height={18}
+							width={56}
+							height={66}
 						/>
 					</div>
 
@@ -108,25 +101,25 @@ export const Footer = ({ variant, id }: Props) => {
 								<Link href={'/'}>
 									<Image
 										src={telegram}
-										alt={t('telegram')}
+										alt={'telegram'}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
 										src={facebook}
-										alt={t('facebook')}
+										alt={'facebook'}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
-										src={vk}
-										alt={t('vk')}
+										src={tik_tok}
+										alt={'tik_tok'}
 									/>
 								</Link>
 								<Link href={'/'}>
 									<Image
 										src={instagram}
-										alt={t('instagram')}
+										alt={'instagram'}
 									/>
 								</Link>
 							</div>
@@ -173,28 +166,6 @@ export const Footer = ({ variant, id }: Props) => {
 								</li>
 							</ul>
 						</div>
-						<div className={s.column}>
-							<h6 className={s.columnTitle}>{t('nav')}</h6>
-
-							<ul className={s.columnList}>
-								{footerMenuData.map(({ name, link }) => (
-									<li
-										key={link}
-										className={s.columnItem}>
-										<Link
-											href={link}
-											onClick={(e) => {
-												scrollToSection(e, link)
-												document.body.click()
-											}}
-											className={`${s.link} ${isActive(link) ? s.active : ''}`}>
-											{t(name)}
-										</Link>
-									</li>
-								))}
-							</ul>
-						</div>
-
 						<div className={s.column}>
 							<h6 className={s.columnTitle}>{t('support')}</h6>
 

@@ -6,7 +6,7 @@ import { Link } from '@/i18n'
 
 import s from './AppLink.module.scss'
 
-type AppLinkVariant = 'primary' | 'secondary' | 'danger' | 'clear' | 'border'
+type AppLinkVariant = 'primary' | 'secondary' | 'danger' | 'clear' | 'border' | 'border-white'
 type AppLinkSize = 'sm' | 'md' | 'lg' | 'full' | 'auto'
 
 type AppLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {

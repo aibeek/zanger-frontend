@@ -22,7 +22,7 @@ export const DeviceGuard = ({ children }: AuthGuardProps) => {
 	useEffect(() => {
 		if (isMobile && pathname !== '/') {
 			router.push('/')
-			toast.error('Скачайте приложение для взаимодействия')
+			// toast.error('Скачайте приложение для взаимодействия')
 		}
 	}, [isMobile, pathname, router])
 

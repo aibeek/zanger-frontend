@@ -1,13 +1,13 @@
 .wrapper {
 	display: flex;
 	align-items: center;
-	padding: 2px;
+	padding: 4px;
 	border-radius: 10px;
-	background-color: rgba(243, 244, 245, 1);
+	border: 1px solid rgba(243, 244, 245, 1);
 
 	.btn {
 		font-size: 12px !important;
-		color: rgba(136, 137, 138, 1) !important;
+		color: white !important;
 		padding: 8px 16px !important;
 		text-transform: uppercase;
 	}
@@ -18,13 +18,7 @@
 		border-radius: 8px;
 		font-size: 14px;
 		background-color: white;
-		color: $primary-color;
+		color: black !important;
 		box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
-	}
-}
-
-.hide {
-	@media (max-width: 768px) {
-		display: none !important;
 	}
 }
