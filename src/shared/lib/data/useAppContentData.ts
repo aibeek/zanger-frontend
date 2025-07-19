@@ -9,12 +9,8 @@ export type ContentDataItem = {
 	}
 }
 
-export const useAppContentData = () => {
+export const useAppContentData = (): { descriptionData: ContentDataItem[] } => {
 	const t = useTranslations('lending.descriptionSection')
-
-	const lawyer = t.raw('lawyer') as { name: string; faq: { question: string; answer: string }[] }
-
-	const lawyerFaqData: any[] = [{ name: lawyer.name, faq: lawyer.faq }]
 
 	const leftTexts = t.raw('left.items') as string[]
 	const rightTexts = t.raw('right.items') as string[]
@@ -32,6 +28,5 @@ export const useAppContentData = () => {
 
 	return {
 		descriptionData,
-		lawyerFaqData,
 	}
 }

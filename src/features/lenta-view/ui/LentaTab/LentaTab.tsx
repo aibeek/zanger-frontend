@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { Alert } from '@/shared/ui-kit/Alert'
 import { Loader } from '@/shared/ui-kit'
 import { useLentaAccessStatus } from '@/shared/lib'
-import { ClientFaq } from '@/widgets/ClientFaq'
 import { AppLink } from '@/shared/ui-kit/AppLink'
 import { DashboarEmptyLenta } from '@/widgets/DashboarEmptyLenta'
 import AlarmAlertIcon from '@/app/assets/icons/alarm-alert.svg'
@@ -102,7 +101,6 @@ export const LentaTab = () => {
 					}}
 				/>
 				<DashboarEmptyLenta />
-				<ClientFaq />
 			</>
 		)
 	}
