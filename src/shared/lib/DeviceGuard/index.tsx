@@ -20,9 +20,15 @@ export const DeviceGuard = ({ children }: AuthGuardProps) => {
 	}, [])
 
 	useEffect(() => {
-		if (isMobile && pathname !== '/') {
-			router.push('/')
-			// toast.error('Скачайте приложение для взаимодействия')
+		if (!isMobile) return
+
+		const isAllowedPath = /^\/(ru|kz)?\/?$/.test(pathname)
+
+		if (!isAllowedPath) {
+			const match = pathname.match(/^\/(ru|kz)/)
+			const locale = match?.[1] || 'ru'
+
+			router.replace(`/${locale}`)
 		}
 	}, [isMobile, pathname, router])
 

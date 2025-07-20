@@ -18,9 +18,9 @@ export const DescriptionSection = () => {
 					{data.left.text.map((text, idx) => (
 						<li
 							className={s.item}
-							key={idx}>
-							{text}
-						</li>
+							key={idx}
+							dangerouslySetInnerHTML={{ __html: text }}
+						/>
 					))}
 				</ul>
 				<p className={s.descr}>{t('leftDescr')}</p>
@@ -31,9 +31,9 @@ export const DescriptionSection = () => {
 					{data.right.text.map((text, idx) => (
 						<li
 							className={s.item}
-							key={idx}>
-							{text}
-						</li>
+							key={idx}
+							dangerouslySetInnerHTML={{ __html: text }}
+						/>
 					))}
 				</ul>
 				<p className={s.descr}>{t('rightDescr')}</p>

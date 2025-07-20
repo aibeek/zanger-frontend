@@ -15,6 +15,20 @@
 		gap: 16px;
 	}
 
+	.logoBox {
+		width: 80px;
+		height: 64px;
+		background-color: $blue-color;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.logo {
+		width: 46px;
+		height: 56px;
+		background-color: transparent;
+	}
+
 	.city {
 		color: rgba(156, 165, 172, 1);
 		font-size: 14px;
@@ -90,6 +104,21 @@
 
 	@media (max-width: 768px) {
 		height: 60px;
+	}
+
+	.userInfo {
+		display: flex;
+		flex-direction: column;
+		gap: 3px;
+		align-items: end;
+	}
+
+	.user {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: white;
+		font-size: 14px;
 	}
 
 	.left {

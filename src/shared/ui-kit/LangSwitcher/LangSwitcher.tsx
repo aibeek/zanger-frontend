@@ -10,12 +10,7 @@ import { profileApi } from '@/shared/api'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 import toast from 'react-hot-toast'
 
-const mapLocaleToBackend = (locale: string): string => {
-	if (locale === 'kk') return 'kz'
-	return locale
-}
-
-export function LangSwitcher({ hide }: { hide?: boolean }) {
+export function LangSwitcher() {
 	const pathname = usePathname()
 	const currentLocale = useLocale()
 	const { isAuthenticated } = useAuthStore()
@@ -23,7 +18,7 @@ export function LangSwitcher({ hide }: { hide?: boolean }) {
 	const handleClick = async (locale: string) => {
 		if (isAuthenticated) {
 			try {
-				await profileApi.updateLanguage({ language: mapLocaleToBackend(locale) })
+				await profileApi.updateLanguage({ language: locale })
 				await refreshUser()
 			} catch (error) {
 				console.error('Ошибка при смене языка:', error)
@@ -35,7 +30,7 @@ export function LangSwitcher({ hide }: { hide?: boolean }) {
 	}
 
 	return (
-		<div className={clsx(s.wrapper, { [s.hide]: hide })}>
+		<div className={s.wrapper}>
 			{routing.locales.map((locale) => (
 				<Link
 					key={locale}

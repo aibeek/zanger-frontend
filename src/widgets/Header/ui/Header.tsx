@@ -54,7 +54,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								height={66}
 							/>
 						</div>
-						<LangSwitcher hide={true} />
+						<LangSwitcher />
 					</div>
 
 					<div className="container">
@@ -76,23 +76,27 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								</div>
 							)}
 							{isAuthenticated && personalData ? (
-								<div className={s.user}>
-									<Link
-										style={{ cursor: 'pointer' }}
-										href={`/${personalData.language}/dashboard/profile`}>
-										<Image
-											style={{ borderRadius: '10px' }}
-											src={personalData.icon ?? avatar}
-											alt={t('avatarAlt')}
-											width={40}
-											height={40}
-										/>
-									</Link>
-									<div className={s.userInfo}>
-										<p className={s.userName}>{personalData.name}</p>
-										<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
-									</div>
-								</div>
+								<>
+									{!isMobile && (
+										<div className={s.user}>
+											<Link
+												style={{ cursor: 'pointer' }}
+												href={`/${personalData.language}/dashboard/profile`}>
+												<Image
+													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+													src={personalData.icon ?? avatar}
+													alt={t('avatarAlt')}
+													width={40}
+													height={40}
+												/>
+											</Link>
+											<div className={s.userInfo}>
+												<p className={s.userName}>{personalData.name}</p>
+												<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+											</div>
+										</div>
+									)}
+								</>
 							) : (
 								<>
 									{!isMobile && (
@@ -148,8 +152,11 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				<div className="container">
 					<div className={s.inner}>
 						<div className={s.left}>
-							<Link href={'/'}>
+							<Link
+								className={s.logoBox}
+								href={'/'}>
 								<Image
+									className={s.logo}
 									src="/logo.svg"
 									alt={t('logoAlt')}
 									width={100}
@@ -164,7 +171,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							)}
 						</div>
 						<div className={s.right}>
-							<LangSwitcher hide={true} />
+							<LangSwitcher />
 
 							{isAuthenticated && personalData && (
 								<>
