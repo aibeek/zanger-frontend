@@ -55,22 +55,22 @@ export const Footer = ({ variant, id }: Props) => {
 						<Link
 							target={'_blank'}
 							href={policyHref}>
-							{'privacy'}
+							{t('privacy')}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={termsHref}>
-							{'offer'}
+							{t('offer')}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={paymentHref}>
-							{'payment'}
+							{t('payment')}
 						</Link>
 						<Link
 							target={'_blank'}
 							href={canselSubscriptionHref}>
-							{'canselSubscription'}
+							{t('canselSubscription')}
 						</Link>
 					</div>
 				</div>
