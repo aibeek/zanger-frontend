@@ -1,6 +1,4 @@
 import { sharedApi } from '@/shared/api'
-import toast from 'react-hot-toast'
-import useSWR from 'swr'
 import { create } from 'zustand'
 
 export interface NotificationItem {
@@ -23,7 +21,7 @@ type NotificationsStore = {
 	markAsRead: (id: number) => void
 }
 
-export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
+export const useNotificationsStore = create<NotificationsStore>((set) => ({
 	notifications: [],
 
 	setNotifications: (newData) =>

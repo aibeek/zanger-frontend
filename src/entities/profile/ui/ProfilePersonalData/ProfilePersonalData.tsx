@@ -1,7 +1,7 @@
 'use client'
 
 import { IMaskInput } from 'react-imask'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -171,7 +171,8 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											name="region_id"
 											control={control}
 											render={({ field }) => {
-												const selected = allOptions.find((r) => String(r.id) === String(field.value)) || null
+												const selected =
+													allOptions.find((r) => String(r.id) === String(field.value)) || null
 
 												return (
 													<SearchSelect
@@ -180,7 +181,9 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 														value={selected}
 														onChange={(region) => field.onChange(region?.id)}
 														getId={(item) => item.id}
-														getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
+														getLabel={(item) =>
+															item.path ? `${item.name} (${item.path})` : item.name
+														}
 														renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 														placeholder={placeholder}
 														disabled={!editableInputs.region_id}
@@ -202,7 +205,9 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											)
 										) : (
 											<Button
-												onClick={() => setEditableInputs((prev) => ({ ...prev, region_id: true }))}
+												onClick={() =>
+													setEditableInputs((prev) => ({ ...prev, region_id: true }))
+												}
 												type="button"
 												variant="clear"
 												className={s.editBtn}>
@@ -214,7 +219,9 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 												/>
 											</Button>
 										)}
-										{errors.region_id && <p className={s.error}>{t(errors.region_id.message || '')}</p>}
+										{errors.region_id && (
+											<p className={s.error}>{t(errors.region_id.message || '')}</p>
+										)}
 									</div>
 								</div>
 							)

@@ -39,7 +39,7 @@ export const useLentaStore = create<LentaStore>((set, get) => ({
 				const newPages = prevData.map((page) => page.filter((item) => item.id !== order_id))
 				return newPages
 			}, false)
-		} catch (error) {
+		} catch (e) {
 			toast.error(t('error'))
 		}
 	},

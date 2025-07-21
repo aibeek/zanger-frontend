@@ -1,7 +1,6 @@
 'use client'
 
 import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
-import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { useTranslations } from 'next-intl'
 
 import s from './ResponseHistoryList.module.scss'

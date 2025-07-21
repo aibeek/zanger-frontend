@@ -42,7 +42,9 @@ export const PhoneVerificationStep = ({ variant }: Props) => {
 	const handleCodeChange = (val: string) => {
 		setCode(val)
 		if (val.length === 3) {
-			validateCode(phone, nextStep, variant, (res) => (variant === 'reset-password' ? true : res.success === true))
+			validateCode(phone, nextStep, variant, (res) =>
+				variant === 'reset-password' ? true : res.success === true,
+			)
 		}
 	}
 

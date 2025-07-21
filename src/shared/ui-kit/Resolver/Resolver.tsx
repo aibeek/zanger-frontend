@@ -13,6 +13,7 @@ export function Resolver() {
 				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'center',
+				zIndex: '10000',
 			}}>
 			<Image
 				src={'/logo.svg'}

@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button, Input } from '@/shared/ui-kit'
-import { LawyerRegisterDto } from '@/shared/api'
+import { LawyerRegisterDto, Tag } from '@/shared/api'
 import {
 	clientRegistrationSchema,
 	formatPhoneNumber,
@@ -100,7 +100,9 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 						</label>
 						<Input
 							placeholder={
-								clientVariant ? t('auth.registration.namePlaceholder') : t('auth.registration.lawyerNamePlaceholder')
+								clientVariant
+									? t('auth.registration.namePlaceholder')
+									: t('auth.registration.lawyerNamePlaceholder')
 							}
 							{...register('name', { required: t('auth.registration.nameRequired') })}
 							hasError={!!errors.name}
@@ -166,8 +168,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 										data={[...lawyerTypes].sort((a, b) => a.name.localeCompare(b.name))}
 										loading={loadingLawyerTypes}
 										value={lawyerTypes.find((item) => item.id === field.value) || null}
-										onChange={(item) => {
-											// @ts-expect-error fix it
+										onChange={(item: Tag) => {
 											const id = item?.id ?? 0
 											field.onChange(id)
 										}}
@@ -201,7 +202,9 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 							{...register('password_confirmation')}
 							hasError={!!errors.password_confirmation}
 						/>
-						{errors.password_confirmation && <p className={s.error}>{t(errors.password_confirmation.message)}</p>}
+						{errors.password_confirmation && (
+							<p className={s.error}>{t(errors.password_confirmation.message)}</p>
+						)}
 					</div>
 
 					<div className={s.submit}>

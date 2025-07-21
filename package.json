@@ -6,8 +6,9 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint",
-		"steiger": "npx steiger ./src --watch"
+		"lint": "eslint . --ext .ts,.tsx",
+		"steiger": "npx steiger ./src --watch",
+		"lint:fix": "eslint . --ext .ts,.tsx --fix"
 	},
 	"dependencies": {
 		"@headlessui/react": "^2.2.1",
@@ -56,6 +57,7 @@
 		"autoprefixer": "^10.4.21",
 		"eslint": "^9",
 		"eslint-config-next": "15.2.4",
+		"eslint-plugin-unused-imports": "^4.1.4",
 		"prettier": "^3.5.3",
 		"typescript": "^5"
 	}

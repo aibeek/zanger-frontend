@@ -20,7 +20,7 @@ export const SubscriptionPlans = () => {
 			setSelected(plans[0].value)
 			setPlanId(plans[0].planId)
 		}
-	}, [plans, selected])
+	}, [plans, selected, setPlanId])
 
 	if (loading) return <Loader />
 
@@ -48,7 +48,9 @@ export const SubscriptionPlans = () => {
 								<div className={s.top}>
 									<span className={clsx(s.circle, { [s.filled]: checked })} />
 									<span className={s.title}>{option.label}</span>
-									<span className={s.price}>{option.price.startsWith('0') ? 'Бесплатно' : option.price}</span>
+									<span className={s.price}>
+										{option.price.startsWith('0') ? 'Бесплатно' : option.price}
+									</span>
 								</div>
 								<p className={s.descr}>{option.description}</p>
 							</article>

@@ -16,7 +16,7 @@ export const SubscriptionView = () => {
 	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
 	const t = useTranslations('subscriptionView')
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async () => {
 		try {
 			const { link } = await lawyerApi.subscribe(planId, isAutoRenew)
 			window.location.href = link

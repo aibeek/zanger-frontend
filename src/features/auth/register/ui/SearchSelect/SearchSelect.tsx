@@ -58,7 +58,10 @@ export function SearchSelect<T>({
 	const sortedData = useMemo(() => {
 		const withName = filtered.filter((item) => getLabel(item) !== 'Другое')
 		const other = filtered.filter((item) => getLabel(item) === 'Другое')
-		return [...withName.sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'ru', { sensitivity: 'base' })), ...other]
+		return [
+			...withName.sort((a, b) => getLabel(a).localeCompare(getLabel(b), 'ru', { sensitivity: 'base' })),
+			...other,
+		]
 	}, [filtered])
 
 	if (groupBy) {
@@ -93,16 +96,16 @@ export function SearchSelect<T>({
 			? value.map((v) => ({
 					value: getId(v)?.toString(),
 					label: getLabel(v),
-			  }))
+				}))
 			: []
 		: value
-		? {
-				// @ts-expect-error fix it
-				value: getId(value)?.toString(),
-				// @ts-expect-error fix it
-				label: getLabel(value),
-		  }
-		: undefined
+			? {
+					// @ts-expect-error fix it
+					value: getId(value)?.toString(),
+					// @ts-expect-error fix it
+					label: getLabel(value),
+				}
+			: undefined
 	return (
 		<Select
 			showSearch

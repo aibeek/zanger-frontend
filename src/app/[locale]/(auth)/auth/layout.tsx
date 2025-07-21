@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { Open_Sans } from 'next/font/google'
