@@ -55,7 +55,7 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 		if (lawyerVariant) fetchLawyerTypes()
 	}, [])
 
-	const onSubmit = async (data: any) => {
+	const onSubmit = async () => {
 		await sendData(async () => {
 			resetState()
 			router.push(`/auth/login`)
@@ -159,26 +159,33 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 						<div className={`${s.specialization} ${s.inputBox}`}>
 							<label className={s.label}>{t('auth.registration.specializationLabel')}</label>
 							<Controller
-								name="lawyer_type_id"
+								name="lawyer_type_ids"
 								control={control}
 								rules={{ required: t('auth.registration.specializationRequired') }}
-								render={({ field }) => (
-									<SearchSelect
-										className={`search-select`}
-										data={[...lawyerTypes].sort((a, b) => a.name.localeCompare(b.name))}
-										loading={loadingLawyerTypes}
-										value={lawyerTypes.find((item) => item.id === field.value) || null}
-										onChange={(item: Tag) => {
-											const id = item?.id ?? 0
-											field.onChange(id)
-										}}
-										getId={(item) => item.id}
-										getLabel={(item) => item.name}
-										placeholder={t('auth.registration.specializationPlaceholder')}
-									/>
-								)}
+								render={({ field }) => {
+									const selectedLawyerTypes = lawyerTypes.filter((s) =>
+										Array.isArray(field.value) ? field.value.includes(s.id) : false,
+									)
+
+									return (
+										<SearchSelect
+											className="search-select"
+											data={lawyerTypes}
+											loading={loadingLawyerTypes}
+											value={selectedLawyerTypes}
+											onChange={(item: Tag) => {
+												const ids = Array.isArray(item) ? item.map((s) => s.id) : []
+												field.onChange(ids)
+											}}
+											getId={(item) => item.id}
+											getLabel={(item) => item.name}
+											placeholder={t('auth.registration.specializationPlaceholder')}
+											multiple={true}
+										/>
+									)
+								}}
 							/>
-							{errors.lawyer_type_id && <p className={s.error}>{t(errors.lawyer_type_id.message)}</p>}
+							{errors.lawyer_type_ids && <p className={s.error}>{t(errors.lawyer_type_ids.message)}</p>}
 						</div>
 					)}
 

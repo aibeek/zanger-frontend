@@ -70,10 +70,12 @@ export const lawyerRegistrationSchema = z
 		}),
 		language: z.enum(['ru', 'en', 'kz']).default('ru').optional(),
 		iin: z.string().regex(/^\d{12}$/, { message: 'validation.iin_invalid' }),
-		lawyer_type_id: z.number({
-			required_error: 'validation.specialization_required',
-			invalid_type_error: 'validation.specialization_required',
-		}),
+		lawyer_type_ids: z
+			.array(z.number(), {
+				required_error: 'Выберите хотя бы один статус',
+				invalid_type_error: 'Выберите хотя бы один статус',
+			})
+			.min(1, { message: 'Выберите хотя бы один статус' }),
 	})
 	.superRefine(({ password, password_confirmation }, ctx) => {
 		if (password !== password_confirmation) {

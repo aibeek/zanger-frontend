@@ -157,7 +157,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								href={'/'}>
 								<Image
 									className={s.logo}
-									src="/logo.svg"
+									src="/logo-blue.svg"
 									alt={t('logoAlt')}
 									width={100}
 									height={20}
