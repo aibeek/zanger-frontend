@@ -1,6 +1,6 @@
 'use client'
 
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { Loader } from '@/shared/ui-kit'
 import { defaultLawyerTab } from '@/shared/lib'
@@ -11,6 +11,7 @@ import { useMyResponsesInfinite } from '../../model'
 
 export const MyResponsesTab = () => {
 	const locale = useLocale()
+	const t = useTranslations()
 	const { items, isLoadingMore, isReachingEnd, setSize, size } = useMyResponsesInfinite()
 
 	if (size === 0) {
@@ -21,8 +22,8 @@ export const MyResponsesTab = () => {
 		return (
 			<EmptyApplicationsAndResponses
 				redirectUrl={`/${locale}/${defaultLawyerTab}`}
-				buttonContent={'В ленту заявок'}
-				descr={'Заявок пока нет'}
+				buttonContent={t('tabs.historyTab.toApplicationsFeed')}
+				descr={t('myApplications.noRequests')}
 			/>
 		)
 	}
