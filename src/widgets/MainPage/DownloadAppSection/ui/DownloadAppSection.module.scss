@@ -21,18 +21,6 @@
 			padding: 40px 25px;
 			height: 500px;
 		}
-
-		.right {
-			.img {
-				@media (max-width: 920px) {
-					width: 395px;
-					height: 410px;
-					left: 50%;
-					bottom: 50%;
-					transform: translate(-50%, 30%);
-				}
-			}
-		}
 	}
 
 	.btns {
@@ -67,9 +55,17 @@
 			position: absolute;
 			right: 0;
 			bottom: 50%;
-			width: 720px;
-			height: 750px;
+			width: max-content;
+			height: max-content;
 			transform: translateY(45%);
+
+			@media (max-width: 920px) {
+				width: 320px;
+				height: 330px;
+				left: 50%;
+				bottom: 60%;
+				transform: translate(-50%, 35%);
+			}
 		}
 	}
 
