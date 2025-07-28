@@ -13,6 +13,22 @@
 
 .option {
 	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	cursor: pointer;
+	margin-bottom: 12px;
+	position: relative;
+
+	&:hover {
+		border-color: #007bff;
+	}
+}
+
+.option {
+	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	cursor: pointer;
@@ -31,6 +47,11 @@
 		border: 2px solid rgba(156, 165, 172, 1);
 		box-sizing: border-box;
 		position: relative;
+
+		.checked {
+			background-color: #007bff;
+			box-shadow: inset 0 0 0 4px white;
+		}
 
 		&::after {
 			content: '';

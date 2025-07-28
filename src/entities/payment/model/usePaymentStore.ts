@@ -2,7 +2,15 @@ import { create } from 'zustand'
 import { lawyerApi } from '@/shared/api'
 import { toast } from 'react-hot-toast'
 
-interface Card {}
+interface Card {
+	id: number
+	bank_account: string
+	expiry_month: string
+	expiry_year: string
+	created_at: string
+	bank_name: string
+	is_active: boolean
+}
 
 interface PaymentState {
 	cards: Card[]
@@ -38,7 +46,6 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 		const toastId = toast.loading('Удаление карты…')
 		try {
 			await lawyerApi.deleteCardById(id)
-			// @ts-expect-error fix it
 			set((state) => ({ cards: state.cards.filter((card) => card.id !== id) }))
 			toast.success('Карта удалена', { id: toastId })
 		} catch (e: any) {
@@ -52,7 +59,6 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 		try {
 			await lawyerApi.toActiveMyCard(id)
 			set((state) => ({
-				// @ts-expect-error fix it
 				cards: state.cards.map((card) => ({ ...card, isActive: card.id === id })),
 			}))
 			toast.success('Карта активирована', { id: toastId })
@@ -66,8 +72,9 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 		set({ loading: true, error: null })
 		const toastId = toast.loading('Создание карты…')
 		try {
-			const result = await lawyerApi.addNewCard() // Card с optional redirect_url
-			set((state) => ({ cards: [...state.cards, result], loading: false }))
+			const result = await lawyerApi.addNewCard()
+
+			set((state: any) => ({ cards: [...state.cards, result], loading: false }))
 			toast.success('Карта создана', { id: toastId })
 
 			if (result.redirect_url && typeof result.redirect_url === 'string') {

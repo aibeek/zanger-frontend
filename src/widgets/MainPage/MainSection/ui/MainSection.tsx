@@ -24,19 +24,19 @@ export const MainSection = () => {
 							alt="telegram"
 						/>
 					</Link>
-					<Link href={'/'}>
+					<Link href={'https://www.facebook.com/people/Zanger5510/61578403178388/'}>
 						<Image
 							src={facebook}
 							alt="facebook"
 						/>
 					</Link>
-					<Link href={'/'}>
+					<Link href={'https://www.tiktok.com/@zanger5510'}>
 						<Image
 							src={tik_tok}
 							alt="tik tok"
 						/>
 					</Link>
-					<Link href={'/'}>
+					<Link href={'https://www.instagram.com/zanger5510/'}>
 						<Image
 							src={instagram}
 							alt="instagram"

@@ -1,4 +1,3 @@
-import { add } from 'date-fns'
 import { API_URL } from '../config'
 import { createQuery } from '../lib'
 import { httpClientWithAuth } from './httpClient'
@@ -152,6 +151,7 @@ export const lawyerApi = {
 	addNewCard(): Promise<{ redirect_url: string }> {
 		return httpClientWithAuth(`${API_URL}/lawyers/cards/init`, {
 			method: 'POST',
+			body: JSON.stringify({}),
 		})
 	},
 }

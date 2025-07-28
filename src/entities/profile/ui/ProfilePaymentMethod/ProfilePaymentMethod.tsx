@@ -1,13 +1,13 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import PaymentMethodIcon from '@/app/assets/icons/payment-method.svg'
 import kaspiIcon from '@/app/assets/icons/kaspi.png'
 import s from './ProfilePaymentMethod.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
-import { Loader, useModal } from '@/shared/ui-kit'
+import { Button, Loader, useModal } from '@/shared/ui-kit'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Image from 'next/image'
 import { NewPaymentPopup } from '@/entities/subscription/ui/SubscriptionView/NewPaymentPopup'
@@ -16,7 +16,7 @@ import { usePaymentStore } from '@/entities/payment'
 import toast from 'react-hot-toast'
 
 export const ProfilePaymentMethod = () => {
-	const t = useTranslations('profile.payment_method')
+	const t = useTranslations()
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const { open, isOpen, close } = useModal()
 	const [selected, setSelected] = useState<string | null>(null)
@@ -40,44 +40,63 @@ export const ProfilePaymentMethod = () => {
 		}
 	}
 
+	useEffect(() => {
+		if (cards?.length && !selected) {
+			const activeCard = cards.find((card) => card.is_active)
+			if (activeCard) {
+				setSelected(activeCard.id.toString())
+			}
+		}
+	}, [cards])
+
 	return (
 		<ProfileTabWrapper
-			title={t('title')}
+			title={t('profile.payment_method.title')}
 			imgSrc={PaymentMethodIcon}
-			imgAlt="payment"
-			panel_title={t('panelTitle')}
-			panel_descr={t('panelDescription')}
+			imgAlt="profile.payment_method.payment"
+			panel_title={t('profile.payment_method.panelTitle')}
+			panel_descr={t('profile.payment_method.panelDescription')}
 			ref={disclosureBtnRef}>
 			<div className={s.radioGroup}>
 				{isLoading ? (
 					<Loader />
 				) : error ? (
-					<div className={s.error}>{t('loadingError')}</div>
+					<div className={s.error}>ошибка</div>
 				) : (
 					cards.map((card) => (
 						<div
 							key={card.id}
 							onClick={() => handleSelect(card.id.toString())}
 							className={clsx(s.option, {
-								[s.checked]: selected === card.id.toString(),
+								[s.checked]: card.is_active,
 							})}>
 							<div className={s.left}>
 								<div className={s.cardBox}>
 									<Image
 										src={kaspiIcon}
-										alt="kaspi"
+										alt={card.bank_name}
 										width={80}
 										height={60}
 									/>
 								</div>
-								<span>{card.title}</span>
+								<div className={s.cardInfo}>
+									<span>{card.bank_account}</span>
+
+									{card.is_active && <span className={s.active}>Активная карта</span>}
+								</div>
 							</div>
-							<span className={s.circle} />
+
+							<span
+								className={clsx(s.option, {
+									[s.checked]: selected === card.id.toString(),
+								})}
+							/>
 						</div>
 					))
 				)}
 
-				<button
+				<Button
+					variant={'clear'}
 					onClick={handleAddCard}
 					className={clsx(s.option, s.optionAddCard)}>
 					<div className={s.left}>
@@ -88,9 +107,9 @@ export const ProfilePaymentMethod = () => {
 								color="rgba(2, 125, 255, 1)"
 							/>
 						</div>
-						<span>{t('newCard')}</span>
+						<span>{t('profile.payment_method.newCard')}</span>
 					</div>
-				</button>
+				</Button>
 			</div>
 
 			<NewPaymentPopup
