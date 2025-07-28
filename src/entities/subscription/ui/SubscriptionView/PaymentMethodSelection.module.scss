@@ -1,10 +1,9 @@
-/* NewPaymentPopup.module.scss */
-
 .radioGroup {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
-	margin-bottom: 24px;
+	gap: 8px;
+	margin-bottom: 20px;
+	width: 100%;
 }
 
 .option {
@@ -12,20 +11,20 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 14px 16px;
-	border: 1.5px solid #ccc;
+	border: 1.5px solid $light-blue-color;
 	border-radius: 10px;
 	cursor: pointer;
 	transition: border-color 0.2s ease;
 
 	&:hover {
-		border-color: #027dff;
-		background-color: #f0f7ff;
+		border-color: $blue-color;
+		background-color: $light-blue-color;
 	}
 }
 
 .checked {
-	border-color: #027dff;
-	background-color: #e7f0ff;
+	border-color: $blue-color;
+	background-color: $light-blue-color;
 }
 
 .left {
@@ -35,9 +34,8 @@
 }
 
 .cardBox {
-	min-width: 70px;
 	padding: 6px 12px;
-	background-color: #027dff;
+	background-color: $blue-color;
 	color: white;
 	font-weight: 600;
 	font-size: 14px;
@@ -45,10 +43,16 @@
 	user-select: none;
 }
 
+.text {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 130%;
+}
+
 .cardBoxNew {
-	min-width: 40px;
-	min-height: 40px;
-	background: #d9eaff;
+	min-width: 30px;
+	min-height: 30px;
+	background: $light-blue-color;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -62,9 +66,9 @@
 }
 
 .circle {
-	width: 22px;
-	height: 22px;
-	border: 2.5px solid #ccc;
+	width: 20px;
+	height: 20px;
+	border: 2px solid $light-blue-color;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -73,23 +77,21 @@
 }
 
 .checked .circle {
-	border-color: #027dff;
+	border-color: $blue-color;
 }
 
 .innerCircle {
 	width: 12px;
 	height: 12px;
-	background-color: #027dff;
+	background-color: $blue-color;
 	border-radius: 50%;
 }
 
 .optionAddCard {
-	border: 1.5px dashed #027dff;
-	color: #027dff;
-	font-weight: 600;
-
+	border: 1px dashed $blue-color;
+	transition: all 0.2s ease;
 	&:hover {
-		background-color: #e7f0ff;
+		background-color: $light-blue-color;
 	}
 }
 

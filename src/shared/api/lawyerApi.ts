@@ -143,7 +143,8 @@ export const lawyerApi = {
 
 	deleteCardById: (id: number) => {
 		httpClientWithAuth(`${API_URL}/lawyers/cards/${id}`, {
-			method: 'POST',
+			method: 'DELETE',
+			body: JSON.stringify({ id }),
 		})
 	},
 

@@ -1,18 +1,15 @@
 import Image from 'next/image'
 import s from './SubscriptionPopupStates.module.scss'
-import { useTranslations } from 'next-intl'
+
 import subFailed from '@/app/assets/images/subscription-failed.webp'
 import subSuccess from '@/app/assets/images/subscription-success.webp'
 
 interface Props {
-	status: 'success' | 'failed' | null
+	status: 'success' | 'failed'
+	message: string
 }
 
-export const SubscriptionPopupStates = ({ status }: Props) => {
-	const t = useTranslations('profile.subscription')
-
-	if (!status) return null
-
+export const PopupStates = ({ status, message }: Props) => {
 	return (
 		<div className={s.item}>
 			<Image
@@ -22,8 +19,7 @@ export const SubscriptionPopupStates = ({ status }: Props) => {
 				height={311}
 				alt={status}
 			/>
-
-			<p className={s.text}>{t(`${status}.text`)}</p>
+			<p className={s.text}>{message}</p>
 		</div>
 	)
 }

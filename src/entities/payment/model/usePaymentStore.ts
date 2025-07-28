@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { lawyerApi } from '@/shared/api'
 import { toast } from 'react-hot-toast'
+import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 interface Card {
 	id: number
@@ -36,6 +37,7 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 			const cards = await lawyerApi.getMyCards()
 			// @ts-expect-error fix it
 			set({ cards, loading: false })
+			await refreshUser()
 		} catch (e: any) {
 			set({ loading: false, error: e.message ?? 'Не удалось загрузить карты' })
 			toast.error(get().error!)
@@ -43,14 +45,12 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 	},
 
 	deleteCard: async (id: number) => {
-		const toastId = toast.loading('Удаление карты…')
 		try {
 			await lawyerApi.deleteCardById(id)
 			set((state) => ({ cards: state.cards.filter((card) => card.id !== id) }))
-			toast.success('Карта удалена', { id: toastId })
+			await refreshUser()
 		} catch (e: any) {
 			set({ error: e.message ?? 'Ошибка при удалении' })
-			toast.error(`Ошибка: ${get().error}`, { id: toastId })
 		}
 	},
 
@@ -62,6 +62,7 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 				cards: state.cards.map((card) => ({ ...card, isActive: card.id === id })),
 			}))
 			toast.success('Карта активирована', { id: toastId })
+			await refreshUser()
 		} catch (e: any) {
 			set({ error: e.message ?? 'Ошибка при активации' })
 			toast.error(`Ошибка: ${get().error}`, { id: toastId })
@@ -76,7 +77,7 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 
 			set((state: any) => ({ cards: [...state.cards, result], loading: false }))
 			toast.success('Перенаправляем...', { id: toastId })
-
+			await refreshUser()
 			if (result.redirect_url && typeof result.redirect_url === 'string') {
 				return result.redirect_url
 			}
