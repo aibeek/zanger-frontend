@@ -129,6 +129,12 @@ export const lawyerApi = {
 			body: JSON.stringify({ plan_id, is_auto_renew }),
 		}),
 
+	subscribeByCard: (plan_id: number, card_id: string): Promise<SubscribeResponse> =>
+		httpClientWithAuth(`${API_URL}/lawyers/cards/init-payment`, {
+			method: 'POST',
+			body: JSON.stringify({ plan_id, card_id }),
+		}),
+
 	getMyCards: () => {
 		return httpClientWithAuth(`${API_URL}/lawyers/cards`, {
 			method: 'GET',
@@ -152,6 +158,13 @@ export const lawyerApi = {
 		return httpClientWithAuth(`${API_URL}/lawyers/cards/init`, {
 			method: 'POST',
 			body: JSON.stringify({}),
+		})
+	},
+
+	setAutoRenew: (number: number) => {
+		httpClientWithAuth(`${API_URL}/profile/lawyers/auto-renew`, {
+			method: 'PATCH',
+			body: JSON.stringify({ number }),
 		})
 	},
 }

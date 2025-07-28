@@ -1,28 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import s from './SubscriptionView.module.scss'
 import Subscription from '@/app/assets/images/subscription.webp'
 import { SubscriptionPlans } from './SubscriptionPlans'
 import { AutoRenewal } from './AutoRenewal'
-import { Button } from '@/shared/ui-kit'
-import { useSubscriptionStore } from '../../model'
-import { lawyerApi } from '@/shared/api'
-import toast from 'react-hot-toast'
+import { Button, Modal } from '@/shared/ui-kit'
 import { useTranslations } from 'next-intl'
+import { PaymentMethodSelection } from './PaymentMethodSelection'
 
 export const SubscriptionView = () => {
-	const planId = useSubscriptionStore((state) => state.planId)
-	const isAutoRenew = useSubscriptionStore((state) => state.isAutoRenew)
 	const t = useTranslations('subscriptionView')
+	const [isModalOpen, setModalOpen] = useState(false)
 
-	const handleSubmit = async () => {
-		try {
-			const { link } = await lawyerApi.subscribe(planId, isAutoRenew)
-			window.location.href = link
-		} catch (e) {
-			toast.error(t('error'))
-		}
+	const handleOpenModal = () => {
+		setModalOpen(true)
+	}
+
+	const handleCloseModal = () => {
+		setModalOpen(false)
 	}
 
 	return (
@@ -42,17 +39,27 @@ export const SubscriptionView = () => {
 					</div>
 
 					<SubscriptionPlans />
+
 					<div className={s.buy}>
 						<Button
 							style={{ marginBottom: '20px' }}
-							onClick={handleSubmit}
-							size={'full'}>
+							onClick={handleOpenModal}
+							size="full">
 							{t('button')}
 						</Button>
 					</div>
+
 					<AutoRenewal />
 				</div>
 			</div>
+
+			<Modal
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+				title="Выберите способ оплаты"
+				className={s.paymentModal}>
+				<PaymentMethodSelection />
+			</Modal>
 		</section>
 	)
 }

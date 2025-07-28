@@ -16,14 +16,15 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 12px;
-	border: 1px solid #ccc;
 	border-radius: 8px;
 	cursor: pointer;
 	margin-bottom: 12px;
 	position: relative;
-
+	color: $primary-color;
+	font-size: 16px;
+	font-weight: 400;
 	&:hover {
-		border-color: #007bff;
+		color: $blue-color;
 	}
 }
 
@@ -68,6 +69,23 @@
 	}
 }
 
+.circle {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	border: 2px solid rgba(156, 165, 172, 1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.innerCircle {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: $blue-color;
+}
+
 .checked {
 	.circle {
 		border-color: $blue-color;
@@ -100,8 +118,11 @@
 }
 
 .cardBox {
-	width: 80px;
-	height: 60px;
+	// width: 80px;
+	// height: 60px;
+	display: flex;
+	align-items: center;
+	gap: 20px;
 }
 
 .cardBoxNew {

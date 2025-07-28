@@ -10,10 +10,10 @@ import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { Button, Loader, useModal } from '@/shared/ui-kit'
 import { PlusIcon } from '@heroicons/react/20/solid'
 import Image from 'next/image'
-import { NewPaymentPopup } from '@/entities/subscription/ui/SubscriptionView/NewPaymentPopup'
 import { useMyCards } from '@/entities/payment/model/useMyCards'
 import { usePaymentStore } from '@/entities/payment'
 import toast from 'react-hot-toast'
+import { NewPaymentPopup } from '@/entities/subscription/ui/SubscriptionView/NewPaymentPopup'
 
 export const ProfilePaymentMethod = () => {
 	const t = useTranslations()
@@ -31,7 +31,6 @@ export const ProfilePaymentMethod = () => {
 
 	const handleAddCard = async () => {
 		const redirectUrl = await addCard()
-		// после создания — обновляем список карт
 		await mutate()
 		if (redirectUrl) {
 			window.location.href = redirectUrl
@@ -68,29 +67,25 @@ export const ProfilePaymentMethod = () => {
 							key={card.id}
 							onClick={() => handleSelect(card.id.toString())}
 							className={clsx(s.option, {
-								[s.checked]: card.is_active,
+								[s.checked]: selected === card.id.toString(),
 							})}>
 							<div className={s.left}>
 								<div className={s.cardBox}>
-									<Image
+									{/* <Image
 										src={kaspiIcon}
 										alt={card.bank_name}
 										width={80}
 										height={60}
-									/>
+									/> */}
+									<span>{card.bank_name}</span>
 								</div>
 								<div className={s.cardInfo}>
 									<span>{card.bank_account}</span>
-
-									{card.is_active && <span className={s.active}>Активная карта</span>}
 								</div>
 							</div>
 
-							<span
-								className={clsx(s.option, {
-									[s.checked]: selected === card.id.toString(),
-								})}
-							/>
+							{/* Радиокнопка */}
+							<div className={s.circle}>{selected === card.id.toString() && <div className={s.innerCircle}></div>}</div>
 						</div>
 					))
 				)}

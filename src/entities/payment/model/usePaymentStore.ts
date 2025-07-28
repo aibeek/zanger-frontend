@@ -70,12 +70,12 @@ export const usePaymentStore = create<PaymentState & PaymentActions>()((set, get
 
 	addCard: async () => {
 		set({ loading: true, error: null })
-		const toastId = toast.loading('Создание карты…')
+		const toastId = toast.loading('Создание карты...')
 		try {
 			const result = await lawyerApi.addNewCard()
 
 			set((state: any) => ({ cards: [...state.cards, result], loading: false }))
-			toast.success('Карта создана', { id: toastId })
+			toast.success('Перенаправляем...', { id: toastId })
 
 			if (result.redirect_url && typeof result.redirect_url === 'string') {
 				return result.redirect_url

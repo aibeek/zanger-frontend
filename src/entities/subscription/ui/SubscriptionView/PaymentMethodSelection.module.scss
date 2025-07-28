@@ -1,0 +1,110 @@
+/* NewPaymentPopup.module.scss */
+
+.radioGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	border: 1.5px solid #ccc;
+	border-radius: 10px;
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+
+	&:hover {
+		border-color: #027dff;
+		background-color: #f0f7ff;
+	}
+}
+
+.checked {
+	border-color: #027dff;
+	background-color: #e7f0ff;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.cardBox {
+	min-width: 70px;
+	padding: 6px 12px;
+	background-color: #027dff;
+	color: white;
+	font-weight: 600;
+	font-size: 14px;
+	border-radius: 6px;
+	user-select: none;
+}
+
+.cardBoxNew {
+	min-width: 40px;
+	min-height: 40px;
+	background: #d9eaff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cardInfo {
+	font-size: 15px;
+	color: #333;
+	user-select: none;
+}
+
+.circle {
+	width: 22px;
+	height: 22px;
+	border: 2.5px solid #ccc;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: border-color 0.2s ease;
+}
+
+.checked .circle {
+	border-color: #027dff;
+}
+
+.innerCircle {
+	width: 12px;
+	height: 12px;
+	background-color: #027dff;
+	border-radius: 50%;
+}
+
+.optionAddCard {
+	border: 1.5px dashed #027dff;
+	color: #027dff;
+	font-weight: 600;
+
+	&:hover {
+		background-color: #e7f0ff;
+	}
+}
+
+.actions {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.error {
+	padding: 12px 16px;
+	background-color: #ffe3e3;
+	color: #d32f2f;
+	border-radius: 8px;
+	font-weight: 600;
+	text-align: center;
+	user-select: none;
+}
