@@ -1,3 +1,4 @@
+import { add } from 'date-fns'
 import { API_URL } from '../config'
 import { createQuery } from '../lib'
 import { httpClientWithAuth } from './httpClient'
@@ -128,4 +129,29 @@ export const lawyerApi = {
 			method: 'POST',
 			body: JSON.stringify({ plan_id, is_auto_renew }),
 		}),
+
+	getMyCards: () => {
+		return httpClientWithAuth(`${API_URL}/lawyers/cards`, {
+			method: 'GET',
+		})
+	},
+
+	deleteCardById: (id: number) => {
+		httpClientWithAuth(`${API_URL}/lawyers/cards/${id}`, {
+			method: 'POST',
+		})
+	},
+
+	toActiveMyCard: (id: number) => {
+		httpClientWithAuth(`${API_URL}/lawyers/cards/${id}/active`, {
+			method: 'PATCH',
+			body: JSON.stringify({ id }),
+		})
+	},
+
+	addNewCard(): Promise<{ redirect_url: string }> {
+		return httpClientWithAuth(`${API_URL}/lawyers/cards/init`, {
+			method: 'POST',
+		})
+	},
 }

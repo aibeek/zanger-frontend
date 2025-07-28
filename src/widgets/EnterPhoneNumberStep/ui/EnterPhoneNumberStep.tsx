@@ -38,7 +38,7 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 		await sendPhoneNumber(rawPhone, nextStep, variant)
 	}
 
-	const { translatedError } = useFormError(error, errors)
+	const { translatedFieldErrors, translatedServerError } = useFormError(error, errors)
 
 	return (
 		<div className={s.wrapper}>
@@ -77,7 +77,8 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 						)}
 					/>
 
-					{translatedError && <p className={s.error}>{error || translatedError}</p>}
+					{translatedFieldErrors.phone && <p className={s.error}>{translatedFieldErrors.phone}</p>}
+					{!translatedFieldErrors.phone && translatedServerError && <p className={s.error}>{translatedServerError}</p>}
 
 					<Button
 						className={s.btn}

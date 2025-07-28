@@ -1,23 +1,36 @@
 import { useTranslations } from 'next-intl'
-import { mapServerError } from '@/shared/lib/helpers/mapServerError'
+import { mapServerError } from '../helpers/mapServerError'
 
 export const useFormError = (error: any, formErrors: any) => {
 	const t = useTranslations()
 
-	const formErrorMessage = formErrors.phone?.message || null
-	const errorMessageKey = error ? mapServerError(error) : null
-	const genericErrorMessage = !errorMessageKey && error ? t('errors.genericError') : null
+	const translatedFieldErrors: Record<string, string> = {}
+	for (const key in formErrors) {
+		const message = formErrors[key]?.message
+		if (message) {
+			translatedFieldErrors[key] = t(message)
+		}
+	}
 
-	const translatedError = formErrorMessage
-		? t(formErrorMessage)
-		: errorMessageKey
-		? t(`errors.${errorMessageKey}`)
-		: genericErrorMessage
+	let translatedServerError = null
+
+	if (error) {
+		if (typeof error === 'object' && error.code) {
+			if (error.code === 422) {
+				translatedServerError = error.message || t('errors.validation_error')
+			} else {
+				const errorMessageKey = mapServerError(error)
+				translatedServerError = errorMessageKey ? t(`errors.${errorMessageKey}`) : t('errors.genericError')
+			}
+		} else if (typeof error === 'string') {
+			translatedServerError = error
+		} else {
+			translatedServerError = t('errors.genericError')
+		}
+	}
 
 	return {
-		formErrorMessage,
-		errorMessageKey,
-		genericErrorMessage,
-		translatedError,
+		translatedFieldErrors,
+		translatedServerError,
 	}
 }

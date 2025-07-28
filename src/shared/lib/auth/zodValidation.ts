@@ -200,6 +200,25 @@ export const servicingCitiesSchema = z.object({
 		.min(1, { message: 'Выберите хотя бы одну локацию' }),
 })
 
+export const cardPaymentSchema = z.object({
+	cardNumber: z
+		.string()
+		.nonempty({ message: 'validation.required' })
+		.regex(/^\d{4}\s?\d{4}\s?\d{4}\s?\d{4}$/, { message: 'validation.cardNumber' })
+		.transform((val) => val.replace(/\s/g, '')),
+
+	expiry: z
+		.string()
+		.nonempty({ message: 'validation.required' })
+		.regex(/^(0[1-9]|1[0-2])\/\d{2}$/, { message: 'validation.expiry' }),
+
+	cvv: z
+		.string()
+		.nonempty({ message: 'validation.required' })
+		.regex(/^\d{3}$/, { message: 'validation.cvv' }),
+})
+
+export type CardPaymentForm = z.infer<typeof cardPaymentSchema>
 export type ServicingCitiesForm = z.infer<typeof servicingCitiesSchema>
 export type StatusesForm = z.infer<typeof statusesSchema>
 export type SpecializationForm = z.infer<typeof specializationSchema>

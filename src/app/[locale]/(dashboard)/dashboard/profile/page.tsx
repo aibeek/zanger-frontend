@@ -73,7 +73,7 @@ export default function ProfileView() {
 						{lawyer && <ProfileConsultationPrice />}
 						{lawyer && <ProfileChangeSpecialization />}
 						{lawyer && <ProfileSubscription />}
-						{/* {lawyer && <ProfilePaymentMethod />} */}
+						{lawyer && <ProfilePaymentMethod />}
 						<ProfileSupport />
 						{lawyer && <ProfileServicingCities />}
 						<ProfileDelete />

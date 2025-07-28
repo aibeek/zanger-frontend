@@ -380,7 +380,11 @@
 		"region_or_city_required": "Укажите регион или город",
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
-		"only_digits": "Введите только цифры"
+		"only_digits": "Введите только цифры",
+		"cardNumber": "Введите 16 цифр карты",
+		"expiry": "Введите дату в формате MM/YY",
+		"cvv": "Введите CVV",
+		"required": "Заполните поле"
 	},
 
 	"errors": {

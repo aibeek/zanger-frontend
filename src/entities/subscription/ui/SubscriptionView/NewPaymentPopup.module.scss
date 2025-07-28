@@ -18,12 +18,20 @@
 	display: block;
 }
 
+.error {
+	color: $error-color;
+	font-size: 12px;
+	font-weight: 400;
+	width: max-content;
+}
+
 .input {
 	border: 1px solid $light-blue-color;
 	border-radius: 8px;
 	padding: 12px;
 	background: #fff;
 	color: $primary-color;
+	width: 100%;
 }
 
 .row {
