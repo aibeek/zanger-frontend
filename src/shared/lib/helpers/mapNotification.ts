@@ -53,6 +53,7 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 			return {
 				...base,
 				image: notification.data?.response?.lawyer?.icon,
+				name: notification.data?.response?.lawyer?.name,
 				buttonText: t('buttons.view'),
 				hasButton: true,
 				buttonLink: `/dashboard/applications`,

@@ -77,7 +77,7 @@ export const MyApplicationsLawyersCards = ({ data, mutate }: MyApplicationsLawye
 
 						<div className={s.userName}>
 							<p className={s.name}>{lawyer?.name || t('noName')}</p>
-							<p className={s.job}>{application.tag?.name || t('noSpec')}</p>
+							<p className={s.job}>{response.types}</p>
 						</div>
 					</div>
 

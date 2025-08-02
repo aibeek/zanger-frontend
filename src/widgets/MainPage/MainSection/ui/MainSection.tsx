@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import tik_tok from '@/app/assets/icons/tik_tok.svg'
 import facebook from '@/app/assets/icons/facebook.svg'
 import telegram from '@/app/assets/icons/telegram.svg'
+import arrow from '@/app/assets/icons/arrow-right.svg'
 import instagram from '@/app/assets/icons/instagram.svg'
 import mainBgPhone from '@/app/assets/icons/main-bg-phone.svg'
 import s from './MainSection.module.scss'
@@ -18,7 +19,7 @@ export const MainSection = () => {
 		<section className={s.wrapper}>
 			<div className={s.middle}>
 				<div className={s.socials}>
-					<Link href={'/'}>
+					<Link href={'https://t.me/zanger5510'}>
 						<Image
 							src={telegram}
 							alt="telegram"
@@ -53,6 +54,16 @@ export const MainSection = () => {
 
 			<div className={s.bottom}>
 				<div className={s.bottomContent}>
+					<div className={s.arrow}>
+						<p dangerouslySetInnerHTML={{ __html: t('disclaimer') }} />
+						<Image
+							src={arrow}
+							alt="arrow"
+							color={'#fff'}
+							width={30}
+							height={30}
+						/>
+					</div>
 					<Link
 						href={'tel:+5510'}
 						className={s.phone}>

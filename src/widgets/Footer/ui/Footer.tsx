@@ -98,7 +98,7 @@ export const Footer = ({ variant, id }: Props) => {
 								dangerouslySetInnerHTML={{ __html: t('socials') }}
 							/>
 							<div className={s.socials}>
-								<Link href={'/'}>
+								<Link href={'https://t.me/zanger5510'}>
 									<Image
 										src={telegram}
 										alt={'telegram'}
