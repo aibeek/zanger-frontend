@@ -81,17 +81,7 @@ export const Footer = ({ variant, id }: Props) => {
 			id={id}
 			className={s.lendingFooter}>
 			<div className="container-middle">
-				<div className={s.lengingInner}>
-					<div className={s.lendingTop}>
-						<Image
-							src={'/logo.svg'}
-							alt={'логотип'}
-							width={56}
-							height={66}
-						/>
-					</div>
-
-					<div className={s.lendingMiddle}>
+				<div className={s.lendingMiddle}>
 						<div className={s.lendingMiddleLeft}>
 							<p
 								className={s.text}
@@ -206,7 +196,6 @@ export const Footer = ({ variant, id }: Props) => {
 						</div>
 					</div>
 				</div>
-			</div>
 			<div className={s.lendingBottom}>
 				<div className="container-middle">
 					<div className={s.lendingBottomInner}>

@@ -48,12 +48,36 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 					<div className="container">
 						<div className={s.headerContent}>
 							<div className={s.logo}>
-								<Image
-									src="/logo.svg"
-									alt={t('logoAlt')}
-									width={56}
-									height={66}
-								/>
+								<Link 
+									href="/"
+									style={{ 
+										background: 'linear-gradient(45deg, #1e3c72, #2a5298, #3b82f6, #60a5fa, #93c5fd)',
+										backgroundSize: '400% 400%',
+										WebkitBackgroundClip: 'text',
+										WebkitTextFillColor: 'transparent',
+										backgroundClip: 'text',
+										fontSize: '28px', 
+										fontWeight: '700', 
+										textDecoration: 'none',
+										letterSpacing: '1.5px',
+										animation: 'gradient 3s ease infinite',
+										display: 'inline-block'
+									}}>
+									ZANGER
+								</Link>
+								<style jsx>{`
+									@keyframes gradient {
+										0% {
+											background-position: 0% 50%;
+										}
+										50% {
+											background-position: 100% 50%;
+										}
+										100% {
+											background-position: 0% 50%;
+										}
+									}
+								`}</style>
 							</div>
 							<LangSwitcher />
 							

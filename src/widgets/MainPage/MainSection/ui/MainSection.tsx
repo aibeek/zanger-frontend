@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -19,6 +19,12 @@ export const MainSection = () => {
 	const handleVideoLoad = () => {
 		setVideoLoaded(true)
 	}
+
+	useEffect(() => {
+		if (videoRef.current) {
+			videoRef.current.playbackRate = 0.8 // Уменьшение скорости на 20%
+		}
+	}, [videoLoaded])
 
 	return (
 		<section className={s.wrapper}>
@@ -45,8 +51,8 @@ export const MainSection = () => {
 								src={logo}
 								alt="ZANGER Logo"
 								className={s.logo}
-								width={300}
-								height={300}
+								width={240}
+								height={240}
 							/>
 						</div>
 						<div className={s.titleContainer}>
