@@ -9,7 +9,7 @@ import { Loader } from '@/shared/ui-kit'
 
 export const SubscriptionPlans = () => {
 	const { plans, fetchPlans, loading, setPlanId } = useSubscriptionStore()
-	const [selected, setSelected] = useState(plans[0]?.value)
+	const [selected, setSelected] = useState<string>('')
 
 	useEffect(() => {
 		fetchPlans()
@@ -23,6 +23,9 @@ export const SubscriptionPlans = () => {
 	}, [plans, selected, setPlanId])
 
 	if (loading) return <Loader />
+
+	// Don't render RadioGroup until we have plans and a selected value
+	if (plans.length === 0 || !selected) return <Loader />
 
 	const handleChange = (value: string) => {
 		setSelected(value)

@@ -33,7 +33,14 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
 		try {
 			const response = (await lawyerApi.getAllSubscriptionPlans()) as { data: SubscriptionPlanRaw[] }
 
-			const mappedPlans: SubscriptionPlan[] = response.data.map((plan) => ({
+			// Фильтруем тестовые планы
+			const filteredPlans = response.data.filter((plan) => {
+				const price = Number(plan.price)
+				const isTestPlan = plan.name.toLowerCase().includes('тест') || price === 25
+				return !isTestPlan
+			})
+
+			const mappedPlans: SubscriptionPlan[] = filteredPlans.map((plan) => ({
 				planId: plan.id,
 				value: `plan-${plan.id}`,
 				label: plan.name,

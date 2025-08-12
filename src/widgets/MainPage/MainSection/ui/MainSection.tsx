@@ -72,7 +72,7 @@ export const MainSection = () => {
 						
 						<div className={s.callAction}>
 							<Link
-								href={'tel:+5510'}
+								href={'tel:5510'}
 								className={s.phoneButton}>
 								<div className={s.phoneIcon}>
 									<Image
