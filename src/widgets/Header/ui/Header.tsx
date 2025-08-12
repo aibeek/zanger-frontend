@@ -45,79 +45,79 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 		return (
 			<>
 				<header className={`${s.lendingHeader}`}>
-					<div className={s.left}>
-						<div className={s.logo}>
-							<Image
-								src="/logo.svg"
-								alt={t('logoAlt')}
-								width={56}
-								height={66}
-							/>
-						</div>
-						<LangSwitcher />
-					</div>
-
 					<div className="container">
-						<div className={s.authBtns}>
-							{isMobile && (
-								<div style={{ height: '42px' }}>
-									<Button
-										onClick={open}
-										size={'auto'}
-										variant={'clear'}>
-										<Image
-											style={{ borderRadius: '10px' }}
-											src={lendingUser}
-											alt={'icon'}
-											width={42}
-											height={42}
-										/>
-									</Button>
-								</div>
-							)}
-							{isAuthenticated && personalData ? (
-								<>
-									{!isMobile && (
-										<div className={s.user}>
-											<Link
-												style={{ cursor: 'pointer' }}
-												href={`/${personalData.language}/dashboard/profile`}>
-												<Image
-													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-													src={personalData.icon ?? avatar}
-													alt={t('avatarAlt')}
-													width={40}
-													height={40}
-												/>
-											</Link>
-											<div className={s.userInfo}>
-												<p className={s.userName}>{personalData.name}</p>
-												<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+						<div className={s.headerContent}>
+							<div className={s.logo}>
+								<Image
+									src="/logo.svg"
+									alt={t('logoAlt')}
+									width={56}
+									height={66}
+								/>
+							</div>
+							<LangSwitcher />
+							
+							<div className={s.authBtns}>
+								{isMobile && (
+									<div style={{ height: '42px' }}>
+										<Button
+											onClick={open}
+											size={'auto'}
+											variant={'clear'}>
+											<Image
+												style={{ borderRadius: '10px' }}
+												src={lendingUser}
+												alt={'icon'}
+												width={42}
+												height={42}
+											/>
+										</Button>
+									</div>
+								)}
+								{isAuthenticated && personalData ? (
+									<>
+										{!isMobile && (
+											<div className={s.user}>
+												<Link
+													style={{ cursor: 'pointer' }}
+													href={`/${personalData.language}/dashboard/profile`}>
+													<Image
+														style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+														src={personalData.icon ?? avatar}
+														alt={t('avatarAlt')}
+														width={40}
+														height={40}
+													/>
+												</Link>
+												<div className={s.userInfo}>
+													<p className={s.userName}>{personalData.name}</p>
+													<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+												</div>
 											</div>
-										</div>
-									)}
-								</>
-							) : (
-								<>
-									{!isMobile && (
-										<AppLink
-											className={s.appLink}
-											variant={'primary'}
-											href={'/auth/login'}>
-											{t('login')}
-										</AppLink>
-									)}
+										)}
+									</>
+								) : (
+									<>
+										{!isMobile && (
+											<AppLink
+												className={s.appLink}
+												variant={'primary'}
+												href={'/auth/login'}>
+												{t('login')}
+											</AppLink>
+										)}
 
-									{!isMobile && (
-										<AppLink
-											className={s.appLink}
-											variant={'border-white'}
-											href={'/auth/register/select-role'}>
-											{t('register')}
-										</AppLink>
-									)}
-								</>
-							)}
+										{!isMobile && (
+											<AppLink
+												className={s.appLink}
+												variant={'border-white'}
+												href={'/auth/register/select-role'}>
+												{t('register')}
+											</AppLink>
+										)}
+									</>
+								)}
+							</div>
 						</div>
 					</div>
 				</header>

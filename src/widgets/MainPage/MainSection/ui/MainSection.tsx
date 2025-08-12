@@ -1,80 +1,90 @@
 'use client'
 
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-
-import tik_tok from '@/app/assets/icons/tik_tok.svg'
-import facebook from '@/app/assets/icons/facebook.svg'
-import telegram from '@/app/assets/icons/telegram.svg'
-import arrow from '@/app/assets/icons/arrow-right.svg'
-import instagram from '@/app/assets/icons/instagram.svg'
-import mainBgPhone from '@/app/assets/icons/main-bg-phone.svg'
+import phone from '@/app/assets/icons/phone.svg'
+import logo from '../../../../../public/logo.svg'
 import s from './MainSection.module.scss'
 
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
+	const [videoLoaded, setVideoLoaded] = useState(false)
+	const videoRef = useRef<HTMLVideoElement>(null)
+
+	const handleVideoLoad = () => {
+		setVideoLoaded(true)
+	}
 
 	return (
 		<section className={s.wrapper}>
 			<div className={s.middle}>
-				<div className={s.socials}>
-					<Link href={'https://t.me/zanger5510'}>
-						<Image
-							src={telegram}
-							alt="telegram"
-						/>
-					</Link>
-					<Link href={'https://www.facebook.com/people/Zanger5510/61578403178388/'}>
-						<Image
-							src={facebook}
-							alt="facebook"
-						/>
-					</Link>
-					<Link href={'https://www.tiktok.com/@zanger5510'}>
-						<Image
-							src={tik_tok}
-							alt="tik tok"
-						/>
-					</Link>
-					<Link href={'https://www.instagram.com/zanger5510/'}>
-						<Image
-							src={instagram}
-							alt="instagram"
-						/>
-					</Link>
-				</div>
 				<div className={s.middleContent}>
+					<video 
+						ref={videoRef}
+						className={`${s.backgroundVideo} ${videoLoaded ? s.loaded : ''}`}
+						width="400"
+						height="225"
+						autoPlay 
+						muted 
+						loop 
+						playsInline
+						onLoadedData={handleVideoLoad}
+						onCanPlay={handleVideoLoad}
+					>
+						<source src="/assets/images/main-video.mp4" type="video/mp4" />
+					</video>
 					<div className={s.text}>
-						<h1 className={s.title}>{t('title')}</h1>
-						<p className={s.descr}>{t('description')}</p>
+						<div className={s.companyTitle}>Global Legal Technologies</div>
+						<div className={s.logoContainer}>
+							<Image
+								src={logo}
+								alt="ZANGER Logo"
+								className={s.logo}
+								width={300}
+								height={300}
+							/>
+						</div>
+						<div className={s.titleContainer}>
+							<h1 className={s.title} dangerouslySetInnerHTML={{ __html: t('title') }} />
+							<div className={s.titleUnderline}></div>
+						</div>
+						<div className={s.descrContainer}>
+							<p className={s.descr}>{t('description')}</p>
+							<div className={s.descrGlow}></div>
+						</div>
 					</div>
 				</div>
 			</div>
 
 			<div className={s.bottom}>
 				<div className={s.bottomContent}>
-					<div className={s.arrow}>
-						<p dangerouslySetInnerHTML={{ __html: t('disclaimer') }} />
-						<Image
-							src={arrow}
-							alt="arrow"
-							color={'#fff'}
-							width={30}
-							height={30}
-						/>
-					</div>
-					<Link
-						href={'tel:+5510'}
-						className={s.phone}>
-						<Image
-							src={mainBgPhone}
-							alt="phone"
-						/>
-					</Link>
-					<div className={s.bottomText}>
-						<p className={s.number}>5510</p>
-						<p className={s.bottomDescr}>{t('freeCalls')}</p>
+					<div className={s.contactSection}>
+						<div className={s.disclaimerWrapper}>
+							<div className={s.arrow}>
+								<p dangerouslySetInnerHTML={{ __html: t('disclaimer') }} />
+							</div>
+						</div>
+						
+						<div className={s.callAction}>
+							<Link
+								href={'tel:+5510'}
+								className={s.phoneButton}>
+								<div className={s.phoneIcon}>
+									<Image
+										src={phone}
+										alt="phone"
+										width={24}
+										height={24}
+									/>
+								</div>
+								<div className={s.callText}>
+									<span className={s.callNow}>Позвонить</span>
+									<span className={s.number}>5510</span>
+								</div>
+							</Link>
+						</div>
 					</div>
 				</div>
 			</div>

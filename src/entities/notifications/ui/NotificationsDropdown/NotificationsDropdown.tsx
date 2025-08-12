@@ -105,7 +105,8 @@ export const NotificationsDropdown = () => {
 		<Dropdown
 			open={open}
 			onOpenChange={(state) => setOpen(state)}
-			overlay={items}
+			menu={{ items: [] }}
+			popupRender={() => items}
 			placement="bottomRight"
 			trigger={['click']}>
 			<Badge

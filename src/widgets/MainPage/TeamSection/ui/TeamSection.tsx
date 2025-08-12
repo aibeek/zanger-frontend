@@ -1,0 +1,100 @@
+/*
+'use client'
+
+import { useTranslations } from 'next-intl'
+import { useEffect, useRef, useMemo } from 'react'
+import s from './TeamSection.module.scss'
+
+interface TeamMember {
+	id: number
+	name: string
+	position: string
+	experience: string
+	description: string
+	image: string
+}
+
+export const TeamSection = () => {
+	const t = useTranslations('lending.teamSection')
+	const sectionRef = useRef<HTMLElement>(null)
+
+	// Данные о членах команды
+	const teamMembers: TeamMember[] = [
+		{
+			id: 1,
+			name: 'Ержан Наурызбай',
+			position: 'Старший партнер',
+			experience: 'Опыт работы: 15+ лет',
+			description: 'Специализируется на корпоративном праве, слияниях и поглощениях, международном праве. Ведущий эксперт по вопросам налогового планирования.',
+			image: '/assets/images/en.jpg'
+		},
+		{
+			id: 2,
+			name: 'Мухаммед Телеген',
+			position: 'Партнер по гражданскому праву',
+			experience: 'Опыт работы: 12+ лет',
+			description: 'Эксперт в области гражданского права, семейного права, наследственного права и защиты прав потребителей.',
+			image: '/assets/images/et.jpg'
+		},
+		{
+			id: 3,
+			name: 'Ерасыл Баймахан',
+			position: 'Партнер по уголовному праву',
+			experience: 'Опыт работы: 10+ лет',
+			description: 'Специализируется на уголовном праве, защите в суде, административном праве и правах человека.',
+			image: '/assets/images/mt.jpg'
+		}
+	]
+
+	// Создаем дублированный массив для бесконечной анимации
+	const duplicatedTeamMembers = useMemo(() => {
+		return [...teamMembers, ...teamMembers]
+	}, [teamMembers])
+
+	// Анимация появления
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add(s.animated)
+					}
+				})
+			},
+			{ threshold: 0.1 }
+		)
+
+		if (sectionRef.current) {
+			observer.observe(sectionRef.current)
+		}
+
+		return () => observer.disconnect()
+	}, [])
+
+	return (
+		<section className={s.wrapper} ref={sectionRef}>
+			<div className={s.container}>
+				<h2 className={s.title}>{t('title')}</h2>
+				
+				<div className={s.teamGrid}>
+					{duplicatedTeamMembers.map((member, index) => (
+						<div key={`member-${member.id}-${index}`} className={s.memberCard}>
+							<img
+								src={member.image}
+								alt={member.name}
+								className={s.memberImage}
+							/>
+							<div className={s.memberOverlay}>
+								<h3 className={s.memberName}>{member.name}</h3>
+								<p className={s.memberPosition}>{member.position}</p>
+								<p className={s.memberExperience}>{member.experience}</p>
+								<p className={s.memberDescription}>{member.description}</p>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</section>
+	)
+}
+*/

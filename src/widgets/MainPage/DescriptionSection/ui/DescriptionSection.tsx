@@ -1,42 +1,94 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { useEffect, useRef } from 'react'
 import s from './DescriptionSection.module.scss'
 import { ContentDataItem, useAppContentData } from '@/shared/lib'
 
 export const DescriptionSection = () => {
 	const t = useTranslations('lending.descriptionSection')
 	const { descriptionData } = useAppContentData()
+	const sectionRef = useRef<HTMLElement>(null)
 
 	const data: ContentDataItem = descriptionData[0]
 
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						entry.target.classList.add(s.animated)
+					}
+				})
+			},
+			{ threshold: 0.1 }
+		)
+
+		if (sectionRef.current) {
+			observer.observe(sectionRef.current)
+		}
+
+		return () => observer.disconnect()
+	}, [])
+
 	return (
-		<section className={s.wrapper}>
-			<div className={s.left}>
-				<h2 className={s.title}>{t('leftTitle')}</h2>
-				<ul className={s.leftList}>
-					{data.left.text.map((text, idx) => (
-						<li
-							className={s.item}
-							key={idx}
-							dangerouslySetInnerHTML={{ __html: text }}
-						/>
-					))}
-				</ul>
-				<p className={s.descr}>{t('leftDescr')}</p>
+		<section className={s.wrapper} ref={sectionRef}>
+			<div className={s.backgroundDecoration}>
+				<div className={s.floatingShapes}>
+					<div className={s.shape1}></div>
+					<div className={s.shape2}></div>
+					<div className={s.shape3}></div>
+				</div>
 			</div>
-			<div className={s.right}>
-				<h2 className={s.title}>{t('rightTitle')}</h2>
-				<ul className={s.rightList}>
-					{data.right.text.map((text, idx) => (
-						<li
-							className={s.item}
-							key={idx}
-							dangerouslySetInnerHTML={{ __html: text }}
-						/>
-					))}
-				</ul>
-				<p className={s.descr}>{t('rightDescr')}</p>
+			
+			<div className={s.container}>
+				<div className={s.left}>
+					<div className={s.cardInner}>
+						<div className={s.iconWrapper}>
+							<div className={s.clientIcon}>👥</div>
+						</div>
+						<h2 className={s.title}>
+							<span className={s.titleGradient}>{t('leftTitle')}</span>
+						</h2>
+						<ul className={s.leftList}>
+							{data.left.text.map((text, idx) => (
+								<li
+									className={`${s.item} ${s.fadeInItem}`}
+									key={idx}
+									style={{ animationDelay: `${idx * 0.1}s` }}
+									dangerouslySetInnerHTML={{ __html: text }}
+								/>
+							))}
+						</ul>
+						<div className={s.descrWrapper}>
+							<p className={s.descr}>{t('leftDescr')}</p>
+						</div>
+					</div>
+				</div>
+				
+				<div className={s.right}>
+					<div className={s.cardInner}>
+						<div className={s.iconWrapper}>
+							<div className={s.lawyerIcon}>⚖️</div>
+						</div>
+						<h2 className={s.title}>
+							<span className={s.titleGradient}>{t('rightTitle')}</span>
+						</h2>
+						<ul className={s.rightList}>
+							{data.right.text.map((text, idx) => (
+								<li
+									className={`${s.item} ${s.fadeInItem}`}
+									key={idx}
+									style={{ animationDelay: `${idx * 0.1 + 0.2}s` }}
+									dangerouslySetInnerHTML={{ __html: text }}
+								/>
+							))}
+						</ul>
+						<div className={s.descrWrapper}>
+							<p className={s.descr}>{t('rightDescr')}</p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</section>
 	)

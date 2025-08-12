@@ -1,7 +1,10 @@
+@use '@/app/styles/vars.scss' as *;
+
 .footer {
 	width: 100%;
 	position: relative;
-	color: #6e6e79;
+	color: #ffffff;
+	background-color: #1e2329;
 	&::before {
 		content: '';
 		position: absolute;
@@ -10,7 +13,7 @@
 		right: 0;
 		height: 1px;
 		width: 100%;
-		background-color: #ebedf1;
+		background-color: #30373f;
 	}
 }
 
@@ -25,11 +28,20 @@
 	display: flex;
 	align-items: center;
 	gap: 32px;
+	
+	a {
+		color: #ffffff;
+		transition: color 0.2s ease;
+		
+		&:hover {
+			color: #ffffff;
+		}
+	}
 }
 
 .lendingFooter {
 	padding-top: 34px;
-	background-color: #1d2228;
+	background-color: #1e2329;
 
 	.lendingTop {
 		margin-bottom: 46px;
@@ -41,7 +53,7 @@
 	.lendingMiddle {
 		display: flex;
 		justify-content: space-between;
-		align-items: start;
+		align-items: flex-start;
 		margin-bottom: 34px;
 
 		@media (max-width: 1170px) {
@@ -54,7 +66,7 @@
 			margin-bottom: 16px;
 			font-weight: 400;
 			line-height: 160%;
-			color: white;
+			color: #ffffff;
 		}
 
 		.socials {
@@ -75,7 +87,7 @@
 
 		.columnTitle {
 			margin-bottom: 16px;
-			color: white;
+			color: #ffffff;
 			font-size: 24px;
 			font-weight: 600;
 		}
@@ -84,13 +96,13 @@
 			display: flex;
 			flex-direction: column;
 			gap: 8px;
-			color: rgba(187, 197, 207, 1);
+			color: #ffffff;
 		}
 
 		.link {
 			transition: all 0.2s;
 			&:hover {
-				color: rgba(255, 255, 255, 1);
+				color: #ffffff;
 			}
 		}
 
@@ -101,7 +113,7 @@
 			font-size: 21px;
 			font-weight: 400;
 			line-height: 160%;
-			color: rgba(187, 197, 207, 1);
+			color: #ffffff;
 		}
 	}
 
@@ -110,7 +122,7 @@
 		font-weight: 400;
 		line-height: 160%;
 		padding: 24px 0;
-		color: rgba(110, 110, 121, 1);
+		color: #ffffff;
 		position: relative;
 		&::before {
 			content: '';
@@ -120,8 +132,8 @@
 			right: 0;
 			left: 0;
 			height: 1px;
-			color: rgba(235, 237, 241, 1);
-			background-color: rgba(235, 237, 241, 1);
+			color: #30373f;
+			background-color: #30373f;
 		}
 	}
 
@@ -144,6 +156,15 @@
 		@media (max-width: 768px) {
 			gap: 4px;
 			flex-direction: column;
+		}
+		
+		a {
+			color: #ffffff;
+			transition: color 0.2s ease;
+			
+			&:hover {
+				color: #ffffff;
+			}
 		}
 	}
 }
