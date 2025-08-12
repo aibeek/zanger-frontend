@@ -8,10 +8,13 @@ import phone from '@/app/assets/icons/phone.svg'
 import logo from '../../../../../public/logo.svg'
 import s from './MainSection.module.scss'
 
+
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
 	const [videoLoaded, setVideoLoaded] = useState(false)
 	const videoRef = useRef<HTMLVideoElement>(null)
+	
+	const mainVideo = '/assets/images/main-video.webm'
 
 	const handleVideoLoad = () => {
 		setVideoLoaded(true)
@@ -33,7 +36,7 @@ export const MainSection = () => {
 						onLoadedData={handleVideoLoad}
 						onCanPlay={handleVideoLoad}
 					>
-						<source src="/assets/images/main-video.mp4" type="video/mp4" />
+						<source src={mainVideo} type="video/mp4" />
 					</video>
 					<div className={s.text}>
 						<div className={s.companyTitle}>Global Legal Technologies</div>
