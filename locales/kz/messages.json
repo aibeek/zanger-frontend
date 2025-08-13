@@ -213,7 +213,8 @@
 
 	"lending": {
 		"downloadAppSection": {
-			"title": "Zanger қосымшасын смартфоныңызға жүктеп алыңыз"
+			"title": "Zanger қосымшасын смартфоныңызға жүктеп алыңыз",
+			"availabilityText": "Мобильді қосымша жақын арада жүктеуге қол жетімді болады"
 		},
 
 		"mainSection": {

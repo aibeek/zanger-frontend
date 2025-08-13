@@ -19,6 +19,7 @@ export const DownloadAppSection = () => {
 				<div className={s.inner}>
 					<div className={s.left}>
 						<h5 className={s.title}>{t('title')}</h5>
+						<p className={s.availability}>{t('availabilityText')}</p>
 						<div className={s.btns}>
 							<Link href={'/'}>
 								<Image

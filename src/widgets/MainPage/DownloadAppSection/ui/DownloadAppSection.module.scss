@@ -78,6 +78,27 @@
 		text-align: center;
 	}
 
+	.availability {
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 150%;
+		color: rgba(255, 255, 255, 0.95);
+		max-width: 420px;
+		text-align: center;
+		margin-bottom: 8px;
+		padding: 12px 20px;
+		background: rgba(255, 255, 255, 0.15);
+		border-radius: 12px;
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(255, 255, 255, 0.25);
+
+		@media (max-width: 920px) {
+			font-size: 14px;
+			padding: 10px 16px;
+			max-width: 300px;
+		}
+	}
+
 	.btns {
 		display: flex;
 		align-items: center;

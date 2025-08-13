@@ -1,5 +1,5 @@
 .userHeader {
-	background-color: rgba(30, 35, 41, 0.95);
+	background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
 	width: 100%;
 	position: fixed;
 	top: 0;
@@ -8,11 +8,27 @@
 	z-index: 1000;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, 
+			transparent 0%, 
+			#027dff 20%, 
+			#00f5ff 50%, 
+			#027dff 80%, 
+			transparent 100%);
+		animation: topGlow 3s ease-in-out infinite;
+	}
+
 	.inner {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		height: 64px;
+		height: 56px;
 	}
 
 	.left {
@@ -22,8 +38,8 @@
 	}
 
 	.logoBox {
-		width: 80px;
-		height: 64px;
+		width: 70px;
+		height: 56px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -103,14 +119,30 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background-color: rgba(30, 35, 41, 0.95);
+	background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
 	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
-	height: 100px;
+	height: 80px;
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	z-index: 1000;
+
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, 
+			transparent 0%, 
+			#027dff 20%, 
+			#00f5ff 50%, 
+			#027dff 80%, 
+			transparent 100%);
+		animation: topGlow 3s ease-in-out infinite;
+	}
 
 	@media (max-width: 768px) {
 		height: 60px;
@@ -263,5 +295,20 @@
 
 	.logoutBtn {
 		min-width: 136px;
+	}
+}
+
+@keyframes topGlow {
+	0% {
+		opacity: 0.6;
+		transform: scaleX(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scaleX(1.1);
+	}
+	100% {
+		opacity: 0.6;
+		transform: scaleX(1);
 	}
 }
