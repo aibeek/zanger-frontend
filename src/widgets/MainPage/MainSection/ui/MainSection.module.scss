@@ -10,7 +10,7 @@
 	}
 
 	.title {
-		font-size: 48px;
+		font-size: 40px;
 		font-weight: 600;
 		font-family: 'Inter', 'Roboto', sans-serif;
 		color: #ffffff;
@@ -25,11 +25,11 @@
 		position: relative;
 
 		@media (max-width: 1337px) {
-			font-size: 30px;
+			font-size: 26px;
 		}
 
 		@media (max-width: 768px) {
-			font-size: 24px;
+			font-size: 20px;
 		}
 	}
 
@@ -87,7 +87,7 @@
 				gap: 10px;
 	}
 	.descr {
-		font-size: 26px;
+		font-size: 22px;
 		line-height: 1;
 		font-weight: 400;
 		font-family: 'Inter', 'Roboto', sans-serif;
@@ -134,12 +134,12 @@
 		}
 
 		@media (max-width: 1337px) {
-			font-size: 20px;
+			font-size: 18px;
 			padding: 12px 20px;
 		}
 
 		@media (max-width: 768px) {
-			font-size: 18px;
+			font-size: 16px;
 			padding: 10px 15px;
 			margin: 0 10px;
 			white-space: normal;
@@ -203,7 +203,7 @@
 			top: 0;
 			left: auto;
 			transform: none;
-			font-size: 22px;
+			font-size: 18px;
 			font-weight: 300;
 			color: #ffffff;
 			letter-spacing: 2px;
@@ -221,21 +221,21 @@
 			text-align: center;
 
 			@media (max-width: 1337px) {
-				font-size: 20px;
+				font-size: 16px;
 				letter-spacing: 1.5px;
 				padding: 6px 14px;
 				margin-bottom: 16px;
 			}
 
 			@media (max-width: 768px) {
-				font-size: 16px;
+				font-size: 14px;
 				letter-spacing: 1px;
 				padding: 5px 12px;
 				margin-bottom: 12px;
 			}
 
 			@media (max-width: 480px) {
-				font-size: 14px;
+				font-size: 12px;
 				letter-spacing: 0.5px;
 				padding: 4px 10px;
 				margin-bottom: 10px;
@@ -379,7 +379,7 @@
 			width: 100%;
 			
 			p {
-				font-size: 28px;
+				font-size: 24px;
 				text-align: center;
 				color: white;
 				font-weight: 700;
@@ -395,11 +395,11 @@
 				animation: textBrightness 3s ease-in-out infinite alternate;
 
 				@media (max-width: 768px) {
-					font-size: 30px;
+					font-size: 26px;
 				}
 
 				@media (max-width: 480px) {
-					font-size: 28px;
+					font-size: 24px;
 				}
 			}
 
@@ -408,10 +408,10 @@
 				
 				p {
 					text-align: center;
-					font-size: 22px;
+					font-size: 18px;
 					
 					@media (max-width: 768px) {
-						font-size: 20px;
+						font-size: 16px;
 					}
 				}
 			}
@@ -540,7 +540,7 @@
 			}
 			
 			.number {
-				font-size: 32px;
+				font-size: 28px;
 				font-weight: 800;
 				color: white;
 				text-shadow: 
@@ -549,11 +549,11 @@
 				letter-spacing: 1px;
 
 				@media (max-width: 768px) {
-					font-size: 36px;
+					font-size: 32px;
 				}
 
 				@media (max-width: 480px) {
-					font-size: 32px;
+					font-size: 28px;
 				}
 			}
 		}

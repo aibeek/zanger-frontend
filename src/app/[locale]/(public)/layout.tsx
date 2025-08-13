@@ -18,6 +18,11 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
 	title: 'Zanger',
 	description: 'Zanger',
+	icons: {
+		icon: '/logo.svg',
+		shortcut: '/logo.svg',
+		apple: '/logo.svg',
+	},
 }
 
 export default async function RootLayout({

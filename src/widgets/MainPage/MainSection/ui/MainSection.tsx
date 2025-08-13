@@ -14,7 +14,8 @@ export const MainSection = () => {
 	const [videoLoaded, setVideoLoaded] = useState(false)
 	const videoRef = useRef<HTMLVideoElement>(null)
 	
-	const mainVideo = '/assets/images/main-video.webm'
+	const mainVideoWebM = '/assets/images/main-video.webm'
+	const mainVideoMP4 = '/assets/images/main-video.mp4'
 
 	const handleVideoLoad = () => {
 		setVideoLoaded(true)
@@ -42,7 +43,9 @@ export const MainSection = () => {
 						onLoadedData={handleVideoLoad}
 						onCanPlay={handleVideoLoad}
 					>
-						<source src={mainVideo} type="video/mp4" />
+						<source src={mainVideoMP4} type="video/mp4" />
+						<source src={mainVideoWebM} type="video/webm" />
+						<p>Ваш браузер не поддерживает видео.</p>
 					</video>
 					<div className={s.text}>
 						<div className={s.companyTitle}>Global Legal Technologies</div>

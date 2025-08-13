@@ -12,7 +12,6 @@ import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { SWRConfig } from 'swr'
-import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -22,6 +21,11 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
 	title: 'Zanger',
 	description: 'Zanger',
+	icons: {
+		icon: '/logo.svg',
+		shortcut: '/logo.svg',
+		apple: '/logo.svg',
+	},
 }
 
 export default async function DashboardLayout({
@@ -40,20 +44,18 @@ export default async function DashboardLayout({
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
 					<AuthGuard>
-						<DeviceGuard>
-							<SWRConfig value={{ shouldRetryOnError: false }}>
-								<div className="authed-wrapper">
-									<div className="dashboard-top">
-										<Header variant="user-variant" />
-										<DashboardWrapper>
-											{children}
-											<AppToaster />
-										</DashboardWrapper>
-									</div>
-									<Footer variant="user-variant" />
+						<SWRConfig value={{ shouldRetryOnError: false }}>
+							<div className="authed-wrapper">
+								<div className="dashboard-top">
+									<Header variant="user-variant" />
+									<DashboardWrapper>
+										{children}
+										<AppToaster />
+									</DashboardWrapper>
 								</div>
-							</SWRConfig>
-						</DeviceGuard>
+								<Footer variant="user-variant" />
+							</div>
+						</SWRConfig>
 					</AuthGuard>
 				</NextIntlClientProvider>
 			</body>

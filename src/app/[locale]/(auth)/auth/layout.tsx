@@ -8,7 +8,6 @@ import { routing } from '@/i18n/routing'
 import { Header } from '@/widgets/Header'
 import { Footer } from '@/widgets/Footer'
 import { SWRConfig } from 'swr'
-import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -18,6 +17,11 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
 	title: 'Zanger',
 	description: 'Zanger',
+	icons: {
+		icon: '/logo.svg',
+		shortcut: '/logo.svg',
+		apple: '/logo.svg',
+	},
 }
 
 export default async function AuthLayout({
@@ -36,13 +40,11 @@ export default async function AuthLayout({
 			<body className={openSans.variable}>
 				<NextIntlClientProvider>
 					<SWRConfig value={{ shouldRetryOnError: false }}>
-						<DeviceGuard>
-							<div className="authed-wrapper">
-								<Header variant={'user-variant'} />
-								<section>{children}</section>
-								<Footer variant={'user-variant'} />
-							</div>
-						</DeviceGuard>
+						<div className="authed-wrapper">
+							<Header variant={'user-variant'} />
+							<section>{children}</section>
+							<Footer variant={'user-variant'} />
+						</div>
 					</SWRConfig>
 				</NextIntlClientProvider>
 			</body>
