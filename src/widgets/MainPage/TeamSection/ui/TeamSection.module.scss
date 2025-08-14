@@ -235,17 +235,9 @@
 	}
 }
 
-.memberCard:nth-child(1),
-.memberCard:nth-child(4) {
-	animation: moveRightToLeft 18s linear infinite;
+@for $i from 1 through 20 { // можно поставить любое большое число
+  .memberCard:nth-child(#{$i}) {
+    animation: moveRightToLeft 21s linear infinite calc(-3s * ($i - 1));
+  }
 }
 
-.memberCard:nth-child(2),
-.memberCard:nth-child(5) {
-	animation: moveRightToLeft 18s linear infinite -6s;
-}
-
-.memberCard:nth-child(3),
-.memberCard:nth-child(6) {
-	animation: moveRightToLeft 18s linear infinite -12s;
-}

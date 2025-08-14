@@ -1,1 +1,1 @@
-// export { TeamSection } from './ui/TeamSection'
+export { TeamSection } from './ui/TeamSection'
