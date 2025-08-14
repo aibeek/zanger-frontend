@@ -29,13 +29,12 @@
 	text-align: center;
 	font-size: 48px;
 	font-weight: 700;
-	color: #1e293b;
-	margin-bottom: 10px;
 	background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
 	color: transparent;
+	margin-bottom: 10px;
 
 	@media (max-width: 768px) {
 		font-size: 36px;
@@ -57,7 +56,6 @@
 
 	@media (max-width: 768px) {
 		font-size: 16px;
-		margin-bottom: 20px;
 	}
 }
 
@@ -74,6 +72,15 @@
 
 	@media (max-width: 768px) {
 		height: 400px;
+	}
+
+	@media (max-width: 480px) {
+		display: flex;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		gap: 16px;
+		height: auto;
+		padding-bottom: 20px;
 	}
 }
 
@@ -107,6 +114,14 @@
 	@media (max-width: 768px) {
 		height: 350px;
 		width: 250px;
+	}
+
+	@media (max-width: 480px) {
+		position: relative;
+		flex: 0 0 auto;
+		scroll-snap-align: center;
+		transform: none !important;
+		animation: none !important;
 	}
 }
 
@@ -200,7 +215,7 @@
 		transform: translateY(-50%) translateX(calc(100vw + 150px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(-350px));
+		transform: translateY(-50%) translateX(-350px);
 	}
 }
 
@@ -226,18 +241,12 @@
 	}
 }
 
-@keyframes float {
-	0%, 100% {
-		transform: translateY(0px);
-	}
-	50% {
-		transform: translateY(-10px);
+@for $i from 1 through 20 {
+	.memberCard:nth-child(#{$i}) {
+		animation: moveRightToLeft 21s linear infinite calc(-3s * ($i - 1));
+
+		@media (max-width: 480px) {
+			animation: none;
+		}
 	}
 }
-
-@for $i from 1 through 20 { // можно поставить любое большое число
-  .memberCard:nth-child(#{$i}) {
-    animation: moveRightToLeft 21s linear infinite calc(-3s * ($i - 1));
-  }
-}
-

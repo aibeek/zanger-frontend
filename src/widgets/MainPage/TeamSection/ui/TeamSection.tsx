@@ -22,30 +22,6 @@ export const TeamSection = () => {
 	const teamMembers: TeamMember[] = [
 		{
 			id: 1,
-			name: 'Ержан Наурызбай',
-			position: 'Старший партнер',
-			experience: 'Опыт работы: 15+ лет',
-			description: 'Специализируется на корпоративном праве, слияниях и поглощениях, международном праве. Ведущий эксперт по вопросам налогового планирования.',
-			image: '/assets/images/en.jpg'
-		},
-		{
-			id: 2,
-			name: 'Мухаммед Телеген',
-			position: 'Партнер по гражданскому праву',
-			experience: 'Опыт работы: 12+ лет',
-			description: 'Эксперт в области гражданского права, семейного права, наследственного права и защиты прав потребителей',
-			image: '/assets/images/et.jpg'
-		},
-		{
-			id: 3,
-			name: 'Ерасыл Баймахан',
-			position: 'Партнер по уголовному праву',
-			experience: 'Опыт работы: 10+ лет',
-			description: 'Специализируется на уголовном праве, защите в суде, административном праве и правах человека',
-			image: '/assets/images/mt.jpg'
-		},
-		{
-			id: 4,
 			name: 'КЕНЖЕБАЕВ БАҚЫТЖАН',
 			position: 'Юрисконсульт',
 			experience: 'более 9 лет',
@@ -53,7 +29,7 @@ export const TeamSection = () => {
 			image: '/assets/images/kb.jpg'
 		},
 		{
-		id: 5,
+		id: 2,
 			name: 'МУКАНОВА НАЗЫМ',
 			position: 'Медиатор, Юрисконсульт',
 			experience: 'более 2 лет',
@@ -61,7 +37,7 @@ export const TeamSection = () => {
 			image: '/assets/images/mn.jpg'
 		},
 		{
-		id: 6,
+		id: 3,
 			name: 'Рахматулина Светлана Анатольевна',
 			position: 'Медиатор, Юрисконсульт, Арбитр',
 			experience: 'более 20 лет',
@@ -69,7 +45,7 @@ export const TeamSection = () => {
 			image: '/assets/images/rsa.jpg'
 		},
 		{
-		id: 7,
+		id: 4,
 			name: 'Мусабеков Меирбек Дильдаханович',
 			position: 'Адвокат, Юрисконсульт',
 			experience: 'более 20 лет',
