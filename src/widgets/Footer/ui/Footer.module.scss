@@ -4,16 +4,22 @@
 	width: 100%;
 	position: relative;
 	color: #ffffff;
-	background-color: #1e2329;
+	background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
+	
 	&::before {
 		content: '';
 		position: absolute;
 		top: 0;
 		left: 0;
 		right: 0;
-		height: 1px;
-		width: 100%;
-		background-color: #30373f;
+		height: 3px;
+		background: linear-gradient(90deg, 
+			transparent 0%, 
+			#027dff 20%, 
+			#00f5ff 50%, 
+			#027dff 80%, 
+			transparent 100%);
+		animation: topGlow 3s ease-in-out infinite;
 	}
 }
 
@@ -31,17 +37,58 @@
 	
 	a {
 		color: #ffffff;
-		transition: color 0.2s ease;
+		padding: 8px 16px;
+		border-radius: 6px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+		border: 1px solid transparent;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+			transition: left 0.5s ease;
+		}
 		
 		&:hover {
 			color: #ffffff;
+			background: rgba(59, 130, 246, 0.1);
+			border-color: rgba(59, 130, 246, 0.3);
+			transform: translateY(-2px);
+			box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+			
+			&::before {
+				left: 100%;
+			}
 		}
 	}
 }
 
 .lendingFooter {
 	padding-top: 34px;
-	background-color: #1e2329;
+	background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
+	position: relative;
+	
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: linear-gradient(90deg, 
+			transparent 0%, 
+			#027dff 20%, 
+			#00f5ff 50%, 
+			#027dff 80%, 
+			transparent 100%);
+		animation: topGlow 3s ease-in-out infinite;
+	}
 
 	.lendingTop {
 		margin-bottom: 46px;
@@ -160,11 +207,50 @@
 		
 		a {
 			color: #ffffff;
-			transition: color 0.2s ease;
+			padding: 8px 16px;
+			border-radius: 6px;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			position: relative;
+			overflow: hidden;
+			border: 1px solid transparent;
+			
+			&::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: -100%;
+				width: 100%;
+				height: 100%;
+				background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+				transition: left 0.5s ease;
+			}
 			
 			&:hover {
 				color: #ffffff;
+				background: rgba(59, 130, 246, 0.1);
+				border-color: rgba(59, 130, 246, 0.3);
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+				
+				&::before {
+					left: 100%;
+				}
 			}
 		}
+	}
+}
+
+@keyframes topGlow {
+	0% {
+		opacity: 0.6;
+		transform: scaleX(1);
+	}
+	50% {
+		opacity: 1;
+		transform: scaleX(1.1);
+	}
+	100% {
+		opacity: 0.6;
+		transform: scaleX(1);
 	}
 }
