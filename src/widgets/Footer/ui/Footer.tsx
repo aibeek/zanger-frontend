@@ -176,7 +176,7 @@ export const Footer = ({ variant, id }: Props) => {
 									<Image
 										src={letter}
 										alt={'письмо'}
-									/>
+									/>	
 									<Link
 										className={s.link}
 										href={'mailto:support@zanger-app.kz'}>
