@@ -309,6 +309,82 @@
 		}
 		
 		// Стиль для кнопки "Регистрация"
+		// Стиль для кнопки "Live заявки"
+		&[href*="live-applications"],
+		&.liveButton {
+			background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
+			border: 2px solid transparent;
+			color: white !important;
+			border-radius: 12px;
+			backdrop-filter: blur(20px);
+			position: relative;
+			overflow: hidden;
+			font-weight: 700 !important;
+			text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+			animation: liveButtonPulse 2s ease-in-out infinite;
+			z-index: 2;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			text-align: center !important;
+			height: 44px !important;
+			line-height: 1 !important;
+			gap: 6px;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			
+			// Светящаяся рамка
+			&::before {
+				content: '';
+				position: absolute;
+				top: -3px;
+				left: -3px;
+				right: -3px;
+				bottom: -3px;
+				background: linear-gradient(45deg, #ff1744, #ff5722, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #ff1744);
+				background-size: 400% 400%;
+				border-radius: 15px;
+				opacity: 0.8;
+				z-index: -2;
+				animation: gradientShift 3s ease infinite;
+				filter: blur(8px);
+			}
+			
+			// Основной фон
+			&::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
+				border-radius: 10px;
+				z-index: -1;
+			}
+			
+			&:hover {
+				transform: translateY(-2px) scale(1.02) !important;
+				color: white !important;
+				animation: none !important;
+				text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+				box-shadow: 
+					0 8px 20px rgba(255, 23, 68, 0.3),
+					0 0 30px rgba(213, 0, 0, 0.2),
+					0 0 50px rgba(183, 28, 28, 0.1) !important;
+				
+				&::before {
+					opacity: 1;
+					filter: blur(10px);
+					animation: gradientShift 2s ease infinite;
+				}
+			}
+			
+			&:active {
+				transform: translateY(-1px) scale(1.01) !important;
+			}
+		}
+		
+		// Стиль для кнопки "Регистрация"
 		&[href*="register"] {
 			background: rgba(59, 130, 246, 0.1);
 			border: 2px solid #3b82f6;
@@ -374,6 +450,314 @@
 
 		@media (max-width: 440px) {
 			min-width: max-content;
+		}
+	}
+	
+	// Стили для Live заявок
+	.liveButtonWrapper {
+		position: relative;
+	}
+	
+	.liveDropdown {
+		position: absolute;
+		top: calc(100% + 15px);
+		right: 0;
+		width: 420px;
+		max-height: 600px;
+		background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
+		border-radius: 16px;
+		box-shadow: 
+			0 35px 70px rgba(0, 0, 0, 0.25),
+			0 15px 35px rgba(0, 0, 0, 0.15),
+			0 0 0 1px rgba(255, 255, 255, 0.05);
+		overflow: hidden;
+		z-index: 1001;
+		backdrop-filter: blur(30px);
+		animation: dropdownFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		border: 1px solid rgba(59, 130, 246, 0.2);
+		
+		&::before {
+			content: '';
+			position: absolute;
+			top: -8px;
+			right: 30px;
+			width: 16px;
+			height: 16px;
+			background: linear-gradient(135deg, #1a1f2e, #2a3441);
+			border: 1px solid rgba(59, 130, 246, 0.2);
+			transform: rotate(45deg);
+		}
+		
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 2px;
+			background: linear-gradient(90deg, 
+				transparent 0%, 
+				#027dff 20%, 
+				#00f5ff 50%, 
+				#027dff 80%, 
+				transparent 100%);
+			animation: topGlow 3s ease-in-out infinite;
+		}
+		
+		@media (max-width: 500px) {
+			width: 380px;
+			right: -20px;
+		}
+	}
+	
+	.liveDropdownHeader {
+		padding: 20px 24px;
+		border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+		color: white;
+		position: relative;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 4px;
+			height: 100%;
+			background: linear-gradient(135deg, #ef4444, #dc2626);
+			border-radius: 0 2px 2px 0;
+		}
+		
+		h3 {
+			margin: 0;
+			font-size: 18px;
+			font-weight: 700;
+			background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+	}
+	
+	.closeDropdown {
+		background: rgba(255, 255, 255, 0.1);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: white;
+		font-size: 20px;
+		cursor: pointer;
+		width: 36px;
+		height: 36px;
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		backdrop-filter: blur(10px);
+		
+		&:hover {
+			background: rgba(239, 68, 68, 0.2);
+			border-color: rgba(239, 68, 68, 0.4);
+			transform: scale(1.05);
+			box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+		}
+	}
+	
+	.liveApplicationsList {
+		max-height: 400px;
+		overflow-y: auto;
+		padding: 12px;
+		
+		&::-webkit-scrollbar {
+			width: 6px;
+		}
+		
+		&::-webkit-scrollbar-track {
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 3px;
+		}
+		
+		&::-webkit-scrollbar-thumb {
+			background: linear-gradient(135deg, #3b82f6, #06b6d4);
+			border-radius: 3px;
+		}
+	}
+	
+	.liveApplicationItem {
+		padding: 20px;
+		margin-bottom: 12px;
+		border-radius: 12px;
+		background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		position: relative;
+		overflow: hidden;
+		backdrop-filter: blur(10px);
+		
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 4px;
+			height: 100%;
+			background: linear-gradient(135deg, #ef4444, #dc2626);
+			border-radius: 0 2px 2px 0;
+		}
+		
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+			opacity: 0;
+			transition: opacity 0.3s ease;
+			z-index: -1;
+		}
+		
+		&:hover {
+			background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+			transform: translateY(-3px);
+			border-color: rgba(59, 130, 246, 0.3);
+			box-shadow: 
+				0 15px 35px rgba(0, 0, 0, 0.2),
+				0 0 30px rgba(59, 130, 246, 0.1);
+				
+			&::after {
+				opacity: 1;
+			}
+		}
+	}
+	
+	.liveAppHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 10px;
+		
+		h4 {
+			margin: 0;
+			font-size: 15px;
+			font-weight: 600;
+			color: #ffffff;
+			flex: 1;
+			margin-right: 12px;
+			line-height: 1.3;
+		}
+	}
+	
+	.timeAgo {
+		font-size: 10px;
+		color: #ffffff;
+		background: linear-gradient(135deg, #ef4444, #dc2626);
+		padding: 4px 8px;
+		border-radius: 6px;
+		white-space: nowrap;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+	}
+	
+	.liveAppDescription {
+		font-size: 13px;
+		color: #cbd5e1;
+		margin: 0 0 16px 0;
+		line-height: 1.5;
+		opacity: 0.9;
+	}
+	
+	.liveAppFooter {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 12px;
+	}
+	
+	.location {
+		font-size: 12px;
+		color: #94a3b8;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 8px;
+		background: rgba(59, 130, 246, 0.1);
+		border-radius: 6px;
+		border: 1px solid rgba(59, 130, 246, 0.2);
+	}
+	
+	.respondBtn {
+		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+		color: white;
+		border: 1px solid rgba(59, 130, 246, 0.3);
+		padding: 8px 16px;
+		border-radius: 8px;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		backdrop-filter: blur(10px);
+		position: relative;
+		overflow: hidden;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+			transition: left 0.5s ease;
+		}
+		
+		&:hover {
+			background: linear-gradient(135deg, #2563eb, #1e40af);
+			transform: translateY(-2px);
+			box-shadow: 
+				0 8px 25px rgba(59, 130, 246, 0.4),
+				0 0 30px rgba(29, 78, 216, 0.3);
+			border-color: rgba(59, 130, 246, 0.5);
+			
+			&::before {
+				left: 100%;
+			}
+		}
+		
+		&:active {
+			transform: translateY(0);
+		}
+	}
+	
+	.liveDropdownFooter {
+		padding: 16px 24px;
+		border-top: 1px solid rgba(59, 130, 246, 0.2);
+		background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.1) 100%);
+		
+		p {
+			margin: 0;
+			font-size: 11px;
+			color: #94a3b8;
+			text-align: center;
+			font-style: italic;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			
+			&::before {
+				content: '🔄';
+				animation: rotate 2s linear infinite;
+			}
 		}
 	}
 }
@@ -464,5 +848,67 @@
 	100% {
 		opacity: 0.6;
 		transform: scaleX(1);
+	}
+}
+
+@keyframes liveButtonPulse {
+	0% {
+		box-shadow: 
+			0 4px 15px rgba(255, 23, 68, 0.2),
+			0 0 20px rgba(213, 0, 0, 0.1),
+			0 0 30px rgba(183, 28, 28, 0.05);
+		transform: scale(1);
+	}
+	50% {
+		box-shadow: 
+			0 6px 20px rgba(255, 23, 68, 0.3),
+			0 0 25px rgba(213, 0, 0, 0.2),
+			0 0 40px rgba(183, 28, 28, 0.1);
+		transform: scale(1.01);
+	}
+	100% {
+		box-shadow: 
+			0 4px 15px rgba(255, 23, 68, 0.2),
+			0 0 20px rgba(213, 0, 0, 0.1),
+			0 0 30px rgba(183, 28, 28, 0.05);
+		transform: scale(1);
+	}
+}
+
+@keyframes gradientShift {
+	0% {
+		background-position: 0% 50%;
+	}
+	25% {
+		background-position: 100% 50%;
+	}
+	50% {
+		background-position: 100% 100%;
+	}
+	75% {
+		background-position: 0% 100%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+@keyframes dropdownFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-15px) scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
 	}
 }

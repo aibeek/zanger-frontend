@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { authService, useLoginStore } from '@/features/auth'
@@ -24,6 +24,25 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const { isAuthenticated, checkAuth } = useAuthStore()
 	const pathname = usePathname()
 	const isMobile = useMediaQuery('(max-width: 768px)')
+	
+	// Состояние для Live заявок
+	const [showLiveApplications, setShowLiveApplications] = useState(false)
+	const [liveApplications, setLiveApplications] = useState([
+		{
+			id: 1,
+			title: "Консультация по трудовому праву",
+			description: "Нужна помощь в составлении трудового договора",
+			timeAgo: "2 мин назад",
+			location: "Алматы"
+		},
+		{
+			id: 2,
+			title: "Семейное право - развод",
+			description: "Консультация по разводу и разделу имущества",
+			timeAgo: "5 мин назад",
+			location: "Астана"
+		}
+	])
 
 	useEffect(() => {
 		checkAuth()
@@ -138,6 +157,88 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												href={'/auth/register/select-role'}>
 												{t('register')}
 											</AppLink>
+										)}
+
+										{!isMobile && (
+											<div className={s.liveButtonWrapper}>
+												<button
+													className={`${s.appLink} ${s.liveButton}`}
+													onClick={() => setShowLiveApplications(!showLiveApplications)}
+													onMouseEnter={(e) => {
+														const shine = e.currentTarget.querySelector('.shine-effect')
+														if (shine) {
+															(shine as HTMLElement).style.left = '100%'
+														}
+													}}
+													onMouseLeave={(e) => {
+														const shine = e.currentTarget.querySelector('.shine-effect')
+														if (shine) {
+															(shine as HTMLElement).style.left = '-100%'
+														}
+													}}>
+													<span 
+														className="shine-effect"
+														style={{
+															position: 'absolute',
+															top: 0,
+															left: '-100%',
+															width: '100%',
+															height: '100%',
+															background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
+															transition: 'left 0.6s ease',
+															zIndex: 1,
+															pointerEvents: 'none'
+														}}>
+													</span>
+													<span style={{ 
+														position: 'relative', 
+														zIndex: 2, 
+														display: 'flex', 
+														alignItems: 'center', 
+														gap: '6px',
+														lineHeight: '1'
+													}}>
+														🔴 {t('liveApplications')}
+													</span>
+												</button>
+												
+												{showLiveApplications && (
+													<div className={s.liveDropdown}>
+														<div className={s.liveDropdownHeader}>
+															<h3>🔴 Live заявки</h3>
+															<button 
+																className={s.closeDropdown}
+																onClick={() => setShowLiveApplications(false)}>
+																×
+															</button>
+														</div>
+														
+														<div className={s.liveApplicationsList}>
+															{liveApplications.map((app) => (
+																<div key={app.id} className={s.liveApplicationItem}>
+																	<div className={s.liveAppHeader}>
+																		<h4>{app.title}</h4>
+																		<span className={s.timeAgo}>{app.timeAgo}</span>
+																	</div>
+																	<p className={s.liveAppDescription}>{app.description}</p>
+																														<div className={s.liveAppFooter}>
+														<span className={s.location}>📍 {app.location}</span>
+														<button 
+															className={s.respondBtn}
+															onClick={() => {
+																setShowLiveApplications(false)
+																router.push('/auth/register/select-role')
+															}}>
+															Откликнуться
+														</button>
+													</div>
+																</div>
+															))}
+														</div>
+													
+													</div>
+												)}
+											</div>
 										)}
 									</>
 								)}
