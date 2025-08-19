@@ -202,66 +202,85 @@
 	color: white;
 	opacity: 1;
 	transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-	padding: 20px 15px 25px;
+	padding: 15px 12px 18px;
 	border-radius: 0 0 24px 24px;
 }
 
 .memberName {
 	font-size: 22px;
 	font-weight: 800;
-	margin-bottom: 10px;
 	text-align: center;
 	color: white;
 	line-height: 1.2;
 	transition: transform 0.3s ease;
 	text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 	letter-spacing: 0.3px;
+	min-height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 6px;
 
 	@media (max-width: 768px) {
 		font-size: 16px;
+		min-height: 28px;
 	}
 
 	@media (max-width: 480px) {
 		font-size: 14px;
+		min-height: 26px;
 	}
 
 	@media (max-width: 360px) {
 		font-size: 13px;
+		min-height: 24px;
 	}
 }
 
 .memberPosition {
 	font-size: 14px;
-	margin-bottom: 8px;
 	text-align: center;
 	color: #2563eb;
 	font-weight: 700;
 	text-transform: uppercase;
 	letter-spacing: 0.8px;
+	min-height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 6px;
 
 	@media (max-width: 768px) {
 		font-size: 12px;
+		min-height: 24px;
 	}
 
 	@media (max-width: 480px) {
 		font-size: 11px;
+		min-height: 22px;
 	}
 }
 
 .memberExperience {
 	font-size: 13px;
-	margin-bottom: 8px;
 	text-align: center;
 	color: white;
 	font-weight: 700;
 	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+	min-height: 22px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 6px;
 
 	@media (max-width: 768px) {
 		font-size: 11px;
+		min-height: 20px;
 	}
 
 	@media (max-width: 480px) {
 		font-size: 10px;
+		min-height: 18px;
 	}
 }
 
@@ -269,16 +288,16 @@
 	background: rgba(255, 255, 255, 0.2);
 	color: white;
 	border: 1px solid rgba(255, 255, 255, 0.3);
-	padding: 8px 16px;
-	border-radius: 8px;
+	padding: 6px 12px;
+	border-radius: 6px;
 	cursor: pointer;
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: 600;
 	transition: all 0.3s ease;
 	backdrop-filter: blur(10px);
 	text-transform: uppercase;
 	letter-spacing: 0.5px;
-	margin-top: 8px;
+	margin-top: 4px;
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.3);
@@ -314,16 +333,22 @@
 	text-align: center;
 	max-width: 90%;
 	font-weight: 600;
-	margin-bottom: 12px;
 	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+	min-height: 36px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 8px;
 
 	@media (max-width: 768px) {
 		font-size: 10px;
 		max-width: 95%;
+		min-height: 32px;
 	}
 
 	@media (max-width: 480px) {
 		font-size: 9px;
+		min-height: 28px;
 	}
 }
 
@@ -386,16 +411,16 @@
 	}
 }
 
-@for $i from 1 through 20 {
+@for $i from 1 through 5 {
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 24s linear infinite calc(-4s * ($i - 1));
+		animation: moveRightToLeft 30s linear infinite calc(-6s * ($i - 1));
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile 80s linear infinite calc(-10s * ($i - 1));
+			animation: moveRightToLeftMobile 40s linear infinite calc(-8s * ($i - 1));
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall 72s linear infinite calc(-9s * ($i - 1));
+			animation: moveRightToLeftSmall 35s linear infinite calc(-7s * ($i - 1));
 		}
 	}
 }
