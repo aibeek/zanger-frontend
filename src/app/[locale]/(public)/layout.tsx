@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 	title: 'Zanger',
 	description: 'Zanger',
 	icons: {
-		icon: '/logo.svg',
-		shortcut: '/logo.svg',
-		apple: '/logo.svg',
+		icon: '/logo-blue.svg',
+		shortcut: '/logo-blue.svg',
+		apple: '/logo-blue.svg',
 	},
 }
 

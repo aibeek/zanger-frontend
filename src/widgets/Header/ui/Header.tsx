@@ -75,10 +75,10 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										WebkitBackgroundClip: 'text',
 										WebkitTextFillColor: 'transparent',
 										backgroundClip: 'text',
-										fontSize: '28px', 
+										fontSize: isMobile ? '20px' : '28px', 
 										fontWeight: '700', 
 										textDecoration: 'none',
-										letterSpacing: '1.5px',
+										letterSpacing: isMobile ? '1px' : '1.5px',
 										animation: 'gradient 3s ease infinite',
 										display: 'inline-block'
 									}}>
@@ -205,7 +205,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												{showLiveApplications && (
 													<div className={s.liveDropdown}>
 														<div className={s.liveDropdownHeader}>
-															<h3>🔴 Live заявки</h3>
+															<h3>🔴 Live заявки <span className={s.demoLabel}>(ДЕМО)</span></h3>
 															<button 
 																className={s.closeDropdown}
 																onClick={() => setShowLiveApplications(false)}>
@@ -217,7 +217,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 															{liveApplications.map((app) => (
 																<div key={app.id} className={s.liveApplicationItem}>
 																	<div className={s.liveAppHeader}>
-																		<h4>{app.title}</h4>
+																		<h4>{app.title} <span className={s.testBadge}>ТЕСТ</span></h4>
 																		<span className={s.timeAgo}>{app.timeAgo}</span>
 																	</div>
 																	<p className={s.liveAppDescription}>{app.description}</p>
@@ -235,7 +235,10 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 																</div>
 															))}
 														</div>
-													
+														
+														<div className={s.liveDropdownFooter}>
+															<p>⚠️ Это тестовые данные для демонстрации</p>
+														</div>
 													</div>
 												)}
 											</div>

@@ -587,6 +587,110 @@
 	}
 }
 
+.headerContacts {
+	margin-top: 16px;
+	display: flex;
+	gap: 8px;
+	
+	@media (max-width: 768px) {
+		margin-top: 12px;
+		gap: 6px;
+	}
+}
+
+.contactIconOnly {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	background: #f1f5f9;
+	border-radius: 8px;
+	border: 1px solid #e2e8f0;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	
+	&:hover {
+		background: #e2e8f0;
+		border-color: #cbd5e1;
+		transform: translateY(-1px);
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	}
+	
+	@media (max-width: 768px) {
+		width: 32px;
+		height: 32px;
+	}
+	
+	.whatsappIcon,
+	.phoneIcon {
+		width: 20px;
+		height: 20px;
+		
+		@media (max-width: 768px) {
+			width: 18px;
+			height: 18px;
+		}
+	}
+}
+
+.contactItem {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 16px;
+	background: #f8fafc;
+	border-radius: 12px;
+	border: 1px solid #e2e8f0;
+	transition: all 0.3s ease;
+	cursor: pointer;
+	
+	&:hover {
+		background: #25d366;
+		border-color: #25d366;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+		
+		.contactLabel {
+			color: white;
+		}
+		
+		.whatsappIcon {
+			path {
+				fill: white;
+			}
+		}
+	}
+	
+	@media (max-width: 768px) {
+		padding: 10px 14px;
+		gap: 10px;
+	}
+}
+
+.whatsappIcon {
+	width: 24px;
+	height: 24px;
+	flex-shrink: 0;
+	transition: all 0.3s ease;
+	
+	@media (max-width: 768px) {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+.contactLabel {
+	font-size: 16px;
+	font-weight: 600;
+	color: #374151;
+	transition: color 0.3s ease;
+	
+	@media (max-width: 768px) {
+		font-size: 14px;
+	}
+}
+
 @keyframes modalFadeIn {
 	from {
 		opacity: 0;
