@@ -373,19 +373,19 @@
 
 @keyframes moveRightToLeftMobile {
 	0% {
-		transform: translateY(-50%) translateX(calc(100vw + 400px));
+		transform: translateY(-50%) translateX(calc(100vw + 600px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(-600px);
+		transform: translateY(-50%) translateX(-800px);
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(100vw + 300px));
+		transform: translateY(-50%) translateX(calc(100vw + 500px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(-500px);
+		transform: translateY(-50%) translateX(-700px);
 	}
 }
 
@@ -413,14 +413,14 @@
 
 @for $i from 1 through 6 {
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 30s linear infinite calc(-6s * ($i - 1));
+		animation: moveRightToLeft 30s linear infinite calc(-5s * $i);
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile 20s linear infinite calc(-2.5s * ($i - 1));
+			animation: moveRightToLeftMobile 20s linear infinite calc(-3.2s * $i);
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall 18s linear infinite calc(-2s * ($i - 1));
+			animation: moveRightToLeftSmall 18s linear infinite calc(-2.8s * $i);
 		}
 	}
 }
