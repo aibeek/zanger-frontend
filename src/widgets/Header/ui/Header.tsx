@@ -153,7 +153,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										{!isMobile && (
 											<AppLink
 												className={s.appLink}
-												variant={'border-white'}
+												variant={'primary'}
 												href={'/auth/register/select-role'}>
 												{t('register')}
 											</AppLink>

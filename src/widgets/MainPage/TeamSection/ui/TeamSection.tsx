@@ -17,6 +17,14 @@ interface TeamMember {
 export const TeamSection = () => {
   const t = useTranslations('lending.teamSection')
   const sectionRef = useRef<HTMLElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
+  const isDraggingRef = useRef(false)
+  const startXRef = useRef(0)
+  const lastXRef = useRef(0)
+  const dragOffsetRef = useRef(0)
+  const lastTimeRef = useRef(0)
+  const velocityRef = useRef(0)
+  const momentumRafRef = useRef<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
 
@@ -137,12 +145,88 @@ export const TeamSection = () => {
     return () => observer.disconnect()
   }, [])
 
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const grid = gridRef.current
+    if (!grid) return
+    if (momentumRafRef.current) {
+      cancelAnimationFrame(momentumRafRef.current)
+      momentumRafRef.current = null
+    }
+    isDraggingRef.current = true
+    startXRef.current = e.clientX
+    lastXRef.current = e.clientX
+    dragOffsetRef.current = 0
+    lastTimeRef.current = performance.now()
+    velocityRef.current = 0
+    grid.classList.add(s.dragging)
+    ;(e.target as Element).setPointerCapture?.(e.pointerId)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return
+    const grid = gridRef.current
+    if (!grid) return
+    const now = performance.now()
+    const dx = e.clientX - lastXRef.current
+    const dt = Math.max(1, now - lastTimeRef.current)
+    lastXRef.current = e.clientX
+    lastTimeRef.current = now
+    dragOffsetRef.current += dx
+    // Low-pass filter for velocity in px/ms
+    const instantV = dx / dt
+    velocityRef.current = velocityRef.current * 0.8 + instantV * 0.2
+    grid.style.setProperty('--drag-x', `${dragOffsetRef.current}px`)
+  }
+
+  const endDrag = (e?: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return
+    const grid = gridRef.current
+    if (!grid) return
+    isDraggingRef.current = false
+    grid.classList.remove(s.dragging)
+    if (e) {
+      ;(e.target as Element).releasePointerCapture?.((e as any).pointerId)
+    }
+    // Keep the current offset and start momentum if still hovered
+    grid.style.setProperty('--drag-x', `${dragOffsetRef.current}px`)
+
+    const friction = 0.94 // velocity decay each frame
+    const minVelocity = 0.02 // px/ms
+
+    const step = () => {
+      // stop if not hovered (autoplay resumes) or new drag started
+      if (!grid.matches(':hover') || isDraggingRef.current) {
+        momentumRafRef.current = null
+        return
+      }
+      // advance position using velocity (assume ~16ms per frame)
+      const v = velocityRef.current
+      if (Math.abs(v) < minVelocity) {
+        momentumRafRef.current = null
+        return
+      }
+      dragOffsetRef.current += v * 16
+      grid.style.setProperty('--drag-x', `${dragOffsetRef.current}px`)
+      velocityRef.current *= friction
+      momentumRafRef.current = requestAnimationFrame(step)
+    }
+    momentumRafRef.current = requestAnimationFrame(step)
+  }
+
   return (
     <section className={s.wrapper} ref={sectionRef}>
       <div className={s.container}>
         <h2 className={s.title}>{t('title')}</h2>
 
-        <div className={s.teamGrid}>
+        <div
+          className={s.teamGrid}
+          ref={gridRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onPointerLeave={endDrag}
+        >
           {displayMembers.map((member, index) => (
             <div key={`member-${member.id}-${index}`} className={s.memberCard}>
               <img

@@ -66,8 +66,17 @@
 	max-width: 1600px;
 	margin: 0 auto;
 	overflow: hidden;
+	/* drag interaction support */
+	--drag-x: 0px;
+	cursor: grab;
+	touch-action: pan-y;
 
 	&:has(.memberCard:hover) .memberCard {
+		animation-play-state: paused;
+	}
+
+	/* pause autoplay when hovering the carousel area */
+	&:hover .memberCard {
 		animation-play-state: paused;
 	}
 
@@ -86,6 +95,14 @@
 
 .paused .memberCard {
 	animation-play-state: paused !important;
+}
+
+.dragging .memberCard {
+	animation-play-state: paused !important;
+}
+
+.dragging {
+	cursor: grabbing;
 }
 
 .memberCard {
@@ -364,28 +381,28 @@
 
 @keyframes moveRightToLeft {
 	0% {
-		transform: translateY(-50%) translateX(calc(100vw + 160px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 160px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(-360px);
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 360px));
 	}
 }
 
 @keyframes moveRightToLeftMobile {
 	0% {
-		transform: translateY(-50%) translateX(calc(100vw + 600px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 600px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(-800px);
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 800px));
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(100vw + 500px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 500px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(-700px);
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 700px));
 	}
 }
 
