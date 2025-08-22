@@ -150,6 +150,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											</AppLink>
 										)}
 
+										{/* Кнопка регистрации скрыта
 										{!isMobile && (
 											<AppLink
 												className={s.appLink}
@@ -158,6 +159,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												{t('register')}
 											</AppLink>
 										)}
+										*/}
 
 										{!isMobile && (
 											<div className={s.liveButtonWrapper}>
