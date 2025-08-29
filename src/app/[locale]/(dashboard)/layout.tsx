@@ -11,6 +11,7 @@ import { Footer } from '@/widgets/Footer'
 import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { DashboardWrapper } from '@/widgets/DashboardWrapper'
+import { ChatBot } from '@/widgets/ChatBot'
 import { SWRConfig } from 'swr'
 
 const openSans = Open_Sans({
@@ -54,6 +55,7 @@ export default async function DashboardLayout({
 									</DashboardWrapper>
 								</div>
 								<Footer variant="user-variant" />
+								<ChatBot />
 							</div>
 						</SWRConfig>
 					</AuthGuard>

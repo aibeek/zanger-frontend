@@ -8,6 +8,7 @@ import { routing } from '@/i18n/routing'
 import { Header } from '@/widgets/Header'
 import { Footer } from '@/widgets/Footer'
 import { SWRConfig } from 'swr'
+import { ChatBot } from '@/widgets/ChatBot'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -44,6 +45,7 @@ export default async function AuthLayout({
 							<Header variant={'user-variant'} />
 							<section>{children}</section>
 							<Footer variant={'user-variant'} />
+							<ChatBot />
 						</div>
 					</SWRConfig>
 				</NextIntlClientProvider>

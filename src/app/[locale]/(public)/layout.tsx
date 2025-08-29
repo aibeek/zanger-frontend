@@ -9,6 +9,7 @@ import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
 import { Header } from '@/widgets/Header'
+import { ChatBot } from '@/widgets/ChatBot'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -50,6 +51,7 @@ export default async function RootLayout({
 								id={'footer'}
 								variant={'lending-variant'}
 							/>
+							<ChatBot />
 						</div>
 					</DeviceGuard>
 				</NextIntlClientProvider>

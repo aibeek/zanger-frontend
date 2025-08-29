@@ -1,4 +1,5 @@
 import { DescriptionSection, DownloadAppSection, MainSection, TeamSection } from '@/widgets/MainPage'
+import { ChatBot } from '@/widgets/ChatBot'
 
 import s from './page.module.scss'
 
@@ -9,6 +10,7 @@ export default function Home() {
 			<DescriptionSection />
 			<TeamSection />
 			<DownloadAppSection />
+			<ChatBot />
 		</div>
 	)
 }
