@@ -96,6 +96,9 @@ export const MainSection = () => {
 									<span className={s.number}>5510</span>
 								</div>
 							</Link>
+							<div className={s.freeConsultationText}>
+								<span>{t('freeConsultation')}</span>
+							</div>
 						</div>
 					</div>
 				</div>
