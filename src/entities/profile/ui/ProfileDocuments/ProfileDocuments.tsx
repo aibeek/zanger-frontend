@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Upload, Select } from 'antd'
-import { UploadFile } from 'antd/lib/upload/interface'
+import type { UploadFile } from 'antd/es/upload/interface'
 import { Button, Modal, useModal } from '@/shared/ui-kit'
 import medalIcon from '@/app/assets/icons/medal.svg'
 import A4 from '@/app/assets/icons/a4.svg'
