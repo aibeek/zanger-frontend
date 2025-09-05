@@ -17,6 +17,7 @@ import {
 } from '@/shared/lib'
 
 import s from './RegistrationFormStep.module.scss'
+import './RegistrationFormStep.scss'
 import { SearchSelect } from '../SearchSelect'
 import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegions } from '../../model'
 import { useTranslations } from 'next-intl'
