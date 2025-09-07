@@ -46,7 +46,6 @@
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
-		"@types/antd": "^1.0.4",
 		"@types/js-cookie": "^3.0.6",
 		"@types/node": "^20",
 		"@types/react": "^19",

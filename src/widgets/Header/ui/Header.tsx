@@ -8,7 +8,7 @@ import avatar from '@/app/assets/icons/header-avatar.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
 import lendingUser from '@/app/assets/icons/user-lending.svg'
 import { Button, LangSwitcher, Modal, useModal } from '@/shared/ui-kit'
-import { formatPhoneNumber, useAuthStore, useMediaQuery } from '@/shared/lib'
+import { formatPhoneNumber, useAuthStore, useMediaQuery, isMobileOrTablet } from '@/shared/lib'
 
 import s from './Header.module.scss'
 import { useTranslations } from 'next-intl'
@@ -23,10 +23,15 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const t = useTranslations('header')
 	const { isAuthenticated, checkAuth } = useAuthStore()
 	const pathname = usePathname()
-	const isMobile = useMediaQuery('(max-width: 768px)')
+	const isMobile = useMediaQuery('(max-width: 768px)') // Возвращаем обратно к 768px
+	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
 	
-	// Состояние для Live заявок
+	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство
+	const shouldShowMobileModal = isMobile || isMobileDevice
+	
+	// Состояние для Live заявок и мобильного меню
 	const [showLiveApplications, setShowLiveApplications] = useState(false)
+	const [showMobileMenu, setShowMobileMenu] = useState(false)
 	const [liveApplications, setLiveApplications] = useState([
 		{
 			id: 1,
@@ -64,213 +69,165 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 		return (
 			<>
 				<header className={`${s.lendingHeader}`}>
-					<div className="container">
-						<div className={s.headerContent}>
+					<div className={s.headerContent}>
+						<div className={s.left}>
 							<div className={s.logo}>
 								<Link 
 									href="/"
-									style={{ 
-										background: 'linear-gradient(45deg, #1e3c72, #2a5298, #3b82f6, #60a5fa, #93c5fd)',
-										backgroundSize: '400% 400%',
-										WebkitBackgroundClip: 'text',
-										WebkitTextFillColor: 'transparent',
-										backgroundClip: 'text',
-										fontSize: isMobile ? '20px' : '28px', 
-										fontWeight: '700', 
-										textDecoration: 'none',
-										letterSpacing: isMobile ? '1px' : '1.5px',
-										animation: 'gradient 3s ease infinite',
-										display: 'inline-block'
-									}}>
-									ZANGER
+									className={s.logoLink}>
+									<Image
+										src="/logo.svg"
+										alt="ZANGER"
+										width={120}
+										height={32}
+										priority
+									/>
 								</Link>
-								<style jsx>{`
-									@keyframes gradient {
-										0% {
-											background-position: 0% 50%;
-										}
-										50% {
-											background-position: 100% 50%;
-										}
-										100% {
-											background-position: 0% 50%;
-										}
-									}
-								`}</style>
-							</div>
-							<LangSwitcher />
-							
-							<div className={s.authBtns}>
-								{isMobile && (
-									<div style={{ height: '42px' }}>
-										<Button
-											onClick={open}
-											size={'auto'}
-											variant={'clear'}>
-											<Image
-												style={{ borderRadius: '10px' }}
-												src={lendingUser}
-												alt={'icon'}
-												width={42}
-												height={42}
-											/>
-										</Button>
-									</div>
-								)}
-								{isAuthenticated && personalData ? (
-									<>
-										{!isMobile && (
-											<div className={s.user}>
-												<Link
-													style={{ cursor: 'pointer' }}
-													href={`/${personalData.language}/dashboard/profile`}>
-													<Image
-														style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-														src={personalData.icon ?? avatar}
-														alt={t('avatarAlt')}
-														width={40}
-														height={40}
-													/>
-												</Link>
-												<div className={s.userInfo}>
-													<p className={s.userName}>{personalData.name}</p>
-													<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
-												</div>
-											</div>
-										)}
-									</>
-								) : (
-									<>
-										{!isMobile && (
-											<AppLink
-												className={s.appLink}
-												variant={'primary'}
-												href={'/auth/login'}>
-												{t('login')}
-											</AppLink>
-										)}
-
-										{!isMobile && (
-											<AppLink
-												className={s.appLink}
-												variant={'primary'}
-												href={'/auth/register/select-role'}>
-												{t('register')}
-											</AppLink>
-										)}
-										
-
-										{!isMobile && (
-											<div className={s.liveButtonWrapper}>
-												<button
-													className={`${s.appLink} ${s.liveButton}`}
-													onClick={() => setShowLiveApplications(!showLiveApplications)}
-													onMouseEnter={(e) => {
-														const shine = e.currentTarget.querySelector('.shine-effect')
-														if (shine) {
-															(shine as HTMLElement).style.left = '100%'
-														}
-													}}
-													onMouseLeave={(e) => {
-														const shine = e.currentTarget.querySelector('.shine-effect')
-														if (shine) {
-															(shine as HTMLElement).style.left = '-100%'
-														}
-													}}>
-													<span 
-														className="shine-effect"
-														style={{
-															position: 'absolute',
-															top: 0,
-															left: '-100%',
-															width: '100%',
-															height: '100%',
-															background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)',
-															transition: 'left 0.6s ease',
-															zIndex: 1,
-															pointerEvents: 'none'
-														}}>
-													</span>
-													<span style={{ 
-														position: 'relative', 
-														zIndex: 2, 
-														display: 'flex', 
-														alignItems: 'center', 
-														gap: '6px',
-														lineHeight: '1'
-													}}>
-														🔴 {t('liveApplications')}
-													</span>
-												</button>
-												
-												{showLiveApplications && (
-													<div className={s.liveDropdown}>
-														<div className={s.liveDropdownHeader}>
-															<h3>🔴 Live заявки <span className={s.demoLabel}>(ДЕМО)</span></h3>
-															<button 
-																className={s.closeDropdown}
-																onClick={() => setShowLiveApplications(false)}>
-																×
-															</button>
-														</div>
-														
-														<div className={s.liveApplicationsList}>
-															{liveApplications.map((app) => (
-																<div key={app.id} className={s.liveApplicationItem}>
-																	<div className={s.liveAppHeader}>
-																		<h4>{app.title} <span className={s.testBadge}>ТЕСТ</span></h4>
-																		<span className={s.timeAgo}>{app.timeAgo}</span>
-																	</div>
-																	<p className={s.liveAppDescription}>{app.description}</p>
-																														<div className={s.liveAppFooter}>
-														<span className={s.location}>📍 {app.location}</span>
-														<button 
-															className={s.respondBtn}
-															onClick={() => {
-																setShowLiveApplications(false)
-																router.push('/auth/register/select-role')
-															}}>
-															Откликнуться
-														</button>
-													</div>
-																</div>
-															))}
-														</div>
-														
-														<div className={s.liveDropdownFooter}>
-															<p>⚠️ Это тестовые данные для демонстрации</p>
-														</div>
-													</div>
-												)}
-											</div>
-										)}
-									</>
-								)}
 							</div>
 						</div>
-					</div>
-				</header>
+						
+						{!isMobile && (
+							<nav className={s.navigation}>
+								<Link href="/about" className={s.navLink}>О нас</Link>
+								<Link href="/lawyers" className={s.navLink}>Юристы</Link>
+								<Link href="/modules" className={s.navLink}>Модули</Link>
+								<Link href="/info" className={s.navLink}>Информация</Link>
+								<Link href="/useful" className={s.navLink}>Полезное</Link>
+								<Link href="/news" className={s.navLink}>Новости</Link>
+							</nav>
+						)}
+						
+						<div className={s.right}>
+							{!isMobile && (
+								<div className={s.authBtns}>
+									{isAuthenticated && personalData ? (
+										<div className={s.user}>
+											<Link
+												style={{ cursor: 'pointer' }}
+												href={`/${personalData.language}/dashboard/profile`}>
+												<Image
+													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+													src={personalData.icon ?? avatar}
+													alt={t('avatarAlt')}
+													width={40}
+													height={40}
+												/>
+											</Link>
+											<div className={s.userInfo}>
+												<p className={s.userName}>{personalData.name}</p>
+												<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+											</div>
+										</div>
+									) : (
+										<>
+											<AppLink
+												className={s.appLink}
+												variant={'primary'}
+												href={shouldShowMobileModal ? '#' : '/auth/login'}
+												onClick={(e) => {
+													if (shouldShowMobileModal) {
+														e.preventDefault()
+														open()
+													}
+												}}>
+												{t('login')}
+											</AppLink>
 
-				<Modal
-					className={s.modal}
-					isOpen={isOpen}
-					onClose={close}>
-					<div className={s.modalContent}>
-						<Image
-							src={monitor}
-							alt={'monitor'}
-							width={114}
-							height={104}
-						/>
-						<p className={s.modalDescr}>{t('mobileModalTitle')}</p>
+											<AppLink
+												className={`${s.appLink} ${s.liveButton}`}
+												variant={'primary'}
+												href={shouldShowMobileModal ? '#' : '/auth/register/select-role'}
+												onClick={(e) => {
+													if (shouldShowMobileModal) {
+														e.preventDefault()
+														open()
+													}
+												}}>
+												LIVE
+											</AppLink>
+										</>
+									)}
+								</div>
+							)}
+							
+							<LangSwitcher />
 
-						<Button
-							variant={'primary'}
-							onClick={close}>
-							{t('mobileModalButton')}
-						</Button>
+							{isMobile && (
+								<button
+									className={s.mobileMenuBtn}
+									onClick={() => setShowMobileMenu(!showMobileMenu)}
+								>
+									<span></span>
+									<span></span>
+									<span></span>
+								</button>
+							)}
+						</div>
 					</div>
-				</Modal>
+
+						{/* Мобильное меню */}
+						{isMobile && showMobileMenu && (
+							<div className={s.mobileMenu}>
+								<div className={s.mobileNavigation}>
+									<Link href="/about" className={s.mobileNavLink}>О нас</Link>
+									<Link href="/lawyers" className={s.mobileNavLink}>Юристы</Link>
+									<Link href="/modules" className={s.mobileNavLink}>Модули</Link>
+									<Link href="/info" className={s.mobileNavLink}>Информация</Link>
+									<Link href="/useful" className={s.mobileNavLink}>Полезное</Link>
+									<Link href="/news" className={s.mobileNavLink}>Новости</Link>
+								</div>
+								
+								<div className={s.mobileAuthBtns}>
+									{isAuthenticated && personalData ? (
+										<div className={s.mobileUser}>
+											<Link
+												style={{ cursor: 'pointer' }}
+												href={`/${personalData.language}/dashboard/profile`}>
+												<Image
+													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+													src={personalData.icon ?? avatar}
+													alt={t('avatarAlt')}
+													width={40}
+													height={40}
+												/>
+											</Link>
+											<div className={s.mobileUserInfo}>
+												<p className={s.userName}>{personalData.name}</p>
+												<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+											</div>
+										</div>
+									) : (
+										<div className={s.mobileAuth}>
+											<AppLink
+												className={s.mobileAppLink}
+												variant={'primary'}
+												href={shouldShowMobileModal ? '#' : '/auth/login'}
+												onClick={(e) => {
+													if (shouldShowMobileModal) {
+														e.preventDefault()
+														open()
+													}
+												}}>
+												{t('login')}
+											</AppLink>
+											<AppLink
+												className={s.mobileAppLink}
+												variant={'primary'}
+												href={shouldShowMobileModal ? '#' : '/auth/register/select-role'}
+												onClick={(e) => {
+													if (shouldShowMobileModal) {
+														e.preventDefault()
+														open()
+													}
+												}}>
+												{t('register')}
+											</AppLink>
+										</div>
+									)}
+								</div>
+							</div>
+						)}
+					</header>
 			</>
 		)
 	}
@@ -299,49 +256,35 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								</p>
 							)}
 						</div>
+
 						<div className={s.right}>
 							<LangSwitcher />
 
-							{isAuthenticated && personalData && (
-								<>
-									<div className={s.notifications}>
-										<NotificationsDropdown />
+							{isAuthenticated && personalData ? (
+								<div className={s.user}>
+									<NotificationsDropdown />
+
+									<div className={s.userInfo}>
+										<p className={s.userName}>{personalData.name}</p>
+										<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
 									</div>
-									<div className={s.user}>
-										{personalData.role_id.code === 'lawyer' &&
-											isAuthenticated &&
-											personalData &&
-											!pathname.includes('/subscription') && (
-												<div className={s.subscription}>
-													<AppLink
-														className={s.subLink}
-														variant={'border'}
-														href={'/subscription'}>
-														{t('subscription')}
-													</AppLink>
-												</div>
-											)}
-										<Link
-											style={{ cursor: 'pointer' }}
-											href={`/${personalData.language}/dashboard/profile`}>
-											<Image
-												style={{ borderRadius: '10px', objectFit: 'cover' }}
-												src={personalData.icon ?? avatar}
-												alt={t('avatarAlt')}
-												width={40}
-												height={40}
-											/>
-										</Link>
-										<div className={s.userInfo}>
-											<p className={s.userName}>{personalData.name}</p>
-											<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
-										</div>
-									</div>
+
+									<Link
+										style={{ cursor: 'pointer' }}
+										href={`/${personalData.language}/dashboard/profile`}>
+										<Image
+											style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+											src={personalData.icon ?? avatar}
+											alt={t('avatarAlt')}
+											width={40}
+											height={40}
+										/>
+									</Link>
+
 									<Button
-										onClick={open}
-										className={s.logout}
-										size={'auto'}
-										variant={'clear'}>
+										style={{ minWidth: 'max-content' }}
+										variant={'danger'}
+										onClick={handleLogout}>
 										<Image
 											src={LogoutIcon}
 											alt={t('logoutAlt')}
@@ -349,7 +292,25 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											height={24}
 										/>
 									</Button>
-								</>
+								</div>
+							) : (
+								<Button
+									style={{ minWidth: 'max-content' }}
+									variant={'primary'}
+									onClick={() => {
+										if (shouldShowMobileModal) {
+											open()
+										} else {
+											router.push('/auth/login')
+										}
+									}}>
+									<Image
+										src={lendingUser}
+										alt={t('lendingUserAlt')}
+										width={24}
+										height={24}
+									/>
+								</Button>
 							)}
 						</div>
 					</div>
@@ -359,28 +320,20 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 			<Modal
 				className={s.modal}
 				isOpen={isOpen}
-				onClose={close}
-				title={t('modalTitle')}>
-				<div className={s.top}>
-					<p
-						className={s.descr}
-						dangerouslySetInnerHTML={{ __html: t('modalDescription') }}
+				onClose={close}>
+				<div className={s.modalContent}>
+					<Image
+						src={monitor}
+						alt={'monitor'}
+						width={114}
+						height={104}
 					/>
-				</div>
-				<div className={s.btns}>
+					<p className={s.modalDescr}>{t('mobileModalTitle')}</p>
+
 					<Button
-						variant="border"
-						size={'lg'}
-						className={s.stayBtn}
+						variant={'primary'}
 						onClick={close}>
-						{t('stay')}
-					</Button>
-					<Button
-						variant="danger"
-						size={'lg'}
-						className={s.logoutBtn}
-						onClick={handleLogout}>
-						{t('logout')}
+						{t('mobileModalButton')}
 					</Button>
 				</div>
 			</Modal>

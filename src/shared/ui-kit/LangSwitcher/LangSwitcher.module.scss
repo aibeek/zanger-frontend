@@ -1,24 +1,90 @@
-.wrapper {
+.langSwitcher {
+	position: relative;
+	display: inline-block;
+}
+
+.currentLang {
+	background: transparent;
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	color: white;
+	padding: 6px 10px;
+	border-radius: 6px;
+	font-size: 11px;
+	font-weight: 500;
+	cursor: pointer;
 	display: flex;
 	align-items: center;
-	padding: 4px;
-	border-radius: 10px;
-	border: 1px solid rgba(243, 244, 245, 1);
-
-	.btn {
-		font-size: 12px !important;
-		color: #c2c2c2 !important;
-		padding: 8px 16px !important;
-		text-transform: uppercase;
+	gap: 4px;
+	min-width: 45px;
+	height: 32px;
+	justify-content: center;
+	transition: all 0.3s ease;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.5);
 	}
+}
 
-	.btnActive {
-		text-transform: uppercase;
-		padding: 8px 16px;
-		border-radius: 8px;
-		font-size: 14px;
-		background-color: #e9e9e9;
-		color: black !important;
-		box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
+.arrow {
+	font-size: 8px;
+	transition: transform 0.3s ease;
+}
+
+.dropdown {
+	position: absolute;
+	top: calc(100% + 4px);
+	right: 0;
+	background: linear-gradient(135deg, #1a1f2e 0%, #2a3441 100%);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 6px;
+	box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+	z-index: 1000;
+	min-width: 60px;
+	backdrop-filter: blur(10px);
+	animation: dropdownFadeIn 0.2s ease;
+}
+
+.option {
+	display: block;
+	padding: 8px 14px;
+	color: rgba(255, 255, 255, 0.8);
+	text-decoration: none;
+	font-size: 11px;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.3px;
+	transition: all 0.3s ease;
+	text-align: center;
+	
+	&:first-child {
+		border-radius: 6px 6px 0 0;
+	}
+	
+	&:last-child {
+		border-radius: 0 0 6px 6px;
+	}
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.1);
+		color: white;
+	}
+	
+	&.active {
+		background: rgba(235, 7, 52, 0.2);
+		color: rgba(235, 7, 52, 1);
+	}
+}
+
+@keyframes dropdownFadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }
