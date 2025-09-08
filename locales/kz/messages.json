@@ -642,5 +642,33 @@
 		"region": "Елді мекен",
 		"description": "Сипаттама",
 		"minimize": "Жіктеу"
-	}
-}	
+	},
+  "dashboard": {
+    "home": {
+      "title": "Dashboard негізгі беті",
+      "description": "Мұнда негізгі контент көрсетіледі"
+    },
+    "calendar": {
+      "mon": "Дс",
+      "tue": "Сс",
+      "wed": "Ср",
+      "thu": "Бс",
+      "fri": "Жм",
+      "sat": "Сб",
+      "sun": "Жс"
+    },
+    "events": {
+      "title": "Оқиғалар",
+      "clientMeeting": "Клиентпен кездесу",
+      "consultation": "Кеңес беру"
+    },
+    "assistant": {
+      "name": "Ai-Zan",
+      "role": "Заңгер көмекшісі",
+      "greeting": "Сәлеметсіз бе! Қалай көмектесе аламын?",
+      "compareAction": "ҚР және РФ Азаматтық кодекстерін салыстыру",
+      "contractAction": "Жалдау келісім-шартының үлгісі",
+      "inputPlaceholder": "Сұрақ қою..."
+    }
+  }
+}

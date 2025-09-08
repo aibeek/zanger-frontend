@@ -1,0 +1,82 @@
+// Header
+.header {
+    background-color: #1E2D4B;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    justify-content: space-between;
+}
+
+.headerLeft {
+    h1 {
+        color: white;
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+    }
+}
+
+.headerCenter {
+    display: flex;
+    gap: 16px;
+}
+
+.govService {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+}
+
+.govServiceText {
+    font-size: 10px;
+    color: white;
+    font-weight: 500;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.subscriptionBtn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: #2563eb;
+    }
+}
+
+.langSwitcher {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.userAvatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+}

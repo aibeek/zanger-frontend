@@ -108,7 +108,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												<Image
 													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
 													src={personalData.icon ?? avatar}
-													alt={t('avatarAlt')}
+													alt={('avatarAlt')}
 													width={40}
 													height={40}
 												/>
@@ -306,7 +306,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									}}>
 									<Image
 										src={lendingUser}
-										alt={t('lendingUserAlt')}
+										alt={('lendingUserAlt')}
 										width={24}
 										height={24}
 									/>

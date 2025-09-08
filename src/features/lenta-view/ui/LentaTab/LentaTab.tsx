@@ -130,7 +130,6 @@ export const LentaTab = () => {
 					link={{ href: '/dashboard/profile?tab=documents', label: t('fillForm') }}
 				/>
 			)}
-
 			<LentaList
 				data={items}
 				loadMore={() => setSize((s) => s + 1)}

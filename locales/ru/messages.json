@@ -639,5 +639,34 @@
 		"region": "Населенный пункт",
 		"description": "Описание",
 		"minimize": "Свернуть"
+	},
+
+	"dashboard": {
+		"home": {
+			"title": "Главная страница Dashboard",
+			"description": "Здесь будет основной контент главной страницы"
+		},
+		"calendar": {
+			"mon": "Пн",
+			"tue": "Вт",
+			"wed": "Ср",
+			"thu": "Чт",
+			"fri": "Пт",
+			"sat": "Сб",
+			"sun": "Вс"
+		},
+		"events": {
+			"title": "События",
+			"clientMeeting": "Встреча с клиентом",
+			"consultation": "Консультация"
+		},
+		"assistant": {
+			"name": "Ai-Zan",
+			"role": "Помощник юриста",
+			"greeting": "Здравствуйте! Чем могу помочь?",
+			"compareAction": "Сравнить ГК РК и РФ",
+			"contractAction": "Шаблон договора аренды",
+			"inputPlaceholder": "Задать вопрос..."
+		}
 	}
 }
