@@ -1,77 +1,87 @@
-// Footer
+/* Общий контейнер для футера */
 .footer {
-    background-color: #1E2D4B;
-    padding: 24px 32px;
-    color: white;
+  background-color: #f0f2f5;
+  padding: 2rem 4rem;
+  font-family: Arial, sans-serif;
 }
 
+/* Раздел с кнопками */
 .footerSections {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
 }
 
 .footerSection {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: none;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 15%;
+  min-width: 150px;
+  padding: 0.8rem 1rem;
+  background-color: #6a7ba1;
+  color: #fff;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
 
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
+  &:hover {
+    background-color: #5b6d92;
+  }
 }
 
 .footerArrow {
-    font-size: 12px;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
 }
 
+/* Раздел со статистикой */
 .footerStats {
-    display: flex;
-    gap: 32px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: flex-start;
+  gap: 4rem;
+  margin-bottom: 2.5rem;
+  color: #333;
 }
 
 .stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
 }
 
 .statLabel {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.2rem;
 }
 
 .statValue {
-    font-size: 18px;
-    font-weight: 600;
-    color: white;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2a68c0;
 }
 
+/* Раздел со ссылками внизу */
 .footerLinks {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: flex-start;
+  gap: 3rem;
+  padding: 1rem 2rem;
+  background-color: #1e2d4b;
+  border-radius: 0.5rem;
 }
 
 .footerLink {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: none;
-    transition: color 0.2s ease;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
 
-    &:hover {
-        color: white;
-    }
+  &:hover {
+    color: #a0a0a0;
+  }
 }

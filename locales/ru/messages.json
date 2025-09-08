@@ -642,6 +642,19 @@
 	},
 
 	"dashboard": {
+		"sidebar": {
+			"main": "Главная",
+			"profile": "Мой профиль",
+			"applications": "Мои заявки",
+			"chats": "Чаты",
+		 	"subscription": "Моя подписка",
+		 	"faq": "FAQ",
+			"support": "Поддержка",
+			"logout": "Выйти",
+			"lawyerRole": "Юрист",
+			"clientRole": "Клиент",
+			"copyright": "© 2025 Zanger.\nВсе права защищены"
+		},
 		"home": {
 			"title": "Главная страница Dashboard",
 			"description": "Здесь будет основной контент главной страницы"
@@ -667,6 +680,14 @@
 			"compareAction": "Сравнить ГК РК и РФ",
 			"contractAction": "Шаблон договора аренды",
 			"inputPlaceholder": "Задать вопрос..."
+		},
+		"footer": {
+			"privacy": "Политика конфиденциальности",
+			"payment": "Правила оплаты",
+			"offer": "Публичная оферта",
+			"cancellation": "Правила отмены подписки"
+}
+
 		}
 	}
-}
+

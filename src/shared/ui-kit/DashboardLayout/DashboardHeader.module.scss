@@ -1,82 +1,133 @@
-// Header
+.headerWrapper {
+  margin: 1rem;
+}
+
 .header {
-    background-color: #1E2D4B;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    padding: 0 32px;
-    justify-content: space-between;
+  background-color: #2e3e5b;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-radius: 20px;
 }
 
+/* Контейнер для гос. сервисов */
+.govServicesContainer {
+  display: flex;
+  gap: 0.75rem;          
+  flex-wrap: nowrap;
+  padding: 0.5rem 0;
+
+  /* Скрыть стандартный скролл для красоты (опционально) */
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+}
+
+
+/* Левая часть хедера: Профиль */
 .headerLeft {
-    h1 {
-        color: white;
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0;
-    }
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
 }
 
+/* Центральная часть: кнопки сервисов */
 .headerCenter {
-    display: flex;
-    gap: 16px;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .govService {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 2.25rem;
+  background-color: #6a7ba1; /* Темно-серый фон кнопок */
+  border-radius: 0.5rem;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
 
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-    }
+  &:hover {
+    background-color: #5b6d92; /* Оттенок при наведении */
+  }
 }
 
 .govServiceText {
-    font-size: 10px;
-    color: white;
-    font-weight: 500;
-    text-align: center;
-    line-height: 1.2;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
+/* Правая часть хедера: подписка, уведомления, язык */
 .headerRight {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .subscriptionBtn {
-    background-color: #3b82f6;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  background-color: #1e69d7; /* Синий цвет кнопки */
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
 
-    &:hover {
-        background-color: #2563eb;
-    }
+  &:hover {
+    background-color: #1555a6; /* Оттенок при наведении */
+  }
+}
+
+.notificationIcon {
+  /* Стиль для иконки уведомлений (круг с колокольчиком) */
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #f0f0f0; /* Светлый фон */
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
 }
 
 .langSwitcher {
-    color: white;
-    font-size: 14px;
-    font-weight: 500;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .userAvatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
+  /* На изображении нет аватара, но можно стилизовать заглушку */
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #ccc;
 }

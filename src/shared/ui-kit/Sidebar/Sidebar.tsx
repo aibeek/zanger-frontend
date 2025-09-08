@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Cookies from 'js-cookie'
+import { useTranslations } from 'next-intl'
 import { useLoginStore } from '@/features/auth/login'
 import { ProfileAvatar } from '@/entities/profile'
 import s from './Sidebar.module.scss'
@@ -14,6 +15,7 @@ interface SidebarProps {
 export const Sidebar = ({ language }: SidebarProps) => {
     const { personalData } = useLoginStore()
     const pathname = usePathname()
+    const t = useTranslations()
     
     const name = personalData?.name ?? ''
     const icon = personalData?.icon ?? ''
@@ -22,43 +24,43 @@ export const Sidebar = ({ language }: SidebarProps) => {
     const menuItems = [
         {
             id: 'main',
-            title: 'Главная',
+            title: t('dashboard.sidebar.main'),
             icon: '🏠',
             href: `/${language}/dashboard/home`,
         },
         {
             id: 'profile',
-            title: 'Мой профиль',
+            title: t('dashboard.sidebar.profile'),
             icon: '👤',
             href: `/${language}/dashboard/profile`,
         },
         {
             id: 'applications',
-            title: 'Мои заявки',
+            title: t('dashboard.sidebar.applications'),
             icon: '📋',
             href: `/${language}/dashboard/applications`,
         },
         {
             id: 'chats',
-            title: 'Чаты',
+            title: t('dashboard.sidebar.chats'),
             icon: '💬',
             href: `/${language}/dashboard/chats`,
         },
         {
             id: 'subscription',
-            title: 'Моя подписка',
+            title: t('dashboard.sidebar.subscription'),
             icon: '⭐',
             href: `/${language}/dashboard/subscription`,
         },
         {
             id: 'faq',
-            title: 'FAQ',
+            title: t('dashboard.sidebar.faq'),
             icon: '❓',
             href: `/${language}/dashboard/faq`,
         },
         {
             id: 'support',
-            title: 'Поддержка',
+            title: t('dashboard.sidebar.support'),
             icon: '👍',
             href: `/${language}/dashboard/support`,
         },
@@ -79,7 +81,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
                 </div>
                 <div className={s.userName}>{name}</div>
                 <div className={s.userRole}>
-                    {role === 'lawyer' ? 'Юрист' : 'Клиент'}
+                    {role === 'lawyer' ? t('dashboard.sidebar.lawyerRole') : t('dashboard.sidebar.clientRole')}
                 </div>
             </div>
 
@@ -99,10 +101,10 @@ export const Sidebar = ({ language }: SidebarProps) => {
             <div className={s.sidebarFooter}>
                 <button className={s.logoutBtn}>
                     <span className={s.logoutIcon}>🚪</span>
-                    <span className={s.logoutText}>Выйти</span>
+                    <span className={s.logoutText}>{t('dashboard.sidebar.logout')}</span>
                 </button>
                 <div className={s.copyright}>
-                    © 2025 Zanger.<br />Все права защищены
+                    {t('dashboard.sidebar.copyright')}
                 </div>
             </div>
         </aside>

@@ -1,7 +1,9 @@
 import Link from 'next/link'
 import s from './DashboardFooter.module.scss'
+import { useTranslations } from 'next-intl'
 
 export const DashboardFooter = () => {
+    const t = useTranslations()
     return (
         <footer className={s.footer}>
             <div className={s.footerSections}>
@@ -32,11 +34,11 @@ export const DashboardFooter = () => {
             </div>
             
             <div className={s.footerLinks}>
-                <Link href="/privacy" className={s.footerLink}>Политика конфиденциальности</Link>
-                <Link href="/payment" className={s.footerLink}>Правила оплаты</Link>
-                <Link href="/offer" className={s.footerLink}>Публичная оферта</Link>
-                <Link href="/cancellation" className={s.footerLink}>Правила отмены подписки</Link>
-            </div>
+            <Link href="/privacy" className={s.footerLink}>{t('dashboard.footer.privacy')}</Link>
+            <Link href="/payment" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
+            <Link href="/offer" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
+            <Link href="/cancellation" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
+        </div>
         </footer>
     )
 }
