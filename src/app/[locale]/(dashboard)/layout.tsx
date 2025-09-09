@@ -5,12 +5,12 @@ import { notFound } from 'next/navigation'
 import { Open_Sans } from 'next/font/google'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-
+import { Footer } from '@/widgets/Footer'
+import { Header } from '@/widgets/Header'
 import '@/app/styles/index.scss'
 import { AuthGuard } from '@/shared/lib'
 import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
-import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChat } from '@/widgets/PulseChat'
 import { SWRConfig } from 'swr'
@@ -54,10 +54,7 @@ export default async function DashboardLayoutRoot({
 							<div className="authed-wrapper">
 								<div className="dashboard-top">
 									<Header variant="user-variant" />
-									<DashboardWrapper>
-										{children}
 										<AppToaster />
-									</DashboardWrapper>
 								</div>
 								<Footer variant="user-variant" />
 								<ChatBot />

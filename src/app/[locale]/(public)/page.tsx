@@ -1,6 +1,6 @@
 import { DescriptionSection, DownloadAppSection, MainSection, TeamSection, AboutSection } from '@/widgets/MainPage'
 import { ChatBot } from '@/widgets/ChatBot'
-
+import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import s from './page.module.scss'
 
 export default function Home() {
