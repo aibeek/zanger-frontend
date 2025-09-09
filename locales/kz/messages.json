@@ -642,5 +642,52 @@
 		"region": "Елді мекен",
 		"description": "Сипаттама",
 		"minimize": "Жіктеу"
-	}
-}	
+	},
+  "dashboard": {
+	"sidebar": {
+		"main": "Негізгі",
+		"profile": "Менің профилім",
+		"applications": "Менің өтініштерім",
+		"chats": "Чаттар",
+		"subscription": "Менің жазылымым",
+		"faq": "Жиі қойылатын сұрақтар",
+		"support": "Қолдау",
+		"logout": "Шығу",
+		"lawyerRole": "Заңгер",
+		"clientRole": "Клиент",
+		"copyright": "© 2025 Zanger.\nБарлық құқықтар қорғалған"
+		},
+    "home": {
+      "title": "Dashboard негізгі беті",
+      "description": "Мұнда негізгі контент көрсетіледі"
+    },
+    "calendar": {
+      "mon": "Дс",
+      "tue": "Сс",
+      "wed": "Ср",
+      "thu": "Бс",
+      "fri": "Жм",
+      "sat": "Сб",
+      "sun": "Жс"
+    },
+    "events": {
+      "title": "Оқиғалар",
+      "clientMeeting": "Клиентпен кездесу",
+      "consultation": "Кеңес беру"
+    },
+    "assistant": {
+      "name": "Ai-Zan",
+      "role": "Заңгер көмекшісі",
+      "greeting": "Сәлеметсіз бе! Қалай көмектесе аламын?",
+      "compareAction": "ҚР және РФ Азаматтық кодекстерін салыстыру",
+      "contractAction": "Жалдау келісім-шартының үлгісі",
+      "inputPlaceholder": "Сұрақ қою..."
+    },
+	"footer": {
+    "privacy": "Құпиялылық саясаты",
+    "payment": "Төлем ережелері",
+    "offer": "Қоғамдық оферта",
+    "cancellation": "Жазылымды тоқтату ережелері"
+  }
+}
+}

@@ -1,0 +1,87 @@
+/* Общий контейнер для футера */
+.footer {
+  background-color: #f0f2f5;
+  padding: 2rem 4rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Раздел с кнопками */
+.footerSections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.footerSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 15%;
+  min-width: 150px;
+  padding: 0.8rem 1rem;
+  background-color: #6a7ba1;
+  color: #fff;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+
+  &:hover {
+    background-color: #5b6d92;
+  }
+}
+
+.footerArrow {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+/* Раздел со статистикой */
+.footerStats {
+  display: flex;
+  justify-content: flex-start;
+  gap: 4rem;
+  margin-bottom: 2.5rem;
+  color: #333;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.2rem;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #2a68c0;
+}
+
+/* Раздел со ссылками внизу */
+.footerLinks {
+  display: flex;
+  justify-content: flex-start;
+  gap: 3rem;
+  padding: 1rem 2rem;
+  background-color: #1e2d4b;
+  border-radius: 0.5rem;
+}
+
+.footerLink {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #a0a0a0;
+  }
+}

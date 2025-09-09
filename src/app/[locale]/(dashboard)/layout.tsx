@@ -8,46 +8,42 @@ import { getMessages } from 'next-intl/server'
 
 import '@/app/styles/index.scss'
 import { AuthGuard } from '@/shared/lib'
-import { Footer } from '@/widgets/Footer'
-import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { SWRConfig } from 'swr'
+import { DevErrorBoundary } from '@/shared/ui-kit/DevErrorBoundary/DevErrorBoundary'
+import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 
 const openSans = Open_Sans({
-	variable: '--font-open-sans',
-	subsets: ['cyrillic', 'latin'],
+    variable: '--font-open-sans',
+    subsets: ['cyrillic', 'latin'],
 })
 
 export const metadata: Metadata = {
-	title: 'Zanger',
-	description: 'Zanger',
-	icons: {
-		icon: '/logo-blue.svg',
-		shortcut: '/logo-blue.svg',
-		apple: '/logo-blue.svg',
-	},
+    title: 'Zanger',
+    description: 'Zanger',
+    icons: {
+        icon: '/logo-blue.svg',
+        shortcut: '/logo-blue.svg',
+        apple: '/logo-blue.svg',
+    },
 }
 
-export default async function DashboardLayout({
-	children,
-	params,
+export default async function DashboardLayoutRoot({
+    children,
+    params,
 }: {
-	children: React.ReactNode
-	params: Promise<{ locale: string }>
+    children: React.ReactNode
+    params: { locale: string }
 }) {
 	const { locale } = await params
 	if (!hasLocale(routing.locales, locale)) {
 		notFound()
 	}
-
-	// Получаем сообщения для локали
-	const messages = await getMessages()
-
 	return (
 		<html lang={locale}>
 			<body className={openSans.variable}>
-				<NextIntlClientProvider messages={messages}>
+				<NextIntlClientProvider>
 					<AuthGuard>
 						<SWRConfig value={{ shouldRetryOnError: false }}>
 							<div className="authed-wrapper">
@@ -59,6 +55,7 @@ export default async function DashboardLayout({
 									</DashboardWrapper>
 								</div>
 								<Footer variant="user-variant" />
+								<ChatBot />
 							</div>
 						</SWRConfig>
 					</AuthGuard>
