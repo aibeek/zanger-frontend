@@ -8,11 +8,10 @@ import { getMessages } from 'next-intl/server'
 
 import '@/app/styles/index.scss'
 import { AuthGuard } from '@/shared/lib'
+import { Footer } from '@/widgets/Footer'
+import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
-import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { SWRConfig } from 'swr'
-import { DevErrorBoundary } from '@/shared/ui-kit/DevErrorBoundary/DevErrorBoundary'
-import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 
 const openSans = Open_Sans({
     variable: '--font-open-sans',
@@ -34,28 +33,29 @@ export default async function DashboardLayoutRoot({
     params,
 }: {
     children: React.ReactNode
-    params: { locale: string }
+    params: Promise<{ locale: string }>
 }) {
 	const { locale } = await params
 	if (!hasLocale(routing.locales, locale)) {
 		notFound()
 	}
+
+	// Получаем сообщения для локали
+	const messages = await getMessages()
+
 	return (
 		<html lang={locale}>
 			<body className={openSans.variable}>
-				<NextIntlClientProvider>
+				<NextIntlClientProvider messages={messages}>
 					<AuthGuard>
 						<SWRConfig value={{ shouldRetryOnError: false }}>
 							<div className="authed-wrapper">
 								<div className="dashboard-top">
 									<Header variant="user-variant" />
-									<DashboardWrapper>
-										{children}
-										<AppToaster />
-									</DashboardWrapper>
+									{children}
+									<AppToaster />
 								</div>
 								<Footer variant="user-variant" />
-								<ChatBot />
 							</div>
 						</SWRConfig>
 					</AuthGuard>
