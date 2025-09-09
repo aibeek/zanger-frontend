@@ -8,8 +8,7 @@ import { getMessages } from 'next-intl/server'
 
 import '@/app/styles/index.scss'
 import { AuthGuard } from '@/shared/lib'
-import { Footer } from '@/widgets/Footer'
-import { Header } from '@/widgets/Header'
+import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
 import { SWRConfig } from 'swr'
 
@@ -49,14 +48,10 @@ export default async function DashboardLayoutRoot({
 				<NextIntlClientProvider messages={messages}>
 					<AuthGuard>
 						<SWRConfig value={{ shouldRetryOnError: false }}>
-							<div className="authed-wrapper">
-								<div className="dashboard-top">
-									<Header variant="user-variant" />
-									{children}
-									<AppToaster />
-								</div>
-								<Footer variant="user-variant" />
-							</div>
+							<DashboardLayout language={locale}>
+								{children}
+								<AppToaster />
+							</DashboardLayout>
 						</SWRConfig>
 					</AuthGuard>
 				</NextIntlClientProvider>
