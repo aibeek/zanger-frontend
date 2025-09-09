@@ -1,0 +1,47 @@
+/* Глобальные стили для Pulse чата */
+
+/* Основной контейнер Pulse чата */
+div[id*="pulse"] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Альтернативные селекторы для Pulse виджета */
+[data-live-chat-id] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+}
+
+/* Если у Pulse есть свой wrapper */
+.pulse-chat-widget,
+.pulse-livechat,
+.livechat-widget {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Стили для iframe чата */
+iframe[src*="pulse"] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+}
+
+/* Общие стили для любых fixed элементов от Pulse */
+div[style*="position: fixed"][style*="bottom"] {
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  z-index: 9999 !important;
+}

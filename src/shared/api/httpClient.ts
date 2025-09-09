@@ -60,8 +60,27 @@ export const httpClient = async <T>(url: string, options?: RequestInit): Promise
 	})
 
 	if (!res.ok) {
-		const error = await res.json()
-		throw new Error(error.message || 'Something went wrong')
+		let errorMessage = `HTTP Error: ${res.status} ${res.statusText}`
+		
+		try {
+			const errorResponse = await res.text()
+			console.error('Server error response:', errorResponse)
+			
+			// Пытаемся распарсить JSON, если это возможно
+			try {
+				const errorJson = JSON.parse(errorResponse)
+				errorMessage = errorJson.message || errorMessage
+			} catch {
+				// Если не JSON, показываем первые 200 символов ответа
+				errorMessage = errorResponse.length > 200 
+					? errorResponse.substring(0, 200) + '...' 
+					: errorResponse
+			}
+		} catch {
+			// Если не можем прочитать ответ, используем стандартное сообщение
+		}
+
+		throw new Error(errorMessage)
 	}
 
 	return await res.json()

@@ -1,0 +1,9 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(46, 62, 91, 0.1);
+}

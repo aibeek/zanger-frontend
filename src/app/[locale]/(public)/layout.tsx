@@ -1,4 +1,5 @@
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
@@ -39,10 +40,13 @@ export default async function RootLayout({
 		notFound()
 	}
 
+	// Получаем сообщения для локали
+	const messages = await getMessages()
+
 	return (
 		<html lang={locale}>
 			<body className={openSans.variable}>
-				<NextIntlClientProvider>
+				<NextIntlClientProvider messages={messages}>
 					<AppToaster />
 					<DeviceGuard>
 						<div className="lending-layout">

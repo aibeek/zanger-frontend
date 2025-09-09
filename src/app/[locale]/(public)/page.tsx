@@ -11,7 +11,7 @@ export default function Home() {
 			<TeamSection />
 			<DescriptionSection />
 			<DownloadAppSection />
-			<ChatBot />
+			<PulseChatWidget />
 		</div>
 	)
 }
