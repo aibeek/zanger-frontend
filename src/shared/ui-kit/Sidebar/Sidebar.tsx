@@ -26,7 +26,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
             id: 'main',
             title: t('dashboard.sidebar.main'),
             icon: '🏠',
-            href: `/${language}/dashboard/home`,
+            href: `/${language}`,
         },
         {
             id: 'profile',
@@ -74,7 +74,6 @@ export const Sidebar = ({ language }: SidebarProps) => {
                     <span className={s.logoText}>ZANGER</span>
                 </div>
             </div>
-            
             <div className={s.userProfile}>
                 <div className={s.avatarWrapper}>
                     <ProfileAvatar avatarUrl={icon} />

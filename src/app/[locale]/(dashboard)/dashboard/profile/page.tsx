@@ -4,7 +4,6 @@ import { useModal } from '@/shared/ui-kit'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
-import { PopupStates } from '@/entities/profile/ui/ProfileSubscription/SubscriptionPopupStates'
 import { useTranslations } from 'next-intl'
 import {
     ProfileChangePassword,
@@ -12,11 +11,9 @@ import {
     ProfilePersonalData,
     ProfileChangeSpecialization,
     ProfileConsultationPrice,
-    ProfileSubscription,
     ProfileServicingCities,
     ProfileDocuments,
     ProfileSupport,
-    ProfilePaymentMethod,
 } from '@/entities/profile'
 import { Modal } from '@/shared/ui-kit'
 import { RightWidgets } from '../components/RightWidgets'
@@ -81,35 +78,15 @@ export default function ProfilePage() {
                             <ProfileDocuments />
                             <ProfileConsultationPrice />
                             <ProfileChangeSpecialization />
-                            <ProfileSubscription />
-                            <ProfilePaymentMethod />
                             <ProfileServicingCities />
                         </>
                     )}
                     <ProfileSupport />
                     <ProfileDelete />
                 </div>
-
-                {/* Right Widgets */}
                 <RightWidgets />
             </div>
 
-            <Modal
-                className={s.modal}
-                isOpen={isOpen}
-                onClose={() => {
-                    close()
-                    setPopupStatus(null)
-                    setPopupMessage(null)
-                }}
-                closeButton>
-                {popupStatus && popupMessage && (
-                    <PopupStates
-                        status={popupStatus}
-                        message={popupMessage}
-                    />
-                )}
-            </Modal>
         </>
     )
 }

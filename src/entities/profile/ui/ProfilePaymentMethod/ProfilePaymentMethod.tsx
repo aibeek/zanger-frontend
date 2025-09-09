@@ -11,7 +11,7 @@ import { TrashIcon, PlusIcon } from '@heroicons/react/20/solid'
 import { useMyCards } from '@/entities/payment/model/useMyCards'
 import { usePaymentStore } from '@/entities/payment'
 import toast from 'react-hot-toast'
-import { NewPaymentPopup } from '@/entities/subscription/ui/SubscriptionView/NewPaymentPopup'
+import { NewPaymentPopup } from '@/entities/payment'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 export const ProfilePaymentMethod = () => {
@@ -48,6 +48,18 @@ export const ProfilePaymentMethod = () => {
 			window.location.href = redirectUrl
 		} else {
 			toast.success(t('addSuccess'))
+		}
+	}
+
+	const handleSubmitCard = async (cardData: any) => {
+		try {
+			// Здесь должна быть логика добавления карты
+			console.log('Adding card:', cardData)
+			await mutate()
+			await refreshUser()
+			toast.success(t('profile.payment_method.cardAdded') || 'Карта добавлена')
+		} catch (error) {
+			toast.error(t('profile.payment_method.deleteError'))
 		}
 	}
 
@@ -129,7 +141,8 @@ export const ProfilePaymentMethod = () => {
 
 			<NewPaymentPopup
 				isOpen={isOpen}
-				close={close}
+				onClose={close}
+				onSubmit={handleSubmitCard}
 			/>
 		</ProfileTabWrapper>
 	)

@@ -9,18 +9,11 @@ export default function FAQPage() {
 	const t = useTranslations('dashboard')
 
 	return (
-		<div className={s.faqPage}>
-			<div className={s.container}>
-				<div className={s.content}>
-					<div className={s.mainContent}>
-						<h1 className={s.title}>FAQ</h1>
-						<FAQAccordion />
-					</div>
-					<div className={s.rightSidebar}>
-						<RightWidgets />
-					</div>
-				</div>
+		<div className={s.faqContent}>
+			<div className={s.faqMain}>
+				<FAQAccordion />
 			</div>
+			<RightWidgets />
 		</div>
 	)
 }

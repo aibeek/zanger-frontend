@@ -1,22 +1,30 @@
-.item {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 20px 16px;
-	width: 100%;
-	border-bottom: 1px solid rgb(245, 246, 251);
+// ProfileSubscription styles
+.subscriptionInfo {
+    margin-top: 20px;
 }
 
-.title,
-.plan {
-	font-size: 14px;
-	font-weight: 400;
-	line-height: 130%;
+.noSubscription {
+    text-align: center;
+    padding: 32px 20px;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    background: #f9fafb;
 }
 
-.plan {
-	color: white;
-	background-color: $blue-color;
-	padding: 5px 10px;
-	border-radius: 10px;
+.activeSubscription {
+    padding: 20px;
+    border: 2px solid #10b981;
+    border-radius: 12px;
+    background: #f0fdf4;
+}
+
+.status {
+    font-size: 16px;
+    color: #374151;
+    margin: 0 0 16px 0;
+    font-weight: 500;
+}
+
+.subscribeButton {
+    margin-top: 16px;
 }
