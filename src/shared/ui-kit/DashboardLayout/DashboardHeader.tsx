@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
 import { ProfileAvatar } from '@/entities/profile'
 import { LangSwitcher, Button } from '@/shared/ui-kit'
@@ -10,10 +11,32 @@ interface DashboardHeaderProps {
     title?: string
 }
 
-export const DashboardHeader = ({ language, title = 'dashboard.sidebar.profile' }: DashboardHeaderProps) => {
+export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const t = useTranslations()
     const { personalData } = useLoginStore()
+    const pathname = usePathname()
     const icon = personalData?.icon ?? ''
+
+    // Функция для определения заголовка на основе текущего пути
+    const getPageTitle = () => {
+        if (title) return title // Если передан title явно, используем его
+        
+        // Маппинг путей к ключам переводов
+        const pathToTitleMap: Record<string, string> = {
+            '/dashboard/home': 'dashboard.sidebar.main',
+            '/dashboard/profile': 'dashboard.sidebar.profile',
+            '/dashboard/applications': 'dashboard.sidebar.applications',
+            '/dashboard/chats': 'dashboard.sidebar.chats',
+            '/dashboard/subscription': 'dashboard.sidebar.subscription',
+            '/dashboard/faq': 'dashboard.sidebar.faq',
+            '/dashboard/support': 'dashboard.sidebar.support',
+        }
+
+        // Удаляем язык из пути для поиска
+        const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+        
+        return pathToTitleMap[pathWithoutLang] || 'dashboard.sidebar.main'
+    }
 
     const govServices = [
         { name: 'AITU' },
@@ -32,7 +55,7 @@ export const DashboardHeader = ({ language, title = 'dashboard.sidebar.profile' 
         <div className={s.headerWrapper}>
             <header className={s.header}>
                 <div className={s.headerLeft}>
-                    <h1>{t(title)}</h1>
+                    <h1>{t(getPageTitle())}</h1>
                 </div>
                 
                 <div className={s.headerRight}>

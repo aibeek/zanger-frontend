@@ -1,35 +1,41 @@
-import { useLoginStore } from '@/features/auth'
-import s from './ProfileSubscription.module.scss'
+'use client'
+
 import { useTranslations } from 'next-intl'
+import { useRef } from 'react'
+import s from './ProfileSubscription.module.scss'
+import { ProfileTabWrapper } from '../ProfileTabWrapper'
+import { Button } from '@/shared/ui-kit'
 
 export const ProfileSubscription = () => {
-	const t = useTranslations('profile.subscription')
-	const personalData = useLoginStore((state) => state.personalData)
+	const t = useTranslations()
+	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 
-	// Проверяем, что данные загружены и пользователь - юрист
-	if (!personalData || !personalData.lawyer) {
-		return (
-			<div className={s.item}>
-				<h6 className={s.title}>{t('title')}</h6>
-				<span className={s.plan}>Загрузка...</span>
-			</div>
-		)
+	const handleSubscribe = () => {
+		// Логика перенаправления на страницу подписки
+		window.location.href = '/dashboard/subscription'
 	}
 
-	const subscriptionPlan = personalData.lawyer.subscription?.plan?.name ?? t('none')
-	const end_at = personalData.lawyer.subscription?.ends_at ?? ''
-
 	return (
-		<div className={s.item}>
-			<h6 className={s.title}>{t('title')}</h6>
-			<span className={s.plan}>
-				{subscriptionPlan}{' '}
-				{personalData.lawyer.subscription?.plan && (
-					<span>
-						- {t('active_until')} {end_at}
-					</span>
-				)}
-			</span>
-		</div>
+		<ProfileTabWrapper
+			title={t('profile.subscription.title')}
+			imgSrc={null}
+			imgAlt={'subscription'}
+			panel_title={t('profile.subscription.title')}
+			panel_descr={t('profile.subscription.none')}
+			ref={disclosureBtnRef}>
+			
+			<div className={s.subscriptionInfo}>
+				<div className={s.noSubscription}>
+					<p className={s.status}>{t('profile.subscription.none')}</p>
+					<Button 
+						variant="primary" 
+						onClick={handleSubscribe}
+						className={s.subscribeButton}
+					>
+						{t('header.subscription')}
+					</Button>
+				</div>
+			</div>
+		</ProfileTabWrapper>
 	)
 }

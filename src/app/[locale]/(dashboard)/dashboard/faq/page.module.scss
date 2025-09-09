@@ -1,12 +1,13 @@
-.faqPage {
-  padding: 2rem 0;
-  min-height: calc(100vh - 140px);
+// FAQ Content
+.faqContent {
+    display: flex;
+    gap: 32px;
+    height: 100%;
 }
 
-.container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
+// FAQ Main
+.faqMain {
+    flex: 1;
 }
 
 .title {
@@ -24,6 +25,15 @@
 
   .container {
     padding: 0 1rem;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .rightSidebar {
+    width: 100%;
   }
 
   .title {

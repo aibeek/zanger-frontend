@@ -6,18 +6,31 @@ type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'clear' | 'border'
 type ButtonSize = 'sm' | 'md' | 'lg' | 'full' | 'auto'
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-	className?: string
-	children: React.ReactNode
-	variant?: ButtonVariant
-	size?: ButtonSize
+  className?: string
+  children: React.ReactNode
+  variant?: ButtonVariant
+  size?: ButtonSize
+  loading?: boolean   // ✅ добавили
 }
 
-export const Button: React.FC<ButtonProps> = ({ className, children, variant = 'primary', size = 'lg', ...props }) => {
-	return (
-		<button
-			className={clsx(s.button, s[variant], s[size], className)}
-			{...props}>
-			{children}
-		</button>
-	)
+export const Button: React.FC<ButtonProps> = ({
+  className,
+  children,
+  variant = 'primary',
+  size = 'lg',
+  loading = false,
+  disabled,
+  ...props
+}) => {
+  return (
+    <button
+      className={clsx(s.button, s[variant], s[size], className, {
+        [s.loading]: loading, // ✅ отдельный стиль для лоадинга
+      })}
+      disabled={disabled || loading} // ✅ блокируем если loading
+      {...props}
+    >
+      {loading ? <span className={s.spinner} /> : children} 
+    </button>
+  )
 }

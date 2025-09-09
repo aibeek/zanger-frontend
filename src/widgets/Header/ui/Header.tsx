@@ -8,7 +8,7 @@ import avatar from '@/app/assets/icons/header-avatar.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
 import lendingUser from '@/app/assets/icons/user-lending.svg'
 import { Button, LangSwitcher, Modal, useModal } from '@/shared/ui-kit'
-import { formatPhoneNumber, useAuthStore, useMediaQuery, isMobileOrTablet } from '@/shared/lib'
+import { formatPhoneNumber, useAuthStore, useMediaQuery, isMobileOrTablet, useHydration } from '@/shared/lib'
 
 import s from './Header.module.scss'
 import { useTranslations } from 'next-intl'
@@ -23,11 +23,24 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const t = useTranslations('header')
 	const { isAuthenticated, checkAuth } = useAuthStore()
 	const pathname = usePathname()
+	const isHydrated = useHydration()
 	const isMobile = useMediaQuery('(max-width: 768px)') // Возвращаем обратно к 768px
 	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
 	
 	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство
-	const shouldShowMobileModal = isMobile || isMobileDevice
+	// Only use this after component is mounted to prevent hydration mismatch
+	const shouldShowMobileModal = isHydrated && (isMobile || isMobileDevice)
+
+	// Функция для скролла к секции
+	const scrollToSection = (sectionId: string) => {
+		const element = document.getElementById(sectionId)
+		if (element) {
+			element.scrollIntoView({ 
+				behavior: 'smooth',
+				block: 'start'
+			})
+		}
+	}
 	
 	// Состояние для Live заявок и мобильного меню
 	const [showLiveApplications, setShowLiveApplications] = useState(false)
@@ -86,9 +99,15 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							</div>
 						</div>
 						
-						{!isMobile && (
+						{isHydrated && !isMobile && (
 							<nav className={s.navigation}>
-								<Link href="/about" className={s.navLink}>О нас</Link>
+								<button 
+									onClick={() => scrollToSection('about')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>
+									О нас
+								</button>
 								<Link href="/lawyers" className={s.navLink}>Юристы</Link>
 								<Link href="/modules" className={s.navLink}>Модули</Link>
 								<Link href="/info" className={s.navLink}>Информация</Link>
@@ -98,7 +117,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 						)}
 						
 						<div className={s.right}>
-							{!isMobile && (
+							{isHydrated && !isMobile && (
 								<div className={s.authBtns}>
 									{isAuthenticated && personalData ? (
 										<div className={s.user}>
@@ -123,7 +142,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											<AppLink
 												className={s.appLink}
 												variant={'primary'}
-												href={shouldShowMobileModal ? '#' : '/auth/login'}
+												href={'/auth/login'}
 												onClick={(e) => {
 													if (shouldShowMobileModal) {
 														e.preventDefault()
@@ -136,7 +155,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											<AppLink
 												className={`${s.appLink} ${s.liveButton}`}
 												variant={'primary'}
-												href={shouldShowMobileModal ? '#' : '/auth/register/select-role'}
+												href={'/auth/register/select-role'}
 												onClick={(e) => {
 													if (shouldShowMobileModal) {
 														e.preventDefault()
@@ -152,7 +171,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							
 							<LangSwitcher />
 
-							{isMobile && (
+							{isHydrated && isMobile && (
 								<button
 									className={s.mobileMenuBtn}
 									onClick={() => setShowMobileMenu(!showMobileMenu)}
@@ -166,10 +185,16 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 					</div>
 
 						{/* Мобильное меню */}
-						{isMobile && showMobileMenu && (
+						{isHydrated && isMobile && showMobileMenu && (
 							<div className={s.mobileMenu}>
 								<div className={s.mobileNavigation}>
-									<Link href="/about" className={s.mobileNavLink}>О нас</Link>
+									<button 
+										onClick={() => scrollToSection('about')} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										О нас
+									</button>
 									<Link href="/lawyers" className={s.mobileNavLink}>Юристы</Link>
 									<Link href="/modules" className={s.mobileNavLink}>Модули</Link>
 									<Link href="/info" className={s.mobileNavLink}>Информация</Link>
@@ -201,7 +226,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											<AppLink
 												className={s.mobileAppLink}
 												variant={'primary'}
-												href={shouldShowMobileModal ? '#' : '/auth/login'}
+												href={'/auth/login'}
 												onClick={(e) => {
 													if (shouldShowMobileModal) {
 														e.preventDefault()
@@ -213,7 +238,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											<AppLink
 												className={s.mobileAppLink}
 												variant={'primary'}
-												href={shouldShowMobileModal ? '#' : '/auth/register/select-role'}
+												href={'/auth/register/select-role'}
 												onClick={(e) => {
 													if (shouldShowMobileModal) {
 														e.preventDefault()
