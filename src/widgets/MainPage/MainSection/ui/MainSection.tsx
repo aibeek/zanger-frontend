@@ -20,9 +20,6 @@ export const MainSection = () => {
 			<div className={s.container}>
 				<div className={s.leftContent}>
 					<div className={s.textSection}>
-						<div className={s.frameLabel}>
-							<span>Frame 175</span>
-						</div>
 						<div className={s.titleContainer}>
 							<h1 className={s.title} dangerouslySetInnerHTML={{ __html: t('title') }} />
 						</div>
@@ -31,7 +28,6 @@ export const MainSection = () => {
 						</div>
 						<div className={s.numberSection}>
 							<div className={s.bigNumber}>5510</div>
-							<div className={s.numberBadge}>602</div>
 						</div>
 						<div className={s.disclaimer}>
 							<p>{t('disclaimer')}</p>

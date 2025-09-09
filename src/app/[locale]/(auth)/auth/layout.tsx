@@ -9,6 +9,7 @@ import { Header } from '@/widgets/Header'
 import { Footer } from '@/widgets/Footer'
 import { SWRConfig } from 'swr'
 import { ChatBot } from '@/widgets/ChatBot'
+import { PulseChat } from '@/widgets/PulseChat'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -46,6 +47,7 @@ export default async function AuthLayout({
 							<section>{children}</section>
 							<Footer variant={'user-variant'} />
 							<ChatBot />
+							<PulseChat />
 						</div>
 					</SWRConfig>
 				</NextIntlClientProvider>

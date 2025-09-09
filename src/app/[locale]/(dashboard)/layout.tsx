@@ -12,6 +12,7 @@ import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
 import { DashboardWrapper } from '@/widgets/DashboardWrapper'
 import { ChatBot } from '@/widgets/ChatBot'
+import { PulseChat } from '@/widgets/PulseChat'
 import { SWRConfig } from 'swr'
 
 const openSans = Open_Sans({
@@ -56,6 +57,7 @@ export default async function DashboardLayout({
 								</div>
 								<Footer variant="user-variant" />
 								<ChatBot />
+								<PulseChat />
 							</div>
 						</SWRConfig>
 					</AuthGuard>

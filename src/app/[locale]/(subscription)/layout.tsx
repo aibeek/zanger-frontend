@@ -10,6 +10,7 @@ import { AuthGuard } from '@/shared/lib'
 import { Footer } from '@/widgets/Footer'
 import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
+import { PulseChat } from '@/widgets/PulseChat'
 import { SWRConfig } from 'swr'
 
 const openSans = Open_Sans({
@@ -52,6 +53,7 @@ export default async function DashboardLayout({
 									<AppToaster />
 								</div>
 								<Footer variant="user-variant" />
+								<PulseChat />
 							</div>
 						</SWRConfig>
 					</AuthGuard>

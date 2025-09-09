@@ -5,9 +5,7 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
-	experimental: {
-		optimizePackageImports: ['antd'],
-	},
+	transpilePackages: ['antd'],
 	webpack(config) {
 		const oneOfRules = config.module.rules.find((rule: any) => typeof rule.oneOf === 'object')
 

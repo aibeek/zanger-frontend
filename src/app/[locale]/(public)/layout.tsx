@@ -10,6 +10,7 @@ import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
 import { Header } from '@/widgets/Header'
 import { ChatBot } from '@/widgets/ChatBot'
+import { PulseChat } from '@/widgets/PulseChat'
 
 const openSans = Open_Sans({
 	variable: '--font-open-sans',
@@ -52,6 +53,7 @@ export default async function RootLayout({
 								variant={'lending-variant'}
 							/>
 							<ChatBot />
+							<PulseChat />
 						</div>
 					</DeviceGuard>
 				</NextIntlClientProvider>
