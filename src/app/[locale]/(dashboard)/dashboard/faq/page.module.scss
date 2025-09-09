@@ -4,9 +4,25 @@
 }
 
 .container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
+}
+
+.content {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.mainContent {
+  flex: 1;
+  min-width: 0; // Prevents flex item from overflowing
+}
+
+.rightSidebar {
+  width: 300px;
+  flex-shrink: 0;
 }
 
 .title {
@@ -24,6 +40,15 @@
 
   .container {
     padding: 0 1rem;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .rightSidebar {
+    width: 100%;
   }
 
   .title {

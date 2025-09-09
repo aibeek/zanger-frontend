@@ -3,20 +3,13 @@ import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
-import { Open_Sans } from 'next/font/google'
 
-import '@/app/styles/index.scss'
 import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
 import { Header } from '@/widgets/Header'
 import { ChatBot } from '@/widgets/ChatBot'
-import { PulseChat } from '@/widgets/PulseChat'
-
-const openSans = Open_Sans({
-	variable: '--font-open-sans',
-	subsets: ['cyrillic', 'latin'],
-})
+import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
 export const metadata: Metadata = {
 	title: 'Zanger',
@@ -44,24 +37,20 @@ export default async function RootLayout({
 	const messages = await getMessages()
 
 	return (
-		<html lang={locale}>
-			<body className={openSans.variable}>
-				<NextIntlClientProvider messages={messages}>
-					<AppToaster />
-					<DeviceGuard>
-						<div className="lending-layout">
-							<Header variant={'lending-variant'} />
-							{children}
-							<Footer
-								id={'footer'}
-								variant={'lending-variant'}
-							/>
-							<ChatBot />
-							<PulseChat />
-						</div>
-					</DeviceGuard>
-				</NextIntlClientProvider>
-			</body>
-		</html>
+		<NextIntlClientProvider messages={messages}>
+			<AppToaster />
+			<DeviceGuard>
+				<div className="lending-layout">
+					<Header variant={'lending-variant'} />
+					{children}
+					<Footer
+						id={'footer'}
+						variant={'lending-variant'}
+					/>
+					<ChatBot />
+					<PulseChatWidget />
+				</div>
+			</DeviceGuard>
+		</NextIntlClientProvider>
 	)
 }

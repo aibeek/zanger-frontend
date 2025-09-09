@@ -1,8 +1,21 @@
 import type { Metadata } from 'next'
+import { Open_Sans } from 'next/font/google'
+
+import './styles/index.scss'
+
+const openSans = Open_Sans({
+    variable: '--font-open-sans',
+    subsets: ['cyrillic', 'latin'],
+})
 
 export const metadata: Metadata = {
     title: 'Zanger',
     description: 'Zanger - платформа для юридических услуг',
+    icons: {
+        icon: '/logo-blue.svg',
+        shortcut: '/logo-blue.svg',
+        apple: '/logo-blue.svg',
+    },
 }
 
 export default function RootLayout({
@@ -12,7 +25,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="ru">
-            <body>
+            <body className={openSans.variable}>
                 {children}
             </body>
         </html>
