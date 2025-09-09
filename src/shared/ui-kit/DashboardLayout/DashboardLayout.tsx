@@ -26,14 +26,11 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
     return (
         <div className={s.layout}>
             <Sidebar language={language} />
-            
             <main className={s.mainContent}>
                 <DashboardHeader language={language} />
-                
                 <div className={s.contentArea}>
                     {children}
                 </div>
-                
                 <DashboardFooter />
             </main>
         </div>
