@@ -1,5 +1,5 @@
 export * from './DescriptionSection'
-export * from './DownloadAppSection'
 export * from './MainSection'
 export * from './TeamSection'
 export * from './AboutSection'
+export * from './ModulesSection'

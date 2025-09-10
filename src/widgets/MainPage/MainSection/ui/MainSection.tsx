@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import phone from '@/app/assets/icons/phone.svg'
 import logo from '../../../../../public/logo.svg'
+import { Header } from '@/widgets/Header'
 import s from './MainSection.module.scss'
 import Iphones from '@/app/assets/images/iphones.webp'
 import GooglePlay from '@/app/assets/icons/googleplay.webp'
@@ -16,6 +17,7 @@ export const MainSection = () => {
 
 	return (
 		<section className={s.wrapper}>
+			<Header variant={'lending-variant'} />
 			<div className={s.abstractLandscape}></div>
 			<div className={s.container}>
 				<div className={s.leftContent}>

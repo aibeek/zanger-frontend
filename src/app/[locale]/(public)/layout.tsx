@@ -7,7 +7,6 @@ import type { Metadata } from 'next'
 import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
-import { Header } from '@/widgets/Header'
 import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
@@ -41,7 +40,6 @@ export default async function RootLayout({
 			<AppToaster />
 			<DeviceGuard>
 				<div className="lending-layout">
-					<Header variant={'lending-variant'} />
 					{children}
 					<Footer
 						id={'footer'}
