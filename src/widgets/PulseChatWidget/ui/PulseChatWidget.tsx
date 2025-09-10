@@ -12,6 +12,8 @@ interface PulseChatWidgetProps {
 export const PulseChatWidget = ({ className, enabled = true }: PulseChatWidgetProps) => {
   const chatId = process.env.NEXT_PUBLIC_PULSE_CHAT_ID || '68beb8714d31c577970ac394';
   
+  console.log('PulseChatWidget rendered:', { chatId, enabled, className });
+  
   return (
     <div className={`${s.pulseChatWidget} ${className || ''}`}>
       <PulseChat chatId={chatId} enabled={enabled} />

@@ -1,47 +1,33 @@
-/* Глобальные стили для Pulse чата */
+/* Глобальные стили для блокирования только Pulse чата */
 
-/* Основной контейнер Pulse чата */
-div[id*="pulse"] {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  z-index: 9999 !important;
+/* Блокировка элементов Pulse, но НЕ наших */
+div[id*="pulse"]:not(.chatContainer):not(.chatContainer *),
+[data-live-chat-id]:not(.chatContainer):not(.chatContainer *),
+.pulse-chat-widget:not(.chatContainer):not(.chatContainer *),
+.pulse-livechat:not(.chatContainer):not(.chatContainer *),
+.livechat-widget:not(.chatContainer):not(.chatContainer *),
+iframe[src*="pulse"]:not(.chatContainer):not(.chatContainer *) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
 }
 
-/* Альтернативные селекторы для Pulse виджета */
-[data-live-chat-id] {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
+/* НЕ ТРОГАЕМ наш контейнер и его содержимое */
+.chatContainer,
+.chatContainer *,
+.chatContainer img,
+.chatContainer button {
+  display: initial !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  top: auto !important;
   left: auto !important;
-}
-
-/* Если у Pulse есть свой wrapper */
-.pulse-chat-widget,
-.pulse-livechat,
-.livechat-widget {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  z-index: 9999 !important;
-}
-
-/* Стили для iframe чата */
-iframe[src*="pulse"] {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  z-index: 9999 !important;
-}
-
-/* Общие стили для любых fixed элементов от Pulse */
-div[style*="position: fixed"][style*="bottom"] {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  left: auto !important;
-  z-index: 9999 !important;
+  z-index: auto !important;
+  pointer-events: auto !important;
 }
