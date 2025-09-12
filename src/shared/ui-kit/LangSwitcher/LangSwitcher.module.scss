@@ -4,28 +4,27 @@
 }
 
 .currentLang {
-	background: rgba(255, 255, 255, 0.1);
-	border: none;
-	color: white;
-	padding: 8px 12px;
-	border-radius: 20px;
-	font-size: 12px;
-	font-weight: 500;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	min-width: 50px;
-	height: 36px;
-	justify-content: center;
-	transition: all 0.3s ease;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	
-	&:hover {
-		background: rgba(255, 255, 255, 0.2);
-		transform: translateY(-1px);
-	}
+    padding: 8px 12px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 50px;
+    height: 36px;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: transparent;
+    border: none;
+    color: #fff; 
+    
+    /* Эффект при наведении */
+    &:hover {
+		    transform: scale(1.1);
+    }
 }
 
 .arrow {
