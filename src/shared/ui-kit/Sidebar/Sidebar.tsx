@@ -75,14 +75,19 @@ export const Sidebar = ({ language }: SidebarProps) => {
                 </div>
             </div>
             <div className={s.userProfile}>
-                <div className={s.avatarWrapper}>
-                    <ProfileAvatar avatarUrl={icon} />
-                </div>
-                <div className={s.userName}>{name}</div>
-                <div className={s.userRole}>
-                    {role === 'lawyer' ? t('dashboard.sidebar.lawyerRole') : t('dashboard.sidebar.clientRole')}
-                </div>
+                    <div className={s.avatarWrapper}>
+                        <ProfileAvatar avatarUrl={icon} />
+                    </div>
+                    <div className={s.userInfo}>
+                        <div className={s.userName}>{name}</div>
+                        <div className={s.userRole}>
+                            {role === 'lawyer'
+                                ? t('dashboard.sidebar.lawyerRole')
+                                : t('dashboard.sidebar.clientRole')}
+                        </div>
+                    </div>
             </div>
+
 
             <nav className={s.navigation}>
                 {menuItems.map((item) => (

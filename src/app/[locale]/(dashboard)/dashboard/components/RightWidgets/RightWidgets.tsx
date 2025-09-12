@@ -1,13 +1,34 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import s from './RightWidgets.module.scss'
 
 export const RightWidgets = () => {
     const t = useTranslations()
+    const locale = useLocale()
     const today = new Date()
     const currentDate = today.getDate()
-    const currentMonth = today.toLocaleString('ru', { month: 'long' })
+    
+    // Получаем название месяца из переводов
+    const monthNames = [
+        'january', 'february', 'march', 'april', 'may', 'june',
+        'july', 'august', 'september', 'october', 'november', 'december'
+    ]
+    const currentMonthKey = monthNames[today.getMonth()]
+    
+    // Попробуем получить перевод месяца
+    let currentMonth
+    try {
+        currentMonth = t(`months.${currentMonthKey}`)
+    } catch (error) {
+        console.error('Translation error for month:', currentMonthKey, error)
+        // Fallback к системному имени месяца
+        currentMonth = today.toLocaleString(locale === 'kz' ? 'kk-KZ' : 'ru-RU', { month: 'long' })
+    }
+    
+    console.log('Current locale:', locale)
+    console.log('Current month key:', currentMonthKey)
+    console.log('Translated month:', currentMonth)
 
     const events = [
         { time: '16:00', title: t('dashboard.events.clientMeeting') },

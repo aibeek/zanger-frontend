@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
 import { ProfileAvatar } from '@/entities/profile'
+import { NotificationsDropdown } from '@/entities/notifications'
 import { LangSwitcher, Button } from '@/shared/ui-kit'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
@@ -59,9 +60,13 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
                 
                 <div className={s.headerRight}>
-                      <Button variant="primary" className={s.subscriptionBtn}>
+                    <Button variant="primary" className={s.subscriptionBtn}>
                         {t('dashboard.sidebar.subscription')}
                     </Button>
+                    
+                    <div className={s.notificationsWrapper}>
+                        <NotificationsDropdown />
+                    </div>
                     
                     <div className={s.langSwitcher}>
                         <LangSwitcher />

@@ -1,10 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import edit from '@/app/assets/icons/avatar-edit.svg'
 import avatar from '@/app/assets/icons/avatar-default.svg'
 
-import { Button, Modal, useModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 import { UploadAvatar } from './UploadAvatar'
 import s from './ProfileAvatar.module.scss'
 import { useTranslations } from 'next-intl'
@@ -15,7 +14,7 @@ export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 
 	return (
 		<>
-			<div className={s.avatar}>
+			<div className={s.avatar} onClick={open} style={{ cursor: 'pointer' }}>
 				<Image
 					style={{ borderRadius: '10px', objectFit: 'cover' }}
 					src={avatarUrl || avatar}
@@ -23,18 +22,6 @@ export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 					width={80}
 					height={80}
 				/>
-				<Button
-					onClick={open}
-					style={{ padding: '0px' }}
-					variant="clear"
-					className={s.editBtn}>
-					<Image
-						src={edit}
-						alt={t('editAlt')}
-						width={30}
-						height={30}
-					/>
-				</Button>
 			</div>
 
 			<Modal
@@ -43,7 +30,7 @@ export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 				onClose={close}
 				closeButton={true}
 				title={t('modalTitle')}>
-				<UploadAvatar onClose={close} />
+				<UploadAvatar onClose={close} currentAvatarUrl={avatarUrl} />
 			</Modal>
 		</>
 	)

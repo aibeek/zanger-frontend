@@ -4,6 +4,21 @@
 		"hi": "Приветствие"
 	},
 
+	"months": {
+		"january": "Январь",
+		"february": "Февраль",
+		"march": "Март",
+		"april": "Апрель",
+		"may": "Май",
+		"june": "Июнь",
+		"july": "Июль",
+		"august": "Август",
+		"september": "Сентябрь",
+		"october": "Октябрь",
+		"november": "Ноябрь",
+		"december": "Декабрь"
+	},
+
 	"description": {
 		"clientRequest": "Оформите запрос для специалистов в области права, и они свяжутся с вами в ближайшее время"
 	},
@@ -553,6 +568,9 @@
 		"submit": "Загрузить",
 		"loading": "Загрузка...",
 		"imageLoading": "Изображение загружается...",
+		"downloadCurrent": "Скачать текущее фото",
+		"downloadSuccess": "Фото успешно скачано",
+		"downloadError": "Ошибка при скачивании фото",
 
 		"modalTitle": "Загрузить изображение",
 		"avatarAlt": "аватар",
@@ -641,6 +659,20 @@
 			"title": "События",
 			"clientMeeting": "Встреча с клиентом",
 			"consultation": "Консультация"
+		},
+		"months": {
+			"january": "Январь",
+			"february": "Февраль",
+			"march": "Март",
+			"april": "Апрель",
+			"may": "Май",
+			"june": "Июнь",
+			"july": "Июль",
+			"august": "Август",
+			"september": "Сентябрь",
+			"october": "Октябрь",
+			"november": "Ноябрь",
+			"december": "Декабрь"
 		},
 		"assistant": {
 			"name": "Ai-Zan",
