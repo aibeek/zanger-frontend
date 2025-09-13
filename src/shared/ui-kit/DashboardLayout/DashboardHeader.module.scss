@@ -3,35 +3,26 @@
 }
 
 .header {
-  background-color: #1C233D;
-  height: 90px;
+  background-color: #081729;
+  height: 85px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  border-radius: 20px;
+  border-radius: 27px;
 }
 
 /* Контейнер для гос. сервисов */
 .govServicesContainer {
   display: flex;
-  gap: 0.75rem;          
+  gap: 0.75rem;
   flex-wrap: nowrap;
-  padding: 0.5rem 0;
+  padding: 1rem 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  justify-content: flex-start;
 
-  /* Скрыть стандартный скролл для красоты (опционально) */
-  &::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
 }
 
 
@@ -48,10 +39,16 @@
   }
 }
 
+.profileIcon {
+  filter: brightness(0) invert(1);
+  width: 35px !important;
+  height: 35px !important;
+}
+
 /* Центральная часть: кнопки сервисов */
 .headerCenter {
   display: flex;
-  gap: 0.75rem;
+  gap: 1.5rem;
   align-items: center;
 }
 
@@ -59,23 +56,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 4rem;
-  height: 2.25rem;
-  background-color: #6a7ba1; /* Темно-серый фон кнопок */
-  border-radius: 0.5rem;
-  transition: background-color 0.3s ease;
   cursor: pointer;
+  transition: transform 0.2s ease;
 
   &:hover {
-    background-color: #5b6d92; /* Оттенок при наведении */
+    transform: scale(1.1);
   }
 }
 
-.govServiceText {
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
+.govServiceIcon {
+  width: 190px !important;
+  object-fit: contain;
 }
 
 /* Правая часть хедера: подписка, уведомления, язык */
@@ -102,27 +93,34 @@
   }
 }
 
-.notificationIcon {
-  /* Стиль для иконки уведомлений (круг с колокольчиком) */
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: #f0f0f0; /* Светлый фон */
-  border: 2px solid #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #333;
-}
-
 .langSwitcher {
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-}
+    .dropdown {
+      background: linear-gradient(135deg, #1a1f2e 0%, #2a3441 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(15px);
+      min-width: 70px;
+      overflow: hidden;
+    }
+    .option {
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+      
+      &.active {
+        background: rgba(30, 105, 215, 0.3);
+        color: #1e69d7;
+      }
+    }
+  }
 
 .userAvatar {
   /* На изображении нет аватара, но можно стилизовать заглушку */

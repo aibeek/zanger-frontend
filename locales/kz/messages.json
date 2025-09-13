@@ -4,6 +4,21 @@
 		"hi": "Сәлемдесу"
 	},
 
+	"months": {
+		"january": "Қаңтар",
+		"february": "Ақпан",
+		"march": "Наурыз",
+		"april": "Сәуір",
+		"may": "Мамыр",
+		"june": "Маусым",
+		"july": "Шілде",
+		"august": "Тамыз",
+		"september": "Қыркүйек",
+		"october": "Қазан",
+		"november": "Қараша",
+		"december": "Желтоқсан"
+	},
+
 	"description": {
 		"clientRequest": "Құқық саласындағы мамандарға сұраныс жіберіңіз, олар жақын арада сізбен байланысады."
 	},
@@ -589,6 +604,10 @@
 		"submit": "Жүктеу",
 		"loading": "Жүктелуде...",
 		"imageLoading": "Сурет жүктелуде...",
+		"downloadCurrent": "Ағымдағы фотосуретті жүктеп алу",
+		"downloadSuccess": "Фото сәтті жүктелді",
+		"downloadError": "Фото жүктеу кезінде қате",
+		"downloadFallback": "Сурет жаңа қойындыда ашылды. Оны қолмен сақтаңыз.",
 
 		"modalTitle": "Суретті жүктеу",
 		"avatarAlt": "аватар",
@@ -680,6 +699,20 @@
       "title": "Оқиғалар",
       "clientMeeting": "Клиентпен кездесу",
       "consultation": "Кеңес беру"
+    },
+    "months": {
+      "january": "Қаңтар",
+      "february": "Ақпан",
+      "march": "Наурыз",
+      "april": "Сәуір",
+      "may": "Мамыр",
+      "june": "Маусым",
+      "july": "Шілде",
+      "august": "Тамыз",
+      "september": "Қыркүйек",
+      "october": "Қазан",
+      "november": "Қараша",
+      "december": "Желтоқсан"
     },
     "assistant": {
       "name": "Ai-Zan",
