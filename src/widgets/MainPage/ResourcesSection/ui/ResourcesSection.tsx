@@ -5,16 +5,16 @@ import { useTranslations } from 'next-intl'
 import s from './ResourcesSection.module.scss'
 
 // Импорт иконок
-import AituIcon from '@/app/assets/icons/aitu.svg'
-import EgovIcon from '@/app/assets/icons/egov.svg'
-import EotinishIcon from '@/app/assets/icons/eotinish.svg'
-import AdiletgovIcon from '@/app/assets/icons/adiletgov.svg'
-import ErdrIcon from '@/app/assets/icons/erdr.svg'
-import LeIcon from '@/app/assets/icons/le.svg'
-import SupremeCourtIcon from '@/app/assets/icons/верховный суд.svg'
-import Contract24Icon from '@/app/assets/icons/договор24.svg'
-import EnotaryIcon from '@/app/assets/icons/enotary.svg'
-import AdiletkzIcon from '@/app/assets/icons/adiletkz.svg'
+import AituIcon from '@/app/assets/icons/resourses/aitu.svg'
+import EgovIcon from '@/app/assets/icons/resourses/egov.svg'
+import EotinishIcon from '@/app/assets/icons/resourses/eotinish.svg'
+import AdiletgovIcon from '@/app/assets/icons/resourses/adiletgov.svg'
+import ErdrIcon from '@/app/assets/icons/resourses/erdr.svg'
+import LeIcon from '@/app/assets/icons/resourses/le.svg'
+import SupremeCourtIcon from '@/app/assets/icons/resourses/верховный суд.svg'
+import Contract24Icon from '@/app/assets/icons/resourses/договор24.svg'
+import EnotaryIcon from '@/app/assets/icons/resourses/enotary.svg'
+import AdiletkzIcon from '@/app/assets/icons/resourses/adiletkz.svg'
 
 export const ResourcesSection = () => {
 	const t = useTranslations('lending.resourcesSection')

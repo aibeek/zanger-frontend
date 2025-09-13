@@ -10,17 +10,17 @@ import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
 
 // Импорт иконок
-import HeaderEgov from '@/app/assets/icons/header-egov.svg'
-import HeaderAitu from '@/app/assets/icons/header-aitu.svg'
-import HeaderAdiletGov from '@/app/assets/icons/header-adiletGov.svg'
-import HeaderAdilet from '@/app/assets/icons/header-adilet.svg'
-import HeaderEnotary from '@/app/assets/icons/header-enotary.svg'
-import HeaderContract24 from '@/app/assets/icons/header-договор24.svg'
-import HeaderSupremeCourt from '@/app/assets/icons/header-верховный-суд.svg'
-import HeaderLe from '@/app/assets/icons/header-le.svg'
-import HeaderErdr from '@/app/assets/icons/header-erdr.svg'
-import HeaderEotinish from '@/app/assets/icons/header-eotinish.svg'
-import HeaderAvatar from '@/app/assets/icons/header-avatar.svg'
+import HeaderEgov from '@/app/assets/icons/header-resourses/header-egov.svg'
+import HeaderAitu from '@/app/assets/icons/header-resourses/header-aitu.svg'
+import HeaderAdiletGov from '@/app/assets/icons/header-resourses/header-adiletGov.svg'
+import HeaderAdilet from '@/app/assets/icons/header-resourses/header-adilet.svg'
+import HeaderEnotary from '@/app/assets/icons/header-resourses/header-enotary.svg'
+import HeaderContract24 from '@/app/assets/icons/header-resourses/header-договор24.svg'
+import HeaderSupremeCourt from '@/app/assets/icons/header-resourses/header-верховный-суд.svg'
+import HeaderLe from '@/app/assets/icons/header-resourses/header-le.svg'
+import HeaderErdr from '@/app/assets/icons/header-resourses/header-erdr.svg'
+import HeaderEotinish from '@/app/assets/icons/header-resourses/header-eotinish.svg'
+import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
 interface DashboardHeaderProps {
     language: string
     title?: string

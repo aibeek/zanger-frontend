@@ -109,11 +109,12 @@
 }
 
 .navIcon {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .navText {
-    flex: 1;
+    font-size: 15px;
+    font-weight:bold;
 }
 
 .sidebarFooter {
@@ -147,6 +148,7 @@
 }
 
 .logoutText {
+    font-weight:bold;
     flex: 1;
     text-align: left;
 }
