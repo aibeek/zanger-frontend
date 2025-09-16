@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Cookies from 'js-cookie'
 import { useTranslations } from 'next-intl'
 import { useLoginStore } from '@/features/auth/login'
+import { authService } from '@/features/auth/login/service'
 import { ProfileAvatar } from '@/entities/profile'
 import s from './Sidebar.module.scss'
 
@@ -25,13 +26,20 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ language }: SidebarProps) => {
-    const { personalData } = useLoginStore()
+    const { personalData, reset } = useLoginStore()
     const pathname = usePathname()
+    const router = useRouter()
     const t = useTranslations()
     
     const name = personalData?.name ?? ''
     const icon = personalData?.icon ?? ''
     const role = Cookies.get('role')
+    
+    const handleLogout = () => {
+        authService.logout()
+        reset()
+        router.push(`/${language}`)
+    }
 
     const menuItems = [
         {
@@ -117,7 +125,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
             </nav>
 
             <div className={s.sidebarFooter}>
-                <button className={s.logoutBtn}>
+                <button className={s.logoutBtn} onClick={handleLogout}>
                      <Image
                                 src={LogoutIcon}
                                 alt="Logout"
