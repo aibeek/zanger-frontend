@@ -5,9 +5,11 @@
 }
 
 .item {
-	background-color: white;
-	padding: 10px;
-	border-radius: 10px;
+	background-color: #F5F5F5;
+	padding: 24px;
+	border-radius: 16px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+	margin-bottom: 24px;
 }
 
 .top {
@@ -27,10 +29,16 @@
 }
 
 .title {
-	font-size: 16px;
+	font-size: 24px;
 	font-weight: 700;
-	line-height: 130%;
-	margin-bottom: 10px;
+	color: #1A1A1A;
+	margin-bottom: 12px;
+}
+
+.description {
+	font-size: 16px;
+	color: #555;
+	margin-bottom: 16px;
 }
 
 .tag {
@@ -42,6 +50,23 @@
 	color: $blue-color;
 	display: inline-block;
 	margin-bottom: 15px;
+}
+
+.dataRow {
+	display: flex;
+	justify-content: space-between;
+	font-size: 15px;
+	color: #555;
+	margin-bottom: 16px;
+	font-weight: 600;
+}
+
+.deadline {
+	color: #1A1A1A;
+}
+
+.publishDate {
+	color: #1A1A1A;
 }
 
 .bottom {
@@ -121,4 +146,32 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+}
+
+.buttonsRow {
+	display: flex;
+	gap: 16px;
+	margin-top: 8px;
+}
+
+.editBtn {
+	background: #0056D2;
+	color: #fff;
+	border-radius: 10px;
+	font-weight: 600;
+	transition: background 0.2s;
+	&:hover {
+		background: #003a8c;
+	}
+}
+
+.completeBtn {
+	background: #E53935;
+	color: #fff;
+	border-radius: 10px;
+	font-weight: 600;
+	transition: background 0.2s;
+	&:hover {
+		background: #b71c1c;
+	}
 }

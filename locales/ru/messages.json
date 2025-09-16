@@ -23,6 +23,40 @@
 		"clientRequest": "Оформите запрос для специалистов в области права, и они свяжутся с вами в ближайшее время"
 	},
 
+	"applications": {
+		"createNew": "Создать новую заявку",
+		"myApplications": "Мои заявки",
+		"newApplications": "Новые заявки",
+		"serviceType": "Тип заявки",
+		"selectServiceType": "Выберите тип заявки",
+		"region": "Регион",
+		"selectRegion": "Выберите регион",
+		"deadline": "Сроки",
+		"selectDeadline": "Выберите срок",
+		"description": "Описание",
+		"descriptionPlaceholder": "Подробно опишите свой запрос",
+		"createButton": "Создать заявку",
+		"editButton": "Редактировать",
+		"completeButton": "Завершить",
+		"publishDate": "Дата публикации",
+		"respondButton": "Откликнуться",
+		"chatButton": "Перейти в чат",
+		"searchButton": "Найти",
+		"clientType": "Клиент",
+		"individualClient": "Физическое лицо",
+		"legalClient": "Юридическое лицо",
+		"dateFilter": "Дата",
+		"selectDate": "Выберите дату",
+		"subscribe_required": "Требуется подписка",
+		"deadlines": {
+			"urgent": "Срочно (1-2 дня)",
+			"week": "В течение недели",
+			"twoWeeks": "В течение 2 недель", 
+			"month": "В течение месяца",
+			"flexible": "Гибкий график"
+		}
+	},
+
 	"profile": {
 		"change_password": {
 			"title": "Смена пароля",
@@ -462,6 +496,10 @@
 		"callbackError": "Ошибка при отправке вызова",
 		"createRequest": "Создать заявку",
 		"noRequests": "Заявок пока нет",
+		"deadline": "Срок",
+		"publishDate": "Дата публикации",
+		"editButton": "Редактировать",
+		"completeButton": "Завершить",
 		"modal": {
 			"title": "Причина отзыва заявки"
 		},
@@ -511,6 +549,28 @@
 			"callbackError": "Ошибка при отправке вызова",
 			"createRequest": "Создать заявку",
 			"noRequests": "Заявок пока нет"
+		}
+	},
+
+	"lenta": {
+		"accessRestricted": "Доступ ограничен",
+		"documentsModeration": "Ваши документы на модерации",
+		"uploadDocsPrompt": "Загрузите необходимые документы",
+		"uploaded": "Загружен",
+		"notUploaded": "Не загружен",
+		"uploadDocs": "Загрузить документы",
+		"subscriptionTitle": "Нужна подписка",
+		"subscriptionDescription": "Для доступа к заявкам необходима активная подписка",
+		"subscribe": "Оформить подписку",
+		"formNotFilled": "Форма не заполнена",
+		"formDescription": "Заполните форму для доступа к заявкам",
+		"fillForm": "Заполнить форму",
+		"regionSwitch": "Все регионы"
+	},
+
+	"tabs": {
+		"historyTab": {
+			"toApplicationsFeed": "К ленте заявок"
 		}
 	},
 

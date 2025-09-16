@@ -2,7 +2,8 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
-import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
+import { Button, DescriptionText } from '@/shared/ui-kit'
+import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
 import s from './LentaList.module.scss'
 import { ReportButton } from '@/features/report/ui/ReportButton'
@@ -11,7 +12,7 @@ import { useLentaAccessStatus } from '@/shared/lib'
 import { useMyResponsesInfinite } from '@/features/my-responses-view'
 
 export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyToRequest }) => {
-	const t = useTranslations('lenta')
+	const t = useTranslations('applications')
 	const { needsSubscription } = useLentaAccessStatus()
 	const { mutate: mutateMyResponses } = useMyResponsesInfinite()
 
@@ -30,24 +31,24 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0, x: 100 }}
 									transition={{ duration: 0.5 }}>
-									<div className={s.top}>
-										<UserBox data={item} />
-										<div className={s.title}>
-											{item.tag && (
-												<>
-													<span className={s.specialization}>
-														{item.tag.specialization.name}
-													</span>
-													<span className={s.tag}>{item.tag.name}</span>
-												</>
-											)}
-										</div>
+									<div className={s.cardHeader}>
+										<h3 className={s.title}>{item.title}</h3>
+									</div>
+									<div className={s.description}>
 										<DescriptionText>{item.description}</DescriptionText>
+									</div>
+									<div className={s.dataRow}>
+										<span className={s.deadline}>{t('deadline')}: {item.deadline}</span>
+										<span className={s.clientType}>
+											{t('clientType')}: {item.user?.type === 'legal' ? t('legalClient') : t('individualClient')}
+										</span>
+										<span className={s.publishDate}>
+											{t('publishDate')}: <DateComponent date={item.created_at} />
+										</span>
 									</div>
 									<div className={s.bottom}>
 										<Button
-											style={{ padding: '8px 30px' }}
-											className={s.btn}
+											className={s.respondBtn}
 											variant="primary"
 											size="sm"
 											onClick={() => {
@@ -58,13 +59,8 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 												mutateMyResponses()
 												applyToRequest({ order_id: item.id })
 											}}>
-											{t('respond')}
+											{t('respondButton')}
 										</Button>
-
-										<ReportButton
-											userId={item.user.id}
-											role="client"
-										/>
 									</div>
 								</motion.article>
 							)
@@ -77,7 +73,7 @@ export const LentaList = ({ data, loadMore, isLoadingMore, isReachingEnd, applyT
 								size={'full'}
 								disabled={isLoadingMore}
 								onClick={loadMore}>
-								{isLoadingMore ? t('loading') : t('load_more')}
+								{isLoadingMore ? 'Загрузка...' : 'Загрузить еще'}
 							</Button>
 						</div>
 					)}
