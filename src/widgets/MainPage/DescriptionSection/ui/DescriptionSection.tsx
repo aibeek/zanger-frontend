@@ -56,6 +56,9 @@ export const DescriptionSection = () => {
 									/>
 								))}
 							</ul>
+							<div className={s.descrWrapper}>
+								<p className={s.descr}>{t('leftDescr')}</p>
+							</div>
 						</div>
 					</div>
 					
@@ -74,6 +77,9 @@ export const DescriptionSection = () => {
 									/>
 								))}
 							</ul>
+							<div className={s.descrWrapper}>
+								<p className={s.descr}>{t('rightDescr')}</p>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -20,7 +20,7 @@ export const ModulesSection = () => {
     id: index + 1,
     title: module.title,
     description: module.description,
-    icon: '→'
+    icon: '↗'
   }))
 
   return (
@@ -38,7 +38,7 @@ export const ModulesSection = () => {
               </div>
               <div className={s.moduleIcon}>
                 <div className={s.iconCircle}>
-                  →
+                  ↗
                 </div>
               </div>
             </div>        

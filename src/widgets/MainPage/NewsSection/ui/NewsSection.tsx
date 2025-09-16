@@ -24,7 +24,7 @@ export const NewsSection = () => {
 			title: t('newLaws.title'),
 			description: t('newLaws.description'),
 			date: '03.08.2025',
-			image: '/assets/images/news-1.jpg',
+			image: '/assets/images/news-1.png',
 			readMore: t('readMore')
 		},
 		{
@@ -32,7 +32,7 @@ export const NewsSection = () => {
 			title: t('legalStatistics.title'),
 			description: t('legalStatistics.description'),
 			date: '05.06.2025',
-			image: '/assets/images/news-2.jpg',
+			image: '/assets/images/news-2.png',
 			readMore: t('readMore')
 		},
 		{
@@ -40,7 +40,7 @@ export const NewsSection = () => {
 			title: t('lawyerTips.title'),
 			description: t('lawyerTips.description'),
 			date: '26.11.2025',
-			image: '/assets/images/news-3.jpg',
+			image: '/assets/images/news-3.png',
 			readMore: t('readMore')
 		}
 	]

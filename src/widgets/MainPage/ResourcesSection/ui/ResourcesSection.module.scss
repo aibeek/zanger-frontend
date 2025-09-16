@@ -73,12 +73,24 @@
 	}
 }
 
+.resourceLink {
+	display: inline-block;
+	transition: transform 0.2s ease;
+
+	&:hover {
+		transform: scale(1.05);
+	}
+}
+
 .resourceIcon {	                                
 	width: 360px;
 	height: 140px;
 	transition: transform 0.2s ease;
 	object-fit: none;
 
+	.resourceLink:hover & {
+		transform: none;
+	}
 
 	&:hover {
 		transform: scale(1.05);

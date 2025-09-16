@@ -20,16 +20,16 @@ export const ResourcesSection = () => {
 	const t = useTranslations('lending.resourcesSection')
 	
 	const resources = [
-		{ id: 'aitu', icon: AituIcon },
-		{ id: 'egov', icon: EgovIcon },
-		{ id: 'eotinish', icon: EotinishIcon },
-		{ id: 'adiletgov', icon: AdiletgovIcon },
-		{ id: 'erdr', icon: ErdrIcon },
-		{ id: 'le', icon: LeIcon },
-		{ id: 'supreme-court', icon: SupremeCourtIcon },
-		{ id: 'contract24', icon: Contract24Icon },
-		{ id: 'adiletkz', icon: AdiletkzIcon },
-		{ id: 'enotary', icon: EnotaryIcon }
+		{ id: 'aitu', icon: AituIcon, url: 'https://aitu.io/' },
+		{ id: 'egov', icon: EgovIcon, url: 'https://egov.kz/cms/kk' },
+		{ id: 'eotinish', icon: EotinishIcon, url: 'https://eotinish.kz/kk' },
+		{ id: 'adiletgov', icon: AdiletgovIcon, url: 'https://aisoip.adilet.gov.kz/debtors' },
+		{ id: 'erdr', icon: ErdrIcon, url: 'https://erdr-public.kgp.kz/' },
+		{ id: 'le', icon: LeIcon, url: 'https://legalexpert.kz/login' },
+		{ id: 'supreme-court', icon: SupremeCourtIcon, url: 'https://sud.gov.kz/kaz' },
+		{ id: 'contract24', icon: Contract24Icon, url: 'https://lawyer.dogovor24.kz/login' },
+		{ id: 'adiletkz', icon: AdiletkzIcon, url: 'https://adilet.zan.kz/kaz' },
+		{ id: 'enotary', icon: EnotaryIcon, url: 'https://enis.kz/?lang=kk' }
 	]
 
 	return (
@@ -39,14 +39,32 @@ export const ResourcesSection = () => {
 				
 				<div className={s.resourcesGrid}>
 					{resources.map((resource) => (
-						<Image
-							key={resource.id}
-							src={resource.icon}
-							alt={resource.id}
-							width={360}
-							height={140}
-							className={s.resourceIcon}
-						/>
+						resource.url ? (
+							<a
+								key={resource.id}
+								href={resource.url}
+								target="_blank"
+								rel="noopener noreferrer"
+								className={s.resourceLink}
+							>
+								<Image
+									src={resource.icon}
+									alt={resource.id}
+									width={360}
+									height={140}
+									className={s.resourceIcon}
+								/>
+							</a>
+						) : (
+							<Image
+								key={resource.id}
+								src={resource.icon}
+								alt={resource.id}
+								width={360}
+								height={140}
+								className={s.resourceIcon}
+							/>
+						)
 					))}
 				</div>
 			</div>
