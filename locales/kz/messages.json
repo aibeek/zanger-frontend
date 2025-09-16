@@ -23,6 +23,70 @@
 		"clientRequest": "Құқық саласындағы мамандарға сұраныс жіберіңіз, олар жақын арада сізбен байланысады."
 	},
 
+	"applications": {
+		"createNew": "Жаңа өтініш жасау",
+		"myApplications": "Менің өтініштерім",
+		"newApplications": "Жаңа өтініштер",
+		"serviceType": "Өтініш түрі",
+		"selectServiceType": "Өтініш түрін таңдаңыз",
+		"region": "Өңір",
+		"selectRegion": "Өңірді таңдаңыз",
+		"deadline": "Мерзімдер",
+		"selectDeadline": "Мерзімді таңдаңыз",
+		"description": "Сипаттама",
+		"descriptionPlaceholder": "Сұратуыңызды толық сипаттаңыз",
+		"createButton": "Өтініш жасау",
+		"editButton": "Өңдеу",
+		"completeButton": "Аяқтау",
+		"publishDate": "Жариялау күні",
+		"respondButton": "Жауап беру",
+		"chatButton": "Чатқа өту",
+		"searchButton": "Іздеу",
+		"clientType": "Клиент",
+		"individualClient": "Жеке тұлға",
+		"legalClient": "Заңды тұлға",
+		"dateFilter": "Күн",
+		"selectDate": "Күнді таңдаңыз",
+		"respondButton": "Жауап беру",
+		"subscribe_required": "Жазылу қажет",
+		"serviceTypes": {
+			"officeRent": "Кеңсе жалгерлік шартын жасау",
+			"apartmentRent": "Пәтер жалгерлік шарты",
+			"landRent": "Жер учаскесі жалгерлік шарты",
+			"businessContract": "Бизнес сату-сатып алу шарты",
+			"propertyContract": "Жылжымайтын мүлік сату-сатып алу шарты",
+			"carContract": "Автомобиль сату-сатып алу шарты",
+			"workContract": "Еңбек шарты",
+			"serviceContract": "Қызмет көрсету шарты",
+			"partnershipContract": "Серіктестік шарты",
+			"consultingContract": "Консультациялық шарт"
+		},
+		"regions": {
+			"almaty": "Алматы",
+			"nur-sultan": "Нұр-Сұлтан",
+			"shymkent": "Шымкент",
+			"aktobe": "Ақтөбе",
+			"taraz": "Тараз",
+			"pavlodar": "Павлодар",
+			"ust-kamenogorsk": "Өскемен",
+			"semey": "Семей",
+			"aktau": "Ақтау",
+			"kostanay": "Қостанай",
+			"kyzylorda": "Қызылорда",
+			"petropavlovsk": "Петропавл",
+			"oral": "Орал",
+			"temirtau": "Теміртау",
+			"atyrau": "Атырау"
+		},
+		"deadlines": {
+			"urgent": "Шұғыл (1-2 күн)",
+			"week": "Бір апта ішінде",
+			"twoWeeks": "2 апта ішінде",
+			"month": "Бір ай ішінде",
+			"flexible": "Икемді кесте"
+		}
+	},
+
 	"profile": {
 		"change_password": {
 			"title": "Құпиясөзді өзгерту",
@@ -523,6 +587,10 @@
 		"callbackError": "Қоңырауды жіберу кезінде қате",
 		"createRequest": "Өтініш беру",
 		"noRequests": "Тапсырыстар әлі жоқ",
+		"deadline": "Мерзім",
+		"publishDate": "Жариялау күні",
+		"editButton": "Өңдеу",
+		"completeButton": "Аяқтау",
 		"modal": {
 			"title": "Өтініштен бас тарту себебі"
 		},

@@ -1,17 +1,16 @@
 'use client'
 
-import { useTranslations } from 'use-intl'
+import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-
-import { Button, DescriptionText, UserBox } from '@/shared/ui-kit'
+import { Button, DescriptionText } from '@/shared/ui-kit'
+import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
 import s from './MyResponsesList.module.scss'
 import { Status, useMyResponsesStore } from '../../model'
-import { ReportButton } from '@/features/report/ui/ReportButton'
 
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const { workOut, closeItem, workedOutIds } = useMyResponsesStore()
-	const t = useTranslations('tabs.responsesList')
+	const t = useTranslations('applications')
 
 	const statusMap = items.reduce((acc: any, item: any) => {
 		acc[item.id] = Object.fromEntries(item.status.map((st: Status) => [st.title, st.is_active]))
@@ -36,60 +35,28 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 										animate={{ opacity: 1, y: 0 }}
 										exit={{ opacity: 0, y: 10 }}
 										transition={{ duration: 0.3 }}>
-										<div className={s.top}>
-											<UserBox data={item} />
-
-											<div className={s.title}>
-												<span className={s.specialization}>{item.order.tag.specialization.name}</span>
-												<span className={s.tag}>{item.order.tag.name}</span>
-											</div>
-
+										<div className={s.cardHeader}>
+											<h3 className={s.title}>{item.order?.title}</h3>
+										</div>
+										<div className={s.description}>
 											<DescriptionText>{item.order.description}</DescriptionText>
 										</div>
-
-										<div className={s.middle}>
-											<ul className={s.statusList}>
-												{item.status.map((st: Status) => {
-													const isActive = currentStatusMap[st.title]
-													return (
-														<li
-															key={st.title}
-															className={s.statusItemBox}>
-															<span className={`${s.dot} ${isActive ? s.active : ''}`}></span>
-															<span
-																className={s.statusItem}
-																style={{ fontWeight: isActive ? '600' : '400' }}>
-																{st.title}
-															</span>
-														</li>
-													)
-												})}
-											</ul>
+										<div className={s.dataRow}>
+											<span className={s.deadline}>{t('deadline')}: {item.order?.deadline}</span>
+											<span className={s.clientType}>
+												{t('clientType')}: {item.user?.type === 'legal' ? t('legalClient') : t('individualClient')}
+											</span>
+											<span className={s.publishDate}>
+												{t('publishDate')}: <DateComponent date={item.order?.created_at} />
+											</span>
 										</div>
-
 										<div className={s.bottom}>
-											<div className={s.btns}>
-												{currentStatusMap['Запрос моих контактов'] && !workedOutIds.includes(item.id) && (
-													<Button
-														style={{ padding: '8px 30px' }}
-														onClick={() => workOut(item.id)}>
-														{t('workedOut')}
-													</Button>
-												)}
-
-												{workedOutIds.includes(item.id) && (
-													<Button
-														style={{ padding: '8px 30px' }}
-														onClick={() => closeItem(item.id)}>
-														{t('close')}
-													</Button>
-												)}
-
-												<ReportButton
-													userId={item.user.id}
-													role="client"
-												/>
-											</div>
+											<Button
+												className={s.chatBtn}
+												variant="primary"
+												size="sm">
+												{t('chatButton')}
+											</Button>
 										</div>
 									</motion.article>
 								</div>
