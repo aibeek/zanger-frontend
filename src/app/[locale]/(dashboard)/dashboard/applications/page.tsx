@@ -1,10 +1,33 @@
-import s from './page.module.scss'
-import { MyApplicationsTab } from '@/features/my-applications-view'
+'use client'
 
-export default function RequestsView() {
+import { useEffect, useState } from 'react'
+import Cookies from 'js-cookie'
+import { ClientApplicationsView, LawyerApplicationsView } from './components'
+import { Loader } from '@/shared/ui-kit'
+import s from './page.module.scss'
+
+export default function ApplicationsPage() {
+	const [role, setRole] = useState<string | null>(null)
+	const [isLoading, setIsLoading] = useState(true)
+
+	useEffect(() => {
+		const userRole = Cookies.get('role')
+		setRole(userRole || null)
+		setIsLoading(false)
+	}, [])
+
+	if (isLoading) {
+		return (
+			<div className={s.page}>
+				<Loader />
+			</div>
+		)
+	}
+
 	return (
 		<div className={s.page}>
-			<MyApplicationsTab />
+			{role === 'client' && <ClientApplicationsView />}
+			{role === 'lawyer' && <LawyerApplicationsView />}
 		</div>
 	)
 }
