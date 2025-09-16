@@ -24,8 +24,9 @@ export const ModulesSection = () => {
   }))
 
   return (
-    <section className={s.modulesSection}>
+    <section id="modules" className={s.modulesSection}>
       <div className={s.container}>
+        <div className={s.titleLine}></div>
         <h2 className={s.title}>{t('title')}</h2>
         
         <div className={s.modulesGrid}>
@@ -40,7 +41,7 @@ export const ModulesSection = () => {
                   →
                 </div>
               </div>
-            </div>
+            </div>        
           ))}
         </div>
       </div>

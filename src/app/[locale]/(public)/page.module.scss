@@ -40,3 +40,9 @@
 		z-index: 1;
 	}
 }
+.sectionsWrapper{
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	max-height: 2000px;
+}

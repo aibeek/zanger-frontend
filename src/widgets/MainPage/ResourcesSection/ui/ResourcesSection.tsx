@@ -33,7 +33,7 @@ export const ResourcesSection = () => {
 	]
 
 	return (
-		<section className={s.wrapper}>
+		<section id="resources" className={s.wrapper}>
 			<div className={s.container}>
 				<h2 className={s.title}>{t('title')}</h2>
 				
@@ -43,8 +43,8 @@ export const ResourcesSection = () => {
 							key={resource.id}
 							src={resource.icon}
 							alt={resource.id}
-							width={320}
-							height={80}
+							width={360}
+							height={140}
 							className={s.resourceIcon}
 						/>
 					))}

@@ -16,10 +16,9 @@
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 60px 40px;
-  text-align: center;
   position: relative;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 32px;
@@ -41,7 +40,7 @@
 }
 
 .title {
-  font-size: 48px;
+  font-size: 64px;
   font-weight: 800;
   background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
   -webkit-background-clip: text;
@@ -49,40 +48,78 @@
   background-clip: text;
   margin-bottom: 32px;
   line-height: 1.2;
-  letter-spacing: -0.5px;
+  letter-spacing: 8px;
   text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 3px;
+    background: rgba(200, 218, 255, 0.47);
+    margin: 0 30px;
+  }
   
   @media (max-width: 1024px) {
-    font-size: 42px;
+    font-size: 56px;
+    letter-spacing: 6px;
+    
+    &::before,
+    &::after {
+      margin: 0 20px;
+    }
   }
   
   @media (max-width: 768px) {
-    font-size: 36px;
+    font-size: 48px;
     margin-bottom: 24px;
+    letter-spacing: 4px;
+    
+    &::before,
+    &::after {
+      margin: 0 15px;
+    }
   }
   
   @media (max-width: 480px) {
-    font-size: 28px;
+    font-size: 36px;
     margin-bottom: 20px;
+    letter-spacing: 2px;
+    
+    &::before,
+    &::after {
+      margin: 0 10px;
+    }
   }
 }
 
 .description {
-  font-size: 18px;
+  font-size: 30px;
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.85);
-  max-width: 800px;
-  margin: 0 auto;
+  margin: 0;
   font-weight: 400;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  text-align: justify;
+  padding: 0 30px;
+  
+  @media (max-width: 1024px) {
+    padding: 0 20px;
+  }
   
   @media (max-width: 768px) {
-    font-size: 16px;
-    max-width: 100%;
+    font-size: 20px;
+    padding: 0 15px;
   }
   
   @media (max-width: 480px) {
-    font-size: 15px;
+    font-size: 18px;
     line-height: 1.6;
+    padding: 0 10px;
   }
 }

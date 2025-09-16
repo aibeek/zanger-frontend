@@ -91,10 +91,10 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									<Image
 										src="/logo.svg"
 										alt="ZANGER"
-										width={120}
-										height={32}
-										priority
-									/>
+										width={160}
+										height={45}
+										priority									/>
+									<span className={s.logoText}>ZANGER</span>
 								</Link>
 							</div>
 						</div>
@@ -106,13 +106,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									className={s.navLink}
 									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
 								>
-									О нас
+									{t('aboutUs')}
 								</button>
-								<Link href="/lawyers" className={s.navLink}>Юристы</Link>
-								<Link href="/modules" className={s.navLink}>Модули</Link>
-								<Link href="/info" className={s.navLink}>Информация</Link>
-								<Link href="/useful" className={s.navLink}>Полезное</Link>
-								<Link href="/news" className={s.navLink}>Новости</Link>
+								<Link href="/lawyers" className={s.navLink}>{t('lawyers')}</Link>
+								<Link href="/modules" className={s.navLink}>{t('modules')}</Link>
+								<Link href="/info" className={s.navLink}>{t('info')}</Link>
+								<Link href="/useful" className={s.navLink}>{t('useful')}</Link>
+								<Link href="/news" className={s.navLink}>{t('news')}</Link>
 							</nav>
 						)}
 						
@@ -193,13 +193,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										className={s.mobileNavLink}
 										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
 									>
-										О нас
+										{t('aboutUs')}
 									</button>
-									<Link href="/lawyers" className={s.mobileNavLink}>Юристы</Link>
-									<Link href="/modules" className={s.mobileNavLink}>Модули</Link>
-									<Link href="/info" className={s.mobileNavLink}>Информация</Link>
-									<Link href="/useful" className={s.mobileNavLink}>Полезное</Link>
-									<Link href="/news" className={s.mobileNavLink}>Новости</Link>
+									<Link href="/lawyers" className={s.mobileNavLink}>{t('lawyers')}</Link>
+									<Link href="/modules" className={s.mobileNavLink}>{t('modules')}</Link>
+									<Link href="/info" className={s.mobileNavLink}>{t('info')}</Link>
+									<Link href="/useful" className={s.mobileNavLink}>{t('useful')}</Link>
+									<Link href="/news" className={s.mobileNavLink}>{t('news')}</Link>
 								</div>
 								
 								<div className={s.mobileAuthBtns}>

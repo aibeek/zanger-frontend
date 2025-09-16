@@ -4,19 +4,22 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	min-height: 100vh;
 	background: transparent;
 	overflow: hidden;
+	min-height: 100vh;
 
 
 	.abstractLandscape {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		width: 1800px;
-		height: 900px;
-		transform: translate(-50%, -50%);
-		background: url('/assets/images/main.jpg') center/cover no-repeat;
+		top: 40px;
+		left: 20px;
+		right: 20px;
+		height: calc(100vh - 80px);
+		max-width: 1800px;
+		width: auto;
+		margin: 0 auto;
+		background: url('/assets/images/main.jpg') center center/100% no-repeat;
+		background-position: center 30%;
 		z-index: 1;
 		border-radius: 20px;
 		overflow: hidden;
@@ -33,13 +36,32 @@
 		}
 		
 		@media (max-width: 1600px) {
-			width: 90vw;
-			height: 45vh;
+			left: 30px;
+			right: 30px;
+			top: 40px;
+		}
+		
+		@media (max-width: 1024px) {
+			left: 20px;
+			right: 20px;
+			top: 30px;
+			height: calc(100vh - 60px);
 		}
 		
 		@media (max-width: 768px) {
-			width: 95vw;
-			height: 40vh;
+			left: 10px;
+			right: 10px;
+			top: 20px;
+			height: calc(100vh - 40px);
+			border-radius: 15px;
+		}
+		
+		@media (max-width: 480px) {
+			left: 10px;
+			right: 10px;
+			top: 15px;
+			height: calc(100vh - 30px);
+			border-radius: 12px;
 		}
 	}
 
@@ -49,39 +71,38 @@
 		justify-content: space-between;
 		max-width: 1800px;
 		width: 100%;
+		height: 100%;
 		margin: 0 auto;
-		padding: 140px 80px 40px 80px;
-		flex: 1;
+		padding: 89px 60px 60px 60px;
 		position: relative;
 		z-index: 100;
 		
 		@media (max-width: 1600px) {
-			max-width: 95%;
-			padding: 120px 40px 40px 40px;
+			padding: 89px 50px 50px 50px;
 		}
 		
 		@media (max-width: 1200px) {
-			padding: 110px 30px 40px 30px;
+			padding: 89px 40px 40px 40px;
 		}
 		
 		@media (max-width: 1024px) {
-			padding: 100px 25px 30px 25px;
+			padding: 89px 30px 30px 30px;
 		}
 		
 		@media (max-width: 900px) {
 			flex-direction: column;
-			padding: 95px 20px 30px 20px;
+			padding: 60px 20px 20px 20px;
 			text-align: center;
 		}
 		
 		@media (max-width: 768px) {
 			flex-direction: column;
-			padding: 90px 20px 20px 20px;
+			padding: 60px 20px 20px 20px;
 			text-align: center;
 		}
 		
 		@media (max-width: 480px) {
-			padding: 80px 15px 20px 15px;
+			padding: 55px 15px 15px 15px;
 		}
 	}
 
@@ -136,7 +157,7 @@
 		line-height: 1.2;
 		margin: 0;
 		text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-		word-wrap: break-word;
+		white-space: nowrap;
 		
 		@media (max-width: 1200px) {
 			font-size: 42px;
@@ -147,15 +168,19 @@
 		}
 		
 		@media (max-width: 900px) {
-			font-size: 36px;
+			font-size: 34px;
 		}
 		
 		@media (max-width: 768px) {
-			font-size: 32px;
+			font-size: 28px;
 		}
 		
 		@media (max-width: 480px) {
-			font-size: 28px;
+			font-size: 24px;
+		}
+		
+		@media (max-width: 380px) {
+			font-size: 20px;
 		}
 	}
 
@@ -329,57 +354,72 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		align-items: center;
-		gap: 40px;
+		align-items: flex-end;
+		position: relative;
 		
 		@media (max-width: 1024px) {
-			gap: 35px;
+			align-items: center;
 		}
 		
 		@media (max-width: 900px) {
 			margin-top: 30px;
-			gap: 30px;
+			align-items: center;
 		}
 		
 		@media (max-width: 768px) {
 			margin-top: 40px;
-			gap: 30px;
+			align-items: center;
 		}
 	}
 
 	.phoneImages {
 		position: relative;
 		width: 100%;
-		max-width: 500px;
-		height: 400px;
+		max-width: 600px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 30px;
 		
 		@media (max-width: 1024px) {
-			max-width: 450px;
-			height: 360px;
+			max-width: 500px;
+			gap: 25px;
 		}
 		
 		@media (max-width: 900px) {
-			max-width: 400px;
-			height: 320px;
+			max-width: 450px;
+			gap: 20px;
 		}
 		
 		@media (max-width: 768px) {
-			max-width: 350px;
-			height: 280px;
+			max-width: 400px;
+			gap: 20px;
 		}
 	}
 
 	.phoneContainer {
 		position: relative;
 		width: 100%;
-		height: 100%;
+		height: 450px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		
+		@media (max-width: 1024px) {
+			height: 400px;
+		}
+		
+		@media (max-width: 900px) {
+			height: 350px;
+		}
+		
+		@media (max-width: 768px) {
+			height: 320px;
+		}
 	}
 
 	.phonesImg {
-		max-width: 100%;
+		max-width: 180%;
 		height: auto;
 		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
 		transform: perspective(1000px) rotateY(-10deg);
