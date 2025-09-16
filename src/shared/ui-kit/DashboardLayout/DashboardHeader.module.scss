@@ -1,0 +1,131 @@
+.headerWrapper {
+  margin: 1rem;
+}
+
+.header {
+  background-color: #081729;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  border-radius: 27px;
+}
+
+/* Контейнер для гос. сервисов */
+.govServicesContainer {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  padding: 1rem 1.5rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  justify-content: flex-start;
+
+}
+
+
+/* Левая часть хедера: Профиль */
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  h1 {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+}
+
+.profileIcon {
+  filter: brightness(0) invert(1);
+  width: 35px !important;
+  height: 35px !important;
+}
+
+/* Центральная часть: кнопки сервисов */
+.headerCenter {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.govService {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.govServiceIcon {
+  width: 190px !important;
+  object-fit: contain;
+}
+
+/* Правая часть хедера: подписка, уведомления, язык */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.subscriptionBtn {
+  background-color: #1e69d7; /* Синий цвет кнопки */
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #1555a6; /* Оттенок при наведении */
+  }
+}
+
+.langSwitcher {
+  display: flex;
+  align-items: center;
+    .dropdown {
+      background: linear-gradient(135deg, #1a1f2e 0%, #2a3441 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(15px);
+      min-width: 70px;
+      overflow: hidden;
+    }
+    .option {
+      padding: 10px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+      
+      &.active {
+        background: rgba(30, 105, 215, 0.3);
+        color: #1e69d7;
+      }
+    }
+  }
+
+.userAvatar {
+  /* На изображении нет аватара, но можно стилизовать заглушку */
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: #ccc;
+}

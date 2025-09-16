@@ -1,0 +1,52 @@
+/* Стили перенесены из DocumentsList.module.scss */
+.documentItem {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.documentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.docName {
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.featuresDoc {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.docLink {
+  color: #1e69d7;
+  text-decoration: none;
+  font-size: 0.9rem;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.docStatus {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.trashIcon {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  
+  &:hover {
+    opacity: 0.7;
+  }
+}

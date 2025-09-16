@@ -32,60 +32,54 @@ export const DescriptionSection = () => {
 	}, [])
 
 	return (
-		<section className={s.wrapper} ref={sectionRef}>
+		<section id="info" className={s.wrapper} ref={sectionRef}>
 			<div className={s.backgroundDecoration}>
-				<div className={s.floatingShapes}>
-					<div className={s.shape1}></div>
-					<div className={s.shape2}></div>
-					<div className={s.shape3}></div>
-				</div>
 			</div>
 			
 			<div className={s.container}>
-				<div className={s.left}>
-					<div className={s.cardInner}>
-						<div className={s.iconWrapper}>
-							<div className={s.clientIcon}>👥</div>
-						</div>
-						<h2 className={s.title}>
-							<span className={s.titleGradient}>{t('leftTitle')}</span>
-						</h2>
-						<ul className={s.leftList}>
-							{data.left.text.map((text, idx) => (
-								<li
-									className={`${s.item} ${s.fadeInItem}`}
-									key={idx}
-									style={{ animationDelay: `${idx * 0.1}s` }}
-									dangerouslySetInnerHTML={{ __html: text }}
-								/>
-							))}
-						</ul>
-						<div className={s.descrWrapper}>
-							<p className={s.descr}>{t('leftDescr')}</p>
+				<div className={s.titleLine}></div>
+				<h2 className={s.sectionTitle}>{t('title')}</h2>
+				
+				<div className={s.cardGrid}>
+					<div className={s.left}>
+						<div className={s.cardInner}>
+							<h2 className={s.title}>
+								<span className={s.titleGradient}>{t('leftTitle')}</span>
+							</h2>
+							<ul className={s.leftList}>
+								{data.left.text.map((text, idx) => (
+									<li
+										className={`${s.item} ${s.fadeInItem}`}
+										key={idx}
+										style={{ animationDelay: `${idx * 0.1}s` }}
+										dangerouslySetInnerHTML={{ __html: text }}
+									/>
+								))}
+							</ul>
+							<div className={s.descrWrapper}>
+								<p className={s.descr}>{t('leftDescr')}</p>
+							</div>
 						</div>
 					</div>
-				</div>
-				
-				<div className={s.right}>
-					<div className={s.cardInner}>
-						<div className={s.iconWrapper}>
-							<div className={s.lawyerIcon}>⚖️</div>
-						</div>
-						<h2 className={s.title}>
-							<span className={s.titleGradient}>{t('rightTitle')}</span>
-						</h2>
-						<ul className={s.rightList}>
-							{data.right.text.map((text, idx) => (
-								<li
-									className={`${s.item} ${s.fadeInItem}`}
-									key={idx}
-									style={{ animationDelay: `${idx * 0.1 + 0.2}s` }}
-									dangerouslySetInnerHTML={{ __html: text }}
-								/>
-							))}
-						</ul>
-						<div className={s.descrWrapper}>
-							<p className={s.descr}>{t('rightDescr')}</p>
+					
+					<div className={s.right}>
+						<div className={s.cardInner}>
+							<h2 className={s.title}>
+								<span className={s.titleGradient}>{t('rightTitle')}</span>
+							</h2>
+							<ul className={s.rightList}>
+								{data.right.text.map((text, idx) => (
+									<li
+										className={`${s.item} ${s.fadeInItem}`}
+										key={idx}
+										style={{ animationDelay: `${idx * 0.1 + 0.2}s` }}
+										dangerouslySetInnerHTML={{ __html: text }}
+									/>
+								))}
+							</ul>
+							<div className={s.descrWrapper}>
+								<p className={s.descr}>{t('rightDescr')}</p>
+							</div>
 						</div>
 					</div>
 				</div>

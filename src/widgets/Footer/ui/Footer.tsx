@@ -80,152 +80,142 @@ export const Footer = ({ variant, id }: Props) => {
 		<footer
 			id={id}
 			className={s.lendingFooter}>
-			<div className="container-middle">
-				<div className={s.lendingMiddle}>
-						<div className={s.lendingMiddleLeft}>
-							<p
-								className={s.text}
-								dangerouslySetInnerHTML={{ __html: t('socials') }}
-							/>
-							<div className={s.socials}>
-								<Link href={'https://t.me/zanger5510'}>
-									<Image
-										src={telegram}
-										alt={'telegram'}
-									/>
-								</Link>
-								<Link href={'https://www.facebook.com/people/Zanger5510/61578403178388/'}>
-									<Image
-										src={facebook}
-										alt={'facebook'}
-									/>
-								</Link>
-								<Link href={'https://www.tiktok.com/@zanger5510'}>
-									<Image
-										src={tik_tok}
-										alt={'tik_tok'}
-									/>
-								</Link>
-								<Link href={'https://www.instagram.com/zanger5510/'}>
-									<Image
-										src={instagram}
-										alt={'instagram'}
-									/>
+			<div className={s.lendingMain}>
+				{/* Contacts Section */}
+				<div className={s.contactsSection}>
+						<h3 className={s.sectionTitle}>{t('contacts')}</h3>
+						<div className={s.contactItems}>
+							<div className={s.contactItem}>
+								<Image
+									src={phone}
+									alt={'phone'}
+									width={20}
+									height={20}
+								/>
+								<Link
+									className={s.contactLink}
+									target={'_blank'}
+									href={'https://api.whatsapp.com/send/?phone=77009375505'}>
+									+7 700 937 55 05
 								</Link>
 							</div>
-							<div className={s.appBtns}>
-								<Link href={'/'}>
-									<Image
-										src={appstore}
-										alt={t('appstore')}
-										width={180}
-										height={52}
-									/>
-								</Link>
-								<Link href={'/'}>
-									<Image
-										src={googleplay}
-										alt={t('googleplay')}
-										width={180}
-										height={52}
-									/>
+							<div className={s.contactItem}>
+								<Image
+									src={letter}
+									alt={'email'}
+									width={20}
+									height={20}
+								/>	
+								<Link
+									className={s.contactLink}
+									href={'mailto:support@zanger-app.kz'}>
+									support@zanger-app.kz
 								</Link>
 							</div>
 						</div>
-
-						<div className={s.columnAddress}>
-							<ul className={s.columnList}>
-								<li className={s.columnItem}>{t('too')}</li>
-								<li
-									style={{ marginBottom: '10px' }}
-									className={s.columnItem}>
-									{t('bin')}
-								</li>
-								<h6
-									style={{ marginBottom: '0' }}
-									className={s.columnTitle}>
-									{t('address')}
-								</h6>
-
-								<li className={s.columnItem}>
-									<Image
-										src={location}
-										alt={'метка'}
-									/>
-									{t('location')}
-								</li>
-							</ul>
-						</div>
-						<div className={s.column}>
-							<h6 className={s.columnTitle}>{t('support')}</h6>
-
-							<ul className={s.columnList}>
-								<li className={s.columnItem}>
-									<Image
-										src={phone}
-										alt={'телефон'}
-									/>
-									<Link
-										className={s.link}
-										target={'_blank'}
-										href={'https://api.whatsapp.com/send/?phone=77009375505'}>
-										+7 700 937 55 05
-									</Link>
-								</li>
-								<li className={s.columnItem}>
-									<Image
-										src={letter}
-										alt={'письмо'}
-									/>	
-									<Link
-										className={s.link}
-										href={'mailto:support@zanger-app.kz'}>
-										support@zanger-app.kz
-									</Link>
-								</li>
-
-								<li className={s.columnItem}>
-									<Image
-										width={71}
-										height={46}
-										src={card}
-										alt={'карта'}
-									/>
-								</li>
-							</ul>
+						
+						<div className={s.socialIcons}>
+							<Link href={'https://t.me/zanger5510'}>
+								<Image
+									src={telegram}
+									alt={'telegram'}
+									width={32}
+									height={32}
+								/>
+							</Link>
+							<Link href={'https://api.whatsapp.com/send/?phone=77009375505'}>
+								<Image
+									src={phone}
+									alt={'whatsapp'}
+									width={32}
+									height={32}
+								/>
+							</Link>
+							<Link href={'https://www.instagram.com/zanger5510/'}>
+								<Image
+									src={instagram}
+									alt={'instagram'}
+									width={32}
+									height={32}
+								/>
+							</Link>
+							<Link href={'https://www.facebook.com/people/Zanger5510/61578403178388/'}>
+								<Image
+									src={facebook}
+									alt={'facebook'}
+									width={32}
+									height={32}
+								/>
+							</Link>
 						</div>
 					</div>
-				</div>
-			<div className={s.lendingBottom}>
-				<div className="container-middle">
-					<div className={s.lendingBottomInner}>
-						<div className={s.lendingBottomLeft}>
-							<p>
-								© {new Date().getFullYear()} Zanger. {t('copyright')}
-							</p>
-						</div>
-						<div className={s.lendingBottomRight}>
+
+				{/* Information Section */}
+				<div className={s.infoSection}>
+						<h3 className={s.sectionTitle}>{t('information')}</h3>
+						<div className={s.infoLinks}>
 							<Link
 								target={'_blank'}
-								href={policyHref}>
+								href={policyHref}
+								className={s.infoLink}>
 								{t('privacy')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={termsHref}>
+								href={termsHref}
+								className={s.infoLink}>
 								{t('offer')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={paymentHref}>
+								href={paymentHref}
+								className={s.infoLink}>
 								{t('payment')}
 							</Link>
 							<Link
 								target={'_blank'}
-								href={canselSubscriptionHref}>
+								href={canselSubscriptionHref}
+								className={s.infoLink}>
 								{t('canselSubscription')}
 							</Link>
 						</div>
+					</div>
+
+				{/* Contact Form Section */}
+				<div className={s.contactFormSection}>
+						<div className={s.contactForm}>
+							<h3 className={s.formTitle}>{t('questionsTitle')}</h3>
+							<div className={s.formInputs}>
+								<input
+									type="text"
+									placeholder={t('namePlaceholder')}
+									className={s.formInput}
+								/>
+								<input
+									type="tel"
+									placeholder={t('phonePlaceholder')}
+									className={s.formInput}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			<div className={s.lendingBottom}>
+				<div className={s.lendingBottomInner}>
+					<div className={s.lendingBottomLeft}>
+						<p>
+							© {new Date().getFullYear()} Zanger. {t('copyright')}
+						</p>
+						<p className={s.companyInfo}>
+							{t('companyName')}
+						</p>
+					</div>
+					<div className={s.lendingBottomRight}>
+						<p className={s.addressInfo}>
+							{t('address')} <br />
+							{t('bin')}
+						</p>
 					</div>
 				</div>
 			</div>

@@ -1,0 +1,43 @@
+// FAQ Content
+.faqContent {
+    display: flex;
+    gap: 32px;
+    height: 100%;
+}
+
+// FAQ Main
+.faqMain {
+    flex: 1;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2e3e5b;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .faqPage {
+    padding: 1rem 0;
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .rightSidebar {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+}

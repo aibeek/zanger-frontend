@@ -36,23 +36,24 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 	const personalData: UserProfile = useLoginStore((state) => state.personalData)
 	const { updateProfilePersonalData } = useEditPersonalDataStore()
 
+	// Все хуки должны быть объявлены в начале компонента
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
-
-	const isLawyer = role === 'lawyer'
-	const lawyerData = isLawyer ? (personalData as LawyerProfile).lawyer : null
 	const { regions } = useRegions()
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
+
+	const isLawyer = role === 'lawyer'
+	const lawyerData = isLawyer ? (personalData as LawyerProfile)?.lawyer : null
 
 	const methods = useForm<ProfilePersonalDataFormValues>({
 		resolver: zodResolver(profilePersonalDataSchema),
 		mode: 'onChange',
 		defaultValues: {
-			name: personalData.name,
-			phone: personalData.phone,
+			name: personalData?.name ?? '',
+			phone: personalData?.phone ?? '',
 			telegram: lawyerData?.telegram ?? '',
 			whatsapp: lawyerData?.whatsapp ?? '',
 			iin: lawyerData?.iin ?? '',
-			region_id: personalData.region.id ?? null,
+			region_id: personalData?.region?.id ?? null,
 			lawyer_type_ids: lawyerData?.lawyer_types?.map((type) => type.id) ?? [],
 		},
 	})
@@ -82,6 +83,21 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			}
 		}
 	}, [editableInputs, setFocus])
+
+	// Проверяем, загружены ли данные
+	if (!personalData) {
+		return (
+			<ProfileTabWrapper
+				title={t('profile.personal_data.title')}
+				imgSrc={personalDataIcon}
+				imgAlt="Personal Data"
+				panel_title={t('profile.personal_data.panelTitle')}
+				panel_descr={t('profile.personal_data.panelDescription')}
+			>
+				<div>Загрузка...</div>
+			</ProfileTabWrapper>
+		)
+	}
 
 	const onSave = async (field: keyof ProfilePersonalDataFormValues) => {
 		let value = field === 'name' ? methods.getValues('name') : watch(field)

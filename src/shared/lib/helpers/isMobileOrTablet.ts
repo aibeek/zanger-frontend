@@ -7,6 +7,6 @@ export const isMobileOrTablet = () => {
 
 	const parser = new UAParser()
 	const deviceType = parser.getDevice().type
-
+	
 	return deviceType === 'mobile' || deviceType === 'tablet'
 }

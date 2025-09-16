@@ -13,9 +13,10 @@ const { Dragger } = Upload
 
 interface UploadAvatarProps {
 	onClose?: () => void
+	currentAvatarUrl?: string
 }
 
-export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
+export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose, currentAvatarUrl }) => {
 	const { setFile, avatarPreviewUrl, uploadAvatar, isUploading, clearFile, uploadProgress } = useUploadAvatarStore()
 	const [showUploadUI, setShowUploadUI] = useState(false)
 	const t = useTranslations('uploadAvatar')
@@ -30,6 +31,66 @@ export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
 	const handleUpload = async () => {
 		await uploadAvatar(t)
 		if (onClose) onClose()
+	}
+
+	const handleDownloadAvatar = async () => {
+		if (!currentAvatarUrl) return
+
+		try {
+			// Сначала попробуем прямую ссылку (если это data URL или blob URL)
+			if (currentAvatarUrl.startsWith('data:') || currentAvatarUrl.startsWith('blob:')) {
+				const link = document.createElement('a')
+				link.href = currentAvatarUrl
+				link.download = `avatar-${Date.now()}.jpg`
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+				message.success(t('downloadSuccess'))
+				return
+			}
+
+			// Для обычных HTTP URL используем fetch с дополнительными опциями
+			const response = await fetch(currentAvatarUrl, {
+				method: 'GET',
+				mode: 'cors',
+				credentials: 'same-origin',
+				headers: {
+					'Accept': 'image/*',
+				},
+			})
+
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`)
+			}
+
+			const blob = await response.blob()
+			const url = window.URL.createObjectURL(blob)
+			const link = document.createElement('a')
+			link.href = url
+			link.download = `avatar-${Date.now()}.jpg`
+			document.body.appendChild(link)
+			link.click()
+			document.body.removeChild(link)
+			window.URL.revokeObjectURL(url)
+			message.success(t('downloadSuccess'))
+		} catch (error) {
+			console.error('Error downloading avatar:', error)
+			
+			// Fallback: попробуем открыть изображение в новой вкладке
+			try {
+				const link = document.createElement('a')
+				link.href = currentAvatarUrl
+				link.target = '_blank'
+				link.rel = 'noopener noreferrer'
+				document.body.appendChild(link)
+				link.click()
+				document.body.removeChild(link)
+				message.info(t('downloadFallback') || 'Изображение открыто в новой вкладке. Сохраните его вручную.')
+			} catch (fallbackError) {
+				console.error('Fallback download failed:', fallbackError)
+				message.error(t('downloadError'))
+			}
+		}
 	}
 
 	return (
@@ -89,6 +150,14 @@ export const UploadAvatar: React.FC<UploadAvatarProps> = ({ onClose }) => {
 			)}
 
 			<div className={s.bottom}>
+				{currentAvatarUrl && (
+					<Button
+						variant="secondary"
+						className={s.btn}
+						onClick={handleDownloadAvatar}>
+						{t('downloadCurrent')}
+					</Button>
+				)}
 				<Button
 					variant="primary"
 					className={s.btn}

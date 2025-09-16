@@ -215,9 +215,34 @@ export const TeamSection = () => {
   }
 
   return (
-    <section className={s.wrapper} ref={sectionRef}>
+    <section id="lawyers" className={s.wrapper} ref={sectionRef}>
       <div className={s.container}>
+        <div className={s.titleLine}></div>
         <h2 className={s.title}>{t('title')}</h2>
+        
+        <div className={s.searchForm}>
+          <input 
+            type="text" 
+            placeholder="Найти юриста..." 
+            className={s.searchInput}
+          />
+          <select className={s.searchSelect}>
+            <option value="">Регион</option>
+            <option value="almaty">Алматы</option>
+            <option value="nur-sultan">Нур-Султан</option>
+            <option value="shymkent">Шымкент</option>
+          </select>
+          <select className={s.searchSelect}>
+            <option value="">Специализация</option>
+            <option value="civil">Гражданское право</option>
+            <option value="criminal">Уголовное право</option>
+            <option value="family">Семейное право</option>
+            <option value="corporate">Корпоративное право</option>
+          </select>
+          <button className={s.searchButton}>
+            Найти
+          </button>
+        </div>
 
         <div
           className={s.teamGrid}
@@ -233,6 +258,8 @@ export const TeamSection = () => {
               <Image
                 src={member.image}
                 alt={member.name}
+                width={200}
+                height={200}
                 className={s.memberImage}
                 width={300}
                 height={300}
@@ -266,6 +293,8 @@ export const TeamSection = () => {
               <Image
                 src={selectedMember.image}
                 alt={selectedMember.name}
+                width={150}
+                height={150}
                 className={s.modalImage}
                 width={200}
                 height={200}
@@ -320,3 +349,4 @@ export const TeamSection = () => {
     </section>
   )
 }
+

@@ -167,44 +167,77 @@
 }
 
 .lendingHeader {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
+	background: rgba(0, 0, 0, 1);
+	border-radius: 20px;
 	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
-	height: 80px;
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
+	position: absolute;
+	top: 40px;
+	left: 20px;
+	right: 20px;
 	z-index: 1000;
+	max-width: 1800px;
+	width: auto;
+	margin: 0 auto;
+
 
 	&::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 3px;
-		background: linear-gradient(90deg, 
-			transparent 0%, 
-			#027dff 20%, 
-			#00f5ff 50%, 
-			#027dff 80%, 
-			transparent 100%);
-		animation: topGlow 3s ease-in-out infinite;
+		display: none;
+	}
+
+	@media (max-width: 1600px) {
+		left: 30px;
+		right: 30px;
+		top: 40px;
+	}
+
+	@media (max-width: 1024px) {
+		left: 20px;
+		right: 20px;
+		top: 30px;
 	}
 
 	@media (max-width: 768px) {
 		height: 60px;
+		border-radius: 15px;
+		top: 20px;
+		left: 10px;
+		right: 10px;
+		
+		&::after {
+			border-radius: 0 0 15px 15px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		height: 55px;
+		border-radius: 12px;
+		top: 15px;
+		left: 10px;
+		right: 10px;
+		
+		&::after {
+			border-radius: 0 0 12px 12px;
+		}
 	}
 
 	.headerContent {
 		display: flex;
+		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
+		height: 100%;
+		padding: 26px 113px;
 		gap: 40px;
+		
+		@media (max-width: 1200px) {
+			padding: 20px 40px;
+		}
+		
+		@media (max-width: 768px) {
+			gap: 20px;
+			padding: 15px 20px;
+		}
 	}
 
 	.userInfo {
@@ -225,13 +258,220 @@
 	.left {
 		display: flex;
 		align-items: center;
-		gap: 40px;
+		flex-shrink: 0;
+	}
+
+	.right {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		flex-shrink: 0;
+		
+		@media (max-width: 1200px) {
+			gap: 16px;
+		}
+		
+		@media (max-width: 768px) {
+			gap: 12px;
+		}
 	}
 
 	.logoSection {
 		display: flex;
 		align-items: center;
 		gap: 16px;
+	}
+
+	.logoSection {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.logoLink {
+		display: flex;
+		align-items: center;
+		text-decoration: none;
+		gap: 12px;
+	}
+
+	.logoText {
+		color: #ffffff;
+		font-size: 24px;
+		font-weight: 700;
+		letter-spacing: 1px;
+		text-transform: uppercase;
+		
+		@media (max-width: 768px) {
+			font-size: 20px;
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 18px;
+		}
+	}
+
+	.navigation {
+		display: flex;
+		align-items: center;
+		gap: 30px;
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		
+		@media (max-width: 1200px) {
+			gap: 20px;
+		}
+		
+		@media (max-width: 1024px) {
+			gap: 16px;
+		}
+		
+		@media (max-width: 900px) {
+			display: none;
+		}
+	}
+
+	.navLink {
+		color: rgba(255, 255, 255, 1);
+		text-decoration: none;
+		font-size: 16px;
+		font-weight: 500;
+		letter-spacing: 0.3px;
+		transition: all 0.3s ease;
+		position: relative;
+		padding: 8px 16px;
+		border-radius: 8px;
+		white-space: nowrap;
+		
+		@media (max-width: 1200px) {
+			font-size: 15px;
+			padding: 6px 12px;
+		}
+		
+		@media (max-width: 1024px) {
+			font-size: 14px;
+			padding: 6px 10px;
+		}
+		
+		&::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 0;
+			height: 2px;
+			background: rgba(235, 7, 52, 1);
+			transition: width 0.3s ease;
+		}
+		
+		&:hover {
+			color: rgba(235, 7, 52, 1);
+			background: rgba(255, 255, 255, 0.05);
+			
+			&::after {
+				width: 100%;
+			}
+		}
+		
+		&:active {
+			color: rgba(235, 7, 52, 1);
+			background: rgba(235, 7, 52, 0.1);
+		}
+	}
+
+	.mobileMenuBtn {
+		display: none;
+		flex-direction: column;
+		justify-content: space-around;
+		width: 24px;
+		height: 24px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		z-index: 10;
+		
+		@media (max-width: 900px) {
+			display: flex;
+		}
+
+		span {
+			width: 24px;
+			height: 2px;
+			background: #ffffff;
+			border-radius: 1px;
+			transition: all 0.3s ease;
+		}
+
+		&:hover span {
+			background: #3b82f6;
+		}
+	}
+
+	.mobileMenu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 25%, #2a3441 50%, #1a1f2e 75%, #0a0f1a 100%);
+		border-top: 1px solid rgba(59, 130, 246, 0.2);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		animation: mobileMenuSlideIn 0.3s ease;
+		z-index: 999;
+	}
+
+	.mobileNavigation {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+	}
+
+	.mobileNavLink {
+		color: rgba(255, 255, 255, 0.9);
+		text-decoration: none;
+		font-size: 16px;
+		font-weight: 500;
+		padding: 12px 16px;
+		border-radius: 8px;
+		transition: all 0.3s ease;
+		
+		&:hover {
+			color: #ffffff;
+			background: rgba(59, 130, 246, 0.1);
+		}
+	}
+
+	.mobileAuthBtns {
+		padding: 20px;
+	}
+
+	.mobileUser {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: #ffffff;
+	}
+
+	.mobileUserInfo {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.mobileAuth {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.mobileAppLink {
+		padding: 12px 16px !important;
+		text-align: center;
+		border-radius: 8px;
+		font-weight: 600 !important;
 	}
 
 	.globalLegalTech {
@@ -254,32 +494,35 @@
 		display: flex;
 		gap: 20px;
 		align-items: center;
-		margin-left: auto;
+		position: relative;
+		z-index: 1;
 		@media (max-width: 1370px) {
 			gap: 8px;
 		}
 	}
 
 	.appLink {
-		min-width: 118px;
-		padding: 16px 8px !important;
-		height: 40px;
+		min-width: 80px;
+		padding: 8px 16px !important;
+		height: 32px;
 		position: relative;
 		overflow: hidden;
-		font-weight: 600 !important;
-		letter-spacing: 0.5px;
+		font-weight: 500 !important;
+		font-size: 14px !important;
+		letter-spacing: 0.3px;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		border: 2px solid transparent;
 		background-clip: padding-box;
 		
 		// Стиль для кнопки "Войти"
 		&[href*="login"] {
-			background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-			color: white !important;
+			background: rgba(235, 7, 52, 1) !important;
+			color: rgba(255, 255, 255, 1) !important;
 			border: none !important;
+			border-radius: 8px;
 			box-shadow: 
-				0 4px 15px rgba(59, 130, 246, 0.3),
-				0 0 20px rgba(59, 130, 246, 0.2);
+				0 2px 8px rgba(235, 7, 52, 0.2),
+				0 0 12px rgba(235, 7, 52, 0.1);
 			
 			&::before {
 				content: '';
@@ -288,16 +531,16 @@
 				left: -100%;
 				width: 100%;
 				height: 100%;
-				background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+				background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 				transition: left 0.5s ease;
 			}
 			
 			&:hover {
-				transform: translateY(-2px);
+				transform: translateY(-1px);
 				box-shadow: 
-					0 8px 25px rgba(59, 130, 246, 0.4),
-					0 0 30px rgba(59, 130, 246, 0.3);
-				background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+					0 4px 12px rgba(235, 7, 52, 0.3),
+					0 0 16px rgba(235, 7, 52, 0.2);
+				background: rgba(200, 6, 45, 1) !important;
 				
 				&::before {
 					left: 100%;
@@ -314,40 +557,41 @@
 		&[href*="live-applications"],
 		&.liveButton {
 			background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
-			border: 2px solid transparent;
+			border: 1px solid transparent;
 			color: white !important;
-			border-radius: 12px;
+			border-radius: 8px;
 			backdrop-filter: blur(20px);
 			position: relative;
 			overflow: hidden;
-			font-weight: 700 !important;
-			text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+			font-weight: 600 !important;
+			font-size: 14px !important;
+			text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 			animation: liveButtonPulse 2s ease-in-out infinite;
 			z-index: 2;
 			display: flex !important;
 			align-items: center !important;
 			justify-content: center !important;
 			text-align: center !important;
-			height: 40px !important;
+			height: 32px !important;
 			line-height: 1 !important;
-			gap: 6px;
+			gap: 4px;
 			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 			
 			// Светящаяся рамка
 			&::before {
 				content: '';
 				position: absolute;
-				top: -3px;
-				left: -3px;
-				right: -3px;
-				bottom: -3px;
+				top: -2px;
+				left: -2px;
+				right: -2px;
+				bottom: -2px;
 				background: linear-gradient(45deg, #ff1744, #ff5722, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #ff1744);
 				background-size: 400% 400%;
-				border-radius: 15px;
-				opacity: 0.8;
+				border-radius: 10px;
+				opacity: 0.6;
 				z-index: -2;
 				animation: gradientShift 3s ease infinite;
-				filter: blur(8px);
+				filter: blur(4px);
 			}
 			
 			// Основной фон
@@ -359,43 +603,46 @@
 				right: 0;
 				bottom: 0;
 				background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
-				border-radius: 10px;
+				border-radius: 6px;
 				z-index: -1;
 			}
 			
 			&:hover {
-				transform: translateY(-2px) scale(1.02) !important;
+				transform: translateY(-1px) scale(1.02) !important;
 				color: white !important;
 				animation: none !important;
-				text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+				text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 				box-shadow: 
-					0 8px 20px rgba(255, 23, 68, 0.3),
-					0 0 30px rgba(213, 0, 0, 0.2),
-					0 0 50px rgba(183, 28, 28, 0.1) !important;
+					0 4px 12px rgba(255, 23, 68, 0.3),
+					0 0 20px rgba(213, 0, 0, 0.2),
+					0 0 30px rgba(183, 28, 28, 0.1) !important;
 				
 				&::before {
-					opacity: 1;
-					filter: blur(10px);
+					opacity: 0.8;
+					filter: blur(6px);
 					animation: gradientShift 2s ease infinite;
 				}
 			}
 			
 			&:active {
-				transform: translateY(-1px) scale(1.01) !important;
+				transform: translateY(0) scale(1.01) !important;
 			}
 		}
 		
 		// Стиль для кнопки "Регистрация"  
 		&[href*="register"] {
 			background: transparent !important;
-			color: white !important;
-			border: 1px solid white !important;
+			color: rgba(255, 255, 255, 1) !important;
+			border: 1px solid rgba(255, 255, 255, 0.5) !important;
+			border-radius: 8px;
 			box-shadow: none;
 			
 			&:hover {
-				transform: translateY(-2px);
+				transform: translateY(-1px);
 				background: rgba(255, 255, 255, 0.1) !important;
-				box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+				box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15);
+				border-color: rgba(235, 7, 52, 1) !important;
+				color: rgba(235, 7, 52, 1) !important;
 			}
 			
 			&:active {
@@ -404,11 +651,14 @@
 		}
 
 		@media (max-width: 1370px) {
-			padding: 8px !important;
+			padding: 6px 12px !important;
+			font-size: 13px !important;
 		}
 
 		@media (max-width: 440px) {
 			min-width: max-content;
+			padding: 4px 8px !important;
+			font-size: 12px !important;
 		}
 	}
 	
@@ -779,19 +1029,20 @@
 
 .companyTitle {
 	color: #ffffff;
-	font-size: 16px;
-	font-weight: 300;
+	font-size: 24px;
+	font-weight: 600;
 	letter-spacing: 0.5px;
-	opacity: 0.9;
-	margin-left: 12px;
+	opacity: 0.95;
+	margin-left: 8px;
 	
 	@media (max-width: 768px) {
-		font-size: 14px;
-		margin-left: 8px;
+		font-size: 20px;
+		margin-left: 6px;
 	}
 	
 	@media (max-width: 480px) {
-		display: none;
+		font-size: 18px;
+		margin-left: 4px;
 	}
 }
 
@@ -840,23 +1091,23 @@
 @keyframes liveButtonPulse {
 	0% {
 		box-shadow: 
-			0 4px 15px rgba(255, 23, 68, 0.2),
-			0 0 20px rgba(213, 0, 0, 0.1),
-			0 0 30px rgba(183, 28, 28, 0.05);
+			0 2px 8px rgba(255, 23, 68, 0.15),
+			0 0 12px rgba(213, 0, 0, 0.08),
+			0 0 16px rgba(183, 28, 28, 0.04);
 		transform: scale(1);
 	}
 	50% {
 		box-shadow: 
-			0 6px 20px rgba(255, 23, 68, 0.3),
-			0 0 25px rgba(213, 0, 0, 0.2),
-			0 0 40px rgba(183, 28, 28, 0.1);
-		transform: scale(1.01);
+			0 3px 12px rgba(255, 23, 68, 0.2),
+			0 0 16px rgba(213, 0, 0, 0.12),
+			0 0 20px rgba(183, 28, 28, 0.06);
+		transform: scale(1.005);
 	}
 	100% {
 		box-shadow: 
-			0 4px 15px rgba(255, 23, 68, 0.2),
-			0 0 20px rgba(213, 0, 0, 0.1),
-			0 0 30px rgba(183, 28, 28, 0.05);
+			0 2px 8px rgba(255, 23, 68, 0.15),
+			0 0 12px rgba(213, 0, 0, 0.08),
+			0 0 16px rgba(183, 28, 28, 0.04);
 		transform: scale(1);
 	}
 }
@@ -896,5 +1147,16 @@
 	}
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+@keyframes mobileMenuSlideIn {
+	from {
+		opacity: 0;
+		transform: translateY(-20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
 	}
 }

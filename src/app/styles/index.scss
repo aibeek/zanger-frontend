@@ -5,12 +5,7 @@
 	flex-direction: column;
 	justify-content: space-between;
 	min-height: 100vh;
-	padding-top:80px; // Отступ для фиксированного header'а
 	position: relative;
-
-	@media (max-width: 768px) {
-		padding-top: 60px; // Меньший отступ для мобильных устройств
-	}
 }
 
 .spinner {
@@ -221,7 +216,7 @@ body {
 }
 
 .container {
-	max-width: 1200px;
+	max-width: 1506px;
 	width: 100%;
 	margin: 0 auto;
 	padding: 0 20px;
@@ -244,8 +239,7 @@ body {
 .container-big {
 	max-width: 1600px;
 	width: 100%;
-	margin: 0 auto;
-	padding: 0 20px;
+	margin: 0 auto
 }
 
 .lending-title {

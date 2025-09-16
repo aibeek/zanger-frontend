@@ -70,33 +70,18 @@ export const MyApplicationsList = ({ items, loadMore, isLoadingMore, isReachingE
 				<div className={s.inner}>
 					<div className={s.items}>
 						{items.map((item) => (
-							<article
-								className={s.item}
-								key={item.id}>
+							<article className={s.item} key={item.id}>
 								<div className={s.top}>
-									<div className={s.topContent}>
-										<DateComponent date={item.created_at} />
-										<span className={s.status}>{item.status}</span>
+									<div className={s.title}>{item.title}</div>
+									<div className={s.description}>{item.description}</div>
+									<div className={s.dataRow}>
+										<span className={s.deadline}>{t('deadline')}: {item.deadline}</span>
+										<span className={s.publishDate}>{t('publishDate')}: <DateComponent date={item.created_at} /></span>
 									</div>
-									{item.tag?.name && <span className={s.tag}>{item.tag.name}</span>}
-									<DescriptionText>{item.description}</DescriptionText>
 								</div>
-
-								<MyApplicationsLawyersCards
-									data={item}
-									mutate={mutate}
-								/>
-
-								<div className={s.bottom}>
-									{item.status !== 'Отменена' && (
-										<Button
-											className={s.btn}
-											size={'full'}
-											variant={'clear'}
-											onClick={() => handleOpenModal(item.id)}>
-											{t('cancelButton')}
-										</Button>
-									)}
+								<div className={s.buttonsRow}>
+									<Button className={s.editBtn} variant="primary" size="full">{t('editButton')}</Button>
+									<Button className={s.completeBtn} variant="danger" size="full" onClick={() => handleOpenModal(item.id)}>{t('completeButton')}</Button>
 								</div>
 							</article>
 						))}

@@ -2,39 +2,31 @@ import type { Metadata } from 'next'
 import React from 'react'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
-import { Open_Sans } from 'next/font/google'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-
-import '@/app/styles/index.scss'
 import { AuthGuard } from '@/shared/lib'
-import { Footer } from '@/widgets/Footer'
-import { Header } from '@/widgets/Header'
+import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
-import { DashboardWrapper } from '@/widgets/DashboardWrapper'
+import { ChatBot } from '@/widgets/ChatBot'
+import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { SWRConfig } from 'swr'
 
-const openSans = Open_Sans({
-	variable: '--font-open-sans',
-	subsets: ['cyrillic', 'latin'],
-})
-
 export const metadata: Metadata = {
-	title: 'Zanger',
-	description: 'Zanger',
-	icons: {
-		icon: '/logo-blue.svg',
-		shortcut: '/logo-blue.svg',
-		apple: '/logo-blue.svg',
-	},
+    title: 'Zanger',
+    description: 'Zanger',
+    icons: {
+        icon: '/logo-blue.svg',
+        shortcut: '/logo-blue.svg',
+        apple: '/logo-blue.svg',
+    },
 }
 
-export default async function DashboardLayout({
-	children,
-	params,
+export default async function DashboardLayoutRoot({
+    children,
+    params,
 }: {
-	children: React.ReactNode
-	params: Promise<{ locale: string }>
+    children: React.ReactNode
+    params: Promise<{ locale: string }>
 }) {
 	const { locale } = await params
 	if (!hasLocale(routing.locales, locale)) {
@@ -45,25 +37,17 @@ export default async function DashboardLayout({
 	const messages = await getMessages()
 
 	return (
-		<html lang={locale}>
-			<body className={openSans.variable}>
-				<NextIntlClientProvider messages={messages}>
-					<AuthGuard>
-						<SWRConfig value={{ shouldRetryOnError: false }}>
-							<div className="authed-wrapper">
-								<div className="dashboard-top">
-									<Header variant="user-variant" />
-									<DashboardWrapper>
-										{children}
-										<AppToaster />
-									</DashboardWrapper>
-								</div>
-								<Footer variant="user-variant" />
-							</div>
-						</SWRConfig>
-					</AuthGuard>
-				</NextIntlClientProvider>
-			</body>
-		</html>
+		<NextIntlClientProvider messages={messages}>
+			<AuthGuard>
+				<SWRConfig value={{ shouldRetryOnError: false }}>
+					<DashboardLayout language={locale}>
+						{children}
+					</DashboardLayout>
+					<AppToaster />
+					<ChatBot />
+					<PulseChatWidget />
+				</SWRConfig>
+			</AuthGuard>
+		</NextIntlClientProvider>
 	)
 }

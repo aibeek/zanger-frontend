@@ -1,2 +1,2 @@
-export const defaultClientTab = '/dashboard/main'
-export const defaultLawyerTab = '/dashboard/lenta'
+export const defaultClientTab = '/dashboard/profile'
+export const defaultLawyerTab = '/dashboard/profile'

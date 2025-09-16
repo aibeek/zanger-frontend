@@ -14,6 +14,7 @@ import DocsIcon from '@/app/assets/icons/need-to-access-docs.svg'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
 
 import { LentaList } from '../LentaList'
+import { LawyerFilters } from '../LawyerFilters'
 import s from './LentaTab.module.scss'
 import { RegionSwitch } from './RegionSwitch'
 import { useLentaInfinite, useLentaStore } from '../../model'
@@ -25,8 +26,12 @@ export const LentaTab = () => {
 
 	const { applyToRequest } = useLentaStore()
 	const [allRegions, setAllRegions] = useState(false)
+	const [filters, setFilters] = useState({})
 
-	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useLentaInfinite({ all_regions: allRegions })
+	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useLentaInfinite({ 
+		all_regions: allRegions,
+		...filters
+	})
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -93,6 +98,10 @@ export const LentaTab = () => {
 	if (!items || items.length === 0) {
 		return (
 			<>
+				<LawyerFilters onFilter={(newFilters) => {
+					setFilters(newFilters)
+					setSize(1)
+				}} />
 				<RegionSwitch
 					value={allRegions}
 					onChange={(val) => {
@@ -107,6 +116,10 @@ export const LentaTab = () => {
 
 	return (
 		<>
+			<LawyerFilters onFilter={(newFilters) => {
+				setFilters(newFilters)
+				setSize(1)
+			}} />
 			<RegionSwitch
 				value={allRegions}
 				onChange={(val) => {
@@ -130,7 +143,6 @@ export const LentaTab = () => {
 					link={{ href: '/dashboard/profile?tab=documents', label: t('fillForm') }}
 				/>
 			)}
-
 			<LentaList
 				data={items}
 				loadMore={() => setSize((s) => s + 1)}

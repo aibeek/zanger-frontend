@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 
 import s from './NotificationsDropdown.module.scss'
-import NotificationsIcon from '@/app/assets/icons/notiifications.svg'
+import NotificationsIcon from '@/app/assets/icons/notification-icon.svg'
 
 import { useNotificationsStore } from '../../model'
 import { AppLink, Button, Loader } from '@/shared/ui-kit'
@@ -111,13 +111,15 @@ export const NotificationsDropdown = () => {
 			trigger={['click']}>
 			<Badge
 				count={unreadCount}
-				size="small">
+				size="small"
+				style={{ background: 'none', boxShadow: 'none' }}
+				>
 				<Image
-					style={{ cursor: 'pointer', borderRadius: '10px', objectFit: 'cover' }}
+					style={{ cursor: 'pointer', objectFit: 'cover', borderRadius: '0' }}
 					src={NotificationsIcon}
 					alt={t('alt')}
-					width={24}
-					height={24}
+					width={35}
+					height={35}
 				/>
 			</Badge>
 		</Dropdown>
