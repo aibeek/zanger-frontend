@@ -258,11 +258,9 @@ export const TeamSection = () => {
               <Image
                 src={member.image}
                 alt={member.name}
-                width={200}
-                height={200}
-                className={s.memberImage}
                 width={300}
                 height={300}
+                className={s.memberImage}
               />
               <div className={s.memberOverlay}>
                 <h3 className={s.memberName}>{member.name}</h3>
@@ -293,11 +291,9 @@ export const TeamSection = () => {
               <Image
                 src={selectedMember.image}
                 alt={selectedMember.name}
-                width={150}
-                height={150}
-                className={s.modalImage}
                 width={200}
                 height={200}
+                className={s.modalImage}
               />
               <div className={s.modalInfo}>
                 <h3 className={s.modalName}>{selectedMember.name}</h3>
