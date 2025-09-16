@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useMemo, useState } from 'react'
+import Image from 'next/image'
 import s from './TeamSection.module.scss'
 
 interface TeamMember {
@@ -254,9 +255,11 @@ export const TeamSection = () => {
         >
           {displayMembers.map((member, index) => (
             <div key={`member-${member.id}-${index}`} className={s.memberCard}>
-              <img
+              <Image
                 src={member.image}
                 alt={member.name}
+                width={200}
+                height={200}
                 className={s.memberImage}
               />
               <div className={s.memberOverlay}>
@@ -285,9 +288,11 @@ export const TeamSection = () => {
               ×
             </button>
             <div className={s.modalHeader}>
-              <img
+              <Image
                 src={selectedMember.image}
                 alt={selectedMember.name}
+                width={150}
+                height={150}
                 className={s.modalImage}
               />
               <div className={s.modalInfo}>
