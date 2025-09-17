@@ -1,0 +1,510 @@
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  // Шапка чата
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fafbfc;
+
+    .backButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #f3f4f6;
+      border-radius: 8px;
+      color: #6b7280;
+      font-size: 18px;
+      cursor: pointer;
+      margin-right: 12px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: #e5e7eb;
+        color: #374151;
+      }
+    }
+
+    .clientInfo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .avatar {
+        flex-shrink: 0;
+        
+        .avatarImage {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        
+        .avatarPlaceholder {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #e5e7eb;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 16px;
+          font-weight: 600;
+          color: #6b7280;
+        }
+      }
+
+      .details {
+        .clientName {
+          margin: 0 0 4px 0;
+          font-size: 18px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+
+        .applicationTitle {
+          margin: 0;
+          font-size: 14px;
+          color: #6b7280;
+        }
+      }
+    }
+
+    .lastActivity {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+  }
+
+  // Область сообщений
+  .messagesArea {
+    flex: 1;
+    background: #f9fafb;
+    overflow-y: auto;
+    padding: 16px 24px;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+      
+      &:hover {
+        background: #94a3b8;
+      }
+    }
+
+    .messageGroup {
+      margin-bottom: 24px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .dateSeparator {
+      text-align: center;
+      margin: 16px 0;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e5e7eb;
+        z-index: 1;
+      }
+
+      span {
+        background: #f9fafb;
+        color: #6b7280;
+        font-size: 12px;
+        padding: 4px 12px;
+        position: relative;
+        z-index: 2;
+      }
+    }
+
+    .message {
+      margin-bottom: 12px;
+
+      &.sent {
+        display: flex;
+        justify-content: flex-end;
+
+        .messageContent {
+          .bubble {
+            background: #3b82f6;
+            color: white;
+            border-radius: 18px 18px 4px 18px;
+          }
+
+          .timestamp {
+            text-align: right;
+          }
+        }
+      }
+
+      &.received {
+        display: flex;
+        justify-content: flex-start;
+
+        .messageContent {
+          .bubble {
+            background: #e5e7eb;
+            color: #1f2937;
+            border-radius: 18px 18px 18px 4px;
+          }
+
+          .timestamp {
+            text-align: left;
+          }
+        }
+      }
+
+      .messageContent {
+        max-width: 70%;
+
+        .bubble {
+          padding: 12px 16px;
+          font-size: 14px;
+          line-height: 1.4;
+          word-wrap: break-word;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .timestamp {
+          font-size: 12px;
+          color: #9ca3af;
+          margin-top: 4px;
+          padding: 0 4px;
+        }
+      }
+    }
+  }
+
+  // Поле ввода
+  .inputArea {
+    padding: 20px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+
+    .inputContainer {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      max-width: 100%;
+
+      .messageInput {
+        flex: 1;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        padding: 12px 16px;
+        font-size: 14px;
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        min-height: 44px;
+        max-height: 120px;
+        font-family: inherit;
+
+        &:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        &::placeholder {
+          color: #9ca3af;
+        }
+      }
+
+      .inputActions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .actionButton {
+          width: 40px;
+          height: 40px;
+          border: none;
+          background: #f3f4f6;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 16px;
+
+          &:hover {
+            background: #e5e7eb;
+            transform: scale(1.05);
+          }
+        }
+
+        .sendButton {
+          background: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 20px;
+          padding: 12px 20px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+
+          &:hover:not(:disabled) {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+          }
+
+          &:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+          }
+        }
+      }
+    }
+  }
+
+  // Пустое состояние
+  .emptyState {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #f9fafb;
+
+    .emptyContent {
+      text-align: center;
+      max-width: 300px;
+
+      .emptyIcon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+
+      h3 {
+        margin: 0 0 8px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #1f2937;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: #6b7280;
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .chatWindow {
+    .header {
+      padding: 16px 20px;
+
+      .clientInfo {
+        gap: 10px;
+
+        .avatar {
+          .avatarImage,
+          .avatarPlaceholder {
+            width: 36px;
+            height: 36px;
+          }
+
+          .avatarPlaceholder {
+            font-size: 14px;
+          }
+        }
+
+        .details {
+          .clientName {
+            font-size: 16px;
+          }
+
+          .applicationTitle {
+            font-size: 13px;
+          }
+        }
+      }
+
+      .lastActivity {
+        font-size: 11px;
+      }
+    }
+
+    .messagesArea {
+      padding: 12px 16px;
+
+      .message {
+        .messageContent {
+          max-width: 85%;
+
+          .bubble {
+            padding: 10px 14px;
+            font-size: 13px;
+          }
+
+          .timestamp {
+            font-size: 11px;
+          }
+        }
+      }
+    }
+
+    .inputArea {
+      padding: 16px 20px;
+
+      .inputContainer {
+        gap: 8px;
+
+        .messageInput {
+          padding: 10px 14px;
+          font-size: 13px;
+          min-height: 40px;
+        }
+
+        .inputActions {
+          .actionButton {
+            width: 36px;
+            height: 36px;
+            font-size: 14px;
+          }
+
+          .sendButton {
+            padding: 10px 16px;
+            font-size: 13px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .chatWindow {
+    .header {
+      padding: 12px 16px;
+
+      .clientInfo {
+        gap: 8px;
+
+        .avatar {
+          .avatarImage,
+          .avatarPlaceholder {
+            width: 32px;
+            height: 32px;
+          }
+
+          .avatarPlaceholder {
+            font-size: 12px;
+          }
+        }
+
+        .details {
+          .clientName {
+            font-size: 15px;
+          }
+
+          .applicationTitle {
+            font-size: 12px;
+          }
+        }
+      }
+
+      .lastActivity {
+        font-size: 10px;
+      }
+    }
+
+    .messagesArea {
+      padding: 8px 12px;
+
+      .message {
+        .messageContent {
+          max-width: 90%;
+
+          .bubble {
+            padding: 8px 12px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .inputArea {
+      padding: 12px 16px;
+
+      .inputContainer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+
+        .inputActions {
+          justify-content: space-between;
+
+          .actionButton {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+          }
+
+          .sendButton {
+            flex: 1;
+            margin-left: 8px;
+            padding: 8px 16px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    .emptyState {
+      .emptyContent {
+        .emptyIcon {
+          font-size: 40px;
+        }
+
+        h3 {
+          font-size: 18px;
+        }
+
+        p {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
