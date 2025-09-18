@@ -13,7 +13,7 @@ export default function Home() {
 				<DescriptionSection />
 				<ResourcesSection />
 				<NewsSection />
-				<Footer/>
+				<Footer />
 				<PulseChatWidget />
 		</div>
 	)
