@@ -47,7 +47,7 @@ export default async function DashboardLayout({
 							{children}
 							<AppToaster />
 						</div>
-						<Footer variant="user-variant" />
+						<Footer />
 						<PulseChatWidget />
 					</div>
 				</SWRConfig>
