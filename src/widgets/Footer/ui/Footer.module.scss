@@ -71,24 +71,27 @@
 
 .lendingFooter {
 	width: 100%;
-	padding: 60px 40px 40px 40px;
-	background: #0f1419;
+	/* Lift footer slightly up to overlap the page background like in the screenshot */
+	padding: 40px 40px 20px 40px;
+	margin-top: -24px;
+	// Make outer container transparent so page background is visible
+	background: transparent;
 	color: #ffffff;
 	position: relative;
 
 	.lendingMain {
-		max-width: 1384px;
-		width: 100%;
-		margin: 0 auto;
-		padding: 60px 40px;
-		background: #171c2f;
-		border-radius: 20px 20px 0 0;
-		border: 1px solid #2d3748;
-		border-bottom: none;
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-		gap: 80px;
-		margin-bottom: 0;
+	max-width: 1384px;
+	width: 100%;
+	margin: 0 auto;
+	padding: 40px 32px;
+	background: #171c2f;
+	border-radius: 16px 16px 0 0;
+	border: 1px solid #2d3748;
+	border-bottom: none;
+	display: grid;
+	grid-template-columns: 1fr 1fr 420px; /* right column fixed for contact form */
+	gap: 40px;
+	margin-bottom: 0;
 
 		@media (max-width: 1424px) {
 			max-width: 1200px;
@@ -102,7 +105,7 @@
 		}
 
 		@media (max-width: 480px) {
-			padding: 30px 20px;
+			padding: 20px 16px;
 		}
 	}
 
@@ -110,21 +113,21 @@
 		font-size: 18px;
 		font-weight: 600;
 		color: #ffffff;
-		margin-bottom: 24px;
+		margin-bottom: 20px;
 		font-family: 'Roboto', sans-serif;
 	}
 
 	// Contacts Section
 	.contactsSection {
 		.contactItems {
-			margin-bottom: 32px;
+			margin-bottom: 20px;
 		}
 
 		.contactItem {
 			display: flex;
 			align-items: center;
 			gap: 12px;
-			margin-bottom: 16px;
+			margin-bottom: 12px;
 
 			&:last-child {
 				margin-bottom: 0;
@@ -134,8 +137,8 @@
 		.contactLink {
 			color: #ffffff;
 			text-decoration: none;
-			font-size: 16px;
-			transition: color 0.3s ease;
+			font-size: 15px;
+			transition: color 0.2s ease;
 
 			&:hover {
 				color: #3b82f6;
@@ -144,22 +147,22 @@
 
 		.socialIcons {
 			display: flex;
-			gap: 16px;
+			gap: 12px;
 
 			a {
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				width: 40px;
-				height: 40px;
+				width: 36px;
+				height: 36px;
 				border-radius: 8px;
-				background: rgba(59, 130, 246, 0.1);
-				border: 1px solid rgba(59, 130, 246, 0.2);
-				transition: all 0.3s ease;
+				background: rgba(59, 130, 246, 0.08);
+				border: 1px solid rgba(59, 130, 246, 0.15);
+				transition: all 0.2s ease;
 
 				&:hover {
-					background: rgba(59, 130, 246, 0.2);
-					border-color: rgba(59, 130, 246, 0.4);
+					background: rgba(59, 130, 246, 0.14);
+					border-color: rgba(59, 130, 246, 0.3);
 					transform: translateY(-2px);
 				}
 			}
@@ -192,17 +195,19 @@
 	// Contact Form Section
 	.contactFormSection {
 		.contactForm {
-			background: rgba(45, 55, 72, 0.5);
-			border: 1px solid #4a5568;
+			/* White card like in screenshot */
+			background: #ffffff;
+			color: #0b1220;
 			border-radius: 12px;
-			padding: 24px;
+			padding: 20px 18px;
+			box-shadow: 0 8px 24px rgba(2, 6, 23, 0.4);
 		}
 
 		.formTitle {
-			font-size: 18px;
-			font-weight: 600;
-			color: #ffffff;
-			margin-bottom: 20px;
+			font-size: 20px;
+			font-weight: 700;
+			color: #0b1220;
+			margin-bottom: 14px;
 			text-align: center;
 			font-family: 'Roboto', sans-serif;
 		}
@@ -210,40 +215,114 @@
 		.formInputs {
 			display: flex;
 			flex-direction: column;
-			gap: 16px;
+			gap: 12px;
 		}
 
 		.formInput {
-			background: rgba(255, 255, 255, 0.1);
-			border: 1px solid rgba(255, 255, 255, 0.2);
+			background: #f3f4f6;
+			border: 1px solid #e6e9ef;
 			border-radius: 8px;
-			padding: 12px 16px;
-			color: #ffffff;
-			font-size: 16px;
-			transition: all 0.3s ease;
+			padding: 10px 12px;
+			color: #0b1220;
+			font-size: 14px;
+			transition: all 0.15s ease;
 
 			&::placeholder {
-				color: rgba(255, 255, 255, 0.6);
+				color: rgba(11, 18, 32, 0.45);
 			}
 
 			&:focus {
 				outline: none;
-				border-color: #3b82f6;
-				background: rgba(255, 255, 255, 0.15);
-				box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+				border-color: #94bfff;
+				background: #ffffff;
+				box-shadow: 0 0 0 4px rgba(14, 82, 255, 0.06);
 			}
+		}
+
+		/* Ensure inputs take full width inside the white card */
+		.formInput, .formInputs input {
+			width: 100%;
+			display: block;
+		}
+
+		.submitButton {
+			background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+			color: #ffffff;
+			border: none;
+			border-radius: 8px;
+			padding: 12px 20px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.2s ease;
+			width: 100%;
+			margin-top: 4px;
+
+			&:hover:not(:disabled) {
+				background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+				transform: translateY(-1px);
+				box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+			}
+
+			&:active:not(:disabled) {
+				transform: translateY(0);
+				box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+			}
+
+			&:disabled {
+				opacity: 0.6;
+				cursor: not-allowed;
+				transform: none;
+			}
+		}
+
+		.submitMessage {
+			margin-top: 12px;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 13px;
+			text-align: center;
+			background: #e0f2fe;
+			color: #0369a1;
+			border: 1px solid #bae6fd;
+
+			&.error {
+				background: #fef2f2;
+				color: #dc2626;
+				border-color: #fecaca;
+			}
+
+			&.success {
+				background: #f0fdf4;
+				color: #16a34a;
+				border-color: #bbf7d0;
+			}
+		}
+	}
+
+	// Footer bottom section structure
+	.footerBottom {
+		grid-column: 1 / -1; // Span all columns
+		margin-top: 30px;
+		padding-top: 24px;
+		border-top: 1px solid #2d3748;
+
+		@media (max-width: 1024px) {
+			margin-top: 40px;
 		}
 	}
 
 	.lendingBottom {
 		width: 100%;
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 400;
 		line-height: 160%;
-		padding: 0 40px 40px 40px;
+		padding: 0 24px 28px 24px;
 		color: #ffffff;
 		position: relative;
-		background: #0f1419;
+		/* Slightly lift the bottom strip visually */
+		margin-top: -8px;
+		background: transparent;
 
 		@media (max-width: 1024px) {
 			padding: 0 30px 30px 30px;
@@ -258,11 +337,11 @@
 		max-width: 1384px;
 		width: 100%;
 		margin: 0 auto;
-		padding: 24px 40px;
+		padding: 20px 28px;
 		background: #171c2f;
 		border: 1px solid #2d3748;
 		border-top: 1px solid #2d3748;
-		border-radius: 0 0 20px 20px;
+		border-radius: 0 0 12px 12px;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
@@ -290,13 +369,13 @@
 
 		p {
 			margin: 0;
-			font-size: 14px;
-			color: rgba(255, 255, 255, 0.8);
+			font-size: 13px;
+			color: rgba(255, 255, 255, 0.88);
 		}
 
 		.companyInfo {
-			font-size: 14px;
-			color: rgba(255, 255, 255, 0.6);
+			font-size: 13px;
+			color: rgba(255, 255, 255, 0.65);
 		}
 	}
 

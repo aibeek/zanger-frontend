@@ -368,7 +368,7 @@
 		"socials": "Наши новости в социальных сетях",
 		"too": "ТОО «Global Legal Technologies»",
 		"bin": "БИН 250140021849",
-		"location": "г. Алматы, ул.Брусиловского, д.159, блок 1, офис 5А",
+		"location": "г. Алматы, ул. Брусиловского, д.159, блок 1, офис 5А",
 		"phone": "Телефон:",
 		"email": "Email:",
 		"appstore": "App Store",
@@ -383,6 +383,11 @@
 		"questionsTitle": "Есть вопросы?",
 		"namePlaceholder": "Введите ваше имя",
 		"phonePlaceholder": "Введите номер телефона",
+		"sendButton": "Отправить",
+		"sending": "Отправка...",
+		"requiredFields": "Пожалуйста, заполните все поля",
+		"successMessage": "Спасибо! Ваше сообщение отправлено. Мы свяжемся с вами в ближайшее время.",
+		"errorMessage": "Произошла ошибка при отправке. Попробуйте еще раз.",
 		"companyName": "ТОО «Global Legal Technologies»"
 	},
 

@@ -1,13 +1,14 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
+import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import s from './ModulesSection.module.scss'
 
 interface Module {
   id: number
   title: string
   description: string
-  icon: string
 }
 
 export const ModulesSection = () => {
@@ -19,8 +20,7 @@ export const ModulesSection = () => {
   const modules: Module[] = modulesData.map((module, index) => ({
     id: index + 1,
     title: module.title,
-    description: module.description,
-    icon: '↗'
+    description: module.description
   }))
 
   return (
@@ -38,7 +38,12 @@ export const ModulesSection = () => {
               </div>
               <div className={s.moduleIcon}>
                 <div className={s.iconCircle}>
-                  ↗
+                  <Image
+                    src={moduleIcon}
+                    alt="Module icon"
+                    width={48}
+                    height={48}
+                  />
                 </div>
               </div>
             </div>        
