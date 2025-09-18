@@ -41,7 +41,7 @@ export default async function AuthLayout({
 				<div className="authed-wrapper">
 					<Header variant={'user-variant'} />
 					<section>{children}</section>
-					<Footer variant={'user-variant'} />
+					<Footer />
 					<ChatBot />
 					<PulseChatWidget />
 				</div>
