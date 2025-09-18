@@ -65,6 +65,7 @@ export const NewsSection = () => {
 	return (
 		<section id="news" className={s.wrapper}>
 			<div className={s.container}>
+				<div className={s.titleLine}></div>
 				<h2 className={s.title}>{t('title')}</h2>
 				
 				<div className={s.newsGrid}>

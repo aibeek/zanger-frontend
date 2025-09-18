@@ -25,7 +25,6 @@ export const ResourcesSection = () => {
 		{ id: 'eotinish', icon: EotinishIcon, url: 'https://eotinish.kz/kk' },
 		{ id: 'adiletgov', icon: AdiletgovIcon, url: 'https://aisoip.adilet.gov.kz/debtors' },
 		{ id: 'erdr', icon: ErdrIcon, url: 'https://erdr-public.kgp.kz/' },
-		{ id: 'le', icon: LeIcon, url: 'https://legalexpert.kz/login' },
 		{ id: 'supreme-court', icon: SupremeCourtIcon, url: 'https://sud.gov.kz/kaz' },
 		{ id: 'contract24', icon: Contract24Icon, url: 'https://lawyer.dogovor24.kz/login' },
 		{ id: 'adiletkz', icon: AdiletkzIcon, url: 'https://adilet.zan.kz/kaz' },
@@ -35,6 +34,7 @@ export const ResourcesSection = () => {
 	return (
 		<section id="resources" className={s.wrapper}>
 			<div className={s.container}>
+				<div className={s.titleLine}></div>
 				<h2 className={s.title}>{t('title')}</h2>
 				
 				<div className={s.resourcesGrid}>
@@ -50,8 +50,6 @@ export const ResourcesSection = () => {
 								<Image
 									src={resource.icon}
 									alt={resource.id}
-									width={360}
-									height={140}
 									className={s.resourceIcon}
 								/>
 							</a>
@@ -60,8 +58,6 @@ export const ResourcesSection = () => {
 								key={resource.id}
 								src={resource.icon}
 								alt={resource.id}
-								width={360}
-								height={140}
 								className={s.resourceIcon}
 							/>
 						)

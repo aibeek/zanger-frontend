@@ -24,7 +24,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const { isAuthenticated, checkAuth } = useAuthStore()
 	const pathname = usePathname()
 	const isHydrated = useHydration()
-	const isMobile = useMediaQuery('(max-width: 768px)') // Возвращаем обратно к 768px
+	const isMobile = useMediaQuery('(max-width: 900px)') // Изменили с 768px на 900px для соответствия навигации
 	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
 	
 	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство

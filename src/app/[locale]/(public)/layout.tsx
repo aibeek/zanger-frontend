@@ -41,10 +41,6 @@ export default async function RootLayout({
 			<DeviceGuard>
 				<div className="lending-layout">
 					{children}
-					<Footer
-						id={'footer'}
-						variant={'lending-variant'}
-					/>
 					<ChatBot />
 					<PulseChatWidget />
 				</div>
