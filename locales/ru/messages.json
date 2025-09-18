@@ -841,6 +841,19 @@
 					"subscribe": "Оформить подписку"
 				},
 		"footer": {
+			"sections": {
+				"forum": "Форум",
+				"database": "База данных",
+				"seminars": "Семинары",
+				"digitalSignature": "ЭЦП",
+				"videoConference": "Видео-конференц связь",
+				"documentManagement": "Управление документами"
+			},
+			"stats": {
+				"registeredLawyers": "Зарегистрировано юристов",
+				"lawyersOnline": "Юристов онлайн",
+				"totalRequests": "Всего заявок"
+			},
 			"privacy": "Политика конфиденциальности",
 			"payment": "Правила оплаты",
 			"offer": "Публичная оферта",

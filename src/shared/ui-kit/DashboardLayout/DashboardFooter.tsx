@@ -4,13 +4,20 @@ import { useTranslations } from 'next-intl'
 
 export const DashboardFooter = () => {
     const t = useTranslations()
+    
+    const sections = [
+        t('dashboard.footer.sections.forum'),
+        t('dashboard.footer.sections.database'),
+        t('dashboard.footer.sections.seminars'),
+        t('dashboard.footer.sections.digitalSignature'),
+        t('dashboard.footer.sections.videoConference'),
+        t('dashboard.footer.sections.documentManagement')
+    ]
+    
     return (
         <footer className={s.footer}>
             <div className={s.footerSections}>
-                {[
-                    'Форум', 'База данных', 'Семинары', 'ЭЦП', 
-                    'Видео-конференц связь', 'Управление документами'
-                ].map((section, index) => (
+                {sections.map((section, index) => (
                     <button key={index} className={s.footerSection}>
                         <span>{section}</span>
                         <span className={s.footerArrow}>→</span>
@@ -20,16 +27,16 @@ export const DashboardFooter = () => {
             
             <div className={s.footerStats}>
                 <div className={s.stat}>
-                    <span className={s.statLabel}>Зарегистрировано юристов:</span>
-                    <span className={s.statValue}>10 254</span>
+                    <span className={s.statLabel}>{t('dashboard.footer.stats.registeredLawyers')}:</span>
+                    <span className={s.statValue}></span>
                 </div>
                 <div className={s.stat}>
-                    <span className={s.statLabel}>Юристов онлайн:</span>
-                    <span className={s.statValue}>5 632</span>
+                    <span className={s.statLabel}>{t('dashboard.footer.stats.lawyersOnline')}:</span>
+                    <span className={s.statValue}></span>
                 </div>
                 <div className={s.stat}>
-                    <span className={s.statLabel}>Всего заявок:</span>
-                    <span className={s.statValue}>8 129</span>
+                    <span className={s.statLabel}>{t('dashboard.footer.stats.totalRequests')}:</span>
+                    <span className={s.statValue}></span>
                 </div>
             </div>
             
