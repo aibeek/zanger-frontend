@@ -228,15 +228,26 @@
 		width: 100%;
 		height: 100%;
 		padding: 26px 113px;
-		gap: 40px;
+		
+		@media (max-width: 1400px) {
+			padding: 24px 80px;
+		}
 		
 		@media (max-width: 1200px) {
 			padding: 20px 40px;
 		}
 		
+		@media (max-width: 1024px) {
+			padding: 18px 30px;
+		}
+		
 		@media (max-width: 768px) {
 			gap: 20px;
 			padding: 15px 20px;
+		}
+		
+		@media (max-width: 480px) {
+			padding: 12px 16px;
 		}
 	}
 
@@ -319,12 +330,20 @@
 		left: 50%;
 		transform: translateX(-50%);
 		
+		@media (max-width: 1400px) {
+			gap: 24px;
+		}
+		
 		@media (max-width: 1200px) {
 			gap: 20px;
 		}
 		
 		@media (max-width: 1024px) {
 			gap: 16px;
+		}
+		
+		@media (max-width: 950px) {
+			gap: 12px;
 		}
 		
 		@media (max-width: 900px) {
@@ -343,6 +362,10 @@
 		padding: 8px 16px;
 		border-radius: 8px;
 		white-space: nowrap;
+		background: none !important;
+		border: none !important;
+		cursor: pointer !important;
+		font-family: inherit;
 		
 		@media (max-width: 1200px) {
 			font-size: 15px;
@@ -367,7 +390,7 @@
 		
 		&:hover {
 			color: rgba(235, 7, 52, 1);
-			background: rgba(255, 255, 255, 0.05);
+			background: rgba(255, 255, 255, 0.05) !important;
 			
 			&::after {
 				width: 100%;
@@ -376,7 +399,7 @@
 		
 		&:active {
 			color: rgba(235, 7, 52, 1);
-			background: rgba(235, 7, 52, 0.1);
+			background: rgba(235, 7, 52, 0.1) !important;
 		}
 	}
 
@@ -419,6 +442,12 @@
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 		animation: mobileMenuSlideIn 0.3s ease;
 		z-index: 999;
+		border-radius: 0 0 15px 15px;
+		backdrop-filter: blur(10px);
+		
+		@media (max-width: 480px) {
+			border-radius: 0 0 12px 12px;
+		}
 	}
 
 	.mobileNavigation {
@@ -437,10 +466,17 @@
 		padding: 12px 16px;
 		border-radius: 8px;
 		transition: all 0.3s ease;
+		background: none !important;
+		border: none !important;
+		cursor: pointer !important;
+		font-family: inherit;
+		width: 100%;
+		text-align: left !important;
+		display: block;
 		
 		&:hover {
 			color: #ffffff;
-			background: rgba(59, 130, 246, 0.1);
+			background: rgba(59, 130, 246, 0.1) !important;
 		}
 	}
 

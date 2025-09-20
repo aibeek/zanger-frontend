@@ -1,0 +1,41 @@
+.chatPage {
+  display: flex;
+  height: 100%;
+  background: #f8fafc;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative; // Добавляем относительное позиционирование
+
+  .chatList {
+    width: 100%;
+    height: 100%;
+    position: absolute; // Абсолютное позиционирование для предотвращения скролла
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  .chatWindow {
+    width: 100%;
+    height: 100%;
+    position: absolute; // Абсолютное позиционирование для предотвращения скролла
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .chatPage {
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chatPage {
+    border-radius: 8px;
+  }
+}

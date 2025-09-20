@@ -261,6 +261,8 @@ export const TeamSection = () => {
                 width={300}
                 height={300}
                 className={s.memberImage}
+                width={200}
+                height={200}
               />
               <div className={s.memberOverlay}>
                 <h3 className={s.memberName}>{member.name}</h3>
@@ -294,6 +296,8 @@ export const TeamSection = () => {
                 width={200}
                 height={200}
                 className={s.modalImage}
+                width={120}
+                height={120}
               />
               <div className={s.modalInfo}>
                 <h3 className={s.modalName}>{selectedMember.name}</h3>
