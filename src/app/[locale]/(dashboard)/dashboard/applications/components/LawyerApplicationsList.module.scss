@@ -1,0 +1,182 @@
+.container {
+	padding: 20px;
+	max-width: 100%;
+}
+
+.header {
+	margin-bottom: 20px;
+}
+
+.filters {
+	display: flex;
+	gap: 16px;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-bottom: 24px;
+}
+
+.filterItem {
+	min-width: 200px;
+	flex: 1;
+}
+
+.dateInput {
+	width: 100%;
+	padding: 12px 16px;
+	border: 1px solid #e1e5e9;
+	border-radius: 8px;
+	font-size: 14px;
+	color: #333;
+	background: white;
+	transition: border-color 0.2s ease;
+
+	&:focus {
+		outline: none;
+		border-color: #007bff;
+		box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+	}
+}
+
+.clearBtn,
+.searchBtn {
+	padding: 12px 24px;
+	min-width: auto;
+	white-space: nowrap;
+}
+
+.clearBtn {
+	background: #f8f9fa;
+	color: #6c757d;
+	border: 1px solid #dee2e6;
+
+	&:hover {
+		background: #e9ecef;
+		color: #495057;
+	}
+}
+
+.loading {
+	text-align: center;
+	padding: 40px;
+	color: #666;
+	font-size: 16px;
+}
+
+.empty {
+	text-align: center;
+	padding: 60px 20px;
+	color: #666;
+
+	p {
+		margin: 0;
+		font-size: 16px;
+	}
+}
+
+.applicationsList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.applicationCard {
+	background: white;
+	border: 1px solid #e1e5e9;
+	border-radius: 8px;
+	padding: 20px;
+	transition: all 0.2s ease;
+
+	&:hover {
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		border-color: #d1d9e0;
+	}
+}
+
+.cardHeader {
+	margin-bottom: 12px;
+}
+
+.applicationTitle {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 600;
+	color: #1a1a1a;
+}
+
+.cardContent {
+	margin-bottom: 16px;
+}
+
+.description {
+	margin: 0 0 16px 0;
+	color: #333;
+	line-height: 1.5;
+	font-size: 14px;
+}
+
+.cardMeta {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.metaRow {
+	display: flex;
+	gap: 20px;
+	align-items: center;
+}
+
+.metaItem {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 13px;
+}
+
+.metaLabel {
+	color: #666;
+	font-weight: 500;
+}
+
+.metaValue {
+	color: #333;
+}
+
+.cardActions {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #f0f0f0;
+}
+
+.respondBtn {
+	padding: 8px 20px;
+	font-size: 14px;
+	min-width: auto;
+}
+
+@media (max-width: 768px) {
+	.container {
+		padding: 15px;
+	}
+
+	.filters {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.filterSelect {
+		min-width: auto;
+	}
+
+	.metaRow {
+		flex-direction: column;
+		gap: 8px;
+		align-items: flex-start;
+	}
+
+	.cardActions {
+		justify-content: center;
+	}
+}

@@ -41,7 +41,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
         router.push(`/${language}`)
     }
 
-    const menuItems = [
+    const allMenuItems = [
         {
             id: 'main',
             title: t('dashboard.sidebar.main'),
@@ -85,6 +85,16 @@ export const Sidebar = ({ language }: SidebarProps) => {
             href: `/${language}/dashboard/support`,
         },
     ]
+
+    // Фильтруем пункты меню в зависимости от роли
+    const menuItems = allMenuItems.filter(item => {
+        // Для клиентов скрываем подписку
+        if (role === 'client' && item.id === 'subscription') {
+            return false
+        }
+        // Для юристов показываем все пункты
+        return true
+    })
 
     return (
         <aside className={s.sidebar}>

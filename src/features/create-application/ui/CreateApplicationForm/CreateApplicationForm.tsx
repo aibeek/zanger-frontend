@@ -3,21 +3,31 @@
 import { Textarea } from '@headlessui/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/shared/ui-kit'
 import { createApplicationSchema, useRegionsUtils } from '@/shared/lib'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useCreateApplicationStore, useTags } from '@/features/create-application'
+import { clientApi, Application } from '@/shared/api'
 
 import s from './CreateApplicationForm.module.scss'
 import { useTranslations } from 'next-intl'
+import toast from 'react-hot-toast'
 
-export const CreateApplicationForm = () => {
+interface CreateApplicationFormProps {
+	applicationId?: number
+	onSuccess?: () => void
+}
+
+export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplicationFormProps) => {
 	const t = useTranslations('createApplications.form')
 	const { tags, loadingTags } = useTags()
 	const { regions } = useRegions()
 	const { submit, success, resetSuccess } = useCreateApplicationStore()
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
+	const [loading, setLoading] = useState(false)
+	const [initialData, setInitialData] = useState<Application | null>(null)
 
 	const {
 		handleSubmit,
@@ -29,18 +39,57 @@ export const CreateApplicationForm = () => {
 		mode: 'onSubmit',
 	})
 
+	// Загружаем данные заявки для редактирования
+	useEffect(() => {
+		if (applicationId && applicationId !== 0) {
+			const fetchApplication = async () => {
+				try {
+					setLoading(true)
+					const data = await clientApi.getApplication(applicationId) as Application
+					setInitialData(data)
+					
+					// Заполняем форму данными
+					reset({
+						region_id: data.region_id,
+						tag_id: data.tag_id,
+						description: data.description,
+					})
+				} catch (error) {
+					console.error('Error fetching application:', error)
+					toast.error(t('errorFetching'))
+				} finally {
+					setLoading(false)
+				}
+			}
+			fetchApplication()
+		}
+	}, [applicationId, reset, t])
+
 	const onSubmit = async (data) => {
 		try {
+			setLoading(true)
 			const modifiedData = {
 				...data,
 				tag_id: data.tag_id || null,
 			}
 
-			await submit(modifiedData, t)
+			if (applicationId && applicationId !== 0) {
+				// Редактируем существующую заявку
+				await clientApi.updateApplication(applicationId, modifiedData)
+				toast.success(t('successUpdate'))
+			} else {
+				// Создаем новую заявку
+				await submit(modifiedData, t)
+			}
+			
 			reset()
 			resetSuccess()
+			onSuccess?.()
 		} catch (error) {
 			console.error('Ошибка при отправке:', error)
+			toast.error(applicationId ? t('errorUpdate') : t('errorStore'))
+		} finally {
+			setLoading(false)
 		}
 	}
 
@@ -117,8 +166,15 @@ export const CreateApplicationForm = () => {
 						variant="primary"
 						size="lg"
 						type="submit"
-						disabled={success}>
-						{success ? t('success') : t('submit')}
+						disabled={loading || success}>
+						{loading 
+							? t('loading') 
+							: success 
+								? t('success') 
+								: applicationId 
+									? t('update') 
+									: t('submit')
+						}
 					</Button>
 				</form>
 			</div>

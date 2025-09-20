@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Cookies from 'js-cookie'
 import { ClientApplicationsView, LawyerApplicationsView } from './components'
+import { RightWidgets } from '../components/RightWidgets'
 import { Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 
@@ -26,8 +27,11 @@ export default function ApplicationsPage() {
 
 	return (
 		<div className={s.page}>
-			{role === 'client' && <ClientApplicationsView />}
-			{role === 'lawyer' && <LawyerApplicationsView />}
+			<div className={s.content}>
+				{role === 'client' && <ClientApplicationsView />}
+				{role === 'lawyer' && <LawyerApplicationsView />}
+			</div>
+			<RightWidgets />
 		</div>
 	)
 }

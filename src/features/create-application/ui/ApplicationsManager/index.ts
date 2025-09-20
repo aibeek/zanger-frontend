@@ -1,0 +1,1 @@
+export { ApplicationsManager } from './ApplicationsManager'

@@ -27,6 +27,7 @@
 		"createNew": "Создать новую заявку",
 		"myApplications": "Мои заявки",
 		"newApplications": "Новые заявки",
+		"noNewApplications": "Нет новых заявок",
 		"serviceType": "Тип заявки",
 		"selectServiceType": "Выберите тип заявки",
 		"region": "Регион",
@@ -48,12 +49,19 @@
 		"dateFilter": "Дата",
 		"selectDate": "Выберите дату",
 		"subscribe_required": "Требуется подписка",
+		"loading": "Загрузка...",
+		"errorFetching": "Ошибка при загрузке заявок",
+		"responseSubmitted": "Отклик отправлен",
+		"responseError": "Ошибка при отправке отклика",
 		"deadlines": {
 			"urgent": "Срочно (1-2 дня)",
 			"week": "В течение недели",
 			"twoWeeks": "В течение 2 недель", 
 			"month": "В течение месяца",
 			"flexible": "Гибкий график"
+		},
+		"services": {
+			"other": "Другое"
 		}
 	},
 
@@ -599,7 +607,11 @@
 		"formNotFilled": "Форма не заполнена",
 		"formDescription": "Заполните форму для доступа к заявкам",
 		"fillForm": "Заполнить форму",
-		"regionSwitch": "Все регионы"
+		"regionSwitch": "Все регионы",
+		"empty": {
+   				 "alt": "иконка",
+    			"text": "Мы ищем заказы для вас!" } 
+
 	},
 
 	"tabs": {
@@ -610,6 +622,42 @@
 
 	"createApplications": {
 		"title": "Создать заявку",
+		"myApplications": "Мои заявки",
+		"createNew": "Создать новую",
+		"createApplication": "Создать заявку",
+		"editApplication": "Редактировать заявку",
+		"noApplications": "У вас еще нет заявок",
+		"createFirst": "Создать первую заявку",
+		"loading": "Загрузка...",
+		"edit": "Редактировать",
+		"delete": "Удалить",
+		"cancel": "Отменить",
+		"complete": "Завершить",
+		"confirmDelete": "Вы уверены, что хотите удалить заявку?",
+		"confirmCancel": "Вы уверены, что хотите отменить заявку?",
+		"successDelete": "Заявка успешно удалена",
+		"successCancel": "Заявка успешно отменена",
+		"errorDelete": "Ошибка при удалении заявки",
+		"errorCancel": "Ошибка при отмене заявки",
+		"errorFetching": "Ошибка при загрузке заявок",
+		"region": "Регион",
+		"service": "Услуга",
+		"description": "Описание",
+		"publishDate": "Дата публикации",
+		"notSpecified": "Не указано",
+		"service.other": "Другое",
+		"status": {
+			"in_progress": "В обработке",
+			"moderation": "На модерации",
+			"completed": "Завершена",
+			"cancelled": "Отменена",
+			"statuses": {
+				"in_progress": "В обработке",
+				"moderation": "На модерации",
+				"completed": "Завершена",
+				"cancelled": "Отменена"
+			}
+		},
 		"form": {
 			"tagLabel": "Вид услуги",
 			"tagPlaceholder": "Выберите вид услуги",
@@ -618,11 +666,16 @@
 			"descriptionLabel": "Описание",
 			"descriptionPlaceholder": "Введите описание",
 			"submit": "Подать заявку",
+			"update": "Обновить заявку",
+			"loading": "Отправка...",
 			"success": "Заявка отправлена",
 			"description_required": "Опишите заявку",
 			"region_or_city_required": "Укажите регион или город",
 			"successStore": "Заявка успешно создана",
+			"successUpdate": "Заявка успешно обновлена",
 			"errorStore": "Произошла ошибка при создании заявки",
+			"errorUpdate": "Произошла ошибка при обновлении заявки",
+			"errorFetching": "Ошибка при загрузке заявки",
 			"description_too_short": "Описание слишком короткое"
 		}
 	},

@@ -26,11 +26,11 @@ export const LentaTab = () => {
 
 	const { applyToRequest } = useLentaStore()
 	const [allRegions, setAllRegions] = useState(false)
-	const [filters, setFilters] = useState({})
+	const [filters, setFilters] = useState<{ region_id?: number; specialization_id?: number; date?: string }>({})
 
 	const { items, isLoadingMore, isReachingEnd, setSize, size, mutate } = useLentaInfinite({ 
 		all_regions: allRegions,
-		...filters
+		...filters,
 	})
 
 	useEffect(() => {

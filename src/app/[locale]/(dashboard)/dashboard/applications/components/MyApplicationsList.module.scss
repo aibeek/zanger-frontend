@@ -1,0 +1,194 @@
+.container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.loading {
+	text-align: center;
+	padding: 40px;
+	color: #666;
+	font-size: 16px;
+}
+
+.empty {
+	text-align: center;
+	padding: 60px 20px;
+	color: #666;
+
+	p {
+		margin: 0;
+		font-size: 16px;
+	}
+}
+
+.applicationsList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	flex: 1;
+}
+
+.applicationCard {
+	background: white;
+	border: 1px solid #e1e5e9;
+	border-radius: 12px;
+	overflow: hidden;
+	transition: all 0.2s ease;
+
+	&:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		border-color: #d1d9e0;
+	}
+}
+
+.cardHeader {
+	padding: 20px;
+}
+
+.cardTop {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 16px;
+}
+
+.applicationTitle {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 600;
+	color: #1a1a1a;
+	line-height: 1.3;
+}
+
+.statusBadge {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 12px;
+	background: #f8f9fa;
+	border-radius: 16px;
+	white-space: nowrap;
+}
+
+.statusDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+
+.statusText {
+	font-size: 12px;
+	font-weight: 500;
+	color: #495057;
+}
+
+.cardMeta {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.metaItem {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.metaLabel {
+	font-size: 12px;
+	font-weight: 500;
+	color: #6c757d;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.metaValue {
+	font-size: 14px;
+	color: #333;
+	font-weight: 400;
+}
+
+.description {
+	margin: 0;
+	font-size: 14px;
+	color: #555;
+	line-height: 1.4;
+	max-height: 60px;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.cardActions {
+	display: flex;
+	gap: 8px;
+	padding: 16px 20px;
+	background: #f8f9fa;
+	border-top: 1px solid #e1e5e9;
+}
+
+.editBtn {
+	flex: 1;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: #0056b3;
+	}
+}
+
+.completeBtn {
+	flex: 1;
+	padding: 8px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	background: #dc3545;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: #c82333;
+	}
+}
+
+@media (max-width: 768px) {
+	.cardHeader {
+		padding: 16px;
+	}
+
+	.cardTop {
+		flex-direction: column;
+		gap: 12px;
+		align-items: stretch;
+	}
+
+	.statusBadge {
+		align-self: flex-start;
+	}
+
+	.cardActions {
+		padding: 12px 16px;
+		flex-direction: column;
+	}
+
+	.editBtn,
+	.completeBtn {
+		flex: none;
+		width: 100%;
+	}
+}

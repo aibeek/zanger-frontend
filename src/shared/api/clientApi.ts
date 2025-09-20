@@ -20,6 +20,22 @@ export const clientApi = {
 			body: JSON.stringify(data),
 		}),
 
+	updateApplication: (id: number, data: CreateApplicationType) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify(data),
+		}),
+
+	deleteApplication: (id: number) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'DELETE',
+		}),
+
+	getApplication: (id: number) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'GET',
+		}),
+
 	cancelApplication: (data: CancelApplicationType) =>
 		httpClientWithAuth(`${API_URL}/clients/orders/${data.application_id}/cancel`, {
 			method: 'PUT',
