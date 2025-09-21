@@ -60,16 +60,6 @@ export const HistoryTab = () => {
 	}
 
 	if (role === 'lawyer') {
-		if (!responsesHistory || responsesHistory.length === 0) {
-			return (
-				<DashboarEmptyHistory
-					descr={t('noResponses')}
-					redirectUrl={`/${locale}/${defaultLawyerTab}`}
-					buttonContent={t('toApplicationsFeed')}
-				/>
-			)
-		}
-
 		return (
 			<ResponseHistoryList
 				items={responsesHistory}

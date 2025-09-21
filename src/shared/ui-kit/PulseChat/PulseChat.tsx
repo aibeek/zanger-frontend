@@ -13,8 +13,6 @@ export const PulseChat = ({ chatId, enabled = true }: PulseChatProps) => {
   const [showChat, setShowChat] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
 
-  console.log('PulseChat component rendered:', { enabled, chatId, showChat });
-
   // Блокируем все оригинальные элементы Pulse
   useEffect(() => {
     if (!enabled) return;

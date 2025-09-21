@@ -1,0 +1,165 @@
+.wrapper {
+	background: #fff;
+	border-radius: 16px;
+	padding: 24px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+	min-height: 400px;
+}
+
+.header {
+	margin-bottom: 32px;
+	border-bottom: 1px solid rgba(245, 246, 251, 1);
+	padding-bottom: 16px;
+}
+
+.backButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #666;
+	font-size: 14px;
+	margin-bottom: 16px;
+	padding: 8px 0;
+	transition: color 0.2s;
+
+	&:hover:not(:disabled) {
+		color: #0056D2;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
+.backIcon {
+	width: 16px;
+	height: 16px;
+}
+
+.title {
+	font-size: 20px;
+	font-weight: 600;
+	color: #1a1a1a;
+	margin: 0;
+}
+
+.reasons {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.reasonBtn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 20px 0;
+	font-size: 16px;
+	font-weight: 400;
+	border-bottom: 1px solid rgba(245, 246, 251, 1);
+	border-radius: 0;
+	width: 100%;
+	color: #1a1a1a;
+	text-align: left;
+	background: transparent;
+	transition: all 0.2s ease;
+	
+	&:hover:not(:disabled) {
+		background-color: rgba(245, 246, 251, 0.5);
+		color: #0056D2;
+	}
+	
+	&:last-child {
+		border-bottom: none;
+	}
+
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+.reasonText {
+	flex: 1;
+}
+
+.reasonIcon {
+	width: 20px;
+	height: 20px;
+	color: rgba(156, 165, 172, 1);
+	transition: color 0.2s;
+}
+
+.reasonBtn:hover:not(:disabled) .reasonIcon {
+	color: #0056D2;
+}
+
+.customReason {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.customReasonLabel {
+	font-size: 16px;
+	font-weight: 600;
+	color: #1a1a1a;
+	margin-bottom: 0;
+}
+
+.textarea {
+	color: #1a1a1a;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 140%;
+	width: 100%;
+	min-height: 120px;
+	max-height: 300px;
+	resize: vertical;
+	border: 1px solid #ddd;
+	background-color: #fff;
+	border-radius: 8px;
+	outline: none;
+	padding: 12px 16px;
+	font-family: inherit;
+	transition: border-color 0.2s ease;
+
+	&:focus {
+		border-color: #0056D2;
+		box-shadow: 0 0 0 3px rgba(0, 86, 210, 0.1);
+	}
+
+	&::placeholder {
+		color: rgba(156, 165, 172, 1);
+	}
+
+	&:disabled {
+		background-color: #f5f5f5;
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+}
+
+.customReasonButtons {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.submitButton {
+	background: #0056D2;
+	color: #fff;
+	border-radius: 8px;
+	font-weight: 600;
+	padding: 12px 24px;
+	transition: background 0.2s;
+	
+	&:hover:not(:disabled) {
+		background: #003a8c;
+	}
+	
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}

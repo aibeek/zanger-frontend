@@ -48,42 +48,16 @@
 		"dateFilter": "Күн",
 		"selectDate": "Күнді таңдаңыз",
 		"subscribe_required": "Жазылу қажет",
-		"serviceTypes": {
-			"officeRent": "Кеңсе жалгерлік шартын жасау",
-			"apartmentRent": "Пәтер жалгерлік шарты",
-			"landRent": "Жер учаскесі жалгерлік шарты",
-			"businessContract": "Бизнес сату-сатып алу шарты",
-			"propertyContract": "Жылжымайтын мүлік сату-сатып алу шарты",
-			"carContract": "Автомобиль сату-сатып алу шарты",
-			"workContract": "Еңбек шарты",
-			"serviceContract": "Қызмет көрсету шарты",
-			"partnershipContract": "Серіктестік шарты",
-			"consultingContract": "Консультациялық шарт"
-		},
-		"regions": {
-			"almaty": "Алматы",
-			"nur-sultan": "Нұр-Сұлтан",
-			"shymkent": "Шымкент",
-			"aktobe": "Ақтөбе",
-			"taraz": "Тараз",
-			"pavlodar": "Павлодар",
-			"ust-kamenogorsk": "Өскемен",
-			"semey": "Семей",
-			"aktau": "Ақтау",
-			"kostanay": "Қостанай",
-			"kyzylorda": "Қызылорда",
-			"petropavlovsk": "Петропавл",
-			"oral": "Орал",
-			"temirtau": "Теміртау",
-			"atyrau": "Атырау"
-		},
 		"deadlines": {
 			"urgent": "Шұғыл (1-2 күн)",
 			"week": "Бір апта ішінде",
 			"twoWeeks": "2 апта ішінде",
 			"month": "Бір ай ішінде",
 			"flexible": "Икемді кесте"
-		}
+		},
+		"enterCompletionReason": "Өтініш аяқтау себебін енгізіңіз",
+		"successComplete": "Өтініш сәтті аяқталды",
+		"errorComplete": "Өтінішті аяқтауда қате пайда болды"
 	},
 
 	"profile": {
@@ -649,6 +623,44 @@
 
 	"createApplications": {
 		"title": "Өтініш жасау",
+		"myApplications": "Менің өтініштерім",
+		"createNew": "Жаңасын жасау",
+		"createApplication": "Өтініш жасау",
+		"editApplication": "Өтінішті өңдеу",
+		"noApplications": "Сізде әлі өтініштер жоқ",
+		"createFirst": "Алғашқы өтініш жасау",
+		"loading": "Жүктелуде...",
+		"edit": "Өңдеу",
+		"delete": "Жою",
+		"cancel": "Болдырмау",
+		"complete": "Аяқтау",
+		"confirmDelete": "Өтінішті жойғыңыз келетініне сенімдісіз бе?",
+		"confirmCancel": "Өтінішті болдырмағыңыз келетініне сенімдісіз бе?",
+		"successDelete": "Өтініш сәтті жойылды",
+		"successCancel": "Өтініш сәтті болдырылды",
+		"errorDelete": "Өтінішті жою кезінде қате пайда болды",
+		"errorCancel": "Өтінішті болдырмау кезінде қате пайда болды",
+		"errorFetching": "Өтініштерді жүктеу кезінде қате пайда болды",
+		"region": "Өңір",
+		"service": {
+			"label": "Қызмет",
+			"other": "Басқа"
+		},
+		"description": "Сипаттама",
+		"publishDate": "Жариялау күні",
+		"notSpecified": "Көрсетілмеген",
+		"status": {
+			"in_progress": "Өңделуде",
+			"moderation": "Модерацияда",
+			"completed": "Аяқталды",
+			"cancelled": "Болдырылды",
+			"statuses": {
+				"in_progress": "Өңделуде",
+				"moderation": "Модерацияда",
+				"completed": "Аяқталды",
+				"cancelled": "Болдырылды"
+			}
+		},
 		"form": {
 			"tagLabel": "Қызмет түрі",
 			"tagPlaceholder": "Қызмет түрін таңдаңыз",
@@ -657,11 +669,16 @@
 			"descriptionLabel": "Сипаттама",
 			"descriptionPlaceholder": "Сипаттаманы енгізіңіз",
 			"submit": "Өтініш беру",
+			"update": "Өтінішті жаңарту",
+			"loading": "Жіберілуде...",
 			"success": "Өтініш жіберілді",
 			"description_required": "Өтінішті сипаттаңыз",
 			"region_or_city_required": "Өңірді немесе қаланы көрсетіңіз",
 			"successStore": "Өтініш сәтті құрылды",
+			"successUpdate": "Өтініш сәтті жаңартылды",
 			"errorStore": "Өтініш жасау кезінде қате пайда болды",
+			"errorUpdate": "Өтінішті жаңарту кезінде қате пайда болды",
+			"errorFetching": "Өтінішті жүктеу кезінде қате пайда болды",
 			"description_too_short": "Сипаттама тым қысқа"
 		}
 	},

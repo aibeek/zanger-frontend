@@ -41,7 +41,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
         router.push(`/${language}`)
     }
 
-    const menuItems = [
+    const allMenuItems = [
         {
             id: 'main',
             title: t('dashboard.sidebar.main'),
@@ -54,18 +54,18 @@ export const Sidebar = ({ language }: SidebarProps) => {
             icon: ProfileIcon,
             href: `/${language}/dashboard/profile`,
         },
-        // {
-        //     id: 'applications',
-        //     title: t('dashboard.sidebar.applications'),
-        //     icon: ApplicationsIcon,
-        //     href: `/${language}/dashboard/applications`,
-        // },
-        // {
-        //     id: 'chats',
-        //     title: t('dashboard.sidebar.chats'),
-        //     icon: ChatIcon,
-        //     href: `/${language}/dashboard/chats`,
-        // },
+        {
+            id: 'applications',
+            title: t('dashboard.sidebar.applications'),
+            icon: ApplicationsIcon,
+            href: `/${language}/dashboard/applications`,
+        },
+        {
+            id: 'chats',
+            title: t('dashboard.sidebar.chats'),
+            icon: ChatIcon,
+            href: `/${language}/dashboard/chats`,
+        },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),
@@ -78,13 +78,23 @@ export const Sidebar = ({ language }: SidebarProps) => {
             icon: FaqIcon,
             href: `/${language}/dashboard/faq`,
         },
-        // {
-        //     id: 'support',
-        //     title: t('dashboard.sidebar.support'),
-        //     icon: SupportIcon,
-        //     href: `/${language}/dashboard/support`,
-        // },
+        {
+            id: 'support',
+            title: t('dashboard.sidebar.support'),
+            icon: SupportIcon,
+            href: `/${language}/dashboard/support`,
+        },
     ]
+
+    // Фильтруем пункты меню в зависимости от роли
+    const menuItems = allMenuItems.filter(item => {
+        // Для клиентов скрываем подписку
+        if (role === 'client' && item.id === 'subscription') {
+            return false
+        }
+        // Для юристов показываем все пункты
+        return true
+    })
 
     return (
         <aside className={s.sidebar}>

@@ -66,6 +66,7 @@
 
 .govServiceIcon {
   width: 190px !important;
+  height: auto !important; /* maintain aspect ratio when width is overridden */
   object-fit: contain;
 }
 

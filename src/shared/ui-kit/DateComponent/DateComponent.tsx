@@ -12,7 +12,7 @@ export const DateComponent = ({ date }: Props) => {
 	return (
 		<div className={s.date}>
 			<p>
-				{t('published')}: <span>{formatPublishedDate(date)}</span>
+				<span>{formatPublishedDate(date)}</span>
 			</p>
 		</div>
 	)

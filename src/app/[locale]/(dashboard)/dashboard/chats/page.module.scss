@@ -1,0 +1,16 @@
+// Chat Page Content
+.chatContent {
+    display: flex;
+    gap: 32px;
+    height: 100%;
+    min-height: calc(100vh - 200px); // Учитываем header и footer
+    scroll-behavior: auto; // Отключаем плавный скролл
+    overflow: hidden; // Предотвращаем скролл
+}
+
+// Chat Area
+.chatArea {
+    flex: 1;
+    min-height: 0; // Позволяет flex-элементу сжиматься
+    overflow: hidden; // Предотвращаем скролл в области чата
+}

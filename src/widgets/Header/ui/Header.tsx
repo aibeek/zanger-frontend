@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { authService, useLoginStore } from '@/features/auth'
@@ -24,7 +24,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const { isAuthenticated, checkAuth } = useAuthStore()
 	const pathname = usePathname()
 	const isHydrated = useHydration()
-	const isMobile = useMediaQuery('(max-width: 900px)') // Изменили с 768px на 900px для соответствия навигации
+	const isMobile = useMediaQuery('(max-width: 900px)') // Изменяем breakpoint для соответствия CSS
 	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
 	
 	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство
@@ -35,9 +35,12 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const scrollToSection = (sectionId: string) => {
 		const element = document.getElementById(sectionId)
 		if (element) {
-			element.scrollIntoView({ 
-				behavior: 'smooth',
-				block: 'start'
+			const headerHeight = 120 // Высота хедера + отступ
+			const elementPosition = element.offsetTop - headerHeight
+			
+			window.scrollTo({ 
+				top: elementPosition,
+				behavior: 'smooth'
 			})
 		}
 	}
@@ -61,6 +64,25 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 			location: "Астана"
 		}
 	])
+
+	// Закрытие дропдауна по клику вне и по Esc
+	const liveButtonRef = useRef<HTMLDivElement | null>(null)
+	useEffect(() => {
+		const onDocClick = (e: MouseEvent) => {
+			if (liveButtonRef.current && !liveButtonRef.current.contains(e.target as Node)) {
+				setShowLiveApplications(false)
+			}
+		}
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') setShowLiveApplications(false)
+		}
+		document.addEventListener('mousedown', onDocClick)
+		window.addEventListener('keydown', onKey)
+		return () => {
+			document.removeEventListener('mousedown', onDocClick)
+			window.removeEventListener('keydown', onKey)
+		}
+	}, [])
 
 	useEffect(() => {
 		checkAuth()
@@ -93,7 +115,9 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										alt="ZANGER"
 										width={160}
 										height={45}
-										priority									/>
+										priority
+										style={{ width: 'auto', height: 'auto' }}
+									/>
 									<span className={s.logoText}>ZANGER</span>
 								</Link>
 							</div>
@@ -108,11 +132,31 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 								>
 									{t('aboutUs')}
 								</button>
-								<Link href="/lawyers" className={s.navLink}>{t('lawyers')}</Link>
-								<Link href="/modules" className={s.navLink}>{t('modules')}</Link>
-								<Link href="/info" className={s.navLink}>{t('info')}</Link>
-								<Link href="/useful" className={s.navLink}>{t('useful')}</Link>
-								<Link href="/news" className={s.navLink}>{t('news')}</Link>
+								<button 
+									onClick={() => scrollToSection('lawyers')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('lawyers')}</button>
+								<button 
+									onClick={() => scrollToSection('modules')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('modules')}</button>
+								<button 
+									onClick={() => scrollToSection('info')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('info')}</button>
+								<button 
+									onClick={() => scrollToSection('resources')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('useful')}</button>
+								<button 
+									onClick={() => scrollToSection('news')} 
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('news')}</button>
 							</nav>
 						)}
 						
@@ -152,18 +196,50 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												{t('login')}
 											</AppLink>
 
-											<AppLink
-												className={`${s.appLink} ${s.liveButton}`}
-												variant={'primary'}
-												href={'/auth/register/select-role'}
-												onClick={(e) => {
-													if (shouldShowMobileModal) {
+											<div className={s.liveButtonWrapper} ref={liveButtonRef}>
+												<AppLink
+													className={`${s.appLink} ${s.liveButton}`}
+													variant={'primary'}
+													href={'/live-applications'}
+													onClick={(e) => {
+														// На мобильных показываем модалку, на десктопе — дропдаун
+														if (shouldShowMobileModal) {
+															e.preventDefault()
+															open()
+															return
+														}
+														// Предотвращаем переход и открываем/закрываем дропдаун
 														e.preventDefault()
-														open()
-													}
-												}}>
-												LIVE
-											</AppLink>
+														setShowLiveApplications((prev) => !prev)
+													}}>
+														LIVE
+													</AppLink>
+												{showLiveApplications && (
+													<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
+														<div className={s.liveDropdownHeader}>
+															<h3>
+																LIVE заявки <span className={s.demoLabel}>DEMO</span>
+															</h3>
+															<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
+														</div>
+														<div className={s.liveApplicationsList}>
+															{liveApplications.map((item) => (
+																<div key={item.id} className={s.liveApplicationItem}>
+																	<div className={s.liveAppHeader}>
+																		<h4>{item.title}</h4>
+																		<span className={s.timeAgo}>{item.timeAgo}</span>
+																	</div>
+																	<p className={s.liveAppDescription}>{item.description}</p>
+																	<div className={s.liveAppFooter}>
+																		<span className={s.location}>📍 {item.location}</span>
+																		<button className={s.respondBtn} onClick={() => setShowLiveApplications(false)}>Откликнуться</button>
+																	</div>
+																</div>
+															))}
+														</div>
+													</div>
+												)}
+											</div>
 										</>
 									)}
 								</div>
@@ -189,17 +265,47 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							<div className={s.mobileMenu}>
 								<div className={s.mobileNavigation}>
 									<button 
-										onClick={() => scrollToSection('about')} 
+										onClick={() => { scrollToSection('about'); setShowMobileMenu(false); }} 
 										className={s.mobileNavLink}
 										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
 									>
 										{t('aboutUs')}
 									</button>
-									<Link href="/lawyers" className={s.mobileNavLink}>{t('lawyers')}</Link>
-									<Link href="/modules" className={s.mobileNavLink}>{t('modules')}</Link>
-									<Link href="/info" className={s.mobileNavLink}>{t('info')}</Link>
-									<Link href="/useful" className={s.mobileNavLink}>{t('useful')}</Link>
-									<Link href="/news" className={s.mobileNavLink}>{t('news')}</Link>
+									<button 
+										onClick={() => { scrollToSection('lawyers'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('lawyers')}
+									</button>
+									<button 
+										onClick={() => { scrollToSection('modules'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('modules')}
+									</button>
+									<button 
+										onClick={() => { scrollToSection('info'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('info')}
+									</button>
+									<button 
+										onClick={() => { scrollToSection('resources'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('useful')}
+									</button>
+									<button 
+										onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('news')}
+									</button>
 								</div>
 								
 								<div className={s.mobileAuthBtns}>

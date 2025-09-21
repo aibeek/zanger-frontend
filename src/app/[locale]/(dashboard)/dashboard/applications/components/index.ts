@@ -1,2 +1,5 @@
 export { ClientApplicationsView } from './ClientApplicationsView'
 export { LawyerApplicationsView } from './LawyerApplicationsView'
+export { MyApplicationsList } from './MyApplicationsList'
+export { EditApplicationModal } from './EditApplicationModal'
+export { LawyerApplicationsList } from './LawyerApplicationsList'

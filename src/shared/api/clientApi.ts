@@ -20,6 +20,22 @@ export const clientApi = {
 			body: JSON.stringify(data),
 		}),
 
+	updateApplication: (id: number, data: CreateApplicationType) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'PUT',
+			body: JSON.stringify(data),
+		}),
+
+	deleteApplication: (id: number) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'DELETE',
+		}),
+
+	getApplication: (id: number) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}`, {
+			method: 'GET',
+		}),
+
 	cancelApplication: (data: CancelApplicationType) =>
 		httpClientWithAuth(`${API_URL}/clients/orders/${data.application_id}/cancel`, {
 			method: 'PUT',
@@ -59,9 +75,29 @@ export const clientApi = {
 			method: 'GET',
 		}),
 
+	getApplicationResponses: (orderId: number) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${orderId}/responses`, {
+			method: 'GET',
+		}),
 
-		createCallback: ({ id }: { id: number }) =>
-			httpClientWithAuth(`${API_URL}/clients/orders/responses/${id}/call-request`, {
-				method: 'POST',
-			}),
+	createCallback: ({ id }: { id: number }) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/responses/${id}/call-request`, {
+			method: 'POST',
+		}),
+
+	completeApplication: (id: number, cancelReason: string) =>
+		httpClientWithAuth(`${API_URL}/clients/orders/${id}/cancel`, {
+			method: 'PUT',
+			body: JSON.stringify({ cancel_reason: cancelReason }),
+		}),
+
+	getRegions: () =>
+		httpClientWithAuth(`${API_URL}/regions/all`, {
+			method: 'GET',
+		}),
+
+	getTags: () =>
+		httpClientWithAuth(`${API_URL}/tags`, {
+			method: 'GET',
+		}),
 }

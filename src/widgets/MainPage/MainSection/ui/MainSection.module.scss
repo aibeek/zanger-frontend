@@ -6,7 +6,7 @@
 	flex-direction: column;
 	background: transparent;
 	overflow: hidden;
-	min-height: 100vh;
+	min-height: 100dvh;
 
 
 	.abstractLandscape {
@@ -14,26 +14,15 @@
 		top: 40px;
 		left: 20px;
 		right: 20px;
-		height: calc(100vh - 80px);
 		max-width: 1680px;
 		width: auto;
 		margin: 0 auto;
 		background: url('/assets/images/mainLEFT.jpg') center center/100% no-repeat;
-		background-position: center 10%;
+		background-position: center 5%;
 		z-index: 1;
 		border-radius: 20px;
 		overflow: hidden;
-		
-		&::before {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0, 0, 0, 0.3);
-			z-index: 2;
-		}
+
 		
 		@media (max-width: 1600px) {
 			left: 30px;
@@ -69,24 +58,24 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: 16000px;
+		max-width: 1600px;
 		width: 100%;
-		height: 100%;
+		height: 80%;
 		margin: 0 auto;
-		padding: 89px 60px 60px 60px;
+		padding: 70px 100px 60px 100px !important;
 		position: relative;
 		z-index: 100;
 		
 		@media (max-width: 1600px) {
-			padding: 89px 50px 50px 50px;
+			padding: 70px 100px 60px 100px
 		}
 		
 		@media (max-width: 1200px) {
-			padding: 89px 40px 40px 40px;
+			padding: 70px 40px 40px 40px;
 		}
 		
 		@media (max-width: 1024px) {
-			padding: 89px 30px 30px 30px;
+			padding: 70px 30px 30px 30px;
 		}
 		
 		@media (max-width: 900px) {
@@ -129,35 +118,20 @@
 		}
 	}
 
-	.frameLabel {
-		display: inline-block;
-		background: rgba(59, 130, 246, 0.2);
-		color: #60a5fa;
-		padding: 4px 12px;
-		border-radius: 8px;
-		font-size: 12px;
-		font-weight: 600;
-		margin-bottom: 20px;
-		border: 1px solid rgba(59, 130, 246, 0.3);
-		
-		span {
-			text-transform: uppercase;
-			letter-spacing: 0.5px;
-		}
-	}
 
-	.titleContainer {
-		margin-bottom: 16px;
-	}
 
 	.title {
-		font-size: 48px;
-		font-weight: 700;
+		font-size: 50px;
+		font-family: 'Inter', sans-serif;
+		font-weight: 700;                
 		color: #ffffff;
 		line-height: 1.2;
 		margin: 0;
 		text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 		white-space: nowrap;
+		gap: 24;
+
+
 		
 		@media (max-width: 1200px) {
 			font-size: 42px;
@@ -185,7 +159,7 @@
 	}
 
 	.descrContainer {
-		margin-bottom: 40px;
+		margin-bottom: 100px;
 	}
 
 	.descr {

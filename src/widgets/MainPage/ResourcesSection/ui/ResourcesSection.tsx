@@ -10,8 +10,7 @@ import EgovIcon from '@/app/assets/icons/resourses/egov.svg'
 import EotinishIcon from '@/app/assets/icons/resourses/eotinish.svg'
 import AdiletgovIcon from '@/app/assets/icons/resourses/adiletgov.svg'
 import ErdrIcon from '@/app/assets/icons/resourses/erdr.svg'
-import LeIcon from '@/app/assets/icons/resourses/le.svg'
-import SupremeCourtIcon from '@/app/assets/icons/resourses/верховный суд.svg'
+import SupremeCourtIcon from '@/app/assets/icons/resourses/sud.svg'
 import Contract24Icon from '@/app/assets/icons/resourses/договор24.svg'
 import EnotaryIcon from '@/app/assets/icons/resourses/enotary.svg'
 import AdiletkzIcon from '@/app/assets/icons/resourses/adiletkz.svg'
@@ -36,7 +35,6 @@ export const ResourcesSection = () => {
 			<div className={s.container}>
 				<div className={s.titleLine}></div>
 				<h2 className={s.title}>{t('title')}</h2>
-				
 				<div className={s.resourcesGrid}>
 					{resources.map((resource) => (
 						resource.url ? (

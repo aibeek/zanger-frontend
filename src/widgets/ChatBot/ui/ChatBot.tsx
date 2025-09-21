@@ -452,7 +452,7 @@ export const ChatBot = () => {
 									<p><strong>{t('fullName')}:</strong> {formData.fullName}</p>
 									<p><strong>{t('phone')}:</strong> {formData.phone}</p>
 									{formData.tag_id && (
-										<p><strong>{t('service')}:</strong> {tags.find(t => t.id === formData.tag_id)?.name}</p>
+										<p><strong>{t('service.label')}:</strong> {tags.find(t => t.id === formData.tag_id)?.name}</p>
 									)}
 									{formData.region_id && (
 										<p><strong>{t('region')}:</strong> {allOptions.find(r => r.id === formData.region_id)?.name}</p>

@@ -1,22 +1,10 @@
 import { API_URL } from '../config'
 import { httpClient, httpClientWithAuth } from './httpClient'
+import { Tag } from '../lib/types'
 
 export interface CityType {
 	id: number
 	name: 'Город' | 'Область' | 'Регион' | 'Село'
-}
-
-export interface Application {
-	id: number
-	created_at: string
-	description: string
-	status: string
-	responses_count: number
-	responses: any[]
-	tag: {
-		id: number
-		name: string
-	}
 }
 
 export interface City {
@@ -24,12 +12,6 @@ export interface City {
 	name: string
 	type: CityType
 	path: string | null
-}
-
-export interface Tag {
-	id: number
-	name: string
-	code: string
 }
 
 export interface CitiesResponse {

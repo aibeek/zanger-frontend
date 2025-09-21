@@ -94,6 +94,11 @@ export const lawyerApi = {
 			method: 'GET',
 		}),
 
+	respondToOrder: (orderId: number) =>
+		httpClientWithAuth(`${API_URL}/lawyers/orders/${orderId}/respond`, {
+			method: 'POST',
+		}),
+
 	getResponses: (params?: { page?: number; per_page?: number }) => {
 		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/responses${query}`

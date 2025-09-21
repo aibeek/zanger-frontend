@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { LentaTab } from '@/features/lenta-view'
+import { LawyerApplicationsList } from './LawyerApplicationsList'
 import { MyResponsesTab } from '@/features/my-responses-view'
 import s from './LawyerApplicationsView.module.scss'
 
@@ -15,7 +15,7 @@ export const LawyerApplicationsView = () => {
 					<h2 className={s.sectionTitle}>
 						{t('applications.newApplications')}
 					</h2>
-					<LentaTab />
+					<LawyerApplicationsList />
 				</div>
 			</div>
 			

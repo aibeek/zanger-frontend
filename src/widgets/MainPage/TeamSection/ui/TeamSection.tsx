@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import s from './TeamSection.module.scss'
 
@@ -28,6 +29,8 @@ export const TeamSection = () => {
   const momentumRafRef = useRef<number | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const scrollYRef = useRef(0)
 
   const teamMembers: TeamMember[] = [
     {
@@ -127,6 +130,54 @@ export const TeamSection = () => {
     }
   }, [isModalOpen])
 
+  // Avoid SSR mismatch for portals
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Блокировка скролла когда модальное окно открыто (устойчивый вариант)
+  useEffect(() => {
+    if (!mounted) return
+
+    const docEl = document.documentElement
+    const prevBehavior = docEl.style.scrollBehavior
+
+    if (isModalOpen) {
+      // Сохраняем позицию и блокируем фон
+      scrollYRef.current = window.scrollY
+      docEl.style.scrollBehavior = 'auto' // отключаем плавный скролл, чтобы не было рывков при восстановлении
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollYRef.current}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+      document.body.style.overflow = 'hidden'
+    } else {
+      // Восстанавливаем фон и позицию
+      const yFromStyle = -parseInt(document.body.style.top || '0') || scrollYRef.current || 0
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+      window.scrollTo({ top: yFromStyle, left: 0 })
+      // Возвращаем поведение скролла
+      docEl.style.scrollBehavior = prevBehavior
+    }
+
+    // Очистка при размонтировании компонента
+    return () => {
+      docEl.style.scrollBehavior = prevBehavior
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+      document.body.style.overflow = ''
+    }
+  }, [isModalOpen, mounted])
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -215,6 +266,7 @@ export const TeamSection = () => {
   }
 
   return (
+    <>
     <section id="lawyers" className={s.wrapper} ref={sectionRef}>
       <div className={s.container}>
         <div className={s.titleLine}></div>
@@ -258,15 +310,19 @@ export const TeamSection = () => {
               <Image
                 src={member.image}
                 alt={member.name}
-                width={300}
-                height={300}
+                width={200}
+                height={200}
                 className={s.memberImage}
               />
-              <div className={s.memberOverlay}>
-                <h3 className={s.memberName}>{member.name}</h3>
-                <p className={s.memberPosition}>{member.position}</p>
-                <p className={s.memberExperience}>{member.experience}</p>
-                <p className={s.memberDescription}>{member.description}</p>
+              
+              <h3 className={s.memberName}>{member.name}</h3>
+              
+              <div className={s.memberInfo}>
+                <div className={s.memberInfoText}>
+                  <p className={s.memberPosition}>{member.position}</p>
+                  <p className={s.memberExperience}>Опыт: {member.experience}</p>
+                  <p className={s.memberDescription}>{member.description}</p>
+                </div>
                 
                 <button
                   className={s.moreBtn}
@@ -279,12 +335,25 @@ export const TeamSection = () => {
           ))}
         </div>
       </div>
-
-      {/* Модальное окно */}
-      {isModalOpen && selectedMember && (
-        <div className={s.modalOverlay} onClick={closeModal}>
-          <div className={s.modalContent} onClick={(e) => e.stopPropagation()}>
-            <button className={s.modalCloseBtn} onClick={closeModal}>
+    </section>
+    {/* Модальное окно через портал, чтобы выйти из stacking context секции */}
+    {mounted && isModalOpen && selectedMember &&
+      createPortal(
+        <div
+          className={s.modalOverlay}
+          onClick={closeModal}
+          onWheel={(e) => e.preventDefault()}
+          onTouchMove={(e) => e.preventDefault()}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className={s.modalContent}
+            onClick={(e) => e.stopPropagation()}
+            onWheel={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
+            <button className={s.modalCloseBtn} onClick={closeModal} aria-label="Закрыть модальное окно">
               ×
             </button>
             <div className={s.modalHeader}>
@@ -299,34 +368,34 @@ export const TeamSection = () => {
                 <h3 className={s.modalName}>{selectedMember.name}</h3>
                 <p className={s.modalPosition}>{selectedMember.position}</p>
                 <p className={s.modalExperience}>{selectedMember.experience}</p>
-                
+
                 <div className={s.headerContacts}>
                   <div className={s.contactIconOnly}>
-                    <svg 
-                      className={s.whatsappIcon} 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
+                    <svg
+                      className={s.whatsappIcon}
+                      viewBox="0 0 24 24"
+                      fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path 
-                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488" 
+                      <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.488"
                         fill="#25D366"
                       />
                     </svg>
                   </div>
-                  
+
                   <div className={s.contactIconOnly}>
-                    <svg 
-                      className={s.phoneIcon} 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
+                    <svg
+                      className={s.phoneIcon}
+                      viewBox="0 0 24 24"
+                      fill="none"
                       xmlns="http://www.w3.org/2000/svg"
                     >
-                      <path 
-                        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" 
-                        stroke="#2563eb" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                      <path
+                        d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"
+                        stroke="#2563eb"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                         fill="none"
                       />
@@ -340,9 +409,10 @@ export const TeamSection = () => {
               <p className={s.modalDescription}>{selectedMember.moreExperience}</p>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </section>
+    </>
   )
 }
 

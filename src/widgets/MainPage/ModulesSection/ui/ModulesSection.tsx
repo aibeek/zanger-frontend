@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import s from './ModulesSection.module.scss'
 
@@ -23,6 +24,12 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
+  const handleComingSoon = () => {
+    toast('Раздел в разработке', {
+      icon: '🚧',
+    })
+  }
+
   return (
     <section id="modules" className={s.modulesSection}>
       <div className={s.container}>
@@ -31,7 +38,19 @@ export const ModulesSection = () => {
         
         <div className={s.modulesGrid}>
           {modules.map((module) => (
-            <div key={module.id} className={s.moduleCard}>
+            <div
+              key={module.id}
+              className={s.moduleCard}
+              role="button"
+              tabIndex={0}
+              onClick={handleComingSoon}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleComingSoon()
+                }
+              }}
+            >
               <div className={s.cardContent}>
                 <h3 className={s.moduleTitle}>{module.title}</h3>
                 <p className={s.moduleDescription}>{module.description}</p>
