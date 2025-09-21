@@ -39,8 +39,8 @@ export const sharedApi = {
 			method: 'GET',
 		}),
 
-	getAllTags: () =>
-		httpClientWithAuth(`${API_URL}/tags`, {
+	getAllTags: (): Promise<TagsResponse> =>
+		httpClientWithAuth<TagsResponse>(`${API_URL}/tags`, {
 			method: 'GET',
 		}),
 

@@ -2,10 +2,8 @@ import useSWR from 'swr'
 
 import { sharedApi, Tag, TagsResponse } from '@/shared/api'
 
-const fetchTags = async (): Promise<Tag[]> => {
-	// @ts-expect-error fix it
-	const tags: TagsResponse = await sharedApi.getAllTags()
-	// @ts-expect-error fix it
+const fetchTags = async (): Promise<(Tag | { id: null; name: string })[]> => {
+	const tags = await sharedApi.getAllTags()
 	return [...tags.data, { id: null, name: 'Другое' }]
 }
 
