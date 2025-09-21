@@ -54,7 +54,10 @@
 			"twoWeeks": "2 апта ішінде",
 			"month": "Бір ай ішінде",
 			"flexible": "Икемді кесте"
-		}
+		},
+		"enterCompletionReason": "Өтініш аяқтау себебін енгізіңіз",
+		"successComplete": "Өтініш сәтті аяқталды",
+		"errorComplete": "Өтінішті аяқтауда қате пайда болды"
 	},
 
 	"profile": {
@@ -639,11 +642,13 @@
 		"errorCancel": "Өтінішті болдырмау кезінде қате пайда болды",
 		"errorFetching": "Өтініштерді жүктеу кезінде қате пайда болды",
 		"region": "Өңір",
-		"service": "Қызмет",
+		"service": {
+			"label": "Қызмет",
+			"other": "Басқа"
+		},
 		"description": "Сипаттама",
 		"publishDate": "Жариялау күні",
 		"notSpecified": "Көрсетілмеген",
-		"service.other": "Басқа",
 		"status": {
 			"in_progress": "Өңделуде",
 			"moderation": "Модерацияда",

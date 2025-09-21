@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/shared/ui-kit'
-import { lawyerApi, sharedApi } from '@/shared/api'
+import { lawyerApi, sharedApi, Tag } from '@/shared/api'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useRegionsUtils } from '@/shared/lib'
 
@@ -32,14 +32,9 @@ interface LawyerApplication {
 	}
 }
 
-interface Specialization {
-	id: number
-	name: string
-}
-
 interface Filters {
 	region_id?: number
-	specialization_id?: number
+	tag_id?: number  // Изменено с specialization_id на tag_id
 	date?: string
 	[key: string]: string | number | undefined
 }
@@ -50,32 +45,64 @@ export const LawyerApplicationsList = () => {
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 	
 	const [applications, setApplications] = useState<LawyerApplication[]>([])
-	const [specializations, setSpecializations] = useState<Specialization[]>([])
+	const [tags, setTags] = useState<Tag[]>([])  // Изменено с specializations на tags
 	const [loading, setLoading] = useState(true)
 	const [filters, setFilters] = useState<Filters>({})
 
-	// Загружаем специализации
+	// Отладочная информация при монтировании компонента
 	useEffect(() => {
-		const fetchSpecializations = async () => {
+		console.log('LawyerApplicationsList mounted')
+		console.log('User role from cookie:', document.cookie)
+	}, [])
+
+	// Загружаем теги (вместо специализаций)
+	useEffect(() => {
+		const fetchTags = async () => {
 			try {
-				const response = await sharedApi.getAllSpecializations() as { data: Specialization[] }
-				setSpecializations(response.data || [])
+				console.log('Fetching tags...')
+				const response = await sharedApi.getAllTags() as { data: Tag[] }
+				console.log('Tags response:', response)
+				setTags(response.data || [])
 			} catch (error) {
-				console.error('Error fetching specializations:', error)
+				console.error('Error fetching tags:', error)
 			}
 		}
-		fetchSpecializations()
+		fetchTags()
 	}, [])
 
 	const fetchApplications = async () => {
 		try {
 			setLoading(true)
+			console.log('Fetching applications with filters:', filters)
+			
 			// Передаем фильтры в API
-			const response = await lawyerApi.getOrders(filters) as { data: LawyerApplication[] }
-			setApplications(response.data || [])
+			const response = await lawyerApi.getOrders(filters)
+			console.log('API Response:', response)
+			
+			// Проверяем структуру ответа
+			if (response && typeof response === 'object') {
+				const data =
+					'data' in response
+						? (response as { data: any }).data
+						: response
+				console.log('Applications data:', data)
+				
+				if (Array.isArray(data)) {
+					setApplications(data)
+				} else if (data && Array.isArray(data.data)) {
+					setApplications(data.data)
+				} else {
+					console.warn('Unexpected response structure:', response)
+					setApplications([])
+				}
+			} else {
+				console.warn('Invalid response:', response)
+				setApplications([])
+			}
 		} catch (error) {
 			console.error('Error fetching applications:', error)
 			toast.error(t('errorFetching'))
+			setApplications([])
 		} finally {
 			setLoading(false)
 		}
@@ -94,10 +121,10 @@ export const LawyerApplicationsList = () => {
 		}))
 	}
 
-	const handleSpecializationChange = (specialization: any) => {
+	const handleTagChange = (tag: any) => {
 		setFilters(prev => ({
 			...prev,
-			specialization_id: specialization?.id || undefined
+			tag_id: tag?.id || undefined
 		}))
 	}
 
@@ -118,9 +145,10 @@ export const LawyerApplicationsList = () => {
 
 	const handleRespond = async (applicationId: number) => {
 		try {
-			// Здесь будет логика отклика на заявку
-			console.log('Responding to application:', applicationId)
+			await lawyerApi.respondToOrder(applicationId)
 			toast.success(t('responseSubmitted'))
+			// Перезагружаем список заявок
+			fetchApplications()
 		} catch (error) {
 			console.error('Error responding to application:', error)
 			toast.error(t('responseError'))
@@ -128,8 +156,19 @@ export const LawyerApplicationsList = () => {
 	}
 
 	if (loading) {
-		return <div className={s.loading}>{t('loading')}</div>
+		return (
+			<div className={s.loading}>
+				<p>Загрузка заявок...</p>
+			</div>
+		)
 	}
+
+	console.log('LawyerApplicationsList render:', {
+		applicationsCount: applications.length,
+		applications: applications.slice(0, 2), // первые 2 для отладки
+		loading,
+		filters
+	})
 
 	return (
 		<div className={s.container}>
@@ -152,9 +191,9 @@ export const LawyerApplicationsList = () => {
 					<div className={s.filterItem}>
 						<SearchSelect
 							className="search-select dashboard-select"
-							data={specializations}
-							value={specializations.find((s) => s.id === filters.specialization_id) || null}
-							onChange={handleSpecializationChange}
+							data={tags}
+							value={tags.find((t) => t.id === filters.tag_id) || null}
+							onChange={handleTagChange}
 							getId={(item) => item.id}
 							getLabel={(item) => item.name}
 							placeholder={t('serviceType')}

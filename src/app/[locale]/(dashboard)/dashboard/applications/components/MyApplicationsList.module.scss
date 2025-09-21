@@ -37,25 +37,25 @@
 	transition: all 0.2s ease;
 
 	&:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 		border-color: #d1d9e0;
 	}
 }
 
 .cardHeader {
-	padding: 20px;
+	padding: 16px;
 }
 
 .cardTop {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
-	margin-bottom: 16px;
+	margin-bottom: 12px;
 }
 
 .applicationTitle {
 	margin: 0;
-	font-size: 18px;
+	font-size: 16px;
 	font-weight: 600;
 	color: #1a1a1a;
 	line-height: 1.3;
@@ -64,21 +64,21 @@
 .statusBadge {
 	display: flex;
 	align-items: center;
-	gap: 6px;
-	padding: 4px 12px;
+	gap: 4px;
+	padding: 3px 8px;
 	background: #f8f9fa;
-	border-radius: 16px;
+	border-radius: 12px;
 	white-space: nowrap;
 }
 
 .statusDot {
-	width: 8px;
-	height: 8px;
+	width: 6px;
+	height: 6px;
 	border-radius: 50%;
 }
 
 .statusText {
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: 500;
 	color: #495057;
 }
@@ -86,13 +86,13 @@
 .cardMeta {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 8px;
 }
 
 .metaItem {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+	gap: 2px;
 
 	&:last-child {
 		margin-bottom: 0;
@@ -103,46 +103,38 @@
 	font-size: 12px;
 	font-weight: 500;
 	color: #6c757d;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
 }
 
 .metaValue {
-	font-size: 14px;
-	color: #333;
+	font-size: 13px;
+	color: #495057;
 	font-weight: 400;
 }
 
 .description {
-	margin: 0;
-	font-size: 14px;
-	color: #555;
+	font-size: 13px;
+	color: #495057;
 	line-height: 1.4;
-	max-height: 60px;
-	overflow: hidden;
-	display: -webkit-box;
-	-webkit-line-clamp: 3;
-	line-clamp: 3;
-	-webkit-box-orient: vertical;
+	margin: 0;
 }
 
 .cardActions {
 	display: flex;
 	gap: 8px;
-	padding: 16px 20px;
+	padding: 12px 16px;
 	background: #f8f9fa;
 	border-top: 1px solid #e1e5e9;
 }
 
 .editBtn {
 	flex: 1;
-	padding: 8px 16px;
-	font-size: 13px;
+	padding: 6px 12px;
+	font-size: 12px;
 	font-weight: 500;
 	background: #007bff;
 	color: white;
 	border: none;
-	border-radius: 6px;
+	border-radius: 4px;
 	transition: background 0.2s ease;
 
 	&:hover {
@@ -152,13 +144,13 @@
 
 .completeBtn {
 	flex: 1;
-	padding: 8px 16px;
-	font-size: 13px;
+	padding: 6px 12px;
+	font-size: 12px;
 	font-weight: 500;
 	background: #dc3545;
 	color: white;
 	border: none;
-	border-radius: 6px;
+	border-radius: 4px;
 	transition: background 0.2s ease;
 
 	&:hover {
@@ -166,14 +158,270 @@
 	}
 }
 
+.responsesSection {
+	padding: 10px 16px;
+	border-top: 1px solid #f0f0f0;
+	background: #fafbfc;
+}
+
+.responsesBtn {
+	width: 100%;
+	background: #3b82f6;
+	color: white;
+	border: none;
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: #2563eb;
+	}
+}
+
+.topRight {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.responsesCounter {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	height: 20px;
+	background: #ef4444;
+	color: white;
+	border-radius: 50%;
+	font-size: 10px;
+	font-weight: 600;
+	box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3);
+}
+
+.counterNumber {
+	line-height: 1;
+}
+
+.cardActions {
+	display: flex;
+	gap: 12px;
+	padding: 16px 20px;
+	border-top: 1px solid #f1f5f9;
+	background: #fafbfc;
+}
+
+.editBtn,
+.completeBtn {
+	flex: 1;
+	min-height: 36px;
+}
+
+.editBtn {
+	background: #3b82f6;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background: #2563eb;
+	}
+}
+
+.completeBtn {
+	background: #ef4444;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+
+	&:hover {
+		background: #dc2626;
+	}
+}
+
+.responsesSection {
+	padding: 16px 20px;
+	border-top: 1px solid #f1f5f9;
+}
+
+.responsesBtn {
+	width: 100%;
+	background: #f8fafc;
+	color: #475569;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	padding: 10px 16px;
+	font-size: 14px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+
+	&:hover {
+		background: #f1f5f9;
+		border-color: #cbd5e1;
+	}
+}
+
+// Inline редактирование
+.editFormContainer {
+	padding: 16px;
+	background: #f8f9fa;
+	border-bottom: 1px solid #e1e5e9;
+}
+
+.editForm {
+	max-width: 100%;
+}
+
+.editTitle {
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 16px;
+}
+
+.loadingOptions {
+	text-align: center;
+	padding: 12px;
+	color: #666;
+	font-size: 14px;
+	background: #fff;
+	border-radius: 6px;
+	margin-bottom: 16px;
+}
+
+.editField {
+	margin-bottom: 12px;
+
+	label {
+		display: block;
+		font-size: 13px;
+		font-weight: 500;
+		color: #333;
+		margin-bottom: 4px;
+	}
+}
+
+.editSelect {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #d1d9e0;
+	border-radius: 6px;
+	font-size: 14px;
+	background: #fff;
+	transition: border-color 0.2s ease;
+
+	&:focus {
+		outline: none;
+		border-color: #0056d2;
+		box-shadow: 0 0 0 2px rgba(0, 86, 210, 0.1);
+	}
+
+	&:disabled {
+		background: #f5f5f5;
+		color: #999;
+		cursor: not-allowed;
+	}
+}
+
+.editTextarea {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid #d1d9e0;
+	border-radius: 6px;
+	font-size: 14px;
+	line-height: 1.4;
+	resize: vertical;
+	transition: border-color 0.2s ease;
+	min-height: 80px;
+
+	&:focus {
+		outline: none;
+		border-color: #0056d2;
+		box-shadow: 0 0 0 2px rgba(0, 86, 210, 0.1);
+	}
+
+	&::placeholder {
+		color: #999;
+	}
+}
+
+.editActions {
+	display: flex;
+	gap: 8px;
+	margin-top: 12px;
+
+	@media (max-width: 480px) {
+		flex-direction: column;
+	}
+}
+
+.saveBtn {
+	background: #0056d2;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	flex: 1;
+
+	&:hover:not(:disabled) {
+		background: #003a8c;
+	}
+
+	&:disabled {
+		background: #ccc;
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+}
+
+.cancelBtn {
+	background: #f5f5f5;
+	color: #666;
+	border: 1px solid #d1d9e0;
+	padding: 8px 16px;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex: 1;
+
+	&:hover {
+		background: #e9ecef;
+		border-color: #bbb;
+	}
+}
+
+// Inline завершение
+.completeFormContainer {
+	padding: 16px;
+	background: #fff5f5;
+	border-bottom: 1px solid #ffcccc;
+}
+
 @media (max-width: 768px) {
 	.cardHeader {
-		padding: 16px;
+		padding: 12px;
 	}
 
 	.cardTop {
 		flex-direction: column;
-		gap: 12px;
+		gap: 8px;
 		align-items: stretch;
 	}
 
@@ -182,13 +430,28 @@
 	}
 
 	.cardActions {
-		padding: 12px 16px;
+		padding: 8px 12px;
 		flex-direction: column;
+		gap: 6px;
+	}
+
+	.responsesSection {
+		padding: 8px 12px;
 	}
 
 	.editBtn,
 	.completeBtn {
 		flex: none;
 		width: 100%;
+	}
+
+	.editFormContainer,
+	.completeFormContainer {
+		padding: 12px;
+	}
+
+	.editActions {
+		flex-direction: column;
+		gap: 6px;
 	}
 }

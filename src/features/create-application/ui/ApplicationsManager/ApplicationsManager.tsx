@@ -146,7 +146,7 @@ export const ApplicationsManager = () => {
 								</div>
 								{app.tag && (
 									<div className={s.tag}>
-										<strong>{t('service')}:</strong> {app.tag.name}
+										<strong>{t('service.label')}:</strong> {app.tag.name}
 									</div>
 								)}
 								<div className={s.description}>

@@ -1,0 +1,297 @@
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.modal {
+	background: white;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 800px;
+	max-height: 90vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 24px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.title {
+	font-size: 20px;
+	font-weight: 600;
+	margin: 0;
+	color: #111827;
+}
+
+.closeBtn {
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+	color: #6b7280;
+	padding: 4px;
+	border-radius: 4px;
+	
+	&:hover {
+		background: #f3f4f6;
+		color: #374151;
+	}
+}
+
+.orderInfo {
+	padding: 20px 24px;
+	border-bottom: 1px solid #e5e7eb;
+	background: #f9fafb;
+}
+
+.orderTitle {
+	font-size: 18px;
+	font-weight: 600;
+	margin: 0 0 8px 0;
+	color: #111827;
+}
+
+.orderMeta {
+	display: flex;
+	gap: 24px;
+	font-size: 14px;
+	color: #6b7280;
+}
+
+.content {
+	flex: 1;
+	overflow-y: auto;
+	padding: 24px;
+}
+
+.loading {
+	text-align: center;
+	padding: 40px;
+	color: #6b7280;
+}
+
+.empty {
+	text-align: center;
+	padding: 40px;
+	color: #6b7280;
+}
+
+.responsesList {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.responseCard {
+	position: relative;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: white;
+	
+	&:hover {
+		border-color: #d1d5db;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	}
+}
+
+.lawyerInfo {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex: 1;
+}
+
+.avatar {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	background: #3b82f6;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 24px;
+	font-weight: 600;
+}
+
+.details {
+	flex: 1;
+}
+
+.lawyerName {
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0 0 4px 0;
+	color: #111827;
+}
+
+.specializations {
+	font-size: 14px;
+	color: #6b7280;
+	margin: 0 0 8px 0;
+}
+
+.meta {
+	display: flex;
+	gap: 16px;
+	font-size: 12px;
+	color: #9ca3af;
+}
+
+.actions {
+	display: flex;
+	gap: 12px;
+}
+
+.acceptedBadge,
+.rejectedBadge {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.acceptedBadge {
+	background: #dcfce7;
+	color: #166534;
+}
+
+.rejectedBadge {
+	background: #fee2e2;
+	color: #991b1b;
+}
+
+/* Profile Modal Styles */
+.profileOverlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1001;
+}
+
+.profileModal {
+	background: white;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 500px;
+	max-height: 80vh;
+	overflow: hidden;
+}
+
+.profileHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px;
+	border-bottom: 1px solid #e5e7eb;
+	
+	h3 {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 600;
+		color: #111827;
+	}
+	
+	button {
+		background: none;
+		border: none;
+		font-size: 20px;
+		cursor: pointer;
+		color: #6b7280;
+		padding: 4px;
+		border-radius: 4px;
+		
+		&:hover {
+			background: #f3f4f6;
+		}
+	}
+}
+
+.profileContent {
+	padding: 24px;
+	text-align: center;
+}
+
+.profileAvatar {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: #3b82f6;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32px;
+	font-weight: 600;
+	margin: 0 auto 16px;
+}
+
+.profileContent h4 {
+	font-size: 20px;
+	font-weight: 600;
+	margin: 0 0 8px 0;
+	color: #111827;
+}
+
+.profileContent p {
+	color: #6b7280;
+	margin: 0 0 24px 0;
+}
+
+.profileDetails {
+	text-align: left;
+	margin-bottom: 24px;
+}
+
+.profileRow {
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 0;
+	border-bottom: 1px solid #f3f4f6;
+	
+	&:last-child {
+		border-bottom: none;
+	}
+	
+	span:first-child {
+		font-weight: 500;
+		color: #374151;
+	}
+	
+	span:last-child {
+		color: #6b7280;
+	}
+}
+
+.profileActions {
+	display: flex;
+	gap: 12px;
+	justify-content: center;
+}

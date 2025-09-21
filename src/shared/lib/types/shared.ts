@@ -32,6 +32,7 @@ export type Application = {
 	updated_at: string
 	region?: Region
 	tag?: Tag
+	responses_count?: number
 }
 
 export type ApplicationsResponse = {

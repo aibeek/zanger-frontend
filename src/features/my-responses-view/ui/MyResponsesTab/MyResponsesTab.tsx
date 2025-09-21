@@ -14,17 +14,23 @@ export const MyResponsesTab = () => {
 	const t = useTranslations()
 	const { items, isLoadingMore, isReachingEnd, setSize, size } = useMyResponsesInfinite()
 
+	console.log('MyResponsesTab:', { 
+		size, 
+		itemsCount: items?.length, 
+		isLoadingMore, 
+		isReachingEnd,
+		items: items?.slice(0, 3) // показываем первые 3 элемента для отладки
+	})
+
 	if (size === 0) {
 		return <Loader />
 	}
 
 	if (!items || items.length === 0) {
 		return (
-			<EmptyApplicationsAndResponses
-				redirectUrl={`/${locale}/${defaultLawyerTab}`}
-				buttonContent={t('tabs.historyTab.toApplicationsFeed')}
-				descr={t('myApplications.noRequests')}
-			/>
+			<div style={{ padding: '20px', textAlign: 'center' }}>
+				<p>Нет откликов для отображения</p>
+			</div>
 		)
 	}
 

@@ -35,21 +35,40 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 										animate={{ opacity: 1, y: 0 }}
 										exit={{ opacity: 0, y: 10 }}
 										transition={{ duration: 0.3 }}>
+										
+										{/* Заголовок - тип услуги */}
 										<div className={s.cardHeader}>
-											<h3 className={s.title}>{item.order?.title}</h3>
+											<h3 className={s.title}>
+												{item.order?.tag?.name || t('service.other')}
+											</h3>
 										</div>
+										
+										{/* Описание */}
 										<div className={s.description}>
-											<DescriptionText>{item.order.description}</DescriptionText>
+											<DescriptionText>{item.order?.description}</DescriptionText>
 										</div>
+										
+										{/* Информация о клиенте и сроках */}
 										<div className={s.dataRow}>
-											<span className={s.deadline}>{t('deadline')}: {item.order?.deadline}</span>
-											<span className={s.clientType}>
-												{t('clientType')}: {item.user?.type === 'legal' ? t('legalClient') : t('individualClient')}
-											</span>
-											<span className={s.publishDate}>
-												{t('publishDate')}: <DateComponent date={item.order?.created_at} />
-											</span>
+											<div className={s.infoLine}>
+												<span className={s.label}>{t('deadline')}:</span>
+												<span className={s.value}>{item.order?.deadline || 'Не указан'}</span>
+											</div>
+											<div className={s.infoLine}>
+												<span className={s.label}>{t('clientType')}:</span>
+												<span className={s.value}>
+													{item.order?.user?.type === 'legal' ? t('legalClient') : t('individualClient')}
+												</span>
+											</div>
+											<div className={s.infoLine}>
+												<span className={s.label}>{t('publishDate')}:</span>
+												<span className={s.value}>
+													<DateComponent date={item.order?.created_at} />
+												</span>
+											</div>
 										</div>
+										
+										{/* Кнопка действия */}
 										<div className={s.bottom}>
 											<Button
 												className={s.chatBtn}

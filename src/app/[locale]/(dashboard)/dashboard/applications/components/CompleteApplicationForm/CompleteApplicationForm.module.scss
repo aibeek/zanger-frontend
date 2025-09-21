@@ -1,0 +1,174 @@
+.wrapper {
+	width: 100%;
+	background: transparent;
+	border-radius: 0;
+	box-shadow: none;
+	padding: 0;
+}
+
+.header {
+	margin-bottom: 20px;
+}
+
+.backButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 12px;
+	margin-bottom: 12px;
+	color: #666;
+	font-size: 13px;
+	font-weight: 500;
+	background: none;
+	border: none;
+	border-radius: 6px;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	
+	&:hover:not(:disabled) {
+		background: #f0f0f0;
+		color: #333;
+	}
+	
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+}
+
+.backIcon {
+	width: 14px;
+	height: 14px;
+}
+
+.title {
+	font-size: 18px;
+	font-weight: 600;
+	color: #333;
+	margin: 0;
+}
+
+.reasons {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	border-radius: 8px;
+	overflow: hidden;
+	border: 1px solid #e0e0e0;
+	margin-bottom: 16px;
+}
+
+.reasonBtn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	background: #fff;
+	border: none;
+	border-bottom: 1px solid #f0f0f0;
+	font-size: 14px;
+	font-weight: 500;
+	color: #333;
+	text-align: left;
+	transition: all 0.2s ease;
+	cursor: pointer;
+	
+	&:last-child {
+		border-bottom: none;
+	}
+	
+	&:hover:not(:disabled) {
+		background: #f8f9fa;
+		color: #0056d2;
+	}
+	
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+}
+
+.reasonText {
+	flex: 1;
+}
+
+.reasonIcon {
+	width: 16px;
+	height: 16px;
+	color: #999;
+	transition: color 0.2s ease;
+}
+
+.reasonBtn:hover:not(:disabled) .reasonIcon {
+	color: #0056d2;
+}
+
+.customReason {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.customReasonLabel {
+	font-size: 14px;
+	font-weight: 500;
+	color: #333;
+	margin-bottom: 0;
+}
+
+.textarea {
+	width: 100%;
+	min-height: 100px;
+	padding: 12px;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	font-size: 14px;
+	line-height: 1.5;
+	color: #333;
+	background: #fff;
+	resize: vertical;
+	transition: border-color 0.2s ease;
+	
+	&:focus {
+		outline: none;
+		border-color: #0056d2;
+		box-shadow: 0 0 0 2px rgba(0, 86, 210, 0.1);
+	}
+	
+	&::placeholder {
+		color: #999;
+		font-style: italic;
+	}
+	
+	&:disabled {
+		background: #f5f5f5;
+		color: #999;
+		cursor: not-allowed;
+	}
+}
+
+.customReasonButtons {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.submitButton {
+	background: #dc3545;
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	
+	&:hover:not(:disabled) {
+		background: #c82333;
+	}
+	
+	&:disabled {
+		background: #ccc;
+		cursor: not-allowed;
+	}
+}

@@ -62,7 +62,10 @@
 		},
 		"services": {
 			"other": "Другое"
-		}
+		},
+		"enterCompletionReason": "Введите причину завершения заявки",
+		"successComplete": "Заявка успешно завершена",
+		"errorComplete": "Ошибка при завершении заявки"
 	},
 
 	"profile": {
@@ -540,12 +543,14 @@
 		"noRequests": "Заявок пока нет",
 		"deadline": "Срок",
 		"publishDate": "Дата публикации",
+		"region": "Регион",
 		"editButton": "Редактировать",
 		"completeButton": "Завершить",
 		"modal": {
 			"title": "Причина отзыва заявки"
 		},
 		"customReason": {
+			"label": "Укажите свою причину",
 			"placeholder": "Введите причину отзыва заявки",
 			"confirm": "Подтвердить",
 			"canceling": "Отмена..."
@@ -555,6 +560,13 @@
 			"non_actual": "Больше не актуально",
 			"didnt_help": "Мне не помогли",
 			"other": "Указать свою причину"
+		},
+		"status": {
+			"in_progress": "В обработке",
+			"moderation": "На модерации",
+			"assigned": "Назначена",
+			"completed": "Завершена",
+			"cancelled": "Отменена"
 		},
 		"cancelButton": "Отменить заявку",
 
@@ -641,19 +653,23 @@
 		"errorCancel": "Ошибка при отмене заявки",
 		"errorFetching": "Ошибка при загрузке заявок",
 		"region": "Регион",
-		"service": "Услуга",
+		"service": {
+			"label": "Услуга",
+			"other": "Другое"
+		},
 		"description": "Описание",
 		"publishDate": "Дата публикации",
 		"notSpecified": "Не указано",
-		"service.other": "Другое",
 		"status": {
 			"in_progress": "В обработке",
 			"moderation": "На модерации",
+			"assigned": "Назначена",
 			"completed": "Завершена",
 			"cancelled": "Отменена",
 			"statuses": {
 				"in_progress": "В обработке",
 				"moderation": "На модерации",
+				"assigned": "Назначена",
 				"completed": "Завершена",
 				"cancelled": "Отменена"
 			}
