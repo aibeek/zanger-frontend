@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server'
 
 import { routing } from '@/i18n/routing'
 import { Header } from '@/widgets/Header'
-import { Footer } from '@/widgets/Footer'
 import { SWRConfig } from 'swr'
 import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
@@ -41,7 +40,6 @@ export default async function AuthLayout({
 				<div className="authed-wrapper">
 					<Header variant={'user-variant'} />
 					<section>{children}</section>
-					<Footer />
 					<ChatBot />
 					<PulseChatWidget />
 				</div>

@@ -136,7 +136,6 @@ export const PulseChat = ({ chatId, enabled = true }: PulseChatProps) => {
     return null;
   }
 
-  console.log('PulseChat rendering button with styles:', styles);
 
   return (
     <div className={styles.chatContainer}>
