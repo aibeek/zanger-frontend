@@ -1,20 +1,19 @@
 version: '3.5'
 
 services:
-    lawyerplace-frontend:
-      image: ${SERVICE_IMAGE_NAME}:${SERVICE_IMAGE_TAG}
-      build:
-        context: .
-        args:
-          - "env_build=${SERVICE_PROFILE}"
-        dockerfile: ./.docker/nextjs/Dockerfile
-      restart: always
-      networks:
-        - lawyerplace-network
-      env_file:
-        - .env
-
+  lawyerplace-frontend:
+    image: ${SERVICE_IMAGE_NAME}:${SERVICE_IMAGE_TAG}
+    build:
+      context: .
+      args:
+        - "env_build=${SERVICE_PROFILE}"
+      dockerfile: ./.docker/nextjs/Dockerfile
+    restart: always
+    networks:
+      - lawyerplace_network   # 👈 совпадает с backend
+    env_file:
+      - .env
 
 networks:
-  lawyerplace-network:
+  lawyerplace_network:        # 👈 подчёркивание
     external: true
