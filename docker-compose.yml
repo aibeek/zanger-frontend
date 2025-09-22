@@ -9,7 +9,6 @@ services:
           - "env_build=${SERVICE_PROFILE}"
         dockerfile: ./.docker/nextjs/Dockerfile
       restart: always
-      container_name: lawyerplace-frontend
       networks:
         - lawyerplace-network
       env_file:
