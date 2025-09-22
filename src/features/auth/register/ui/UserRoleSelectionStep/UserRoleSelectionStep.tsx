@@ -2,8 +2,6 @@
 
 import Image from 'next/image'
 import { Button } from '@/shared/ui-kit'
-import client from '@/app/assets/images/role-client.webp'
-import lawyer from '@/app/assets/images/role-lawyer.webp'
 import { Link } from '@/i18n'
 import { useTranslations } from 'next-intl'
 
@@ -18,21 +16,19 @@ export const UserRoleSelectionStep = () => {
 			className: 'clientCard',
 			title: t('client.title'),
 			descr: t('client.description'),
-			imgSrc: client,
 		},
 		{
 			role: 'lawyer',
 			className: 'lawyerCard',
 			title: t('lawyer.title'),
 			descr: t('lawyer.description'),
-			imgSrc: lawyer,
 		},
 	]
 
 	return (
 		<div className={s.wrapper}>
 			<div className={s.cards}>
-				{cardData.map(({ role, className, title, descr, imgSrc }) => (
+				{cardData.map(({ role, className, title, descr }) => (
 					<article
 						key={role}
 						className={s[className]}>
@@ -48,14 +44,6 @@ export const UserRoleSelectionStep = () => {
 										{t('choose')}
 									</Button>
 								</Link>
-							</div>
-							<div className={s.right}>
-								<Image
-									src={imgSrc}
-									alt={role}
-									width={150}
-									height={210}
-								/>
 							</div>
 						</div>
 					</article>

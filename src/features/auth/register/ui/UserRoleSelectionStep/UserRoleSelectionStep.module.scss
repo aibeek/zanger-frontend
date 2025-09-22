@@ -1,48 +1,53 @@
+.wrapper {
+	display: flex;
+	justify-content: center;
+}
+
 .cards {
 	display: flex;
 	flex-direction: column;
-	gap: 40px;
+	gap: 24px;
+	width: 100%;
+	max-width: 760px;
 }
 
 .clientCard,
 .lawyerCard {
-	border-radius: 10px;
-	width: 390px;
-	box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.08);
+	position: relative;
+	border-radius: 16px;
+	width: 100%;
+	background: #fff;
+	border: 2px solid rgba(37, 99, 235, 0.4);
+	box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-.clientCard {
-	background-color: rgba(237, 238, 247, 1);
-}
 
-.lawyerCard {
-	background-color: rgba(245, 241, 238, 1);
-}
 
 .inner {
-	padding: 16px;
+	padding: 20px 24px;
 	position: relative;
+	min-height: 160px;
 }
 
 .left {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	max-width: 210px;
+	max-width: 65%;
 }
 
 .right {
 	position: absolute;
-	right: 0;
-	bottom: 0;
+	right: 12px;
+	bottom: 6px;
 	img {
 		object-fit: cover;
 	}
 }
 
 .title {
-	font-size: 17px;
-	font-weight: 600;
+	font-size: 18px;
+	font-weight: 700;
 	line-height: 22px;
 }
 

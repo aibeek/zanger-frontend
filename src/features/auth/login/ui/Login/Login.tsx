@@ -133,11 +133,14 @@ export const Login = () => {
 					</Button>
 				</form>
 
-				<Link
-					className={s.link}
-					href={`/auth/register/select-role`}>
-					{t('auth.login.registerLink')}
-				</Link>
+				<div className={s.disclaimer}>
+					<span>
+						Авторизуясь, Вы подтверждаете, что ознакомились и принимаете{' '}
+						<Link className={s.link} href="#">Политику конфиденциальности</Link>
+						{' '}и{' '}
+						<Link className={s.link} href="#">Публичную оферту</Link>
+					</span>
+				</div>
 			</div>
 		</div>
 	)
