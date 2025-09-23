@@ -1,11 +1,14 @@
 /* wrapper inherits panel styles from AuthShell */
 
-.inner { padding: 38px 46px; }
+.wrapper { height: 100%; overflow: hidden; }
+.inner { padding: 38px 46px; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 
 .top { text-align: center; color: $secondary-color; margin-bottom: 22px; }
 .phone {
 	margin-bottom: 14px;
 }
+
+.form { flex: 1 1 auto; overflow: hidden; }
 
 .btn { margin-top: 24px; margin-bottom: 16px; }
 
@@ -45,14 +48,6 @@
 	font-size: 32px;
 	margin-bottom: 8px;
 	line-height: 120%;
-}
-
-.form {
-	margin-bottom: 16px;
-}
-
-.link {
-	color: $blue-color;
 }
 
 .disclaimer {

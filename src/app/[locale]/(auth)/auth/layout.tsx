@@ -4,7 +4,6 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 
 import { routing } from '@/i18n/routing'
-import { Header } from '@/widgets/Header'
 import { SWRConfig } from 'swr'
 import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
@@ -37,8 +36,8 @@ export default async function AuthLayout({
 	return (
 		<NextIntlClientProvider messages={messages}>
 			<SWRConfig value={{ shouldRetryOnError: false }}>
-				<div className="authed-wrapper">
-					<Header variant={'user-variant'} />
+				<div className="auth-wrapper">
+					{/* Header удален на страницах авторизации */}
 					<section>{children}</section>
 					<ChatBot />
 					<PulseChatWidget />

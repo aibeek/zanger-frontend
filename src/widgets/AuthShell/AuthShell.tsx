@@ -16,17 +16,12 @@ export function AuthShell({ children, rightHeader }: AuthShellProps) {
         <aside className={s.promo} aria-hidden>
           <div className={s.promoInner}>
             <div className={s.brandBlock}>
-              <Image src="/logo.svg" alt="Zanger" width={80} height={80} />
+              <Image src="/logo.svg" alt="Zanger" width={200} height={200} />
               <h2 className={s.brandTitle}>ZANGER</h2>
               <p className={s.brandSubtitle}>Юридическая платформа Zanger</p>
               <p className={s.brandDescription}>
                 Сервис по взаимодействию клиентов и юристов
               </p>
-            </div>
-            <div className={s.carouselDots}>
-              <span className={s.dot} />
-              <span className={s.dot} />
-              <span className={s.dot} />
             </div>
           </div>
         </aside>
