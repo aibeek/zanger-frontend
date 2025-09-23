@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 import { routing } from '@/i18n/routing'
 import { notFound } from 'next/navigation'
-import { NextIntlClientProvider, hasLocale } from 'next-intl'
+import { NextIntlClientProvider } from 'next-intl'
 
 export const metadata: Metadata = {
     title: 'Zanger',
@@ -14,15 +14,18 @@ export default async function LocaleLayout({
     params,
 }: {
     children: React.ReactNode
-    params: Promise<{ locale: string }>
+    params: { locale: string }
 }) {
-    const { locale } = await params
-    if (!hasLocale(routing.locales, locale)) {
+    const { locale } = params
+
+    if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
         notFound()
     }
-    
+
+    const messages = (await import(`../../../locales/${locale}/messages.json`)).default
+
     return (
-        <NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
         </NextIntlClientProvider>
     )

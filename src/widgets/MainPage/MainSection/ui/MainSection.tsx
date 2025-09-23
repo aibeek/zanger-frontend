@@ -53,7 +53,7 @@ export const MainSection = () => {
 									alt="phones"
 									className={s.phonesImg}
 									width={500}
-									height={400}
+									height={300}
 									style={{ width: 'auto', height: 'auto' }}
 								/>
 							</div>

@@ -206,31 +206,37 @@
 
 	.headerContent {
 		display: flex;
-		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
 		height: 100%;
 		padding: 26px 113px;
-		gap: 20px; /* уменьшили общий горизонтальный зазор между секциями */
-		
-		@media (max-width: 1200px) {
-			padding: 20px 40px;
+		gap: 10px;
+
+  /* Адаптация под 1366px */
+		@media (max-width: 1366px) {
+			padding: 18px 40px;  // меньше боковые отступы
+			gap: 8px;            // уменьшаем расстояние между секциями
 		}
-		
+
+		@media (max-width: 1200px) {
+			padding: 20px 30px;
+		}
+
 		@media (max-width: 1024px) {
 			padding: 18px 30px;
 		}
-		
+
 		@media (max-width: 768px) {
 			gap: 20px;
 			padding: 15px 20px;
 		}
-		
+
 		@media (max-width: 480px) {
 			padding: 12px 16px;
 		}
-	}
+		}
+
 
 
 	.userInfo {
@@ -307,13 +313,13 @@
 	.navigation {
 		display: flex;
 		align-items: center;
-		gap: 20px; /* базовый зазор между пунктами меню */
+		gap: 10px; /* базовый зазор между пунктами меню */
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
 		
 		@media (max-width: 1400px) {
-			gap: 24px;
+			gap: 16px;
 		}
 		
 		@media (max-width: 1200px) {
