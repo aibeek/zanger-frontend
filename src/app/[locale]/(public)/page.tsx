@@ -9,8 +9,8 @@ export default function Home() {
 				<MainSection />
 				<AboutSection />
 				<TeamSection />
-				<ModulesSection />
 				<DescriptionSection />
+				<ModulesSection />
 				<ResourcesSection />
 				<NewsSection />
 				<Footer />
