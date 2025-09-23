@@ -404,7 +404,7 @@
 
 	"auth": {
 		"login": {
-			"title": "Войти<br />в приложение",
+			"title": "Войти в свой аккаунт ",
 			"phoneLabel": "Номер телефона",
 			"phonePlaceholder": "Введите номер телефона",
 			"passwordLabel": "Пароль",

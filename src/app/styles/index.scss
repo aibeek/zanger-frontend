@@ -196,6 +196,16 @@ body {
 	}
 }
 
+// Полноэкранный лейаут для страниц авторизации без хедера
+.auth-wrapper {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+	background-color: $primary-bg;
+	/* без верхнего отступа, так как хедера нет */
+	padding-top: 0;
+}
+
 .dashboard-top {
 	width: 100%;
 	display: flex;

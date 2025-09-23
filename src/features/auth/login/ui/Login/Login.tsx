@@ -7,6 +7,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import Image from 'next/image'
 
 import { Button, Input } from '@/shared/ui-kit'
 import { useEnterPhone, useLoginStore } from '@/features/auth'
@@ -67,6 +68,11 @@ export const Login = () => {
 		<div className={s.wrapper}>
 			<div className={s.inner}>
 				<div className={s.top}>
+					{/* Бренд по центру, как в дизайне */}
+					<div className={s.brand}>
+						<Image src="/logo.svg" alt="Zanger" width={28} height={28} />
+						<span>ZANGER</span>
+					</div>
 					<h1
 						className={s.title}
 						dangerouslySetInnerHTML={{ __html: t('auth.login.title') }}
