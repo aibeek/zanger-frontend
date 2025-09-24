@@ -3,16 +3,15 @@ import { UserRoleSelectionStep } from '@/features/auth/register'
 import { AuthShell } from '@/widgets/AuthShell'
 
 export default async function SelectRole() {
-	const t = await getTranslations('auth.roleSelection')
+	const t = await getTranslations('auth')
+	const shell = await getTranslations('auth.shell')
 
 	return (
 		<AuthShell
-			// title={t('heading', { default: 'Ваш статус' } as any) || 'Ваш статус'}
 			showNavigation={true}
-			navigationText="Есть аккаунт?"
-			navigationLinkText="Вход"
+			navigationText={shell('haveAccount')}
+			navigationLinkText={shell('loginLink')}
 			navigationLinkHref="/auth/login"
-			showDisclaimer={true}
 		>
 			<UserRoleSelectionStep />
 		</AuthShell>

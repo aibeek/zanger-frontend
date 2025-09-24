@@ -65,64 +65,70 @@ export const Login = () => {
 	}
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)} className={s.form}>
-			<div className={`${s.phone} ${s.inputBox}`}>
-				<label className={s.label}>{t('auth.login.phoneLabel')}</label>
-
-				<Controller
-					name="phone"
-					control={control}
-					render={({ field: { onChange, onBlur, value, ref } }) => (
-						<Input
-							autoFocus
-							type="tel"
-							placeholder={t('auth.login.phonePlaceholder')}
-							hasError={!!errors.phone}
-							disabled={loading}
-							// @ts-expect-error fix it
-							as={IMaskInput}
-							mask="+{7} (000) 000-00-00"
-							value={value}
-							onAccept={(phone: string) => {
-								onChange(phone)
-								setPhone(phone)
-							}}
-							onBlur={onBlur}
-							inputRef={ref}
-							unmask={true}
-						/>
-					)}
-				/>
-				{errors.phone && <p className={s.error}>{t(errors.phone.message || 'validation.generic')}</p>}
+		<div className={s.loginWrapper}>
+			<div className={s.logoBlock}>
+				<Image src="/logo-blue.svg" alt="Zanger logo" width={48} height={56} />
+				<span className={s.brand}>ZANGER</span>
 			</div>
+			<form onSubmit={handleSubmit(onSubmit)} className={s.form}>
+				<div className={`${s.phone} ${s.inputBox}`}>
+					<label className={s.label}>{t('auth.login.phoneLabel')}</label>
 
-			<div className={`${s.password} ${s.inputBox}`}>
-				<label className={s.label}>{t('auth.login.passwordLabel')}</label>
-				<Input
-					type="password"
-					placeholder={t('auth.login.passwordPlaceholder')}
-					{...register('password')}
-					hasError={!!errors.password}
-					disabled={loading}
-				/>
-				{errors.password && <p className={s.error}>{t(errors.password.message)}</p>}
-			</div>
+					<Controller
+						name="phone"
+						control={control}
+						render={({ field: { onChange, onBlur, value, ref } }) => (
+							<Input
+								autoFocus
+								type="tel"
+								placeholder={t('auth.login.phonePlaceholder')}
+								hasError={!!errors.phone}
+								disabled={loading}
+								// @ts-expect-error fix it
+								as={IMaskInput}
+								mask="+{7} (000) 000-00-00"
+								value={value}
+								onAccept={(phone: string) => {
+									onChange(phone)
+									setPhone(phone)
+								}}
+								onBlur={onBlur}
+								inputRef={ref}
+								unmask={true}
+							/>
+						)}
+					/>
+					{errors.phone && <p className={s.error}>{t(errors.phone.message || 'validation.generic')}</p>}
+				</div>
 
-			{formError && <p className={s.error}>{formError}</p>}
+				<div className={`${s.password} ${s.inputBox}`}>
+					<label className={s.label}>{t('auth.login.passwordLabel')}</label>
+					<Input
+						type="password"
+						placeholder={t('auth.login.passwordPlaceholder')}
+						{...register('password')}
+						hasError={!!errors.password}
+						disabled={loading}
+					/>
+					{errors.password && <p className={s.error}>{t(errors.password.message)}</p>}
+				</div>
 
-			<Link
-				href={`/auth/reset-password`}
-				className={s.forgetPassword}>
-				{t('auth.login.forgotPassword')}
-			</Link>
+				{formError && <p className={s.error}>{formError}</p>}
 
-			<Button
-				className={s.btn}
-				size="full"
-				type="submit"
-				disabled={loading}>
-				{loading ? t('auth.login.submitting') : t('auth.login.submit')}
-			</Button>
-		</form>
+				<Link
+					href={`/auth/reset-password`}
+					className={s.forgetPassword}>
+					{t('auth.login.forgotPassword')}
+					</Link>
+
+				<Button
+					className={s.btn}
+					size="full"
+					type="submit"
+					disabled={loading}>
+					{loading ? t('auth.login.submitting') : t('auth.login.submit')}
+				</Button>
+			</form>
+		</div>
 	)
 }

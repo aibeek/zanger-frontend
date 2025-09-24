@@ -5,19 +5,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  /* overflow hidden clipped the right border-radius when grid overflowed */
+  overflow: visible;
 }
 
 .container {
   display: grid;
-  grid-template-columns: 40% 60%;
+  /* Using fr units so the gap is subtracted before distributing space, preventing overflow clipping radius */
+  grid-template-columns: 0.4fr 0.6fr;
   gap: 24px;
   max-width: auto;
   width: 100%;
   height: 100%;
   grid-auto-rows: 1fr;
   align-items: stretch;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .promo {
@@ -45,25 +47,29 @@
   flex-direction: column;
   justify-content: center; /* центрирует внутри */
   align-items: center;
+  gap: 8px;
 }
 
 .brandTitle {
-  font-size: 48px;
+  font-size: 52px;
   font-weight: 800;
-  margin: 16px 0 8px 0;
+  margin: 12px 0 4px 0;
   letter-spacing: 2px;
+  text-align: center;
 }
 
 .brandSubtitle {
   font-size: 20px;
   opacity: 0.95;
-  margin-bottom: 8px;
+  margin: 0;
 }
 
 .brandDescription {
   font-size: 14px;
   opacity: 0.85;
-  margin-top: 8px;
+  margin-top: 4px;
+  max-width: 240px;
+  line-height: 1.4;
 }
 
 
@@ -92,7 +98,7 @@
   font-size: 28px !important;
   color: #2563eb !important;
   font-weight: 800 !important;
-  margin: 24px 0 32px !important;
+  margin: 56px 0 40px !important; /* pushed lower */
   text-align: center !important;
   width: 100% !important;
   background: none !important;

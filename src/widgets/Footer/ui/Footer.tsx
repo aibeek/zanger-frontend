@@ -233,11 +233,8 @@ export const Footer = ({ id }: FooterProps) => {
 						</form>
 					</div>
 				</div>
-			</div>
-
-			{/* Bottom Section */}
-			<div className={s.lendingBottom}>
-				<div className={s.lendingBottomInner}>
+				{/* Unified Bottom Section (merged) */}
+				<div className={s.footerBottom}>
 					<div className={s.lendingBottomLeft}>
 						<p>
 							© {new Date().getFullYear()} Zanger. {t('copyright')}

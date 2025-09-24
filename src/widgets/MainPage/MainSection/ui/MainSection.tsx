@@ -76,7 +76,7 @@ export const MainSection = () => {
 								</Link> */}
 								<div className={s.mobileVersionText}>
 									<span className={s.developmentLabel}>
-										Мобильная версия в разработке. Запуск скоро. Следите за новостями!
+										{t('mobileVersionLabel')}
 									</span>
 								</div>
 							</div>

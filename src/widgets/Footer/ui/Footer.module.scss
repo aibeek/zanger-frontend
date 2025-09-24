@@ -83,11 +83,10 @@
 	max-width: 1384px;
 	width: 100%;
 	margin: 0 auto;
-	padding: 40px 32px;
+	padding: 40px 32px 28px 32px;
 	background: #171c2f;
-	border-radius: 16px 16px 0 0;
+	border-radius: 16px;
 	border: 1px solid #2d3748;
-	border-bottom: none;
 	display: grid;
 	grid-template-columns: 1fr 1fr 420px; /* right column fixed for contact form */
 	gap: 40px;
@@ -302,63 +301,19 @@
 
 	// Footer bottom section structure
 	.footerBottom {
-		grid-column: 1 / -1; // Span all columns
-		margin-top: 30px;
-		padding-top: 24px;
-		border-top: 1px solid #2d3748;
-
-		@media (max-width: 1024px) {
-			margin-top: 40px;
-		}
-	}
-
-	.lendingBottom {
-		width: 100%;
-		font-size: 14px;
-		font-weight: 400;
-		line-height: 160%;
-		padding: 0 24px 28px 24px;
-		color: #ffffff;
-		position: relative;
-		/* Slightly lift the bottom strip visually */
-		margin-top: -8px;
-		background: transparent;
-
-		@media (max-width: 1024px) {
-			padding: 0 30px 30px 30px;
-		}
-
-		@media (max-width: 480px) {
-			padding: 0 20px 20px 20px;
-		}
-	}
-
-	.lendingBottomInner {
-		max-width: 1384px;
-		width: 100%;
-		margin: 0 auto;
-		padding: 20px 28px;
-		background: #171c2f;
-		border: 1px solid #2d3748;
-		border-top: 1px solid #2d3748;
-		border-radius: 0 0 12px 12px;
+		grid-column: 1 / -1;
+		margin-top: 32px;
+		padding-top: 0;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-
-		@media (max-width: 1424px) {
-			max-width: 1200px;
-			padding: 24px 40px;
-		}
+		gap: 40px;
+		/* remove separating line */
+		border-top: none;
 
 		@media (max-width: 768px) {
 			flex-direction: column;
 			gap: 20px;
-			padding: 24px 30px;
-		}
-
-		@media (max-width: 480px) {
-			padding: 24px 20px;
 		}
 	}
 
