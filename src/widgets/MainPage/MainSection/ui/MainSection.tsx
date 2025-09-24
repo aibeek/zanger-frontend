@@ -39,7 +39,7 @@ export const MainSection = () => {
 									<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
 									Позвонить
 								</Link>
-								<Link href="/auth/register" className={s.requestButton}>
+								<Link href="/auth/register/select-role" className={s.requestButton}>
 									Оставить заявку
 								</Link>
 							</div>
@@ -58,7 +58,7 @@ export const MainSection = () => {
 								/>
 							</div>
 							<div className={s.appStores}>
-								<Link href={'/'}>
+								{/* <Link href={'/'}>
 									<Image
 										src={AppleStore}
 										alt={'app store'}
@@ -73,7 +73,12 @@ export const MainSection = () => {
 										width={160}
 										height={48}
 									/>
-								</Link>
+								</Link> */}
+								<div className={s.mobileVersionText}>
+									<span className={s.developmentLabel}>
+										Мобильная версия в разработке. Запуск скоро. Следите за новостями!
+									</span>
+								</div>
 							</div>
 						</div>
 					</div>
