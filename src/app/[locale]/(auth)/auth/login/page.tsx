@@ -9,7 +9,6 @@ export default function LoginPage() {
             navigationText="Нет аккаунта?"
             navigationLinkText="Зарегистрироваться"
             navigationLinkHref="/auth/register/select-role"
-            showDisclaimer={true}
         >
             <Login />
         </AuthShell>

@@ -1,3 +1,5 @@
+'use client'
+
 import useSWRInfinite from 'swr/infinite'
 import { lawyerApi } from '@/shared/api'
 import { PAGE_SIZE } from '@/shared/lib'

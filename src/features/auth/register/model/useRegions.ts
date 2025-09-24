@@ -1,4 +1,5 @@
-// @ts-ignore
+'use client'
+
 import useSWR from 'swr'
 
 import { sharedApi, City } from '@/shared/api'

@@ -57,7 +57,6 @@ export default function RegisterPage() {
 			navigationText="Есть аккаунт?"
 			navigationLinkText="Вход"
 			navigationLinkHref="/auth/login"
-			showDisclaimer={step === 'clientRegistrationForm' || step === 'lawyerRegistrationForm'}
 		>
 			{StepComponent ? <StepComponent variant={role as RoleVariant} /> : <div>Шаг не найден</div>}
 		</AuthShell>
