@@ -10,7 +10,7 @@
 
 .container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 40% 60%;
   gap: 24px;
   max-width: auto;
   width: 100%;
@@ -47,10 +47,17 @@
   align-items: center;
 }
 
+.brandTitle {
+  font-size: 48px;
+  font-weight: 800;
+  margin: 16px 0 8px 0;
+  letter-spacing: 2px;
+}
 
 .brandSubtitle {
-  font-size: 36px;
+  font-size: 20px;
   opacity: 0.95;
+  margin-bottom: 8px;
 }
 
 .brandDescription {

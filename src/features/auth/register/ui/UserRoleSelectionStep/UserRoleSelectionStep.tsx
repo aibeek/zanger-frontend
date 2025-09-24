@@ -16,19 +16,21 @@ export const UserRoleSelectionStep = () => {
 			className: 'clientCard',
 			title: t('client.title'),
 			descr: t('client.description'),
+			icon: '/assets/icons/auth_logo_client.svg',
 		},
 		{
 			role: 'lawyer',
 			className: 'lawyerCard',
 			title: t('lawyer.title'),
 			descr: t('lawyer.description'),
+			icon: '/assets/icons/auth-logo-lawyer.svg',
 		},
 	]
 
 	return (
 		<div className={s.wrapper}>
 			<div className={s.cards}>
-				{cardData.map(({ role, className, title, descr }) => (
+				{cardData.map(({ role, className, title, descr, icon }) => (
 					<article
 						key={role}
 						className={s[className]}>
@@ -44,6 +46,15 @@ export const UserRoleSelectionStep = () => {
 										{t('choose')}
 									</Button>
 								</Link>
+							</div>
+							<div className={s.right}>
+								<Image 
+									src={icon} 
+									alt={title} 
+									width={80} 
+									height={80}
+									className={s.icon}
+								/>
 							</div>
 						</div>
 					</article>

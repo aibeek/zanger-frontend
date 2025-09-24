@@ -27,6 +27,9 @@
 	padding: 20px 24px;
 	position: relative;
 	min-height: 160px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .left {
@@ -34,15 +37,19 @@
 	flex-direction: column;
 	gap: 8px;
 	max-width: 65%;
+	flex: 1;
 }
 
 .right {
-	position: absolute;
-	right: 12px;
-	bottom: 6px;
-	img {
-		object-fit: cover;
-	}
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 16px;
+}
+
+.icon {
+	opacity: 0.8;
+	transition: opacity 0.2s ease;
 }
 
 .title {

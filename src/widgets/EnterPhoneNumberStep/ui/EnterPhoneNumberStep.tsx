@@ -41,17 +41,15 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 	const { translatedFieldErrors, translatedServerError } = useFormError(error, errors)
 
 	return (
-		<div className={s.wrapper}>
-			<div className={s.inner}>
-				<div className={s.top}>
-					<h1 className={s.title}>{t('auth.enterPhone.title')}</h1>
-					<p className={s.descr}>{t('auth.enterPhone.description')}</p>
-				</div>
+		<div className={s.inner}>
+			<div className={s.top}>
+				<p className={s.descr}>{t('auth.enterPhone.description')}</p>
+			</div>
 
-				<form
-					className={s.form}
-					onSubmit={handleSubmit(onSubmit)}>
-					<label className={s.label}>{t('auth.enterPhone.label')}</label>
+			<form
+				className={s.form}
+				onSubmit={handleSubmit(onSubmit)}>
+				<label className={s.label}>{t('auth.enterPhone.label')}</label>
 					<Controller
 						name="phone"
 						control={control}
@@ -105,6 +103,5 @@ export const EnterPhoneNumberStep = ({ warning = true, variant }: Props) => {
 					</div>
 				)}
 			</div>
-		</div>
 	)
 }
