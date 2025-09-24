@@ -5,19 +5,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  /* overflow hidden clipped the right border-radius when grid overflowed */
+  overflow: visible;
 }
 
 .container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Using fr units so the gap is subtracted before distributing space, preventing overflow clipping radius */
+  grid-template-columns: 0.4fr 0.6fr;
   gap: 24px;
   max-width: auto;
   width: 100%;
   height: 100%;
   grid-auto-rows: 1fr;
   align-items: stretch;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .promo {
@@ -45,32 +47,72 @@
   flex-direction: column;
   justify-content: center; /* центрирует внутри */
   align-items: center;
+  gap: 8px;
 }
 
+.brandTitle {
+  font-size: 52px;
+  font-weight: 800;
+  margin: 12px 0 4px 0;
+  letter-spacing: 2px;
+  text-align: center;
+}
 
 .brandSubtitle {
-  font-size: 36px;
+  font-size: 20px;
   opacity: 0.95;
+  margin: 0;
 }
 
 .brandDescription {
   font-size: 14px;
   opacity: 0.85;
-  margin-top: 8px;
+  margin-top: 4px;
+  max-width: 240px;
+  line-height: 1.4;
 }
 
 
 .panel {
   background: #fff;
-  border-radius: 24px;
+  border-radius: 24px !important;
   height: 100%;
   overflow: hidden;
 }
 
 .panelInner {
   padding: 24px 32px 28px;
-  height: 100%;
+  height: 100% !important;
   overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.panelContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelTitle {
+  font-size: 28px !important;
+  color: #2563eb !important;
+  font-weight: 800 !important;
+  margin: 56px 0 40px !important; /* pushed lower */
+  text-align: center !important;
+  width: 100% !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.panelDisclaimer {
+  padding: 24px 32px 28px !important;
+  color: #6b7280 !important;
+  font-size: 12px !important;
+  text-align: center !important;
+  line-height: 1.5 !important;
 }
 
 .panelHeader {

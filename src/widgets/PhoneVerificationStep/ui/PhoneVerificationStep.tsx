@@ -47,16 +47,14 @@ export const PhoneVerificationStep = ({ variant }: Props) => {
 	}
 
 	return (
-		<div className={s.wrapper}>
-			<div className={s.inner}>
-				<div className={s.top}>
-					<h1 className={s.title}>{t('auth.verifyCode.title')}</h1>
-					<div className={s.descr}>
-						<p className={s.descrText}>
-							{t('auth.verifyCode.description')} <span className={s.phone}>{phone}</span>
-						</p>
-					</div>
+		<div className={s.inner}>
+			<div className={s.top}>
+				<div className={s.descr}>
+					<p className={s.descrText}>
+						{t('auth.verifyCode.description')} <span className={s.phone}>{phone}</span>
+					</p>
 				</div>
+			</div>
 
 				<form
 					onChange={handleSubmit}
@@ -90,6 +88,5 @@ export const PhoneVerificationStep = ({ variant }: Props) => {
 					)}
 				</div>
 			</div>
-		</div>
 	)
 }

@@ -1,3 +1,4 @@
+// @ts-ignore
 import useSWR from 'swr'
 
 import { sharedApi, City } from '@/shared/api'
