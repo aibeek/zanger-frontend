@@ -42,32 +42,30 @@
 
 .title {
   font-size: 48px;
-  font-weight: 800;
+  font-weight: 700;
   text-align: center;
-  background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+  background: rgb(255, 255, 255);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   line-height: 1.2;
-  letter-spacing: 4px;
-  text-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+  letter-spacing: 2px;
   
-  @media (max-width: 1024px) {
+  @media (max-width: 1200px) {
     font-size: 42px;
-    letter-spacing: 3px;
+    margin-bottom: 35px;
   }
   
   @media (max-width: 768px) {
-    font-size: 36px;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
+    font-size: 32px;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
   }
   
   @media (max-width: 480px) {
     font-size: 28px;
-    margin-bottom: 15px;
-    letter-spacing: 1px;
+    margin-bottom: 25px;
   }
 }
 

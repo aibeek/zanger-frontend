@@ -1,13 +1,13 @@
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import { UserRoleSelectionStep } from '@/features/auth/register'
 import { AuthShell } from '@/widgets/AuthShell'
 
-export default function SelectRole() {
-	const t = useTranslations('auth.roleSelection')
+export default async function SelectRole() {
+	const t = await getTranslations('auth.roleSelection')
 
 	return (
 		<AuthShell
-			title={t('heading', { default: 'Ваш статус' } as any) || 'Ваш статус'}
+			// title={t('heading', { default: 'Ваш статус' } as any) || 'Ваш статус'}
 			showNavigation={true}
 			navigationText="Есть аккаунт?"
 			navigationLinkText="Вход"

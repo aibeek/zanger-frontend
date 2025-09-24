@@ -25,7 +25,6 @@
 .container {
 	position: relative;
 	z-index: 1;
-	/* Match ModulesSection container width and paddings */
 	max-width: 1500px;
 	margin: 0 auto;
 	padding: 0 40px;
@@ -92,7 +91,6 @@
 
 .left, .right {
 	position: relative;
-	/* Make cards span container edges like Modules grid */
 	flex: 0 0 calc(50% - 15px);
 	height: auto;
 	min-height: 600px;

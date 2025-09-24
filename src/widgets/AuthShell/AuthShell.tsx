@@ -60,36 +60,19 @@ export function AuthShell({
 
         {/* Right panel */}
         <main className={s.panel}>
-          <div className={s.panelInner} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div className={s.panelInner}>
             {rightHeader || defaultHeader}
             {title && (
-              <h1 style={{
-                fontSize: 28,
-                color: '#2563eb',
-                fontWeight: 800,
-                margin: '24px 0 32px',
-                textAlign: 'center',
-                width: '100%',
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                borderRadius: 0
-              }}>
+              <h1 className={s.panelTitle}>
                 {title}
               </h1>
             )}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div className={s.panelContent}>
               {children}
             </div>
           </div>
           {showDisclaimer && (
-            <div style={{
-              padding: '24px 32px 28px',
-              color: '#6b7280',
-              fontSize: 12,
-              textAlign: 'center',
-              lineHeight: 1.5
-            }}>
+            <div className={s.panelDisclaimer}>
               <span>
                 Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете{' '}
                 <Link href={policyURL} style={{ color: '#2563eb', textDecoration: 'underline' }} target="_blank">
