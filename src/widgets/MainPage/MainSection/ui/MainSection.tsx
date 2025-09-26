@@ -39,9 +39,11 @@ export const MainSection = () => {
 									<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
 									Позвонить
 								</Link>
+							<div className={s.requestButtonContainer}>
 								<Link href="/auth/register/select-role" className={s.requestButton}>
 									Оставить заявку
 								</Link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -52,8 +54,8 @@ export const MainSection = () => {
 									src={Iphones}
 									alt="phones"
 									className={s.phonesImg}
-									width={500}
-									height={300}
+									width={360}
+									height={360}
 									style={{ width: 'auto', height: 'auto' }}
 								/>
 							</div>
@@ -76,7 +78,7 @@ export const MainSection = () => {
 								</Link> */}
 								<div className={s.mobileVersionText}>
 									<span className={s.developmentLabel}>
-										Мобильная версия в разработке. Запуск скоро. Следите за новостями!
+										Мобильная версия в разработке. <><br /></>Запуск скоро. Следите за новостями!
 									</span>
 								</div>
 							</div>
