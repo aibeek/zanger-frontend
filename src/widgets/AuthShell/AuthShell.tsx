@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
-import { policyURL, termsURL } from '@/shared/lib/consts/urls'
 
 import s from './AuthShell.module.scss'
 
@@ -13,7 +13,6 @@ type AuthShellProps = {
   navigationText?: string
   navigationLinkText?: string
   navigationLinkHref?: string
-  showDisclaimer?: boolean
 }
 
 export function AuthShell({ 
@@ -21,19 +20,22 @@ export function AuthShell({
   rightHeader, 
   title,
   showNavigation = false,
-  navigationText = 'Есть аккаунт?',
-  navigationLinkText = 'Вход',
+  navigationText,
+  navigationLinkText,
   navigationLinkHref = '/auth/login',
-  showDisclaimer = false
 }: AuthShellProps) {
+  const t = useTranslations('auth.shell')
+
+  const navText = navigationText || t('haveAccount')
+  const navLinkText = navigationLinkText || t('loginLink')
   // Если rightHeader не передан, создаем стандартный
   const defaultHeader = showNavigation ? (
     <div className={s.panelHeader}>
       <div></div>
       <div>
-        <span style={{ color: '#6b7280', marginRight: 8 }}>{navigationText}</span>
+        <span style={{ color: '#000000ff', marginRight: 8 }}>{navText}</span>
         <Link href={navigationLinkHref} style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
-          {navigationLinkText}
+          {navLinkText}
         </Link>
       </div>
     </div>
@@ -46,14 +48,10 @@ export function AuthShell({
         <aside className={s.promo} aria-hidden>
           <div className={s.promoInner}>
             <div className={s.brandBlock}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <Image src="/logo.svg" alt="Zanger" width={120} height={120} />
-                <h2 className={s.brandTitle}>ZANGER</h2>
-              </div>
-              <p className={s.brandSubtitle}>Юридическая платформа Zanger</p>
-              <p className={s.brandDescription}>
-                Сервис по взаимодействию клиентов и юристов
-              </p>
+              <Image src="/logo.svg" alt="Zanger" width={140} height={140} />
+              <h2 className={s.brandTitle}>ZANGER</h2>
+              <p className={s.brandSubtitle}>{t('platformTitle')}</p>
+              <p className={s.brandDescription}>{t('platformDescription')}</p>
             </div>
           </div>
         </aside>
@@ -71,20 +69,6 @@ export function AuthShell({
               {children}
             </div>
           </div>
-          {showDisclaimer && (
-            <div className={s.panelDisclaimer}>
-              <span>
-                Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете{' '}
-                <Link href={policyURL} style={{ color: '#2563eb', textDecoration: 'underline' }} target="_blank">
-                  Политику конфиденциальности
-                </Link>
-                {' '}и{' '}
-                <Link href={termsURL} style={{ color: '#2563eb', textDecoration: 'underline' }} target="_blank">
-                  Публичную оферту
-                </Link>
-              </span>
-            </div>
-          )}
         </main>
       </div>
     </div>

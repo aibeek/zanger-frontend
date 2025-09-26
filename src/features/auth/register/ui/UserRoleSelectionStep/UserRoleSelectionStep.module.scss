@@ -1,8 +1,8 @@
-
 .wrapper {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	margin-top: 56px; /* lowered overall block */
 }
 
 .header {
@@ -15,15 +15,15 @@
 .brand {
 	font-size: 32px;
 	font-weight: 700;
-	color: #043676;
+	color: #000; /* changed to black */
 	letter-spacing: 1px;
 }
 
 .statusTitle {
 	font-size: 44px;
 	font-weight: 800;
-	margin-bottom: 8px;
-	color: #2563eb;
+	margin-bottom: 32px; /* increased spacing from header to title */
+	color: #000; /* changed to black */
 	text-align: center;
 }
 
@@ -44,9 +44,27 @@
 	border: 3px solid var(--DarkBB, #043676);
 	box-sizing: border-box;
 	box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.06);
+	transition:
+		box-shadow .25s ease,
+		transform .25s ease,
+		border-color .25s ease;
+	text-decoration: none;
+	color: inherit;
 }
 
+.cardLink {
+	display: block;
+	text-decoration: none;
+	color: #000; /* ensure black text */
+	border-radius: 20px; /* match card for focus ring */
+}
 
+.cardLink:focus-visible,
+.cardLink:hover {
+	box-shadow: 0 6px 24px rgba(4,54,118,0.25);
+	border-color: #2563eb;
+	transform: translateY(-2px);
+}
 
 .inner {
 	display: flex;
@@ -54,6 +72,7 @@
 	justify-content: space-between;
 	padding: 24px 28px;
 	min-height: 120px;
+	gap: 16px;
 }
 
 .left {
@@ -69,24 +88,36 @@
 	justify-content: center;
 	width: 120px;
 	height: 120px;
+	flex-shrink: 0;
 }
 
 .title {
 	font-size: 18px;
 	font-weight: 700;
 	line-height: 22px;
+	color: #000; /* force black per design */
 }
 
 .descr {
-	color: #8ca0b3;
+	color: #000; /* changed to black */
 	font-size: 15px;
 	font-weight: 400;
 	line-height: 130%;
+	max-width: 360px;
+}
+
+@media (max-width: 900px) {
+	.statusTitle { font-size: 38px; }
+}
+
+@media (max-width: 720px) {
+	.statusTitle { font-size: 32px; }
 }
 
 @media (max-width: 600px) {
 	.wrapper {
-		padding: 12px 4px;
+		margin-top: 32px;
+		padding: 12px 8px;
 	}
 	.statusTitle {
 		font-size: 26px;
@@ -108,9 +139,9 @@
 		border-width: 2px;
 	}
 	.inner {
-		flex-direction: column;
+		flex-direction: row; /* keep icon to right but shrink */
 		align-items: flex-start;
-		padding: 14px 8px;
+		padding: 16px 14px;
 		min-height: unset;
 	}
 	.left {
@@ -118,15 +149,20 @@
 		gap: 6px;
 	}
 	.iconWrap {
-		width: 64px;
-		height: 64px;
-		margin: 8px 0 0 0;
+		width: 80px;
+		height: 80px;
+		margin: 0;
 	}
 	.title {
-		font-size: 15px;
-		line-height: 18px;
+		font-size: 16px;
+		line-height: 20px;
 	}
 	.descr {
-		font-size: 12px;
+		font-size: 12.5px;
 	}
+}
+
+@media (max-width: 400px) {
+	.inner { flex-direction: column; align-items: flex-start; }
+	.iconWrap { width: 64px; height: 64px; margin-top: 8px; }
 }
