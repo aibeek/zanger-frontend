@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import avatar from '@/app/assets/icons/avatar-default.svg'
 
@@ -11,16 +12,24 @@ import { useTranslations } from 'next-intl'
 export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 	const { open, close, isOpen } = useModal()
 	const t = useTranslations('uploadAvatar')
+	const [imageError, setImageError] = useState(false)
+
+	const handleImageError = () => {
+		setImageError(true)
+	}
+
+	const imageSrc = (!avatarUrl || imageError) ? avatar : avatarUrl
 
 	return (
 		<>
 			<div className={s.avatar} onClick={open} style={{ cursor: 'pointer' }}>
 				<Image
 					style={{ borderRadius: '10px', objectFit: 'cover' }}
-					src={avatarUrl || avatar}
+					src={imageSrc}
 					alt={t('avatarAlt')}
 					width={80}
 					height={80}
+					onError={handleImageError}
 				/>
 			</div>
 

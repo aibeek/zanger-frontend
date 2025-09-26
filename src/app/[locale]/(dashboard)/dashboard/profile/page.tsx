@@ -14,11 +14,67 @@ import {
     ProfileServicingCities,
     ProfileDocuments,
     ProfileSupport,
+    ProfileAvatar,
+    ProfileSubscription,
+    ProfilePaymentMethod,
 } from '@/entities/profile'
+import { UploadAvatar } from '@/entities/profile/ui/ProfileAvatar/UploadAvatar'
 import { Modal } from '@/shared/ui-kit'
 import { RightWidgets } from '../components/RightWidgets'
 import Cookies from 'js-cookie'
 import s from './page.module.scss'
+import { useLoginStore } from '@/features/auth/login'
+import Image from 'next/image'
+import avatar from '@/app/assets/icons/avatar-default.svg'
+
+// Large avatar component for lawyer profile
+const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
+    const [imageError, setImageError] = useState(false)
+    const { open: openAvatar, close: closeAvatar, isOpen: isAvatarOpen } = useModal()
+    const t = useTranslations('uploadAvatar')
+
+    const handleImageError = () => {
+        setImageError(true)
+    }
+
+    const imageSrc = (!avatarUrl || imageError) ? avatar : avatarUrl
+
+    return (
+        <>
+            <div 
+                onClick={openAvatar} 
+                style={{ 
+                    cursor: 'pointer', 
+                    width: '100%', 
+                    height: '100%',
+                    borderRadius: '12px',
+                    overflow: 'hidden'
+                }}
+            >
+                <Image
+                    src={imageSrc}
+                    alt="Lawyer Avatar"
+                    width={150}
+                    height={150}
+                    style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        objectFit: 'cover' 
+                    }}
+                    onError={handleImageError}
+                />
+            </div>
+            
+            <Modal
+                isOpen={isAvatarOpen}
+                onClose={closeAvatar}
+                closeButton={true}
+                title={t('modalTitle')}>
+                <UploadAvatar onClose={closeAvatar} currentAvatarUrl={avatarUrl} />
+            </Modal>
+        </>
+    )
+}
 
 export default function ProfilePage() {
     const t = useTranslations()
@@ -65,28 +121,119 @@ export default function ProfilePage() {
     }, [searchParams, pathname, open, router, t])
 
     const lawyer = role === 'lawyer'
+    const personalData = useLoginStore((state) => state.personalData)
+    const avatarUrl = personalData?.icon ?? ''
 
-    return (
-        <>
+    const [activeModal, setActiveModal] = useState<string | null>(null)
+
+    const openModal = (modalType: string) => {
+        setActiveModal(modalType)
+        open()
+    }
+
+    const closeModal = () => {
+        setActiveModal(null)
+        close()
+    }
+
+    const getModalTitle = (modalType: string | null) => {
+        switch (modalType) {
+            case 'consultation': return t('profile.consultation_price.title')
+            case 'specialization': return t('profile.change_specialization.title')
+            case 'documents': return t('profile.documents.title')
+            case 'subscription': return t('profile.subscription.title')
+            case 'password': return t('profile.change_password.title')
+            case 'cities': return t('profile.servicing_cities.title')
+            case 'support': return t('profile.support.title')
+            case 'payment': return t('profile.payment_method.title')
+            default: return ''
+        }
+    }
+
+    if (lawyer) {
+        return (
             <div className={s.profileContent}>
-                {/* Profile Settings */}
                 <div className={s.profileSettings}>
-                    <ProfilePersonalData role={role} />
-                    <ProfileChangePassword />
-                    {lawyer && (
-                        <>
-                            <ProfileDocuments />
-                            <ProfileConsultationPrice />
-                            <ProfileChangeSpecialization />
-                            <ProfileServicingCities />
-                        </>
-                    )}
-                    <ProfileSupport />
-                    <ProfileDelete />
+                    {/* Profile Header - 2:3 columns */}
+                    <div className={s.profileHeader}>
+                        {/* Left: Avatar + Rating */}
+                        <div className={s.avatarSection}>
+                            <div className={s.avatarWrapper}>
+                                <LawyerProfileAvatar avatarUrl={avatarUrl} />
+                            </div>
+                            <div className={s.ratingBlock}>
+                                <div className={s.stars}>
+                                    <span>★ ★ ★ ★ ★</span>
+                                    <span className={s.rating}>4,9</span>
+                                </div>
+                                <button className={`btn btn-primary ${s.reviewsBtn}`}>Отзывы</button>
+                            </div>
+                        </div>
+
+                        {/* Right: Personal Info */}
+                        <div className={s.personalInfoSection}>
+                            <ProfilePersonalData role={role} />
+                        </div>
+                    </div>
+
+                    {/* Action Panel - 4x2 Grid */}
+                    <div className={s.actionPanel}>
+                        <button className={s.actionCard} onClick={() => openModal('consultation')}>
+                            Стоимость консультации
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('specialization')}>
+                            Ваша специализация
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('documents')}>
+                            Документы
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('subscription')}>
+                            Ваша подписка
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('password')}>
+                            Смена пароля
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('cities')}>
+                            Обслуживаемая локация
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('support')}>
+                            Служба поддержки
+                        </button>
+                        <button className={s.actionCard} onClick={() => openModal('payment')}>
+                            Способы оплаты
+                        </button>
+                    </div>
+
                 </div>
                 <RightWidgets />
-            </div>
 
-        </>
+                {/* Modal for profile sections - render inline content without nested modals */}
+                <Modal isOpen={isOpen} onClose={closeModal} title={getModalTitle(activeModal) || ''}>
+                    <div className={s.modalContent}>
+                        {activeModal === 'consultation' && <ProfileConsultationPrice />}
+                        {activeModal === 'specialization' && <ProfileChangeSpecialization />}
+                        {activeModal === 'documents' && <ProfileDocuments />}
+                        {activeModal === 'subscription' && <ProfileSubscription />}
+                        {activeModal === 'password' && <ProfileChangePassword />}
+                        {activeModal === 'cities' && <ProfileServicingCities />}
+                        {activeModal === 'support' && <ProfileSupport />}
+                        {activeModal === 'payment' && <ProfilePaymentMethod />}
+                    </div>
+                </Modal>
+            </div>
+        )
+    }
+
+    // Default (client)
+    return (
+        <div className={s.profileContent}>
+            <div className={s.profileSettings}>
+                <ProfilePersonalData role={role} />
+                <ProfileChangePassword />
+                <ProfileSupport />
+                <ProfileDelete />
+            </div>
+            <RightWidgets />
+        </div>
     )
 }
