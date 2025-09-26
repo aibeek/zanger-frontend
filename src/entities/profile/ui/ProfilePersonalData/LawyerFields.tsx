@@ -2,20 +2,15 @@
 
 import { useFormContext, Controller } from 'react-hook-form'
 import { SearchSelect } from '@/features/auth'
-import { Button } from '@/shared/ui-kit'
-import { PencilIcon } from '@heroicons/react/20/solid'
 import { useProfileStatuses } from '../../model'
 import s from './ProfilePersonalData.module.scss'
 import { useTranslations } from 'next-intl'
 
 type Props = {
-	editableInputs: Record<string, boolean>
-	setEditableInputs: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
-	onSave: (field: any) => void
 	t: ReturnType<typeof useTranslations>
 }
 
-export const LawyerFields = ({ editableInputs, setEditableInputs, onSave, t }: Props) => {
+export const LawyerFields = ({ t }: Props) => {
 	const { control } = useFormContext()
 	const { statuses } = useProfileStatuses()
 
@@ -44,40 +39,12 @@ export const LawyerFields = ({ editableInputs, setEditableInputs, onSave, t }: P
 									getId={(item) => item.id}
 									getLabel={(item) => item.name}
 									placeholder={t('profile.personal_data.chooseStatus')}
-									disabled={!editableInputs.lawyer_type_ids}
+									disabled={false}
 									multiple={true}
 								/>
 							)
 						}}
 					/>
-					{editableInputs.lawyer_type_ids ? (
-						<Button
-							onClick={() => onSave('lawyer_type_ids')}
-							type="button"
-							variant="clear"
-							size="sm"
-							className={s.saveBtn}>
-							{t('profile.personal_data.save')}
-						</Button>
-					) : (
-						<Button
-							onClick={() =>
-								setEditableInputs((prev) => ({
-									...prev,
-									lawyer_type_ids: true,
-								}))
-							}
-							type="button"
-							variant="clear"
-							className={s.editBtn}>
-							<PencilIcon
-								className={s.editIcon}
-								width={16}
-								height={16}
-								color="rgba(156,155,153,1)"
-							/>
-						</Button>
-					)}
 				</div>
 			</div>
 		</>

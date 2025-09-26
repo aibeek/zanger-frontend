@@ -27,6 +27,7 @@
 		"createNew": "Жаңа өтініш жасау",
 		"myApplications": "Менің өтініштерім",
 		"newApplications": "Жаңа өтініштер",
+		"noNewApplications": "Жаңа өтініштер жоқ",
 		"serviceType": "Өтініш түрі",
 		"selectServiceType": "Өтініш түрін таңдаңыз",
 		"region": "Өңір",
@@ -242,7 +243,9 @@
 			"freeCalls": "Қазақстан бойынша тегін қоңыраулар",
 			"disclaimer": "Заң көмегіне тапсырыстар қабылдау",
 			"freeConsultation": "Алғашқы кеңес - тегін",
-			"mobileVersionLabel": "Мобильді нұсқа әзірленуде. Жақында іске қосылады. Жаңалықтарды қадағалаңыз!"
+			"mobileVersionLabel": "Мобильді нұсқа әзірленуде. Жақында іске қосылады.<br/>Жаңалықтарды қадағалаңыз!",
+			"phoneButton": "Қоңырау шалу",
+			"createNew": "Өтініш беру"
 		},
 
 		"descriptionSection": {

@@ -37,11 +37,11 @@ export const MainSection = () => {
 							<div className={s.actionButtons}>
 								<Link href="tel:5510" className={s.phoneButton}>
 									<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
-									Позвонить
+									{t('phoneButton')}
 								</Link>
 							<div className={s.requestButtonContainer}>
 								<Link href="/auth/register/select-role" className={s.requestButton}>
-									Оставить заявку
+									{t('createNew')}
 								</Link>
 								</div>
 							</div>
@@ -77,9 +77,10 @@ export const MainSection = () => {
 									/>
 								</Link> */}
 								<div className={s.mobileVersionText}>
-									<span className={s.developmentLabel}>
-										Мобильная версия в разработке. <><br /></>Запуск скоро. Следите за новостями!
-									</span>
+									<span
+										className={s.developmentLabel}
+										dangerouslySetInnerHTML={{ __html: t('mobileVersionLabel') }}
+									/>
 								</div>
 							</div>
 						</div>

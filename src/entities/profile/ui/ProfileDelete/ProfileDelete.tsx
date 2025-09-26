@@ -4,7 +4,6 @@ import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { authService } from '@/features/auth'
 import { Button, Modal, useModal } from '@/shared/ui-kit'
-import { Disclosure, DisclosureButton } from '@headlessui/react'
 
 import s from './ProfileDelete.module.scss'
 import { useDeleteAccountStore } from '../../model/useDeleteAccountStore'
@@ -25,16 +24,9 @@ export const ProfileDelete = () => {
 
 	return (
 		<>
-			<Disclosure>
-				<div className={s.accordion}>
-					<DisclosureButton
-						onClick={open}
-						style={{ color: 'rgba(255, 101, 101, 1)' }}
-						className={s.btn}>
-						{t('button')}
-					</DisclosureButton>
-				</div>
-			</Disclosure>
+			<Button variant="clear" className={s.inlineDanger} onClick={open}>
+				{t('button')}
+			</Button>
 
 			<Modal
 				className={s.modal}

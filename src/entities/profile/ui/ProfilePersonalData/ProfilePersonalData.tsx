@@ -17,6 +17,7 @@ import { useRegionsUtils, ProfilePersonalDataFormValues, profilePersonalDataSche
 import s from './ProfilePersonalData.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { LawyerFields } from './LawyerFields'
+import { ProfileDelete } from '../ProfileDelete/ProfileDelete'
 import { useEditPersonalDataStore } from '../../model/useEditPersonalData'
 
 type FieldKey = keyof ProfilePersonalDataFormValues
@@ -63,6 +64,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		control,
 		watch,
 		setFocus,
+		handleSubmit,
 		formState: { errors, dirtyFields },
 	} = methods
 
@@ -156,6 +158,24 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			: []),
 	]
 
+	const onSubmitAll = handleSubmit(async (values) => {
+		const payload: any = {
+			name: values.name || undefined,
+			phone: values.phone || undefined,
+			telegram: values.telegram || null,
+			whatsapp: values.whatsapp || null,
+			iin: values.iin || undefined,
+			region_id: values.region_id ?? undefined,
+		}
+		if (isLawyer) {
+			payload.lawyer_type_ids = values.lawyer_type_ids && values.lawyer_type_ids.length
+				? (values.lawyer_type_ids as any)
+				: undefined
+		}
+
+		await updateProfilePersonalData(payload, role, t)
+	})
+
 	return (
 		<ProfileTabWrapper
 			title={t('profile.personal_data.title')}
@@ -165,7 +185,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			panel_descr={t('profile.personal_data.panelDescription')}
 			ref={disclosureBtnRef}>
 			<FormProvider {...methods}>
-				<form className={s.form}>
+				<form className={s.form} onSubmit={onSubmitAll}>
 					{fields.map(({ field, label, placeholder, mask, isMasked }) => {
 						const isEditing = editableInputs[field]
 						const hasError = !!errors[field]
@@ -202,39 +222,13 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 														}
 														renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
 														placeholder={placeholder}
-														disabled={!editableInputs.region_id}
+														disabled={false}
 														searchData={allOptions}
 													/>
 												)
 											}}
 										/>
-										{editableInputs.region_id ? (
-											dirtyFields.region_id && (
-												<Button
-													onClick={() => onSave('region_id')}
-													type="button"
-													variant="clear"
-													size="sm"
-													className={s.saveBtn}>
-													{t('profile.personal_data.save')}
-												</Button>
-											)
-										) : (
-											<Button
-												onClick={() =>
-													setEditableInputs((prev) => ({ ...prev, region_id: true }))
-												}
-												type="button"
-												variant="clear"
-												className={s.editBtn}>
-												<PencilIcon
-													className={s.editIcon}
-													width={16}
-													height={16}
-													color="rgba(156,155,153,1)"
-												/>
-											</Button>
-										)}
+										{/* Inline edit/save controls hidden by styles; no per-field actions */}
 										{errors.region_id && (
 											<p className={s.error}>{t(errors.region_id.message || '')}</p>
 										)}
@@ -264,7 +258,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 													id={field}
 													type="tel"
 													placeholder={placeholder}
-													disabled={!isEditing}
+													disabled={false}
 													hasError={hasError}
 													// @ts-expect-error fix it
 													as={IMaskInput}
@@ -283,42 +277,12 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 											id={field}
 											type="text"
 											placeholder={placeholder}
-											disabled={!isEditing}
+											disabled={false}
 											{...register(field)}
 											className={`${s.input} ${hasError ? s.inputError : ''}`}
 										/>
 									)}
-
-									{isEditing ? (
-										dirtyFields[field] && (
-											<Button
-												onClick={() => onSave(field)}
-												type="button"
-												variant="clear"
-												size="sm"
-												className={s.saveBtn}>
-												{t('profile.personal_data.save')}
-											</Button>
-										)
-									) : (
-										<Button
-											onClick={() =>
-												setEditableInputs((prev) => ({
-													...prev,
-													[field]: true,
-												}))
-											}
-											type="button"
-											variant="clear"
-											className={s.editBtn}>
-											<PencilIcon
-												className={s.editIcon}
-												width={16}
-												height={16}
-												color="rgba(156, 155, 153, 1)"
-											/>
-										</Button>
-									)}
+									{/* Per-field edit/save controls removed for simplified UX */}
 									{hasError && <p className={s.error}>{t(errors[field]?.message || '')}</p>}
 								</div>
 							</div>
@@ -326,13 +290,15 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 					})}
 
 					{isLawyer && (
-						<LawyerFields
-							editableInputs={editableInputs}
-							setEditableInputs={setEditableInputs}
-							onSave={onSave}
-							t={t}
-						/>
+						<LawyerFields t={t} />
 					)}
+
+					<div className={s.btns}>
+						<Button variant="primary" size="auto" type="submit">
+							{t('profile.change_password.save')}
+						</Button>
+						<ProfileDelete />
+					</div>
 				</form>
 			</FormProvider>
 		</ProfileTabWrapper>

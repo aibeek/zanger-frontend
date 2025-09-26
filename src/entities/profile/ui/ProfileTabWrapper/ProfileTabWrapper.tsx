@@ -3,6 +3,7 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
+// Keep headlessui imports available but prefer inline rendering by default
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
 
 import s from './ProfileTabWrapper.module.scss'
@@ -32,7 +33,8 @@ export const ProfileTabWrapper = (props: Props) => {
 		defaultOpen = false,
 		children,
 		ref,
-		variant = 'accordion',
+		// default to inline (expanded) to remove collapsing dropdowns globally
+		variant = 'inline',
 		id,
 		className,
 	} = props

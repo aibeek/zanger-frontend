@@ -34,10 +34,12 @@ const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
     const t = useTranslations('uploadAvatar')
 
     const handleImageError = () => {
+        console.log('Image failed to load:', avatarUrl)
         setImageError(true)
     }
 
-    const imageSrc = (!avatarUrl || imageError) ? avatar : avatarUrl
+    // Проверяем, есть ли валидный URL и не произошла ли ошибка
+    const imageSrc = (!avatarUrl || imageError || avatarUrl.includes('Lawyer.jpg')) ? avatar : avatarUrl
 
     return (
         <>
@@ -62,6 +64,7 @@ const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
                         objectFit: 'cover' 
                     }}
                     onError={handleImageError}
+                    unoptimized={imageSrc === avatar}
                 />
             </div>
             

@@ -15,10 +15,12 @@ export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 	const [imageError, setImageError] = useState(false)
 
 	const handleImageError = () => {
+		console.log('Profile avatar failed to load:', avatarUrl)
 		setImageError(true)
 	}
 
-	const imageSrc = (!avatarUrl || imageError) ? avatar : avatarUrl
+	// Проверяем, есть ли валидный URL и не произошла ли ошибка
+	const imageSrc = (!avatarUrl || imageError || avatarUrl.includes('Lawyer.jpg')) ? avatar : avatarUrl
 
 	return (
 		<>
@@ -30,6 +32,7 @@ export const ProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
 					width={80}
 					height={80}
 					onError={handleImageError}
+					unoptimized={imageSrc === avatar}
 				/>
 			</div>
 

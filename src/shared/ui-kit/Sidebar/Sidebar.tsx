@@ -32,7 +32,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
     const t = useTranslations()
     
     const name = personalData?.name ?? ''
-    const icon = personalData?.icon ?? ''
+    const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
     const role = Cookies.get('role')
     
     const handleLogout = () => {
