@@ -115,6 +115,24 @@
   line-height: 1.5 !important;
 }
 
+.disclaimer {
+  margin-top: 20px;
+  padding: 16px 0;
+  color: #6b7280;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.disclaimerLink {
+  color: #2563eb;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .panelHeader {
   display: flex;
   align-items: center;

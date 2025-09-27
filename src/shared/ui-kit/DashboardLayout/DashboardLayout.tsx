@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLoginStore } from '@/features/auth/login'
 import { Sidebar } from '@/shared/ui-kit/Sidebar'
 import { DashboardHeader } from './DashboardHeader'
@@ -14,10 +14,19 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout = ({ children, language }: DashboardLayoutProps) => {
     const { personalData, getPersonalDataByToken, loading } = useLoginStore()
+    const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
     useEffect(() => {
         getPersonalDataByToken()
     }, [getPersonalDataByToken])
+
+    const toggleMobileSidebar = () => {
+        setIsMobileSidebarOpen(!isMobileSidebarOpen)
+    }
+
+    const closeMobileSidebar = () => {
+        setIsMobileSidebarOpen(false)
+    }
 
     if (loading || !personalData) {
         return <div className={s.loader}>Загрузка...</div>
@@ -25,7 +34,30 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
 
     return (
         <div className={s.layout}>
-            <Sidebar language={language} />
+            {/* Mobile menu button */}
+            <button 
+                className={s.mobileMenuButton}
+                onClick={toggleMobileSidebar}
+                aria-label="Открыть меню"
+            >
+                <span className={s.hamburger}></span>
+                <span className={s.hamburger}></span>
+                <span className={s.hamburger}></span>
+            </button>
+
+            {/* Mobile overlay */}
+            {isMobileSidebarOpen && (
+                <div 
+                    className={s.mobileOverlay}
+                    onClick={closeMobileSidebar}
+                ></div>
+            )}
+
+            {/* Sidebar */}
+            <div className={`${s.sidebarContainer} ${isMobileSidebarOpen ? s.mobileOpen : ''}`}>
+                <Sidebar language={language} onMobileClose={closeMobileSidebar} />
+            </div>
+
             <main className={s.mainContent}>
                 <DashboardHeader language={language} />
                 <div className={s.contentArea}>

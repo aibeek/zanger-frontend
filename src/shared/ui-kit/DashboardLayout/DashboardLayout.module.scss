@@ -3,6 +3,27 @@
     display: flex;
     min-height: 100vh;
     background-color: #F8F9FB;
+    position: relative;
+}
+
+// Sidebar Container
+.sidebarContainer {
+    @media (min-width: 769px) {
+        position: static;
+    }
+    
+    @media (max-width: 768px) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        
+        &.mobileOpen {
+            transform: translateX(0);
+        }
+    }
 }
 
 // Main Content
@@ -11,12 +32,78 @@
     margin-left: 260px;
     display: flex;
     flex-direction: column;
+    
+    @media (max-width: 768px) {
+        margin-left: 0;
+    }
 }
 
 // Content Area
 .contentArea {
     flex: 1;
     padding: 32px;
+    
+    @media (max-width: 768px) {
+        padding: 80px 16px 16px 16px; // Добавляем отступ сверху для кнопки-гамбургера
+    }
+}
+
+// Mobile Menu Button
+.mobileMenuButton {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1002;
+    background: #2563eb;
+    border: none;
+    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+        background: #1d4ed8;
+    }
+    
+    &:active {
+        transform: scale(0.95);
+    }
+    
+    @media (max-width: 768px) {
+        display: flex;
+    }
+}
+
+// Hamburger Lines
+.hamburger {
+    width: 18px;
+    height: 2px;
+    background: white;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+}
+
+// Mobile Overlay
+.mobileOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+    
+    @media (max-width: 768px) {
+        display: block;
+    }
 }
 
 // Loading

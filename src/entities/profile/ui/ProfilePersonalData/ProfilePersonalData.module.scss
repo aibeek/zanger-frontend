@@ -93,3 +93,229 @@
 	min-height: 42px;
 	opacity: 1;
 }
+
+/* Clean variant styles - убираем двойные слои */
+.cleanWrapper {
+	padding: 24px;
+	height: 100%;
+}
+
+.cleanHeader {
+	margin-bottom: 24px;
+	border-bottom: 1px solid #E2E8F0;
+	padding-bottom: 16px;
+}
+
+.cleanTitle {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1E293B;
+	margin-bottom: 4px;
+}
+
+.cleanDescr {
+	font-size: 14px;
+	color: #64748B;
+	line-height: 1.4;
+}
+
+.cleanForm {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.cleanInputWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	width: 100%;
+}
+
+.cleanLabel {
+	font-size: 14px;
+	font-weight: 500;
+	color: #374151;
+}
+
+.cleanInputBox {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+	
+	// Переопределение стилей для всех input элементов
+	input, 
+	:global(.input),
+	:global(input) {
+		flex: 1 !important;
+		min-width: 0 !important;
+		width: auto !important;
+		box-sizing: border-box !important;
+	}
+	
+	// Специальные стили для wrapper Input компонента
+	> div {
+		flex: 1;
+		min-width: 0;
+		
+		input {
+			width: 100% !important;
+		}
+	}
+}
+
+.cleanInput {
+	flex: 1 !important;
+	min-width: 0 !important;
+	width: auto !important;
+	padding: 12px 16px !important;
+	border: 1px solid #D1D5DB !important;
+	border-radius: 8px !important;
+	font-size: 14px !important;
+	background: #FFFFFF !important;
+	transition: border-color 0.2s, box-shadow 0.2s !important;
+	
+	&:focus {
+		outline: none !important;
+		border-color: #3B82F6 !important;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+	}
+	
+	&::placeholder {
+		color: #9CA3AF !important;
+	}
+}
+
+.cleanInputReadOnly {
+	background: #F9FAFB !important;
+	color: #6B7280 !important;
+	cursor: not-allowed !important;
+	
+	&:focus {
+		border-color: #D1D5DB !important;
+		box-shadow: none !important;
+	}
+}
+
+.cleanInputError {
+	border-color: #EF4444;
+	
+	&:focus {
+		border-color: #EF4444;
+		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+	}
+}
+
+.cleanError {
+	color: #EF4444;
+	font-size: 12px;
+	margin-top: 4px;
+}
+
+.cleanEditBtn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: none;
+	background: #F3F4F6;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	flex-shrink: 0;
+	
+	&:hover {
+		background: #E5E7EB;
+	}
+	
+	&:active {
+		background: #D1D5DB;
+	}
+}
+
+.cleanEditIcon {
+	width: 16px;
+	height: 16px;
+	color: #6B7280;
+}
+
+.cleanBtns {
+	margin-top: 24px;
+	padding-top: 16px;
+	border-top: 1px solid #E2E8F0;
+	display: flex;
+	gap: 12px;
+	align-items: center;
+}
+
+.saveBtn {
+	background: #3B82F6 !important;
+	color: white !important;
+	border: none !important;
+	padding: 12px 24px !important;
+	border-radius: 8px !important;
+	font-weight: 600 !important;
+	cursor: pointer !important;
+	transition: background-color 0.2s !important;
+	
+	&:hover {
+		background: #2563EB !important;
+	}
+}
+
+// Стили для всех input элементов в cleanInputBox
+.cleanInputBox input {
+	flex: 1 !important;
+	min-width: 0 !important;
+	width: auto !important;
+	padding: 12px 16px !important;
+	border: 1px solid #D1D5DB !important;
+	border-radius: 8px !important;
+	font-size: 14px !important;
+	background: #FFFFFF !important;
+	transition: border-color 0.2s, box-shadow 0.2s !important;
+	
+	&:focus {
+		outline: none !important;
+		border-color: #3B82F6 !important;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+	}
+	
+	&:disabled {
+		background: #F9FAFB !important;
+		color: #6B7280 !important;
+		cursor: not-allowed !important;
+		
+		&:focus {
+			border-color: #D1D5DB !important;
+			box-shadow: none !important;
+		}
+	}
+}
+
+.cleanInputBox :global(.search-select) {
+	flex: 1;
+	background: #FFFFFF;
+	border: 1px solid #D1D5DB;
+	border-radius: 8px;
+	min-height: 44px;
+	
+	&:focus-within {
+		border-color: #3B82F6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+	
+	&.disabled {
+		background: #F9FAFB;
+		color: #6B7280;
+		cursor: not-allowed;
+		
+		&:focus-within {
+			border-color: #D1D5DB;
+			box-shadow: none;
+		}
+	}
+}

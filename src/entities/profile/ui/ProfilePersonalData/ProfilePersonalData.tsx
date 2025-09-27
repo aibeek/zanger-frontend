@@ -32,7 +32,7 @@ type FieldConfig = {
 
 const phoneMask = '+{7} (000) 000-00-00'
 
-export const ProfilePersonalData = ({ role }: { role: string }) => {
+export const ProfilePersonalData = ({ role, variant = 'default' }: { role: string; variant?: 'default' | 'clean' }) => {
 	const t = useTranslations()
 	const personalData: UserProfile = useLoginStore((state) => state.personalData)
 	const { updateProfilePersonalData } = useEditPersonalDataStore()
@@ -51,9 +51,6 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		defaultValues: {
 			name: personalData?.name ?? '',
 			phone: personalData?.phone ?? '',
-			telegram: lawyerData?.telegram ?? '',
-			whatsapp: lawyerData?.whatsapp ?? '',
-			iin: lawyerData?.iin ?? '',
 			region_id: personalData?.region?.id ?? null,
 			lawyer_type_ids: lawyerData?.lawyer_types?.map((type) => type.id) ?? [],
 		},
@@ -71,9 +68,6 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 	const [editableInputs, setEditableInputs] = useState(() => ({
 		name: false,
 		phone: false,
-		telegram: false,
-		whatsapp: false,
-		iin: false,
 		region_id: false,
 		lawyer_type_ids: false,
 	}))
@@ -88,13 +82,24 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 
 	// Проверяем, загружены ли данные
 	if (!personalData) {
+		if (variant === 'clean') {
+			return (
+				<div className={s.cleanWrapper}>
+					<div className={s.cleanHeader}>
+						<h3 className={s.cleanTitle}>{t('profile.personal_data.panelTitle')}</h3>
+						<p className={s.cleanDescr}>{t('profile.personal_data.panelDescription')}</p>
+					</div>
+					<div>Загрузка...</div>
+				</div>
+			)
+		}
+		
 		return (
 			<ProfileTabWrapper
 				title={t('profile.personal_data.title')}
 				imgSrc={personalDataIcon}
 				imgAlt="Personal Data"
 				panel_title={t('profile.personal_data.panelTitle')}
-				panel_descr={t('profile.personal_data.panelDescription')}
 			>
 				<div>Загрузка...</div>
 			</ProfileTabWrapper>
@@ -128,43 +133,19 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 			isMasked: true,
 			mask: phoneMask,
 		},
+		// Статус будет добавлен через LawyerFields компонент после поля телефона
 		{
 			field: 'region_id',
 			label: t('profile.personal_data.regionLabel'),
 			placeholder: t('profile.personal_data.regionPlaceholder'),
 			isMasked: false,
 		},
-		...(isLawyer
-			? [
-					{
-						field: 'telegram' as const,
-						label: t('profile.personal_data.telegramLabel'),
-						placeholder: t('profile.personal_data.telegramPlaceholder'),
-						isMasked: false,
-					},
-					{
-						field: 'whatsapp' as const,
-						label: t('profile.personal_data.whatsappLabel'),
-						placeholder: t('profile.personal_data.whatsappPlaceholder'),
-						isMasked: false,
-					},
-					{
-						field: 'iin' as const,
-						label: t('profile.personal_data.iinLabel'),
-						placeholder: t('profile.personal_data.iinPlaceholder'),
-						isMasked: false,
-					},
-				]
-			: []),
 	]
 
 	const onSubmitAll = handleSubmit(async (values) => {
 		const payload: any = {
 			name: values.name || undefined,
 			phone: values.phone || undefined,
-			telegram: values.telegram || null,
-			whatsapp: values.whatsapp || null,
-			iin: values.iin || undefined,
 			region_id: values.region_id ?? undefined,
 		}
 		if (isLawyer) {
@@ -176,13 +157,159 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 		await updateProfilePersonalData(payload, role, t)
 	})
 
+	if (variant === 'clean') {
+		return (
+			<div className={s.cleanWrapper}>
+				<div className={s.cleanHeader}>
+					<h3 className={s.cleanTitle}>{t('profile.personal_data.panelTitle')}</h3>
+					<p className={s.cleanDescr}>{t('profile.personal_data.panelDescription')}</p>
+				</div>
+				
+				<FormProvider {...methods}>
+					<form className={s.cleanForm} onSubmit={onSubmitAll}>
+						{/* Основные поля для всех ролей */}
+						{/* ФИО */}
+						<div className={s.cleanInputWrapper}>
+							<label className={s.cleanLabel} htmlFor="name">
+								{t('profile.personal_data.nameLabel')}
+							</label>
+							<div className={s.cleanInputBox}>
+								<Input
+									id="name"
+									type="text"
+									placeholder={t('profile.personal_data.namePlaceholder')}
+									disabled={!editableInputs.name}
+									{...register('name')}
+									className={`${s.cleanInput} ${errors.name ? s.cleanInputError : ''} ${!editableInputs.name ? s.cleanInputReadOnly : ''}`}
+									style={{
+										flex: '1',
+										minWidth: '0',
+										width: 'auto'
+									}}
+								/>
+								<button
+									type="button"
+									className={s.cleanEditBtn}
+									onClick={() => setEditableInputs(prev => ({ ...prev, name: !prev.name }))}
+								>
+									<PencilIcon className={s.cleanEditIcon} />
+								</button>
+								{errors.name && <p className={s.cleanError}>{t(errors.name?.message || '')}</p>}
+							</div>
+						</div>
+
+						{/* Номер телефона */}
+						<div className={s.cleanInputWrapper}>
+							<label className={s.cleanLabel} htmlFor="phone">
+								{t('profile.personal_data.phoneLabel')}
+							</label>
+							<div className={s.cleanInputBox}>
+								<Controller
+									name="phone"
+									control={control}
+									render={({ field: { onChange, onBlur, value } }) => (
+										<IMaskInput
+											id="phone"
+											type="tel"
+											placeholder={t('profile.personal_data.phonePlaceholder')}
+											disabled={!editableInputs.phone}
+											mask={phoneMask}
+											value={value}
+											onAccept={(val: string) => onChange(val)}
+											onBlur={onBlur}
+											unmask={true}
+											className={`${s.cleanInput} ${errors.phone ? s.cleanInputError : ''} ${!editableInputs.phone ? s.cleanInputReadOnly : ''}`}
+											style={{
+												flex: '1',
+												minWidth: '0',
+												width: 'auto',
+												padding: '12px 16px',
+												border: '1px solid #D1D5DB',
+												borderRadius: '8px',
+												fontSize: '14px',
+												background: !editableInputs.phone ? '#F9FAFB' : '#FFFFFF'
+											}}
+										/>
+									)}
+								/>
+								<button
+									type="button"
+									className={s.cleanEditBtn}
+									onClick={() => setEditableInputs(prev => ({ ...prev, phone: !prev.phone }))}
+								>
+									<PencilIcon className={s.cleanEditIcon} />
+								</button>
+								{errors.phone && <p className={s.cleanError}>{t(errors.phone?.message || '')}</p>}
+							</div>
+						</div>
+
+						{/* Статус (только для юристов) */}
+						{isLawyer && (
+							<LawyerFields t={t} variant="clean" editableInputs={editableInputs} setEditableInputs={setEditableInputs} />
+						)}
+
+						{/* Регион */}
+						<div className={s.cleanInputWrapper}>
+							<label htmlFor="region_id" className={s.cleanLabel}>
+								{t('profile.personal_data.regionLabel')}
+							</label>
+							<div className={s.cleanInputBox}>
+								<Controller
+									name="region_id"
+									control={control}
+									render={({ field }) => {
+										const selected =
+											allOptions.find((r) => String(r.id) === String(field.value)) || null
+
+										return (
+											<SearchSelect
+												className={`search-select dashboard-select custom-select ${!editableInputs.region_id ? 'disabled' : ''}`}
+												data={optionsForSelect}
+												value={selected}
+												onChange={(region) => field.onChange(region?.id)}
+												getId={(item) => item.id}
+												getLabel={(item) =>
+													item.path ? `${item.name} (${item.path})` : item.name
+												}
+												renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+												placeholder={t('profile.personal_data.regionPlaceholder')}
+												disabled={!editableInputs.region_id}
+												searchData={allOptions}
+											/>
+										)
+									}}
+								/>
+								<button
+									type="button"
+									className={s.cleanEditBtn}
+									onClick={() => setEditableInputs(prev => ({ ...prev, region_id: !prev.region_id }))}
+								>
+									<PencilIcon className={s.cleanEditIcon} />
+								</button>
+								{errors.region_id && (
+									<p className={s.cleanError}>{t(errors.region_id.message || '')}</p>
+								)}
+							</div>
+						</div>
+
+						<div className={s.cleanBtns}>
+							<Button variant="primary" size="auto" type="submit" className={s.saveBtn}>
+								Сохранить изменения
+							</Button>
+							<ProfileDelete />
+						</div>
+					</form>
+				</FormProvider>
+			</div>
+		)
+	}
+
 	return (
 		<ProfileTabWrapper
 			title={t('profile.personal_data.title')}
 			imgSrc={personalDataIcon}
 			imgAlt="personalData"
 			panel_title={t('profile.personal_data.panelTitle')}
-			panel_descr={t('profile.personal_data.panelDescription')}
 			ref={disclosureBtnRef}>
 			<FormProvider {...methods}>
 				<form className={s.form} onSubmit={onSubmitAll}>
@@ -290,7 +417,7 @@ export const ProfilePersonalData = ({ role }: { role: string }) => {
 					})}
 
 					{isLawyer && (
-						<LawyerFields t={t} />
+						<LawyerFields t={t} variant="default" />
 					)}
 
 					<div className={s.btns}>

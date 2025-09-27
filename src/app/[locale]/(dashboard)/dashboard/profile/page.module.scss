@@ -52,8 +52,8 @@
 }
 
 .avatarWrapper {
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 300px;
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 16px;
@@ -100,7 +100,9 @@
     background: #fff;
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 0;
+    padding: 24px;
+    height: fit-content;
+    overflow: visible;
 }
 
 /* Action Panel - 4x2 Grid */
@@ -154,6 +156,212 @@
     transform: translateY(0);
 }
 
+/* Client Avatar Section - упрощенная для клиентов */
+.clientAvatarSection {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Client Actions Panel - для клиентов в 2 колонки */
+.clientActionPanel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+}
+
+.clientActionCard {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    overflow: hidden;
+}
+
+/* Стили для секции смены пароля */
+.passwordSection {
+    h3 {
+        color: #1e293b;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .passwordForm {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .passwordInput {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: #64748b;
+        
+        &::placeholder {
+            color: #94a3b8;
+        }
+
+        &:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #fff;
+        }
+    }
+
+    .passwordRequirements {
+        font-size: 12px;
+        color: #3b82f6;
+        margin-bottom: 8px;
+    }
+
+    .passwordDescription {
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.4;
+        margin-bottom: 20px;
+    }
+
+    .passwordButtons {
+        display: flex;
+        gap: 12px;
+    }
+
+    .primaryBtn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+
+        &:hover {
+            background: #2563eb;
+        }
+    }
+
+    .secondaryBtn {
+        background: #fff;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        flex: 1;
+
+        &:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+    }
+}
+
+/* Стили для секции документов */
+.documentsSection {
+    h3 {
+        color: #1e293b;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .documentsList {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+        
+        /* Кастомный скроллбар */
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 2px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 2px;
+        }
+    }
+
+    .documentItem {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+
+        .documentIcon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1e293b;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .documentName {
+            flex: 1;
+            font-size: 14px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+    }
+
+    .addDocumentBtn {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+
+        &:hover {
+            background: #2563eb;
+        }
+
+        &:before {
+            content: '+';
+            font-size: 16px;
+            font-weight: 700;
+        }
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .profileHeader {
@@ -163,6 +371,10 @@
     
     .actionPanel {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .clientActionPanel {
+        gap: 16px;
     }
 }
 
@@ -174,5 +386,11 @@
     .avatarWrapper {
         width: 120px;
         height: 120px;
+    }
+    
+    .clientActionPanel {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 16px;
     }
 }

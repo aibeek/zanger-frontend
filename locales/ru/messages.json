@@ -96,7 +96,7 @@
 
 		"personal_data": {
 			"title": "Личные данные",
-			"panelTitle": "Настройте личные данные",
+			"panelTitle": "Личная информация",
 			"panelDescription": "Редактирование личных данных",
 
 			"nameLabel": "ФИО",
