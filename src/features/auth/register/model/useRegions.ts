@@ -2,12 +2,10 @@
 
 import useSWR from 'swr'
 
-import { sharedApi, City } from '@/shared/api'
+import { sharedApi, City, CitiesResponse } from '@/shared/api'
 
 const fetchRegions = async (): Promise<City[]> => {
-	const res = await sharedApi.getAllRegions()
-
-	// @ts-expect-error fix it
+	const res: CitiesResponse = await sharedApi.getAllRegions()
 	return res.data
 }
 

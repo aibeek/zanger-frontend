@@ -1,11 +1,12 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
 import { ProfileAvatar } from '@/entities/profile'
 import { NotificationsDropdown } from '@/entities/notifications'
 import { LangSwitcher, Button } from '@/shared/ui-kit'
 import Image from 'next/image'
+import Cookies from 'js-cookie'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
 
@@ -28,9 +29,19 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const t = useTranslations()
+    const router = useRouter()
     const { personalData } = useLoginStore()
     const pathname = usePathname()
     const icon = personalData?.icon ?? ''
+    
+    // Получаем роль пользователя из cookies
+    const userRole = Cookies.get('role')
+    const isLawyer = userRole === 'lawyer'
+    
+    // Функция для перехода на страницу подписки
+    const handleSubscriptionClick = () => {
+        router.push('/dashboard/subscription')
+    }
 
     // Функция для определения заголовка на основе текущего пути
     const getPageTitle = () => {
@@ -79,9 +90,15 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
                 
                 <div className={s.headerRight}>
-                    <Button variant="primary" className={s.subscriptionBtn}>
-                        {t('dashboard.sidebar.subscription')}
-                    </Button>
+                    {isLawyer && (
+                        <Button 
+                            variant="primary" 
+                            className={s.subscriptionBtn}
+                            onClick={handleSubscriptionClick}
+                        >
+                            {t('dashboard.sidebar.subscription')}
+                        </Button>
+                    )}
                     
                     <NotificationsDropdown />
                     

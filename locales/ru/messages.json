@@ -96,7 +96,7 @@
 
 		"personal_data": {
 			"title": "Личные данные",
-			"panelTitle": "Настройте личные данные",
+			"panelTitle": "Личная информация",
 			"panelDescription": "Редактирование личных данных",
 
 			"nameLabel": "ФИО",
@@ -124,6 +124,7 @@
 			"specializationPlaceholder": "Выберите специализацию",
 			"specializationRequired": "Выберите специализацию",
 			"save": "Сохранить",
+			"saveChanges": "Сохранить изменения",
 			"Required": "Обязательное поле",
 			"chooseStatus": "Выберите ваш статус",
 			"success": "Данные успешно обновлены",
@@ -223,6 +224,22 @@
 			"deleteError": "Ошибка при удалении документа"
 		},
 
+		"reviews": {
+			"title": "Отзывы",
+			"noReviews": "Нет откликов для отображения"
+		},
+
+		"menu_items": {
+			"consultation_price": "Стоимость консультации",
+			"specialization": "Ваша специализация",
+			"documents": "Документы", 
+			"subscription": "Ваша подписка",
+			"change_password": "Смена пароля",
+			"servicing_cities": "Обслуживаемая локация",
+			"support": "Служба поддержки",
+			"payment_methods": "Способы оплаты"
+		},
+
 		"support": {
 			"title": "Служба поддержки",
 			"panelTitle": "Обратиться в Службу поддержки",
@@ -248,7 +265,9 @@
 			"freeCalls": "Бесплатные звонки по всему Казахстану",
 			"disclaimer": "Прием заявок на оказание юридической помощи",
 			"freeConsultation": "Бесплатная первичная консультация",
-			"mobileVersionLabel": "Мобильная версия в разработке. Запуск скоро. Следите за новостями!"
+			"mobileVersionLabel": "Мобильная версия в разработке. Запуск скоро.<br/>Следите за новостями!",
+			"phoneButton": "Позвонить",
+			"createNew": "Оставить заявку"
 		},
 
 		"descriptionSection": {
@@ -406,9 +425,21 @@
 	"auth": {
 		"shell": {
 			"haveAccount": "Есть аккаунт?",
+			"noAccount": "Нет аккаунта?",
 			"loginLink": "Вход",
+			"registerLink": "Зарегистрироваться",
 			"platformTitle": "Юридическая платформа Zanger",
 			"platformDescription": "Сервис по взаимодействию клиентов и юристов"
+		},
+		"pages": {
+			"loginTitle": "Вход в систему",
+			"enterPhoneTitle": "Введите номер телефона",
+			"enterCodeTitle": "Введите код подтверждения",
+			"newPasswordTitle": "Новый пароль",
+			"registrationTitle": "Регистрация",
+			"clientRegistrationTitle": "Регистрация клиента",
+			"lawyerRegistrationTitle": "Регистрация юриста",
+			"stepNotFound": "Шаг не найден"
 		},
 		"login": {
 			"title": "Войти в свой аккаунт ",
@@ -419,7 +450,9 @@
 			"forgotPassword": "Забыли пароль?",
 			"submit": "Войти",
 			"submitting": "Входим...",
-			"registerLink": "Регистрация"
+			"registerLink": "Регистрация",
+			"noAccount": "Нет аккаунта?",
+			"registerText": "Зарегистрироваться"
 		},
 		"roleSelection": {
 			"client": {
@@ -474,8 +507,10 @@
 			"passwordConfirmationPlaceholder": "Повторите пароль",
 			"loading": "Отправляется...",
 			"submit": "Зарегистрироваться",
-			"warningText": "Продолжая, вы соглашаетесь с",
-			"privacyPolicy": "Политикой конфиденциальности"
+			"warningText": "Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете",
+			"privacyPolicy": "Политику конфиденциальности",
+			"and": "и",
+			"publicOffer": "Публичную оферту"
 		},
 		"enterNewPassword": {
 			"newPassword": "Новый пароль",
@@ -715,7 +750,8 @@
 		"buttons": {
 			"view": "Посмотреть",
 			"load_more": "Загрузить еще",
-			"loading": "Загружаем..."
+			"loading": "Загружаем...",
+			"clear": "Очистить"
 		},
 
 		"types": {

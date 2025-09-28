@@ -29,7 +29,7 @@ export const MyResponsesTab = () => {
 	if (!items || items.length === 0) {
 		return (
 			<div style={{ padding: '20px', textAlign: 'center' }}>
-				<p>Нет откликов для отображения</p>
+				<p>{t('profile.reviews.noReviews')}</p>
 			</div>
 		)
 	}

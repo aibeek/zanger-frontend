@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { redirect, useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { RegistrationFormStep } from '@/features/auth/register'
 import { EnterPhoneNumberStep } from '@/widgets/EnterPhoneNumberStep'
@@ -17,18 +18,27 @@ const stepComponents = {
 	lawyerRegistrationForm: RegistrationFormStep,
 }
 
-const stepTitles = {
-	phone: 'Введите номер телефона',
-	code: 'Введите код подтверждения',
-	clientRegistrationForm: 'Регистрация клиента',
-	lawyerRegistrationForm: 'Регистрация юриста',
-}
-
 export default function RegisterPage() {
 	const { role } = useParams()
+	const t = useTranslations('auth')
 
 	const { getCurrentStep, isInitialized, forceSetRole, role: currentRoleFromStore } = useStepMarcher()
 	const step = getCurrentStep()
+
+	const getStepTitle = (currentStep: string | null) => {
+		switch (currentStep) {
+			case 'phone':
+				return t('pages.enterPhoneTitle')
+			case 'code':
+				return t('pages.enterCodeTitle')
+			case 'clientRegistrationForm':
+				return t('pages.clientRegistrationTitle')
+			case 'lawyerRegistrationForm':
+				return t('pages.lawyerRegistrationTitle')
+			default:
+				return t('pages.registrationTitle')
+		}
+	}
 
 	useEffect(() => {
 		if (!arrRoles.includes(role as RoleVariant)) {
@@ -52,13 +62,13 @@ export default function RegisterPage() {
 
 	return (
 		<AuthShell
-			title={step ? stepTitles[step] : 'Регистрация'}
+			title={getStepTitle(step)}
 			showNavigation={true}
-			navigationText="Есть аккаунт?"
-			navigationLinkText="Вход"
+			navigationText={t('shell.haveAccount')}
+			navigationLinkText={t('shell.loginLink')}
 			navigationLinkHref="/auth/login"
 		>
-			{StepComponent ? <StepComponent variant={role as RoleVariant} /> : <div>Шаг не найден</div>}
+			{StepComponent ? <StepComponent variant={role as RoleVariant} /> : <div>{t('pages.stepNotFound')}</div>}
 		</AuthShell>
 	)
 }

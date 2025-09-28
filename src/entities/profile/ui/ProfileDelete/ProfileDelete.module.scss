@@ -49,3 +49,18 @@
 		text-align: center;
 	}
 }
+
+.inlineDanger {
+	background: #EF4444 !important;
+	color: white !important;
+	border: none !important;
+	padding: 12px 24px !important;
+	border-radius: 8px !important;
+	font-weight: 600 !important;
+	cursor: pointer !important;
+	transition: background-color 0.2s !important;
+	
+	&:hover {
+		background: #DC2626 !important;
+	}
+}

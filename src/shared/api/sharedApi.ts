@@ -23,8 +23,8 @@ export interface TagsResponse {
 }
 
 export const sharedApi = {
-	getAllRegions: () =>
-		httpClient(`${API_URL}/regions/all`, {
+	getAllRegions: (): Promise<CitiesResponse> =>
+		httpClient<CitiesResponse>(`${API_URL}/regions/all`, {
 			method: 'GET',
 		}),
 

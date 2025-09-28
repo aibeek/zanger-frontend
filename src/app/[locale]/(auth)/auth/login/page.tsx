@@ -1,13 +1,16 @@
+import { useTranslations } from 'next-intl'
 import { Login } from '@/features/auth/login'
 import { AuthShell } from '@/widgets/AuthShell'
 
 export default function LoginPage() {
+    const t = useTranslations('auth')
+    
     return (
         <AuthShell
-            title="Вход в систему"
+            title={t('pages.loginTitle')}
             showNavigation={true}
-            navigationText="Нет аккаунта?"
-            navigationLinkText="Зарегистрироваться"
+            navigationText={t('shell.noAccount')}
+            navigationLinkText={t('shell.registerLink')}
             navigationLinkHref="/auth/register/select-role"
         >
             <Login />

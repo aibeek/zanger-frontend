@@ -19,20 +19,21 @@ import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.sv
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
 import ZangerIcon from '@/app/assets/icons/dashboard-icons/ZANGER.svg'
-import LogoutIcon from '@/app/assets/icons/dashboard-icons/logout.svg'
+import LogoutIcon from '@/app/assets/icons/dashboard-icons/logout2.png'
 
 interface SidebarProps {
     language: string
+    onMobileClose?: () => void
 }
 
-export const Sidebar = ({ language }: SidebarProps) => {
+export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const { personalData, reset } = useLoginStore()
     const pathname = usePathname()
     const router = useRouter()
     const t = useTranslations()
     
     const name = personalData?.name ?? ''
-    const icon = personalData?.icon ?? ''
+    const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
     const role = Cookies.get('role')
     
     const handleLogout = () => {
@@ -60,12 +61,12 @@ export const Sidebar = ({ language }: SidebarProps) => {
             icon: ApplicationsIcon,
             href: `/${language}/dashboard/applications`,
         },
-        {
-            id: 'chats',
-            title: t('dashboard.sidebar.chats'),
-            icon: ChatIcon,
-            href: `/${language}/dashboard/chats`,
-        },
+        // {
+        //     id: 'chats',
+        //     title: t('dashboard.sidebar.chats'),
+        //     icon: ChatIcon,
+        //     href: `/${language}/dashboard/chats`,
+        // },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),
@@ -103,6 +104,15 @@ export const Sidebar = ({ language }: SidebarProps) => {
                     <Image src={ZangerIcon} alt="Zanger Logo" className={s.logoIcon} width={24} height={24} />
                     <span className={s.logoText}>ZANGER</span>
                 </div>
+                {onMobileClose && (
+                    <button 
+                        className={s.mobileCloseBtn}
+                        onClick={onMobileClose}
+                        aria-label="Закрыть меню"
+                    >
+                        ×
+                    </button>
+                )}
             </div>
             <div className={s.userProfile}>
                     <div className={s.avatarWrapper}>
@@ -126,6 +136,7 @@ export const Sidebar = ({ language }: SidebarProps) => {
                             key={item.id}
                             href={item.href}
                             className={`${s.navItem} ${pathname === item.href ? s.navItemActive : ''}`}
+                            onClick={onMobileClose}
                         >
                             <Image src={item.icon} alt={item.title} className={s.navIcon} width={20} height={20} />
                             <span className={s.navText}>{item.title}</span>

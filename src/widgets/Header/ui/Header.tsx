@@ -170,10 +170,11 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												href={`/${personalData.language}/dashboard/profile`}>
 												<Image
 													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-													src={personalData.icon ?? avatar}
+													src={personalData.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : avatar}
 													alt={('avatarAlt')}
 													width={40}
 													height={40}
+													unoptimized={!personalData.icon || personalData.icon.includes('Lawyer.jpg')}
 												/>
 											</Link>
 											<div className={s.userInfo}>
@@ -316,10 +317,11 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												href={`/${personalData.language}/dashboard/profile`}>
 												<Image
 													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-													src={personalData.icon ?? avatar}
+													src={personalData.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : avatar}
 													alt={t('avatarAlt')}
 													width={40}
 													height={40}
+													unoptimized={!personalData.icon || personalData.icon.includes('Lawyer.jpg')}
 												/>
 											</Link>
 											<div className={s.mobileUserInfo}>
@@ -405,10 +407,11 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										href={`/${personalData.language}/dashboard/profile`}>
 										<Image
 											style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-											src={personalData.icon ?? avatar}
+											src={personalData.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : avatar}
 											alt={t('avatarAlt')}
 											width={40}
 											height={40}
+											unoptimized={!personalData.icon || personalData.icon.includes('Lawyer.jpg')}
 										/>
 									</Link>
 

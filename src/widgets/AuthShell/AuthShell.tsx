@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n'
+import { policyURL, termsURL } from '@/shared/lib/consts/urls'
 
 import s from './AuthShell.module.scss'
 
@@ -13,6 +14,7 @@ type AuthShellProps = {
   navigationText?: string
   navigationLinkText?: string
   navigationLinkHref?: string
+  showDisclaimer?: boolean
 }
 
 export function AuthShell({ 
@@ -23,6 +25,7 @@ export function AuthShell({
   navigationText,
   navigationLinkText,
   navigationLinkHref = '/auth/login',
+  showDisclaimer = false,
 }: AuthShellProps) {
   const t = useTranslations('auth.shell')
 
@@ -68,6 +71,22 @@ export function AuthShell({
             <div className={s.panelContent}>
               {children}
             </div>
+            
+            {/* Disclaimer */}
+            {showDisclaimer && (
+              <div className={s.disclaimer}>
+                <span>
+                  {t('registration.warningText')}{' '}
+                  <Link href={policyURL} className={s.disclaimerLink} target="_blank">
+                    {t('registration.privacyPolicy')}
+                  </Link>
+                  {' '}{t('registration.and')}{' '}
+                  <Link href={termsURL} className={s.disclaimerLink} target="_blank">
+                    {t('registration.publicOffer')}
+                  </Link>
+                </span>
+              </div>
+            )}
           </div>
         </main>
       </div>
