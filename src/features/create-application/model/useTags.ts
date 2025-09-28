@@ -1,3 +1,5 @@
+'use client'
+
 import useSWR from 'swr'
 
 import { sharedApi, Tag, TagsResponse } from '@/shared/api'

@@ -67,7 +67,6 @@ export default function RegisterPage() {
 			navigationText={t('shell.haveAccount')}
 			navigationLinkText={t('shell.loginLink')}
 			navigationLinkHref="/auth/login"
-			showDisclaimer={step === 'clientRegistrationForm' || step === 'lawyerRegistrationForm'}
 		>
 			{StepComponent ? <StepComponent variant={role as RoleVariant} /> : <div>{t('pages.stepNotFound')}</div>}
 		</AuthShell>

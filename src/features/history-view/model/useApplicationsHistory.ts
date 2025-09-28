@@ -1,3 +1,5 @@
+'use client'
+
 import useSWRInfinite from 'swr/infinite'
 
 import { clientApi } from '@/shared/api'

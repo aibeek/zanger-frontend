@@ -1,3 +1,5 @@
+'use client'
+
 import useSWRInfinite from 'swr/infinite'
 import Cookies from 'js-cookie'
 import { lawyerApi } from '@/shared/api'
