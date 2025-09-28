@@ -34,16 +34,18 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
 
     return (
         <div className={s.layout}>
-            {/* Mobile menu button */}
-            <button 
-                className={s.mobileMenuButton}
-                onClick={toggleMobileSidebar}
-                aria-label="Открыть меню"
-            >
-                <span className={s.hamburger}></span>
-                <span className={s.hamburger}></span>
-                <span className={s.hamburger}></span>
-            </button>
+            {/* Mobile menu button - показываем только когда сайдбар закрыт */}
+            {!isMobileSidebarOpen && (
+                <button 
+                    className={s.mobileMenuButton}
+                    onClick={toggleMobileSidebar}
+                    aria-label="Открыть меню"
+                >
+                    <span className={s.hamburger}></span>
+                    <span className={s.hamburger}></span>
+                    <span className={s.hamburger}></span>
+                </button>
+            )}
 
             {/* Mobile overlay */}
             {isMobileSidebarOpen && (

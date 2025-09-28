@@ -61,12 +61,12 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             icon: ApplicationsIcon,
             href: `/${language}/dashboard/applications`,
         },
-        {
-            id: 'chats',
-            title: t('dashboard.sidebar.chats'),
-            icon: ChatIcon,
-            href: `/${language}/dashboard/chats`,
-        },
+        // {
+        //     id: 'chats',
+        //     title: t('dashboard.sidebar.chats'),
+        //     icon: ChatIcon,
+        //     href: `/${language}/dashboard/chats`,
+        // },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),

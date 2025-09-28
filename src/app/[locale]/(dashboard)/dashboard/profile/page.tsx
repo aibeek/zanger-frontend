@@ -243,7 +243,7 @@ export default function ProfilePage() {
                                     <span>★ ★ ★ ★ ★</span>
                                     <span className={s.rating}>4,9</span>
                                 </div>
-                                <button className={`btn btn-primary ${s.reviewsBtn}`}>Отзывы</button>
+                                <button className={`btn btn-primary ${s.reviewsBtn}`}>{t('profile.reviews.title')}</button>
                             </div>
                         </div>
 
@@ -256,28 +256,28 @@ export default function ProfilePage() {
                     {/* Action Panel - 4x2 Grid */}
                     <div className={s.actionPanel}>
                         <button className={s.actionCard} onClick={() => openModal('consultation')}>
-                            Стоимость консультации
+                            {t('profile.menu_items.consultation_price')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('specialization')}>
-                            Ваша специализация
+                            {t('profile.menu_items.specialization')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('documents')}>
-                            Документы
+                            {t('profile.menu_items.documents')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('subscription')}>
-                            Ваша подписка
+                            {t('profile.menu_items.subscription')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('password')}>
-                            Смена пароля
+                            {t('profile.menu_items.change_password')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('cities')}>
-                            Обслуживаемая локация
+                            {t('profile.menu_items.servicing_cities')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('support')}>
-                            Служба поддержки
+                            {t('profile.menu_items.support')}
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('payment')}>
-                            Способы оплаты
+                            {t('profile.menu_items.payment_methods')}
                         </button>
                     </div>
 

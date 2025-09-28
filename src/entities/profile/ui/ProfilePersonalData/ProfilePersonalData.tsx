@@ -294,7 +294,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 
 						<div className={s.cleanBtns}>
 							<Button variant="primary" size="auto" type="submit" className={s.saveBtn}>
-								Сохранить изменения
+								{t('profile.personal_data.saveChanges')}
 							</Button>
 							<ProfileDelete />
 						</div>

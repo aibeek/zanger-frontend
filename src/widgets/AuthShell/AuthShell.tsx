@@ -76,13 +76,13 @@ export function AuthShell({
             {showDisclaimer && (
               <div className={s.disclaimer}>
                 <span>
-                  Создавая аккаунт, вы подтверждаете, что ознакомились и принимаете{' '}
+                  {t('registration.warningText')}{' '}
                   <Link href={policyURL} className={s.disclaimerLink} target="_blank">
-                    Политику конфиденциальности
+                    {t('registration.privacyPolicy')}
                   </Link>
-                  {' '}и{' '}
+                  {' '}{t('registration.and')}{' '}
                   <Link href={termsURL} className={s.disclaimerLink} target="_blank">
-                    Публичную оферту
+                    {t('registration.publicOffer')}
                   </Link>
                 </span>
               </div>

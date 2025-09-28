@@ -29,9 +29,7 @@ export const EnterNewPasswordStep = () => {
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
-				<div className={s.top}>
-					<h1 className={s.title}>{t('auth.enterNewPassword.newPassword')}</h1>
-				</div>
+				
 
 				<form
 					className={s.form}

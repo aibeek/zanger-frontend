@@ -215,7 +215,7 @@ export const LawyerApplicationsList = () => {
 						className={s.clearBtn}
 						onClick={clearFilters}
 					>
-						Очистить
+						{t('notifications.buttons.clear')}
 					</Button>
 					
 					<Button variant="primary" className={s.searchBtn}>

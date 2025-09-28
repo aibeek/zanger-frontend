@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { redirect, useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 import { useStepMarcher } from '@/shared/lib'
 import { EnterNewPasswordStep } from '@/features/auth'
@@ -18,6 +19,7 @@ const stepComponents = {
 
 export default function ResetPasswordPage() {
 	const { locale } = useParams()
+	const t = useTranslations('auth')
 	const { getCurrentStep, isInitialized, initResetPasswordFlow } = useStepMarcher()
 	const step = getCurrentStep()
 
@@ -42,10 +44,10 @@ export default function ResetPasswordPage() {
 	if (step === 'phone') {
 		return (
 			<AuthShell
-				title="Введите номер телефона"
+				title={t('pages.enterPhoneTitle')}
 				showNavigation={true}
 				navigationText=""
-				navigationLinkText="Войти"
+				navigationLinkText={t('shell.loginLink')}
 				navigationLinkHref="/auth/login"
 			>
 				<StepComponent
@@ -58,10 +60,10 @@ export default function ResetPasswordPage() {
 	if (step === 'code') {
 		return (
 			<AuthShell
-				title="Введите код подтверждения"
+				title={t('pages.enterCodeTitle')}
 				showNavigation={true}
 				navigationText=""
-				navigationLinkText="Войти"
+				navigationLinkText={t('shell.loginLink')}
 				navigationLinkHref="/auth/login"
 			>
 				<StepComponent variant={'reset-password'} />
@@ -71,10 +73,10 @@ export default function ResetPasswordPage() {
 
 	return StepComponent ? (
 		<AuthShell
-			title="Новый пароль"
+			title={t('pages.newPasswordTitle')}
 			showNavigation={true}
 			navigationText=""
-			navigationLinkText="Войти"
+			navigationLinkText={t('shell.loginLink')}
 			navigationLinkHref="/auth/login"
 		>
 			<StepComponent />

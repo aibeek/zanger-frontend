@@ -117,6 +117,7 @@
 			"specializationPlaceholder": "Мамандануды таңдаңыз",
 			"specializationRequired": "Мамандануды таңдаңыз",
 			"save": "Сақтау",
+			"saveChanges": "Өзгерістерді сақтау",
 			"Required": "Міндетті өріс",
 
 			"chooseStatus": "Өз мәртебеңізді таңдаңыз",
@@ -219,11 +220,27 @@
 			"deleteError": "Құжатты жою қатесі"
 		},
 
+		"reviews": {
+			"title": "Пікірлер",
+			"noReviews": "Көрсетілетін пікірлер жоқ"
+		},
+
 		"support": {
 			"title": "Қолдау қызметі",
 			"panelTitle": "Қолдау қызметіне жүгіну",
 			"panelDescription": "Сұрақтарыңыз болса, қолдау қызметіне хабарласыңыз",
 			"text": "WhatsApp арқылы жазу"
+		},
+
+		"menu_items": {
+			"consultation_price": "Кеңес беру бағасы",
+			"specialization": "Сіздің мамандануыңыз",
+			"documents": "Құжаттар",
+			"subscription": "Сіздің жазылымыңыз",
+			"change_password": "Құпиясөзді өзгерту",
+			"servicing_cities": "Қызмет көрсетілетін аймақ",
+			"support": "Қолдау қызметі",
+			"payment_methods": "Төлем әдістері"
 		},
 
 		"payment_method": {
@@ -403,12 +420,24 @@
 	"auth": {
 		"shell": {
 			"haveAccount": "Аккаунтыңыз бар ма?",
+			"noAccount": "Аккаунтыңыз жоқ па?",
 			"loginLink": "Кіру",
+			"registerLink": "Тіркелу",
 			"platformTitle": "Zanger құқықтық платформасы",
 			"platformDescription": "Клиенттер мен заңгерлер арасындағы байланыс сервисі"
 		},
+		"pages": {
+			"loginTitle": "Жүйеге кіру",
+			"enterPhoneTitle": "Телефон нөмірін енгізіңіз",
+			"enterCodeTitle": "Растау кодын енгізіңіз",
+			"newPasswordTitle": "Жаңа құпиясөз",
+			"registrationTitle": "Тіркеу",
+			"clientRegistrationTitle": "Клиент тіркеуі",
+			"lawyerRegistrationTitle": "Заңгер тіркеуі",
+			"stepNotFound": "Қадам табылмады"
+		},
 		"login": {
-			"title": "Қолданбаға<br />кіру",
+			"title": "Қолданбаға кіру",
 			"phoneLabel": "Телефон нөмірі",
 			"phonePlaceholder": "Телефон нөмірін енгізіңіз",
 			"passwordLabel": "Құпиясөз",
@@ -416,7 +445,9 @@
 			"forgotPassword": "Құпиясөзді ұмыттыңыз ба?",
 			"submit": "Кіру",
 			"submitting": "Кіріп жатырмыз...",
-			"registerLink": "Тіркелу"
+			"registerLink": "Тіркелу",
+			"noAccount": "Аккаунтыңыз жоқ па?",
+			"registerText": "Тіркелу"
 		},
 			"roleSelection": {
 				"client": {
@@ -471,8 +502,10 @@
 			"passwordConfirmationPlaceholder": "Құпиясөзді қайталаңыз",
 			"loading": "Жөнелтілуде...",
 			"submit": "Тіркелу",
-			"warningText": "Жалғастыру арқылы сіз келесімен келісесіз",
-			"privacyPolicy": "Жеке өмірді қорғау саясаты"
+			"warningText": "Аккаунт жасай отырып, сіз келесі құжаттармен танысып, қабылдайтыныңызды растайсыз",
+			"privacyPolicy": "Құпиялылық саясаты",
+			"and": "және",
+			"publicOffer": "Қоғамдық оферта"
 		},
 		"enterNewPassword": {
 			"newPassword": "Жаңа құпиясөз",
@@ -705,7 +738,8 @@
 		"buttons": {
 			"view": "Қарау",
 			"load_more": "Тағы жүктеу",
-			"loading": "Жүктелуде..."
+			"loading": "Жүктелуде...",
+			"clear": "Тазалау"
 		},
 
 		"types": {
