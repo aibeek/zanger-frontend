@@ -1,5 +1,4 @@
 import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection } from '@/widgets/MainPage'
-import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { Footer } from '@/widgets/Footer'
 import s from './page.module.scss'
