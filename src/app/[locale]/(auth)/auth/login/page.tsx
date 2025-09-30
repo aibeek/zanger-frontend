@@ -7,7 +7,6 @@ export default function LoginPage() {
     
     return (
         <AuthShell
-            title={t('pages.loginTitle')}
             showNavigation={true}
             navigationText={t('shell.noAccount')}
             navigationLinkText={t('shell.registerLink')}
