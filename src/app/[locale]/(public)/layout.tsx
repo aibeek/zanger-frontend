@@ -7,7 +7,6 @@ import type { Metadata } from 'next'
 import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
-import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
 export const metadata: Metadata = {
@@ -41,7 +40,6 @@ export default async function RootLayout({
 			<DeviceGuard>
 				<div className="lending-layout">
 					{children}
-					<ChatBot />
 					<PulseChatWidget />
 				</div>
 			</DeviceGuard>

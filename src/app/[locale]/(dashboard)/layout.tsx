@@ -7,7 +7,6 @@ import { getMessages } from 'next-intl/server'
 import { AuthGuard } from '@/shared/lib'
 import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
-import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { SWRConfig } from 'swr'
 
@@ -44,7 +43,6 @@ export default async function DashboardLayoutRoot({
 						{children}
 					</DashboardLayout>
 					<AppToaster />
-					<ChatBot />
 					<PulseChatWidget />
 				</SWRConfig>
 			</AuthGuard>

@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server'
 
 import { routing } from '@/i18n/routing'
 import { SWRConfig } from 'swr'
-import { ChatBot } from '@/widgets/ChatBot'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
 export const metadata: Metadata = {
@@ -39,7 +38,6 @@ export default async function AuthLayout({
 				<div className="auth-wrapper">
 					{/* Header удален на страницах авторизации */}
 					<section>{children}</section>
-					<ChatBot />
 					<PulseChatWidget />
 				</div>
 			</SWRConfig>
