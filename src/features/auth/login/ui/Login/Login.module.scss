@@ -7,14 +7,14 @@
   display: flex;
   flex-direction: column;
   align-items: center; /* center content */
-  padding-top: 24px; /* push down inside panel */
+  padding-top: 40px; /* push down inside panel */
 }
 
 .logoBlock {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 0 32px; /* more space below */
+  margin: 0 0 24px;
 }
 
 .brand {
@@ -24,15 +24,25 @@
   letter-spacing: 1px;
 }
 
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0d62f8;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
 @media (max-width: 640px) {
   .brand { font-size: 26px; }
-  .loginWrapper { max-width: 100%; padding-top: 12px; }
-  .logoBlock { margin-bottom: 24px; }
+  .loginWrapper { max-width: 100%; padding-top: 30px; }
+  .logoBlock { margin-bottom: 20px; }
+  .title { font-size: 20px; margin-bottom: 20px; }
 }
 
 @media (max-width: 420px) {
   .brand { font-size: 22px; }
-  .logoBlock { margin-bottom: 20px; }
+  .logoBlock { margin-bottom: 16px; }
+  .title { font-size: 18px; margin-bottom: 16px; }
 }
 
 .form {
