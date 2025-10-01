@@ -30,10 +30,6 @@ export const UserRoleSelectionStep = () => {
 
   return (
     <div className={s.wrapper}>
-      <div className={s.header}>
-        <Image src="/logo-blue.svg" alt="Zanger logo" width={48} height={56} />
-        <span className={s.brand}>ZANGER</span>
-      </div>
 	  <h1 className={s.statusTitle}>{t('heading', { default: 'Ваш статус' } as any) || 'Ваш статус'}</h1>
       <div className={s.cards}>
         {cardData.map(({ role, className, title, descr, icon }) => (

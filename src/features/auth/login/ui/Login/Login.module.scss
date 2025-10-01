@@ -20,14 +20,14 @@
 .brand {
   font-size: 32px;
   font-weight: 700;
-  color: #043676;
+  color: rgb(2, 125, 255);
   letter-spacing: 1px;
 }
 
 .title {
-  font-size: 24px;
-  font-weight: 600;
-  color: #0d62f8;
+  font-size: 44px;
+  font-weight: 700;
+  color: var(--Black, rgba(0, 0, 0, 1));
   margin-bottom: 24px;
   text-align: center;
 }

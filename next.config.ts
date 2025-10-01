@@ -6,6 +6,11 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
 	transpilePackages: ['antd'],
+	experimental: {
+		// Disable vendor chunking for packages like 'antd' to avoid
+		// runtime requires to missing './vendor-chunks/antd.js'
+		optimizePackageImports: [],
+	},
 	webpack(config) {
 		const oneOfRules = config.module.rules.find((rule: any) => typeof rule.oneOf === 'object')
 

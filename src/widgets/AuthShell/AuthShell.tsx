@@ -31,13 +31,14 @@ export function AuthShell({
 
   const navText = navigationText || t('haveAccount')
   const navLinkText = navigationLinkText || t('loginLink')
-  // Если rightHeader не передан, создаем стандартный
+  
+  // Хедер с навигацией справа вверху
   const defaultHeader = showNavigation ? (
     <div className={s.panelHeader}>
-      <div></div>
-      <div>
-        <span style={{ color: '#000000ff', marginRight: 8 }}>{navText}</span>
-        <Link href={navigationLinkHref} style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
+      <div />
+      <div className={s.panelNav}>
+        <span className={s.navText}>{navText}</span>
+        <Link href={navigationLinkHref} className={s.navLink}>
           {navLinkText}
         </Link>
       </div>
@@ -63,6 +64,13 @@ export function AuthShell({
         <main className={s.panel}>
           <div className={s.panelInner}>
             {rightHeader || defaultHeader}
+            
+            {/* Центральный логотип с текстом */}
+            <div className={s.centerBrand}>
+              <Image src="/logo-blue.svg" alt="Zanger" width={48} height={48} />
+              <span className={s.centerBrandText}>ZANGER</span>
+            </div>
+            
             {title && (
               <h1 className={s.panelTitle}>
                 {title}

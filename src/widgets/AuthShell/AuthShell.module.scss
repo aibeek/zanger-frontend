@@ -12,7 +12,7 @@
 .container {
   display: grid;
   /* Using fr units so the gap is subtracted before distributing space, preventing overflow clipping radius */
-  grid-template-columns: 0.4fr 0.6fr;
+  grid-template-columns: 1fr 1fr; /* 50 / 50 split */
   gap: 24px;
   max-width: auto;
   width: 100%;
@@ -81,7 +81,7 @@
 }
 
 .panelInner {
-  padding: 24px 32px 28px;
+  padding: 20px 28px 24px;
   height: 100% !important;
   overflow: hidden;
   display: flex !important;
@@ -95,10 +95,10 @@
 }
 
 .panelTitle {
-  font-size: 28px !important;
-  color: #2563eb !important;
+  font-size: 26px !important;
+  color: #111827 !important; /* black-ish for consistency */
   font-weight: 800 !important;
-  margin: 56px 0 40px !important; /* pushed lower */
+  margin: 40px 0 32px !important; /* pushed lower */
   text-align: center !important;
   width: 100% !important;
   background: none !important;
@@ -136,7 +136,45 @@
 .panelHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.panelNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navText {
+  color: #000000;
+  font-size: 14px;
+}
+
+.navLink {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.centerBrand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0 20px;
+}
+
+.centerBrandText {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 1px;
 }
 
 .panelBrand { display: inline-flex; align-items: center; gap: 10px; }
@@ -147,4 +185,11 @@
     grid-template-columns: 1fr;
   }
   .promo { display: none; }
+}
+
+/* Tight mobile view: ensure right panel is full width with comfortable paddings */
+@media (max-width: 640px) {
+  .page { padding: 12px; }
+  .panelInner { padding: 16px 20px 20px; }
+  .panelTitle { margin: 24px 0 20px !important; font-size: 22px !important; }
 }
