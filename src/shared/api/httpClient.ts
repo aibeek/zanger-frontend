@@ -7,7 +7,7 @@ const addAuthHeader = (token: string, options: RequestInit = {}) => {
 		...options,
 		headers: {
 			Accept: 'application/json',
-			'Accept-Language': navigator.language,
+			'Accept-Language': typeof navigator !== 'undefined' ? navigator.language : 'ru',
 			...options.headers,
 			Authorization: `Bearer ${token}`,
 			...(isFormData ? {} : { 'Content-Type': 'application/json' }),
@@ -27,61 +27,98 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 
 	const headersOptions = addAuthHeader(token, options || {})
 
+	// Add an AbortController for a soft timeout to avoid hanging requests
+	const controller = new AbortController()
+	const timeoutMs = 15000
+	const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
 	try {
-		const res = await fetch(url, headersOptions)
+		const res = await fetch(url, { ...headersOptions, signal: controller.signal })
 
 		if (!res.ok) {
-			let errorMessage = 'Что-то пошло не так'
+			let errorMessage = `HTTP Error: ${res.status} ${res.statusText}`
 
 			try {
-				const error = await res.json()
-				errorMessage = error?.message || errorMessage
+				const errorResponse = await res.text()
+				try {
+					const errorJson = JSON.parse(errorResponse)
+					errorMessage = (errorJson && errorJson.message) || errorMessage
+				} catch {
+					errorMessage = errorResponse.length > 200 ? errorResponse.substring(0, 200) + '...' : errorResponse
+				}
 			} catch {}
 
 			throw new Error(errorMessage)
 		}
 
-		return await res.json()
-	} catch (error) {
-		console.error('Ошибка сети или запроса:', error)
-		throw error
+		const contentType = res.headers.get('content-type') || ''
+		if (contentType.includes('application/json')) {
+			return (await res.json()) as T
+		}
+		const text = await res.text()
+		return text as unknown as T
+	} catch (error: any) {
+		let reason = 'Network error'
+		if (error?.name === 'AbortError') {
+			reason = `Request timed out after ${timeoutMs}ms`
+		}
+		console.error('Ошибка сети или запроса:', reason, { url })
+		throw new Error(`${reason}. Failed to fetch ${url}`)
+	} finally {
+		clearTimeout(timeoutId)
 	}
 }
 
 export const httpClient = async <T>(url: string, options?: RequestInit): Promise<T> => {
-	const res = await fetch(url, {
-		headers: {
-			'Content-Type': 'application/json',
-			Accept: 'application/json',
-			'Accept-Language': navigator.language,
-			...(options?.headers || {}),
-		},
-		...options,
-	})
+	const controller = new AbortController()
+	const timeoutMs = 15000
+	const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-	if (!res.ok) {
-		let errorMessage = `HTTP Error: ${res.status} ${res.statusText}`
-		
-		try {
-			const errorResponse = await res.text()
-			console.error('Server error response:', errorResponse)
-			
-			// Пытаемся распарсить JSON, если это возможно
+	try {
+		const res = await fetch(url, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				'Accept-Language': typeof navigator !== 'undefined' ? navigator.language : 'ru',
+				...(options?.headers || {}),
+			},
+			signal: controller.signal,
+		})
+
+		if (!res.ok) {
+			let errorMessage = `HTTP Error: ${res.status} ${res.statusText}`
+
 			try {
-				const errorJson = JSON.parse(errorResponse)
-				errorMessage = errorJson.message || errorMessage
-			} catch {
-				// Если не JSON, показываем первые 200 символов ответа
-				errorMessage = errorResponse.length > 200 
-					? errorResponse.substring(0, 200) + '...' 
-					: errorResponse
-			}
-		} catch {
-			// Если не можем прочитать ответ, используем стандартное сообщение
+				const errorResponse = await res.text()
+				console.error('Server error response:', errorResponse)
+
+				try {
+					const errorJson = JSON.parse(errorResponse)
+					errorMessage = errorJson.message || errorMessage
+				} catch {
+					// Если не JSON, показываем первые 200 символов ответа
+					errorMessage = errorResponse.length > 200 ? errorResponse.substring(0, 200) + '...' : errorResponse
+				}
+			} catch {}
+
+			throw new Error(errorMessage)
 		}
 
-		throw new Error(errorMessage)
+		const contentType = res.headers.get('content-type') || ''
+		if (contentType.includes('application/json')) {
+			return (await res.json()) as T
+		}
+		const text = await res.text()
+		return text as unknown as T
+	} catch (error: any) {
+		let reason = 'Network error'
+		if (error?.name === 'AbortError') {
+			reason = `Request timed out after ${timeoutMs}ms`
+		}
+		console.error('Ошибка сети или запроса:', reason, { url })
+		throw new Error(`${reason}. Failed to fetch ${url}`)
+	} finally {
+		clearTimeout(timeoutId)
 	}
-
-	return await res.json()
 }

@@ -1,9 +1,9 @@
 import useSWRInfinite from 'swr/infinite'
 import { sharedApi } from '@/shared/api'
 import { PAGE_SIZE } from '@/shared/lib'
-import { useNotificationsStore } from './useNotificationsStore'
+import { useNotificationsStore, type NotificationItem } from './useNotificationsStore'
 
-const fetcher = async (key: string) => {
+const fetcher = async (key: string): Promise<NotificationItem[]> => {
 	const urlParams = new URLSearchParams(key.split('?')[1])
 	const page = Number(urlParams.get('page')) || 1
 
@@ -12,8 +12,10 @@ const fetcher = async (key: string) => {
 		per_page: PAGE_SIZE,
 	})
 
-	// @ts-expect-error fix it
-	return response.data
+	// Normalize to array; backend returns { data: T[] }
+	// If response shape differs, fallback to empty array to keep SWR stable
+	const data = (response as any)?.data
+	return Array.isArray(data) ? (data as NotificationItem[]) : []
 }
 
 export const useNotificationsInfinite = () => {
@@ -32,15 +34,18 @@ export const useNotificationsInfinite = () => {
 
 	const { data, error, size, setSize, mutate } = useSWRInfinite(getKey, fetcher, {
 		onSuccess: (allPages) => {
-			const flat = allPages.flat()
+			// Guard against unexpected shapes from the fetcher
+			const pages = Array.isArray(allPages) ? allPages : []
+			const flat = pages.flat()
 			setNotifications(flat)
 		},
 	})
 
-	const items = data ? data.flat() : []
+	const items = Array.isArray(data) ? data.flat() : []
 	const isLoadingInitialData = !data && !error
-	const isLoadingMore = isLoadingInitialData || (size > 0 && typeof data[size - 1] === 'undefined')
-	const isReachingEnd = data && data[data.length - 1]?.length < PAGE_SIZE
+	const lastPage = Array.isArray(data) ? data[data.length - 1] : undefined
+	const isLoadingMore = isLoadingInitialData || (size > 0 && typeof lastPage === 'undefined')
+	const isReachingEnd = Array.isArray(lastPage) ? lastPage.length < PAGE_SIZE : false
 
 	return { items, error, isLoadingMore, setSize, size, isReachingEnd, mutate }
 }

@@ -66,11 +66,7 @@ export const Login = () => {
 
 	return (
 		<div className={s.loginWrapper}>
-			<div className={s.logoBlock}>
-				<Image src="/logo-blue.svg" alt="Zanger logo" width={48} height={56} />
-				<span className={s.brand}>ZANGER</span>
-			</div>
-			<h1 className={s.title}>Войдите в свой аккаунт</h1>
+			<h1 className={s.title}>{t('auth.pages.loginTitle')}</h1>
 			<form onSubmit={handleSubmit(onSubmit)} className={s.form}>
 				<div className={`${s.phone} ${s.inputBox}`}>
 					<label className={s.label}>{t('auth.login.phoneLabel')}</label>

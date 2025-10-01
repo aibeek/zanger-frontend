@@ -1,10 +1,12 @@
-import { getTranslations } from 'next-intl/server'
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { UserRoleSelectionStep } from '@/features/auth/register'
 import { AuthShell } from '@/widgets/AuthShell'
 
-export default async function SelectRole() {
-	const t = await getTranslations('auth')
-	const shell = await getTranslations('auth.shell')
+export default function SelectRole() {
+	const t = useTranslations('auth')
+	const shell = useTranslations('auth.shell')
 
 	return (
 		<AuthShell

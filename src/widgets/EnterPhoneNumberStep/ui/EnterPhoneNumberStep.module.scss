@@ -2,12 +2,24 @@
 
 .inner {
 	padding: 0;
+	max-width: 560px;
+	margin: 0 auto;
+	width: 100%;
 }
 
 .top {
 	text-align: center;
 	color: $secondary-color;
 	margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+	.inner {
+		max-width: 100%;
+	}
+	.top {
+		margin-bottom: 20px;
+	}
 }
 
 .btn {
