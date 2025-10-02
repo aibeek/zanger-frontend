@@ -1,57 +1,58 @@
 .wrapper {
 	background-color: white;
 	border-radius: 20px;
-	max-width: 530px;
+	max-width: 420px; /* уменьшил с 480px до 420px */
+	width: 100%;
+	margin: 0 auto; /* центрирование по горизонтали */
+	display: flex;
+	flex-direction: column;
+	height: 100%; /* занимаем всю доступную высоту */
 }
 
 .inner {
-	padding: 38px 46px;
-}
-
-.top {
-	text-align: center;
-	color: $secondary-color;
-	margin-bottom: 38px;
+	padding: 16px 24px; /* уменьшил с 24px 28px */
+	flex: 1; /* занимаем всё доступное пространство */
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto; /* скролл внутри формы если нужно */
+	overflow-x: hidden;
 }
 
 .error {
 	color: $error-color;
-	font-size: 14px;
+	font-size: 13px; /* уменьшил с 14px */
 	font-weight: 400;
 	line-height: 130%;
-	margin-top: 6px;
-}
-
-.title {
-	font-size: 25px;
-	margin-bottom: 8px;
-	line-height: 120%;
+	margin-top: 3px; /* уменьшил с 4px */
 }
 
 .form {
-	margin-bottom: 38px;
+	margin-bottom: 12px; /* уменьшил с 20px */
 }
 .label {
 	display: block;
-	margin-bottom: 6px;
+	margin-bottom: 4px; /* уменьшил с 5px */
+	font-size: 14px; /* уменьшил с 15px */
+	font-weight: 500;
 }
 
 .btn {
-	margin: 30px 0px;
+	margin: 16px 0px 12px; /* уменьшил с 20px 0px 16px */
+	width: 100%;
 }
 
 .descr {
 	display: flex;
 	flex-direction: column;
 	color: $light-gray-color;
-	font-size: 14px;
+	font-size: 11px; /* уменьшил с 12px */
 	font-weight: 400;
 	line-height: 130%;
-	margin-top: 6px;
+	margin-top: 3px; /* уменьшил с 4px */
 }
 
 .inputBox {
-	margin-bottom: 8px;
+	margin-bottom: 10px; /* уменьшил с 12px */
 }
 
 .getNewCode {
@@ -67,17 +68,216 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 4px;
-	font-size: 14px;
+	gap: 2px; /* уменьшил с 4px */
+	font-size: 11px; /* уменьшил с 12px */
 	line-height: 140%;
 	font-weight: 400;
 	color: $light-gray-color;
+	flex-shrink: 0; /* не сжимается */
+	padding-top: 8px; /* уменьшил с 12px */
+	
+	p {
+		text-align: center;
+		margin: 0;
+	}
+	
 	a {
 		color: $blue-color;
 		text-decoration: underline $blue-color;
+		
+		&:hover {
+			opacity: 0.8;
+		}
 	}
 }
 
 .descrError {
 	color: $error-color;
+}
+
+/* Адаптивность для небольших мониторов по высоте */
+@media (max-height: 900px) {
+	.inner {
+		padding: 14px 22px;
+	}
+	
+	.inputBox {
+		margin-bottom: 8px;
+	}
+	
+	.label {
+		margin-bottom: 3px;
+		font-size: 13px;
+	}
+	
+	.btn {
+		margin: 14px 0px 10px;
+	}
+	
+	.warning {
+		font-size: 10px;
+		padding-top: 6px;
+	}
+	
+	.descr {
+		font-size: 10px;
+		margin-top: 2px;
+	}
+	
+	.error {
+		font-size: 12px;
+		margin-top: 2px;
+	}
+}
+
+@media (max-height: 800px) {
+	.wrapper {
+		max-width: 400px;
+	}
+	
+	.inner {
+		padding: 12px 20px;
+	}
+	
+	.inputBox {
+		margin-bottom: 7px;
+	}
+	
+	.label {
+		margin-bottom: 2px;
+		font-size: 13px;
+	}
+	
+	.btn {
+		margin: 12px 0px 8px;
+	}
+	
+	.form {
+		margin-bottom: 8px;
+	}
+	
+	.warning {
+		font-size: 10px;
+		padding-top: 4px;
+	}
+}
+
+@media (max-height: 720px) {
+	.wrapper {
+		max-width: 380px;
+	}
+	
+	.inner {
+		padding: 10px 18px;
+	}
+	
+	.inputBox {
+		margin-bottom: 6px;
+	}
+	
+	.label {
+		margin-bottom: 2px;
+		font-size: 12px;
+	}
+	
+	.btn {
+		margin: 10px 0px 6px;
+	}
+	
+	.form {
+		margin-bottom: 6px;
+	}
+	
+	.warning {
+		font-size: 9px;
+		padding-top: 3px;
+		gap: 1px;
+	}
+	
+	.descr {
+		font-size: 9px;
+		margin-top: 1px;
+	}
+	
+	.error {
+		font-size: 11px;
+		margin-top: 1px;
+	}
+}
+
+/* Адаптивность для планшетов */
+@media (max-width: 768px) {
+	.wrapper {
+		max-width: 100%;
+		border-radius: 16px;
+	}
+
+	.inner {
+		padding: 20px 20px;
+	}
+
+	.btn {
+		margin: 16px 0px 12px;
+	}
+	
+	.inputBox {
+		margin-bottom: 10px;
+	}
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 480px) {
+	.wrapper {
+		border-radius: 12px;
+	}
+
+	.inner {
+		padding: 20px 16px;
+	}
+
+	.label {
+		font-size: 14px;
+		margin-bottom: 4px;
+	}
+
+	.inputBox {
+		margin-bottom: 12px;
+	}
+
+	.btn {
+		margin: 20px 0px 16px;
+	}
+
+	.warning {
+		font-size: 12px;
+		gap: 2px;
+		padding-top: 12px;
+	}
+
+	.error, .descr {
+		font-size: 12px;
+		margin-top: 4px;
+	}
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 360px) {
+	.inner {
+		padding: 16px 12px;
+	}
+
+	.label {
+		font-size: 13px;
+	}
+	
+	.btn {
+		margin: 16px 0px 12px;
+	}
+}
+
+/* Обеспечиваем правильное поведение скролла на iOS */
+@supports (-webkit-overflow-scrolling: touch) {
+	.inner {
+		-webkit-overflow-scrolling: touch;
+	}
 }

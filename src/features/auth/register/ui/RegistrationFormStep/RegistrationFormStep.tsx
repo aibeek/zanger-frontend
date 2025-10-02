@@ -81,10 +81,6 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
-				<div className={s.top}>
-					<h1 className={s.title}>{t('auth.registration.title')}</h1>
-				</div>
-
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<div className={`${s.phone} ${s.inputBox}`}>
 						<label className={s.label}>{t('auth.registration.phoneLabel')}</label>
