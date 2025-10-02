@@ -174,18 +174,18 @@
 	}
 
 	.descrContainer {
-		margin-bottom: 100px;
+		margin-bottom: 70px;
 		
 		@media (max-width: 900px) {
-			margin-bottom: 60px;
+			margin-bottom: 50px;
 		}
 		
 		@media (max-width: 768px) {
-			margin-bottom: 40px;
+			margin-bottom: 35px;
 		}
 		
 		@media (max-width: 480px) {
-			margin-bottom: 30px;
+			margin-bottom: 25px;
 		}
 	}
 
@@ -218,18 +218,18 @@
 
 	.numberSection {
 		position: relative;
-		margin-bottom: 30px;
+		margin-bottom: 20px;
 		display: flex;
 		align-items: center;
 		gap: 20px;
 		
 		@media (max-width: 768px) {
-			margin-bottom: 20px;
+			margin-bottom: 16px;
 			gap: 15px;
 		}
 		
 		@media (max-width: 480px) {
-			margin-bottom: 15px;
+			margin-bottom: 12px;
 			gap: 12px;
 		}
 	}
@@ -280,16 +280,16 @@
 	}
 
 	.disclaimer {
-		margin-bottom: 40px;
+		margin-bottom: 30px;
 		max-width: 400px;
 		
 		@media (max-width: 768px) {
-			margin-bottom: 30px;
+			margin-bottom: 24px;
 			max-width: 100%;
 		}
 		
 		@media (max-width: 480px) {
-			margin-bottom: 25px;
+			margin-bottom: 20px;
 		}
 		
 		p {
@@ -319,18 +319,18 @@
 
 	.actionButtons {
 		display: flex;
-		gap: 20px;
+		gap: 12px;
 		align-items: center;
 		flex-wrap: nowrap; // keep in one line on desktop
 		
 		@media (max-width: 900px) {
-			gap: 15px;
+			gap: 10px;
 		}
 		
 		@media (max-width: 600px) {
 			flex-direction: column;
 			width: 100%;
-			gap: 15px;
+			gap: 12px;
 		}
 		
 		@media (max-width: 480px) {
@@ -349,7 +349,7 @@
 		@media (max-width: 600px) {
 			width: 100%;
 			justify-content: center;
-			margin-top: 15px; // spacing when stacked on mobile
+			margin-top: 12px; // spacing when stacked on mobile
 		}
 	}
 
