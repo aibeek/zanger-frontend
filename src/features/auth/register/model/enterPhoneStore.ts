@@ -29,12 +29,13 @@ export const useEnterPhone = create<EnterPhoneStore>((set) => ({
 			onSuccess()
 			set({ success: true, loading: false })
 		} catch (error: any) {
+			// Handle validation errors (HTTP 422)
 			if (error?.status === 422) {
-				// Специфичная обработка ошибки 422
-				const validationMessage = error?.errors?.phone?.[0] || 'Неверный формат номера телефона'
+				const validationMessage = error?.errors?.phone?.[0] || error?.message || 'Неверный формат номера телефона'
 				set({ error: validationMessage, disableAfterError: true, loading: false })
 			} else {
-				const errorMessage = error?.errors?.phone?.[0] || error?.message || 'Произошла ошибка'
+				// Handle other errors
+				const errorMessage = error?.message || 'Произошла ошибка'
 				set({ error: errorMessage, disableAfterError: true, loading: false })
 			}
 		}

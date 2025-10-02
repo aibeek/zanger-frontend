@@ -81,7 +81,7 @@
 }
 
 .panelInner {
-  padding: 20px 28px 24px;
+  padding: 16px 24px 20px; /* уменьшил с 20px 28px 24px */
   height: 100% !important;
   overflow: hidden;
   display: flex !important;
@@ -92,13 +92,15 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* добавляем скролл для контента */
+  overflow-x: hidden;
 }
 
 .panelTitle {
   font-size: 26px !important;
   color: #111827 !important; /* black-ish for consistency */
   font-weight: 800 !important;
-  margin: 40px 0 32px !important; /* pushed lower */
+  margin: 16px 0 20px !important; /* уменьшил с 40px 0 32px */
   text-align: center !important;
   width: 100% !important;
   background: none !important;
@@ -137,7 +139,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 20px;
+  margin-bottom: 12px; /* уменьшил с 20px */
 }
 
 .panelNav {
@@ -167,7 +169,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 20px 0 20px;
+  margin: 12px 0 8px; /* уменьшил с 20px 0 20px */
 }
 
 .centerBrandText {
@@ -180,16 +182,183 @@
 .panelBrand { display: inline-flex; align-items: center; gap: 10px; }
 .panelBrandText { font-weight: 700; color: #1f2937; letter-spacing: .5px; }
 
+/* Адаптивность для небольших мониторов */
+@media (max-height: 900px) {
+  .panelInner {
+    padding: 12px 20px 16px;
+  }
+  
+  .panelTitle {
+    font-size: 24px !important;
+    margin: 12px 0 16px !important;
+  }
+  
+  .centerBrand {
+    margin: 8px 0 6px;
+    gap: 10px;
+  }
+  
+  .centerBrandText {
+    font-size: 26px;
+  }
+  
+  .panelHeader {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-height: 800px) {
+  .panelInner {
+    padding: 10px 18px 14px;
+  }
+  
+  .panelTitle {
+    font-size: 22px !important;
+    margin: 10px 0 14px !important;
+  }
+  
+  .centerBrand {
+    margin: 6px 0 4px;
+    gap: 8px;
+  }
+  
+  .centerBrandText {
+    font-size: 24px;
+  }
+  
+  .panelHeader {
+    margin-bottom: 6px;
+  }
+  
+  .navText, .navLink {
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 720px) {
+  .panelInner {
+    padding: 8px 16px 12px;
+  }
+  
+  .panelTitle {
+    font-size: 20px !important;
+    margin: 8px 0 12px !important;
+  }
+  
+  .centerBrand {
+    margin: 4px 0 2px;
+  }
+  
+  .centerBrandText {
+    font-size: 22px;
+  }
+}
+
 @media (max-width: 1024px) {
   .container {
     grid-template-columns: 1fr;
   }
   .promo { display: none; }
+  
+  .panel {
+    height: auto;
+    min-height: 100%;
+  }
 }
 
 /* Tight mobile view: ensure right panel is full width with comfortable paddings */
 @media (max-width: 640px) {
-  .page { padding: 12px; }
-  .panelInner { padding: 16px 20px 20px; }
-  .panelTitle { margin: 24px 0 20px !important; font-size: 22px !important; }
+  .page { 
+    padding: 12px;
+    height: auto;
+    min-height: 100dvh;
+  }
+  
+  .container {
+    height: auto;
+    min-height: calc(100dvh - 24px);
+  }
+  
+  .panel {
+    height: auto;
+    min-height: 100%;
+  }
+  
+  .panelInner { 
+    padding: 16px 20px 20px;
+    height: auto !important;
+    min-height: 100%;
+  }
+  
+  .panelTitle { 
+    margin: 24px 0 20px !important; 
+    font-size: 22px !important; 
+  }
+  
+  .centerBrand {
+    margin: 16px 0 16px;
+  }
+  
+  .centerBrandText {
+    font-size: 24px;
+  }
+  
+  .panelHeader {
+    margin-bottom: 12px;
+  }
+  
+  .navText {
+    font-size: 13px;
+  }
+  
+  .navLink {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 8px;
+  }
+  
+  .container {
+    gap: 16px;
+    min-height: calc(100dvh - 16px);
+  }
+  
+  .panel {
+    border-radius: 16px !important;
+  }
+  
+  .panelInner {
+    padding: 12px 16px 16px;
+  }
+  
+  .panelTitle {
+    font-size: 20px !important;
+    margin: 20px 0 16px !important;
+  }
+  
+  .centerBrand {
+    margin: 12px 0 12px;
+    gap: 8px;
+  }
+  
+  .centerBrandText {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 360px) {
+  .panelInner {
+    padding: 12px;
+  }
+  
+  .panelTitle {
+    font-size: 18px !important;
+  }
+  
+  .centerBrandText {
+    font-size: 20px;
+  }
 }
