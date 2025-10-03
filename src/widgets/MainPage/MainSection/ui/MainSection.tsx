@@ -39,7 +39,7 @@ export const MainSection = () => {
 								{t('phoneButton')}
 							</Link>
 						<div className={s.requestButtonContainer}>
-							<Link href="/auth/register/select-role" className={s.requestButton}>
+							<Link href="/" className={s.requestButton}>
 								{t('createNew')}
 							</Link>
 							</div>
