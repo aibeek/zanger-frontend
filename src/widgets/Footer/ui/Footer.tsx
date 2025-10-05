@@ -152,7 +152,7 @@ export const Footer = ({ id }: FooterProps) => {
 								height={32}
 							/>
 						</Link>
-						<Link href={'https://www.facebook.com/people/Zanger5510/61578403178388/'} target="_blank">
+						<Link href={'https://www.facebook.com/people/%D0%AE%D1%80%D0%B8%D0%B4%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F-%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B0-Zanger/61579191275968/'} target="_blank">
 							<Image
 								src={facebook}
 								alt={'facebook'}
@@ -160,6 +160,16 @@ export const Footer = ({ id }: FooterProps) => {
 								height={32}
 							/>
 						</Link>
+					</div>
+
+					{/* Address under social icons */}
+					<div className={s.addressBlock}>
+						<p className={s.addressText}>
+							{t('address')} {t('location')}
+						</p>
+						<p className={s.binText}>
+							{t('bin')}
+						</p>
 					</div>
 				</div>
 
@@ -241,12 +251,6 @@ export const Footer = ({ id }: FooterProps) => {
 						</p>
 						<p className={s.companyInfo}>
 							{t('companyName')}
-						</p>
-					</div>
-					<div className={s.lendingBottomRight}>
-						<p className={s.addressInfo}>
-							{t('address')} {t('location')}<br />
-							{t('bin')}
 						</p>
 					</div>
 				</div>

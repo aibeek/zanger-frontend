@@ -25,7 +25,7 @@ export const ResourcesSection = () => {
 		{ id: 'adiletgov', icon: AdiletgovIcon, url: 'https://aisoip.adilet.gov.kz/debtors' },
 		{ id: 'erdr', icon: ErdrIcon, url: 'https://erdr-public.kgp.kz/' },
 		{ id: 'supreme-court', icon: SupremeCourtIcon, url: 'https://sud.gov.kz/kaz' },
-		{ id: 'contract24', icon: Contract24Icon, url: 'https://lawyer.dogovor24.kz/login' },
+		{ id: 'contract24', icon: Contract24Icon, url: 'https://office.sud.kz/' },
 		{ id: 'adiletkz', icon: AdiletkzIcon, url: 'https://adilet.zan.kz/kaz' },
 		{ id: 'enotary', icon: EnotaryIcon, url: 'https://enis.kz/?lang=kk' }
 	]
