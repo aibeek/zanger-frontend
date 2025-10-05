@@ -31,6 +31,10 @@ export const TeamSection = () => {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
   const [mounted, setMounted] = useState(false)
   const scrollYRef = useRef(0)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
+  const touchStartXRef = useRef(0)
+  const touchEndXRef = useRef(0)
 
   const teamMembers: TeamMember[] = [
     {
@@ -133,6 +137,16 @@ export const TeamSection = () => {
   // Avoid SSR mismatch for portals
   useEffect(() => {
     setMounted(true)
+    
+    // Определяем мобильное устройство
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    
+    return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
   // Блокировка скролла когда модальное окно открыто (устойчивый вариант)
@@ -265,6 +279,57 @@ export const TeamSection = () => {
     momentumRafRef.current = requestAnimationFrame(step)
   }
 
+  // Обработчики свайпа для мобильных устройств
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return
+    touchStartXRef.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isMobile) return
+    touchEndXRef.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (!isMobile) return
+    
+    const swipeDistance = touchStartXRef.current - touchEndXRef.current
+    const minSwipeDistance = 50 // минимальная дистанция для срабатывания свайпа
+    
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        // Свайп влево - следующая карточка
+        setCurrentPage((prev) => (prev + 1) % teamMembers.length)
+      } else {
+        // Свайп вправо - предыдущая карточка
+        setCurrentPage((prev) => (prev - 1 + teamMembers.length) % teamMembers.length)
+      }
+    }
+    
+    // Сброс значений
+    touchStartXRef.current = 0
+    touchEndXRef.current = 0
+  }
+
+  // Обновляем видимость карточек на мобильных устройствах
+  useEffect(() => {
+    if (!isMobile || !gridRef.current) return
+
+    const cards = gridRef.current.querySelectorAll(`.${s.memberCard}`)
+    cards.forEach((card, index) => {
+      const htmlCard = card as HTMLElement
+      if (index === currentPage) {
+        htmlCard.style.opacity = '1'
+        htmlCard.style.pointerEvents = 'auto'
+        htmlCard.style.zIndex = '1'
+      } else {
+        htmlCard.style.opacity = '0'
+        htmlCard.style.pointerEvents = 'none'
+        htmlCard.style.zIndex = '0'
+      }
+    })
+  }, [currentPage, isMobile])
+
   return (
     <>
     <section id="lawyers" className={s.wrapper} ref={sectionRef}>
@@ -304,9 +369,18 @@ export const TeamSection = () => {
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
           onPointerLeave={endDrag}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          data-mobile={isMobile}
         >
           {displayMembers.map((member, index) => (
-            <div key={`member-${member.id}-${index}`} className={s.memberCard}>
+            <div 
+              key={`member-${member.id}-${index}`} 
+              className={s.memberCard}
+              data-mobile={isMobile}
+              data-index={index}
+            >
               <Image
                 src={member.image}
                 alt={member.name}
@@ -334,6 +408,19 @@ export const TeamSection = () => {
             </div>
           ))}
         </div>
+        
+        {isMobile && (
+          <div className={s.paginationDots}>
+            {teamMembers.map((_, index) => (
+              <button
+                key={index}
+                className={`${s.paginationDot} ${index === currentPage ? s.active : ''}`}
+                onClick={() => setCurrentPage(index)}
+                aria-label={`Перейти к юристу ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
     {/* Модальное окно через портал, чтобы выйти из stacking context секции */}
