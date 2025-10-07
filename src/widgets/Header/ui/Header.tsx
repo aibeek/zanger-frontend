@@ -26,10 +26,23 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	const isHydrated = useHydration()
 	const isMobile = useMediaQuery('(max-width: 900px)') // Изменяем breakpoint для соответствия CSS
 	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
+
+	// Логирование состояния модального окна
+	useEffect(() => {
+		console.log('Modal isOpen changed:', isOpen)
+	}, [isOpen])
 	
 	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство
 	// Only use this after component is mounted to prevent hydration mismatch
 	const shouldShowMobileModal = isHydrated && (isMobile || isMobileDevice)
+
+	// Отладка
+	useEffect(() => {
+		console.log('shouldShowMobileModal:', shouldShowMobileModal)
+		console.log('isHydrated:', isHydrated)
+		console.log('isMobile:', isMobile)
+		console.log('isMobileDevice:', isMobileDevice)
+	}, [shouldShowMobileModal, isHydrated, isMobile, isMobileDevice])
 
 	// Функция для скролла к секции
 	const scrollToSection = (sectionId: string) => {
@@ -189,10 +202,12 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												variant={'primary'}
 												href={'/auth/login'}
 												onClick={(e) => {
+													// На мобильных показываем модалку
 													if (shouldShowMobileModal) {
 														e.preventDefault()
 														open()
 													}
+													// На десктопе ссылка работает нормально
 												}}>
 												{t('login')}
 											</AppLink>
@@ -203,13 +218,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													variant={'primary'}
 													href={'/live-applications'}
 													onClick={(e) => {
-														// На мобильных показываем модалку, на десктопе — дропдаун
+														// На мобильных показываем модалку
 														if (shouldShowMobileModal) {
 															e.preventDefault()
 															open()
 															return
 														}
-														// Предотвращаем переход и открываем/закрываем дропдаун
+														// На десктопе — дропдаун
 														e.preventDefault()
 														setShowLiveApplications((prev) => !prev)
 													}}>
@@ -336,10 +351,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												variant={'primary'}
 												href={'/auth/login'}
 												onClick={(e) => {
-													if (shouldShowMobileModal) {
-														e.preventDefault()
-														open()
-													}
+													// В мобильном меню всегда показываем модалку
+													console.log('Клик на Войти в мобильном меню')
+													console.log('isOpen:', isOpen)
+													e.preventDefault()
+													open()
+													console.log('После вызова open()')
+													setShowMobileMenu(false)
 												}}>
 												{t('login')}
 											</AppLink>
@@ -348,10 +366,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												variant={'primary'}
 												href={'/auth/register/select-role'}
 												onClick={(e) => {
-													if (shouldShowMobileModal) {
-														e.preventDefault()
-														open()
-													}
+													// В мобильном меню всегда показываем модалку
+													console.log('Клик на Регистрация в мобильном меню')
+													console.log('isOpen:', isOpen)
+													e.preventDefault()
+													open()
+													console.log('После вызова open()')
+													setShowMobileMenu(false)
 												}}>
 												{t('register')}
 											</AppLink>
@@ -361,6 +382,27 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							</div>
 						)}
 					</header>
+
+				<Modal
+					className={s.modal}
+					isOpen={isOpen}
+					onClose={close}>
+					<div className={s.modalContent}>
+						<Image
+							src={monitor}
+							alt={'monitor'}
+							width={114}
+							height={104}
+						/>
+						<p className={s.modalDescr}>{t('mobileModalTitle')}</p>
+
+						<Button
+							variant={'primary'}
+							onClick={close}>
+							{t('mobileModalButton')}
+						</Button>
+					</div>
+				</Modal>
 			</>
 		)
 	}

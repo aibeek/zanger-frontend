@@ -2,8 +2,10 @@
 
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
+import { useState } from 'react'
+import { Modal, Button } from '@/shared/ui-kit'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
+import monitor from '@/app/assets/icons/monitor.webp'
 import s from './ModulesSection.module.scss'
 
 interface Module {
@@ -14,6 +16,7 @@ interface Module {
 
 export const ModulesSection = () => {
   const t = useTranslations('lending.modulesSection')
+  const [isModalOpen, setIsModalOpen] = useState(false)
   
   // Получаем модули из переводов
   const modulesData = t.raw('modules') as Array<{title: string, description: string}>
@@ -25,9 +28,7 @@ export const ModulesSection = () => {
   }))
 
   const handleComingSoon = () => {
-    toast('Раздел в разработке', {
-      icon: '🚧',
-    })
+    setIsModalOpen(true)
   }
 
   return (
@@ -69,6 +70,38 @@ export const ModulesSection = () => {
           ))}
         </div>
       </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          padding: '20px',
+          textAlign: 'center'
+        }}>
+          <Image
+            src={monitor}
+            alt="monitor"
+            width={114}
+            height={104}
+          />
+          <p style={{ 
+            fontSize: '18px', 
+            fontWeight: '500', 
+            margin: '20px 0',
+            color: '#333'
+          }}>
+            Модули в разработке
+          </p>
+          <Button
+            variant="primary"
+            onClick={() => setIsModalOpen(false)}>
+            Понятно
+          </Button>
+        </div>
+      </Modal>
     </section>
   )
 }
