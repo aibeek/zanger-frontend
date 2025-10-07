@@ -1,7 +1,11 @@
 'use client'
 
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { RightWidgets } from '../components/RightWidgets'
+import { lawyerApi } from '@/shared/api'
+import type { SubscriptionPlanRaw } from '@/shared/api/lawyerApi'
+import { toast } from 'react-hot-toast'
 import s from './page.module.scss'
 
 export default function SubscriptionPage() {
@@ -15,6 +19,49 @@ export default function SubscriptionPage() {
         t('benefits.4'),
         t('benefits.5')
     ]
+
+    const [plans, setPlans] = useState<SubscriptionPlanRaw[] | null>(null)
+    const [loading, setLoading] = useState<null | 'monthly' | 'yearly'>(null)
+
+    useEffect(() => {
+        let mounted = true
+        ;(async () => {
+            try {
+                const res = await lawyerApi.getAllSubscriptionPlans()
+                if (!mounted) return
+                setPlans(res?.data || [])
+            } catch (e: any) {
+                if (!mounted) return
+                toast.error(e?.message || 'Не удалось загрузить тарифы')
+            }
+        })()
+        return () => { mounted = false }
+    }, [])
+
+    const monthlyPlan = useMemo(() => plans?.find(p => p.duration_months === 1) || null, [plans])
+    const yearlyPlan = useMemo(() => plans?.find(p => p.duration_months === 12) || null, [plans])
+
+    const handleSubscribe = async (type: 'monthly' | 'yearly') => {
+        const plan = type === 'monthly' ? monthlyPlan : yearlyPlan
+        if (!plan) {
+            toast.error('Тариф не найден')
+            return
+        }
+
+        setLoading(type)
+        try {
+            const res = await lawyerApi.subscribe(plan.id, true)
+            if (res?.link) {
+                window.location.href = res.link
+                return
+            }
+            toast.success(res?.message || 'Запрос на подписку создан')
+        } catch (e: any) {
+            toast.error(e?.message || 'Не удалось оформить подписку')
+        } finally {
+            setLoading(null)
+        }
+    }
 
     return (
         <div className={s.subscriptionContent}>
@@ -62,10 +109,18 @@ export default function SubscriptionPage() {
 
                 <div className={s.plansSection}>
                     <div className={s.planButtons}>
-                        <button className={s.planButton}>
+                        <button
+                            className={s.planButton}
+                            disabled={loading === 'monthly'}
+                            onClick={() => handleSubscribe('monthly')}
+                        >
                             {t('plans.monthly')}
                         </button>
-                        <button className={s.planButton}>
+                        <button
+                            className={s.planButton}
+                            disabled={loading === 'yearly'}
+                            onClick={() => handleSubscribe('yearly')}
+                        >
                             {t('plans.yearly')}
                         </button>
                     </div>
