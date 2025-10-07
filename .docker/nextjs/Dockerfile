@@ -9,4 +9,4 @@ RUN npm i --legacy-peer-deps
 RUN npm i next
 RUN npm install @emotion/react @emotion/styled
 RUN npm run build
-ENTRYPOINT [ "npm", "run", "start", "--", "--hostname", "0.0.0.0", "--port", "80" ]
+ENTRYPOINT [ "npm", "run", "start", "--", "--hostname", "0.0.0.0", "--port", "3000" ]
