@@ -11,12 +11,12 @@ services:
       dockerfile: ./.docker/nextjs/Dockerfile
     restart: always
     networks:
-      - lawyerplace_network   # 👈 совпадает с backend
+      - lawyerplace_network
     env_file:
       - .env
-    ports:
-      - "3000:80"   # 👈 пробрасываем порт наружу
+    expose:
+      - "3000"
 
 networks:
-  lawyerplace_network:        # 👈 подчёркивание
+  lawyerplace_network:
     external: true
