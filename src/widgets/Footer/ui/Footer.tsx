@@ -109,7 +109,7 @@ export const Footer = ({ id }: FooterProps) => {
 								className={s.contactLink}
 								target={'_blank'}
 								href={'https://api.whatsapp.com/send/?phone=77009375505'}>
-								+7 700 937 55 05
+								+7 701 188 55 10
 							</Link>
 						</div>
 						<div className={s.contactItem}>
@@ -121,8 +121,8 @@ export const Footer = ({ id }: FooterProps) => {
 							/>	
 							<Link
 								className={s.contactLink}
-								href={'mailto:support@zanger-app.kz'}>
-								support@zanger-app.kz
+								href={'mailto:info@zanger-app.kz'}>
+								info@zanger-app.kz
 							</Link>
 						</div>
 					</div>
