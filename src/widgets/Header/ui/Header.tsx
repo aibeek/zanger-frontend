@@ -107,6 +107,19 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 		}
 	}, [isAuthenticated, personalData, getPersonalDataByToken])
 
+	// Логи для отладки кнопки подписки
+	useEffect(() => {
+		console.log('🎫 Header subscription debug:', {
+			isAuthenticated,
+			hasPersonalData: !!personalData,
+			isLawyer: personalData && 'lawyer' in personalData,
+			lawyerData: personalData && 'lawyer' in personalData ? personalData.lawyer : null,
+			subscription: personalData && 'lawyer' in personalData ? personalData.lawyer?.subscription : null,
+			variant,
+			fullPersonalData: personalData
+		})
+	}, [isAuthenticated, personalData, variant])
+
 	const handleLogout = () => {
 		reset()
 		authService.logout()
@@ -433,6 +446,23 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 						</div>
 
 						<div className={s.right}>
+							{/* Кнопка подписки для юристов */}
+							{isAuthenticated && personalData && 'lawyer' in personalData && personalData.lawyer?.subscription && (
+								<>
+									{console.log('🎫 Subscription button data:', {
+										subscription: personalData.lawyer.subscription,
+										ends_at: personalData.lawyer.subscription.ends_at,
+										formatted: new Date(personalData.lawyer.subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+									})}
+									<Link 
+										href={`/${personalData.language}/dashboard/subscription`}
+										className={s.subscriptionButton}
+									>
+										{t('subscriptionActive')} {new Date(personalData.lawyer.subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+									</Link>
+								</>
+							)}
+
 							<LangSwitcher />
 
 							{isAuthenticated && personalData ? (

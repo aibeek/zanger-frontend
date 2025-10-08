@@ -1,9 +1,15 @@
 import { getUploadStatus } from '@/entities/profile/ui/ProfileDocuments/getUploadStatus'
 import { useLoginStore } from '@/features/auth'
+import { LawyerProfile, UserProfile } from '@/shared/lib/types'
+
+// Type guard to check if personalData is LawyerProfile
+const isLawyerProfile = (profile: UserProfile): profile is LawyerProfile => {
+	return profile !== null && 'lawyer' in profile
+}
 
 export const useLentaAccessStatus = () => {
 	const personalData = useLoginStore((store) => store.personalData)
-	const accessItems = personalData.lawyer?.need_to_access
+	const accessItems = isLawyerProfile(personalData) ? personalData.lawyer?.need_to_access : undefined
 
 	const result = {
 		hasAccess: true,
@@ -18,7 +24,7 @@ export const useLentaAccessStatus = () => {
 		}[],
 	}
 
-	if (!personalData?.lawyer || !Array.isArray(accessItems)) {
+	if (!isLawyerProfile(personalData) || !personalData.lawyer || !Array.isArray(accessItems)) {
 		return result
 	}
 

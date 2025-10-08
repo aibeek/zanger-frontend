@@ -38,10 +38,8 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const userRole = Cookies.get('role')
     const isLawyer = userRole === 'lawyer'
     
-    // Функция для перехода на страницу подписки
-    const handleSubscriptionClick = () => {
-        router.push('/dashboard/subscription')
-    }
+    // Проверяем наличие подписки у юриста
+    const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
 
     // Функция для определения заголовка на основе текущего пути
     const getPageTitle = () => {
@@ -90,14 +88,10 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
                 
                 <div className={s.headerRight}>
-                    {isLawyer && (
-                        <Button 
-                            variant="primary" 
-                            className={s.subscriptionBtn}
-                            onClick={handleSubscriptionClick}
-                        >
-                            {t('dashboard.sidebar.subscription')}
-                        </Button>
+                    {isLawyer && hasSubscription && personalData && 'lawyer' in personalData && personalData.lawyer?.subscription && (
+                        <div className={s.subscriptionBtn}>
+                            {t('header.subscriptionActive')} {new Date(personalData.lawyer.subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </div>
                     )}
                     
                     <NotificationsDropdown />

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { useLoginStore } from '@/features/auth/login'
 import { RightWidgets } from '../components/RightWidgets'
 import { lawyerApi } from '@/shared/api'
 import type { SubscriptionPlanRaw } from '@/shared/api/lawyerApi'
@@ -10,18 +11,47 @@ import s from './page.module.scss'
 
 export default function SubscriptionPage() {
     const t = useTranslations('dashboard.subscription')
+    const { personalData } = useLoginStore()
 
     const benefits = [
-        t('benefits.0'),
-        t('benefits.1'), 
-        t('benefits.2'),
-        t('benefits.3'),
-        t('benefits.4'),
-        t('benefits.5')
+        {
+            icon: '📋',
+            title: t('benefitTitles.0'),
+            description: t('benefits.0')
+        },
+        {
+            icon: '⚡',
+            title: t('benefitTitles.1'),
+            description: t('benefits.1')
+        },
+        {
+            icon: '📊',
+            title: t('benefitTitles.2'),
+            description: t('benefits.2')
+        },
+        {
+            icon: '💬',
+            title: t('benefitTitles.3'),
+            description: t('benefits.3')
+        },
+        {
+            icon: '🎯',
+            title: t('benefitTitles.4'),
+            description: t('benefits.4')
+        },
+        {
+            icon: '⭐',
+            title: t('benefitTitles.5'),
+            description: t('benefits.5')
+        }
     ]
 
     const [plans, setPlans] = useState<SubscriptionPlanRaw[] | null>(null)
-    const [loading, setLoading] = useState<null | 'monthly' | 'yearly'>(null)
+    const [loading, setLoading] = useState<boolean>(false)
+
+    // Проверяем наличие подписки
+    const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
+    const subscription = hasSubscription ? personalData.lawyer?.subscription : null
 
     useEffect(() => {
         let mounted = true
@@ -39,16 +69,15 @@ export default function SubscriptionPage() {
     }, [])
 
     const monthlyPlan = useMemo(() => plans?.find(p => p.duration_months === 1) || null, [plans])
-    const yearlyPlan = useMemo(() => plans?.find(p => p.duration_months === 12) || null, [plans])
 
-    const handleSubscribe = async (type: 'monthly' | 'yearly') => {
-        const plan = type === 'monthly' ? monthlyPlan : yearlyPlan
+    const handleSubscribe = async () => {
+        const plan = monthlyPlan
         if (!plan) {
             toast.error('Тариф не найден')
             return
         }
 
-        setLoading(type)
+        setLoading(true)
         try {
             const res = await lawyerApi.subscribe(plan.id, true)
             if (res?.link) {
@@ -59,10 +88,81 @@ export default function SubscriptionPage() {
         } catch (e: any) {
             toast.error(e?.message || 'Не удалось оформить подписку')
         } finally {
-            setLoading(null)
+            setLoading(false)
         }
     }
 
+    const handleExtend = async () => {
+        // TODO: Логика продления подписки
+        toast.success('Функция продления в разработке')
+    }
+
+    const handleCancel = async () => {
+        // TODO: Логика отмены подписки
+        if (window.confirm('Вы уверены, что хотите отменить подписку?')) {
+            toast.success('Функция отмены в разработке')
+        }
+    }
+
+    // Если есть подписка - показываем информацию о ней
+    if (hasSubscription && subscription) {
+        return (
+            <div className={s.subscriptionContent}>
+                <div className={s.subscriptionMain}>
+                    <div className={s.activeSubscriptionCard}>
+                        <div className={s.cardHeader}>
+                            <h2>{t('yourSubscription')}</h2>
+                            <div className={s.badge}>
+                                {t('activeUntil')} {new Date(subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            </div>
+                        </div>
+
+                        <div className={s.benefitsTitle}>
+                            <h3>{t('withSubscription')}</h3>
+                        </div>
+
+                        <div className={s.benefitsGrid}>
+                            <div className={s.column}>
+                                {benefits.slice(0, 3).map((benefit, index) => (
+                                    <div key={index} className={s.benefitItemCard}>
+                                        <div className={s.benefitIconCard}>{benefit.icon}</div>
+                                        <div className={s.benefitContentCard}>
+                                            <h4>{benefit.title}</h4>
+                                            <p>{benefit.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className={s.column}>
+                                {benefits.slice(3).map((benefit, index) => (
+                                    <div key={index} className={s.benefitItemCard}>
+                                        <div className={s.benefitIconCard}>{benefit.icon}</div>
+                                        <div className={s.benefitContentCard}>
+                                            <h4>{benefit.title}</h4>
+                                            <p>{benefit.description}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className={s.actions}>
+                            <button className={s.extendButton} onClick={handleExtend}>
+                                {t('extendButton')}
+                            </button>
+                            <button className={s.cancelButton} onClick={handleCancel}>
+                                {t('cancelButton')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <RightWidgets />
+            </div>
+        )
+    }
+
+    // Если нет подписки - показываем форму оформления
     return (
         <div className={s.subscriptionContent}>
             <div className={s.subscriptionMain}>
@@ -79,31 +179,19 @@ export default function SubscriptionPage() {
                 <div className={s.benefitsSection}>
                     <h2 className={s.benefitsTitle}>{t('benefitsTitle')}</h2>
                     <div className={s.benefitsList}>
-                        {benefits.map((benefit, index) => {
-                            const icons = ['📋', '⚡', '📊', '💬', '🎯', '⭐']
-                            const titles = [
-                                'Доступ к большему количеству заявок',
-                                'Возможность откликаться первыми', 
-                                'Доступ к аналитике',
-                                'Неограниченный чат и видеосвязь',
-                                'Расширенные фильтры',
-                                'Приоритетное отображение в поиске'
-                            ]
-                            
-                            return (
-                                <div key={index} className={s.benefitItem}>
-                                    <div className={s.benefitIcon}>
-                                        {icons[index]}
-                                    </div>
-                                    <div className={s.benefitContent}>
-                                        <h3 className={s.benefitTitle}>
-                                            {titles[index]}
-                                        </h3>
-                                        <p className={s.benefitDescription}>{benefit}</p>
-                                    </div>
+                        {benefits.map((benefit, index) => (
+                            <div key={index} className={s.benefitItem}>
+                                <div className={s.benefitIcon}>
+                                    {benefit.icon}
                                 </div>
-                            )
-                        })}
+                                <div className={s.benefitContent}>
+                                    <h3 className={s.benefitTitle}>
+                                        {benefit.title}
+                                    </h3>
+                                    <p className={s.benefitDescription}>{benefit.description}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
@@ -111,17 +199,10 @@ export default function SubscriptionPage() {
                     <div className={s.planButtons}>
                         <button
                             className={s.planButton}
-                            disabled={loading === 'monthly'}
-                            onClick={() => handleSubscribe('monthly')}
+                            disabled={loading}
+                            onClick={handleSubscribe}
                         >
                             {t('plans.monthly')}
-                        </button>
-                        <button
-                            className={s.planButton}
-                            disabled={loading === 'yearly'}
-                            onClick={() => handleSubscribe('yearly')}
-                        >
-                            {t('plans.yearly')}
                         </button>
                     </div>
                 </div>
@@ -129,7 +210,7 @@ export default function SubscriptionPage() {
                 <div className={s.footer}>
                     <p 
                         className={s.footerText}
-                        dangerouslySetInnerHTML={{ __html: t('agreement') }}
+                        dangerouslySetInnerHTML={{ __html: t.raw('agreement') }}
                     />
                     <p className={s.footerText}>
                         {t('manage')}

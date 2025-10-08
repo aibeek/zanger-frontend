@@ -41,6 +41,19 @@ export type NeedSubscription = {
 
 export type NeedToAccessItem = NeedDocuments | NeedSubscription
 
+// Тип для подписки из localStorage
+export type SubscriptionFromStorage = {
+	id: string
+	user_id: number
+	request_type_id: string
+	request_type: string
+	start_date: string
+	end_date: string
+	total_used: number
+	last_reset: string
+	requests_per_month: number
+}
+
 export type ClientProfile = BaseProfile & {
 	role_id: { id: number; name: string; code: 'client' }
 }
@@ -57,12 +70,15 @@ export type LawyerProfile = BaseProfile & {
 		whatsapp: string | null
 		need_to_access: NeedToAccessItem[]
 		subscription: {
+			id: number
 			plan: {
+				id: number
 				name: string
 			}
+			started_at: string
 			ends_at: string
-		}
+		} | null
 	}
 }
 
-export type UserProfile = LawyerProfile
+export type UserProfile = LawyerProfile | ClientProfile | null

@@ -6,7 +6,7 @@ import { authService } from '../service'
 import { UserProfile } from '@/shared/lib/types'
 
 interface AuthState {
-	personalData: UserProfile
+	personalData: UserProfile | null
 	loading: boolean
 	error: string | null
 	reset: () => void

@@ -16,13 +16,18 @@ import { profileConsultationPriceSchema, ProfileConsultationPriceSchema } from '
 import s from './ProfileConsultationPrice.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { useConsultationPriceStore } from '../../model/useConsultationPriceStore'
-import { UserProfile } from '@/shared/lib/types'
+import { UserProfile, LawyerProfile } from '@/shared/lib/types'
 
 export const ProfileConsultationPrice = () => {
 	const disclosureBtnRef = useRef<HTMLButtonElement>(null)
 	const t = useTranslations('profile.consultation_price')
 	const [selected, setSelected] = useState<'free' | 'paid'>('paid')
 	const personalData: UserProfile = useLoginStore((state) => state.personalData)
+	
+	// Type guard to check if personalData is LawyerProfile
+	const isLawyerProfile = (profile: UserProfile): profile is LawyerProfile => {
+		return profile !== null && 'lawyer' in profile
+	}
 	const { updateConsultationPrice, isSubmitting } = useConsultationPriceStore()
 
 	const {
@@ -100,11 +105,13 @@ export const ProfileConsultationPrice = () => {
 										}}
 										onBlur={onBlur}
 										placeholder={
-											personalData.lawyer?.consultation_price === null
+											isLawyerProfile(personalData) && personalData.lawyer?.consultation_price === null
 												? t('notProvided')
-												: Number(personalData.lawyer.consultation_price) === 0
+												: isLawyerProfile(personalData) && Number(personalData.lawyer.consultation_price) === 0
 													? t('free')
-													: Number(personalData.lawyer.consultation_price).toString()
+													: isLawyerProfile(personalData)
+														? Number(personalData.lawyer.consultation_price).toString()
+														: ''
 										}
 									/>
 								)}

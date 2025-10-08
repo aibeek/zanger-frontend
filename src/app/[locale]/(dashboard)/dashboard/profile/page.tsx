@@ -204,6 +204,8 @@ export default function ProfilePage() {
     const [activeModal, setActiveModal] = useState<string | null>(null)
 
     const openModal = (modalType: string) => {
+        console.log('🔓 Opening modal:', modalType)
+        console.log('📊 Current personalData:', personalData)
         setActiveModal(modalType)
         open()
     }
