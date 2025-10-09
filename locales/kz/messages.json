@@ -58,7 +58,9 @@
 		},
 		"enterCompletionReason": "Өтініш аяқтау себебін енгізіңіз",
 		"successComplete": "Өтініш сәтті аяқталды",
-		"errorComplete": "Өтінішті аяқтауда қате пайда болды"
+		"errorComplete": "Өтінішті аяқтауда қате пайда болды",
+		"needSubscription": "Өтінімдерге жауап беру үшін жазылым жасау керек",
+		"subscriptionRequiredToViewFull": "Өтінімдердің толық сипаттамасын көру үшін жазылым жасаңыз"
 	},
 
 	"profile": {

@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 
 import { Button } from '@/shared/ui-kit'
 import { lawyerApi, sharedApi, Tag } from '@/shared/api'
-import { SearchSelect, useRegions } from '@/features/auth'
-import { useRegionsUtils } from '@/shared/lib'
+import { SearchSelect, useRegions, useLoginStore } from '@/features/auth'
+import { useRegionsUtils, truncateDescription } from '@/shared/lib'
 
 import s from './LawyerApplicationsList.module.scss'
 
@@ -41,13 +43,20 @@ interface Filters {
 
 export const LawyerApplicationsList = () => {
 	const t = useTranslations('applications')
+	const tNotifications = useTranslations('notifications')
+	const router = useRouter()
+	const language = Cookies.get('language') || 'ru'
 	const { regions } = useRegions()
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
+	const { personalData } = useLoginStore()
 	
 	const [applications, setApplications] = useState<LawyerApplication[]>([])
 	const [tags, setTags] = useState<Tag[]>([])  // Изменено с specializations на tags
 	const [loading, setLoading] = useState(true)
 	const [filters, setFilters] = useState<Filters>({})
+
+	// Проверяем наличие подписки у юриста
+	const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
 
 	// Отладочная информация при монтировании компонента
 	useEffect(() => {
@@ -144,6 +153,16 @@ export const LawyerApplicationsList = () => {
 	}, [])
 
 	const handleRespond = async (applicationId: number) => {
+		// Проверяем наличие подписки перед откликом
+		if (!hasSubscription) {
+			toast.error(t('needSubscription') || 'Необходимо оформить подписку для отклика на заявки', {
+				duration: 4000,
+			})
+			// Перенаправляем на страницу подписки
+			router.push(`/${language}/dashboard/subscription`)
+			return
+		}
+
 		try {
 			await lawyerApi.respondToOrder(applicationId)
 			toast.success(t('responseSubmitted'))
@@ -215,7 +234,7 @@ export const LawyerApplicationsList = () => {
 						className={s.clearBtn}
 						onClick={clearFilters}
 					>
-						{t('notifications.buttons.clear')}
+						{tNotifications('buttons.clear')}
 					</Button>
 					
 					<Button variant="primary" className={s.searchBtn}>
@@ -230,57 +249,73 @@ export const LawyerApplicationsList = () => {
 				</div>
 			) : (
 				<div className={s.applicationsList}>
-					{applications.map((app) => (
-						<div key={app.id} className={s.applicationCard}>
-							<div className={s.cardHeader}>
-								<h3 className={s.applicationTitle}>
-									{app.tag?.name || t('serviceType.other')}
-								</h3>
-							</div>
-							
-							<div className={s.cardContent}>
-								<p className={s.description}>{app.description}</p>
+					{applications.map((app, index) => {
+						// Если нет подписки - обрезаем описание
+						const displayDescription = hasSubscription 
+							? app.description 
+							: truncateDescription(app.description, 2)
+						
+						return (
+							<div key={`${app.id}-${index}`} className={s.applicationCard}>
+								<div className={s.cardHeader}>
+									<h3 className={s.applicationTitle}>
+										{app.tag?.name || t('serviceType.other')}
+									</h3>
+								</div>
 								
-								<div className={s.cardMeta}>
-									<div className={s.metaRow}>
-										<div className={s.metaItem}>
-											<span className={s.metaLabel}>{t('deadline')}:</span>
-											<span className={s.metaValue}>
-												{app.deadline || '3 дня'}
-											</span>
-										</div>
-										<div className={s.metaItem}>
-											<span className={s.metaLabel}>{t('clientType')}:</span>
-											<span className={s.metaValue}>
-												{app.user?.name || 'Физическое лицо'}
-											</span>
-										</div>
+								<div className={s.cardContent}>
+									<div className={hasSubscription ? s.description : s.descriptionTruncated}>
+										<p>{displayDescription}</p>
+										{!hasSubscription && (
+											<div className={s.subscriptionOverlay}>
+												<p className={s.subscriptionHint}>
+													{t('subscriptionRequiredToViewFull') || 'Оформите подписку, чтобы видеть полное описание'}
+												</p>
+											</div>
+										)}
 									</div>
-									<div className={s.metaRow}>
-										<div className={s.metaItem}>
-											<span className={s.metaLabel}>{t('publishDate')}:</span>
-											<span className={s.metaValue}>
-												{new Date(app.created_at).toLocaleDateString('ru-RU', {
-													day: '2-digit',
-													month: '2-digit',
-													year: 'numeric'
-												})}
-											</span>
+									
+									<div className={s.cardMeta}>
+										<div className={s.metaRow}>
+											<div className={s.metaItem}>
+												<span className={s.metaLabel}>{t('deadline')}:</span>
+												<span className={s.metaValue}>
+													{app.deadline || '3 дня'}
+												</span>
+											</div>
+											<div className={s.metaItem}>
+												<span className={s.metaLabel}>{t('clientType')}:</span>
+												<span className={s.metaValue}>
+													{app.user?.name || 'Физическое лицо'}
+												</span>
+											</div>
+										</div>
+										<div className={s.metaRow}>
+											<div className={s.metaItem}>
+												<span className={s.metaLabel}>{t('publishDate')}:</span>
+												<span className={s.metaValue}>
+													{new Date(app.created_at).toLocaleDateString('ru-RU', {
+														day: '2-digit',
+														month: '2-digit',
+														year: 'numeric'
+													})}
+												</span>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
 
-							<div className={s.cardActions}>
-								<Button
-									variant="primary"
-									onClick={() => handleRespond(app.id)}
-									className={s.respondBtn}>
-									{t('respondButton')}
-								</Button>
+								<div className={s.cardActions}>
+									<Button
+										variant="primary"
+										onClick={() => handleRespond(app.id)}
+										className={s.respondBtn}>
+										{t('respondButton')}
+									</Button>
+								</div>
 							</div>
-						</div>
-					))}
+						)
+					})}
 				</div>
 			)}
 		</div>

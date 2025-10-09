@@ -65,7 +65,9 @@
 		},
 		"enterCompletionReason": "Введите причину завершения заявки",
 		"successComplete": "Заявка успешно завершена",
-		"errorComplete": "Ошибка при завершении заявки"
+		"errorComplete": "Ошибка при завершении заявки",
+		"needSubscription": "Необходимо оформить подписку для отклика на заявки",
+		"subscriptionRequiredToViewFull": "Оформите подписку, чтобы видеть полное описание заявок"
 	},
 
 	"profile": {
