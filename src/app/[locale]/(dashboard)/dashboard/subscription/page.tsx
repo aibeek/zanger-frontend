@@ -68,10 +68,10 @@ export default function SubscriptionPage() {
         return () => { mounted = false }
     }, [])
 
-    const monthlyPlan = useMemo(() => plans?.find(p => p.duration_months === 1) || null, [plans])
+    const monthlyPlanId = 2
 
     const handleSubscribe = async () => {
-        const plan = monthlyPlan
+        const plan = monthlyPlanId ? plans?.find(p => p.id === monthlyPlanId) : null
         if (!plan) {
             toast.error('Тариф не найден')
             return
