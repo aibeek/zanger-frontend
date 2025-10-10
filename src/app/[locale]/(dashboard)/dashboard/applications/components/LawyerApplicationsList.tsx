@@ -42,6 +42,8 @@ interface Filters {
 }
 
 export const LawyerApplicationsList = () => {
+	console.log('🔥 LawyerApplicationsList COMPONENT MOUNTED!')
+	
 	const t = useTranslations('applications')
 	const tNotifications = useTranslations('notifications')
 	const router = useRouter()
@@ -57,6 +59,12 @@ export const LawyerApplicationsList = () => {
 
 	// Проверяем наличие подписки у юриста
 	const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
+	
+	console.log('🔥 INITIAL STATE:', {
+		hasSubscription,
+		personalDataExists: !!personalData,
+		lawyerData: personalData && 'lawyer' in personalData ? personalData.lawyer : null
+	})
 
 	// Отладочная информация при монтировании компонента
 	useEffect(() => {
