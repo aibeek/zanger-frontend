@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
+import toast from 'react-hot-toast'
 import { Button, DescriptionText } from '@/shared/ui-kit'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
@@ -11,6 +12,15 @@ import { Status, useMyResponsesStore } from '../../model'
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const { workOut, closeItem, workedOutIds } = useMyResponsesStore()
 	const t = useTranslations('applications')
+
+	// Функция для обработки нажатия на кнопку "Перейти в чат"
+	const handleGoToChat = (orderId: number) => {
+		console.log('🚀 handleGoToChat called for order:', orderId)
+		toast('Функционал чата находится в разработке', {
+			icon: '🚧',
+			duration: 3000,
+		})
+	}
 
 	const statusMap = items.reduce((acc: any, item: any) => {
 		acc[item.id] = Object.fromEntries(item.status.map((st: Status) => [st.title, st.is_active]))
@@ -73,8 +83,9 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 											<Button
 												className={s.chatBtn}
 												variant="primary"
-												size="sm">
-												{t('chatButton')}
+												size="sm"
+												onClick={() => handleGoToChat(item.order?.id)}>
+												Перейти в чат
 											</Button>
 										</div>
 									</motion.article>

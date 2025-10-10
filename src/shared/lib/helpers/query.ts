@@ -1,4 +1,8 @@
-export const createQuery = (params: { page?: number; per_page?: number; all_regions?: boolean }) => {
+export const createQuery = (params?: { page?: number; per_page?: number; all_regions?: boolean } | Record<string, any>) => {
+	if (!params || typeof params !== 'object') {
+		return ''
+	}
+	
 	const normalizedParams: Record<string, string> = {}
 
 	for (const [key, value] of Object.entries(params)) {

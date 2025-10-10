@@ -15,6 +15,7 @@ import telegram from '@/app/assets/icons/telegram.svg'
 import instagram from '@/app/assets/icons/instagram.svg'
 import googleplay from '@/app/assets/icons/googleplay.webp'
 import card from '@/app/assets/icons/visa-mc.webp'
+import whatsappBusiness from '@/app/assets/icons/whatsapp-business-white.svg'
 import s from './Footer.module.scss'
 import { Link } from '@/i18n'
 import {
@@ -142,6 +143,14 @@ export const Footer = ({ id }: FooterProps) => {
 								alt={'whatsapp'}
 								width={32}
 								height={32}
+							/>
+						</Link>
+						<Link href={'https://whatsapp.com/channel/0029VbBTmLNDzgTGrhXADy3b'} target="_blank">
+							<Image
+								src={whatsappBusiness}
+								alt={'whatsapp channel'}
+								width={64}
+								height={64}
 							/>
 						</Link>
 						<Link href={'https://www.instagram.com/zanger5510/'} target="_blank">

@@ -1,9 +1,30 @@
-import Link from 'next/link'
+'use client'
+
 import s from './DashboardFooter.module.scss'
 import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { usePathname } from 'next/navigation'
+import {
+    policyURL,
+    policyKzURL,
+    paymentURL,
+    paymentKzURL,
+    termsURL,
+    termsKzURL,
+    canselSubscriptionURL,
+    canselSubscriptionKzURL
+} from '@/shared/lib/consts/urls'
 
 export const DashboardFooter = () => {
     const t = useTranslations()
+    const pathname = usePathname()
+    const isKz = pathname.includes('kz')
+    
+    // Conditional URLs based on locale
+    const policyHref = isKz ? policyKzURL : policyURL
+    const paymentHref = isKz ? paymentKzURL : paymentURL
+    const termsHref = isKz ? termsKzURL : termsURL
+    const canselSubscriptionHref = isKz ? canselSubscriptionKzURL : canselSubscriptionURL
     
     const sections = [
         t('dashboard.footer.sections.forum'),
@@ -41,10 +62,10 @@ export const DashboardFooter = () => {
             </div>
             
             <div className={s.footerLinks}>
-            <Link href="/privacy" className={s.footerLink}>{t('dashboard.footer.privacy')}</Link>
-            <Link href="/payment" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
-            <Link href="/offer" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
-            <Link href="/cancellation" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
+            <Link href={policyHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.privacy')}</Link>
+            <Link href={paymentHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
+            <Link href={termsHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
+            <Link href={canselSubscriptionHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
         </div>
         </footer>
     )

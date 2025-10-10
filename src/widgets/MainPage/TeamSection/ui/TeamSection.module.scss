@@ -524,7 +524,7 @@
 	}
 }
 
-@for $i from 1 through 6 {
+@for $i from 1 through 7 {
 	.memberCard:nth-child(#{$i}) {
 		animation: moveRightToLeft 30s linear infinite calc(-5s * $i);
 
