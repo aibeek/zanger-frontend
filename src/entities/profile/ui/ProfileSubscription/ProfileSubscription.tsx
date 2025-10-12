@@ -7,6 +7,7 @@ import { ProfileTabWrapper } from '../ProfileTabWrapper'
 import { Button } from '@/shared/ui-kit'
 import { useLoginStore } from '@/features/auth'
 import type { SubscriptionFromStorage } from '@/shared/lib/types'
+import PaymentMethodIcon from '@/app/assets/icons/payment-method.svg'
 
 export const ProfileSubscription = () => {
 	console.log('🎬 ProfileSubscription component MOUNTED!')
@@ -128,7 +129,7 @@ export const ProfileSubscription = () => {
 	return (
 		<ProfileTabWrapper
 			title={t('profile.subscription.title')}
-			imgSrc={null}
+			imgSrc={PaymentMethodIcon}
 			imgAlt={'subscription'}
 			panel_title={t('profile.subscription.title')}
 			panel_descr={subscription ? t('profile.subscription.active') : t('profile.subscription.none')}

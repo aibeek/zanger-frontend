@@ -184,7 +184,7 @@ export const LawyerApplicationsList = () => {
 
 	if (loading) {
 		return (
-			<div className={s.loading}>
+	 		<div className={s.loading}>
 				<p>Загрузка заявок...</p>
 			</div>
 		)
