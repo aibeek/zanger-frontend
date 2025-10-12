@@ -63,16 +63,14 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     }
 
     const govServices = [
-        { name: 'AITU', icon: HeaderAitu },
-        { name: 'eGov', icon: HeaderEgov },
-        { name: 'eOtinish', icon: HeaderEotinish },
-        { name: 'AdiletGov', icon: HeaderAdiletGov },
-        { name: 'ERDR', icon: HeaderErdr },
-        { name: 'LE', icon: HeaderLe },
-        { name: 'Верховный суд', icon: HeaderSupremeCourt },
-        { name: 'Договор24', icon: HeaderContract24 },
-        { name: 'Adilet', icon: HeaderAdilet },
-        { name: 'eNotary', icon: HeaderEnotary }
+        { name: 'AITU', icon: HeaderAitu, url: 'https://aitu.io/' },
+        { name: 'eGov', icon: HeaderEgov, url: 'https://egov.kz/cms/kk' },
+        { name: 'eOtinish', icon: HeaderEotinish, url: 'https://eotinish.kz/kk' },
+        { name: 'AdiletGov', icon: HeaderAdiletGov, url: 'https://aisoip.adilet.gov.kz/debtors' },
+        { name: 'ERDR', icon: HeaderErdr, url: 'https://erdr-public.kgp.kz/' },
+        { name: 'Верховный суд', icon: HeaderSupremeCourt, url: 'https://office.sud.kz/' },
+        { name: 'Adilet', icon: HeaderAdilet, url: 'https://adilet.zan.kz/kaz' },
+        { name: 'eNotary', icon: HeaderEnotary, url: 'https://enis.kz/?lang=kk' }
     ]
 
     return (
@@ -104,7 +102,13 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             
             <div className={s.govServicesContainer}>
                 {govServices.map((service, index) => (
-                    <div key={index} className={s.govService}>
+                    <a 
+                        key={index} 
+                        href={service.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={s.govService}
+                    >
                         <Image 
                             src={service.icon} 
                             alt={service.name}
@@ -112,7 +116,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                             height={64}
                             className={s.govServiceIcon}
                         />
-                    </div>
+                    </a>
                 ))}
             </div>
         </div>
