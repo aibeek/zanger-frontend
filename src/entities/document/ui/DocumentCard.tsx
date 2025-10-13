@@ -28,8 +28,9 @@ export const DocumentCard = ({ document, onDocumentDeleted }: DocumentCardProps)
 							href={document.link}
 							target="_blank"
 							rel="noopener noreferrer"
-							className={s.docLink}>
-							{fileName}
+							className={s.docLink}
+							title={t('openInNewTab')}>
+							📄 {fileName}
 						</a>
 						<DeleteDocumentButton
 							documentId={document.id_to_delete}
@@ -65,8 +66,9 @@ export const DocumentCard = ({ document, onDocumentDeleted }: DocumentCardProps)
 									href={side.link}
 									target="_blank"
 									rel="noopener noreferrer"
-									className={s.docLink}>
-									{fileName}
+									className={s.docLink}
+									title={t('openInNewTab')}>
+									📄 {fileName}
 								</a>
 								<DeleteDocumentButton
 									documentId={side.id_to_delete}
