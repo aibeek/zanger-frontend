@@ -46,7 +46,13 @@ export const ProfileDocuments = () => {
 	const searchParams = useSearchParams()
 	const tab = searchParams.get('tab')
 	const shouldOpen = useMemo(() => tab === 'documents', [tab])
-	const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png']
+	const allowedTypes = [
+		'application/pdf', 
+		'image/jpeg', 
+		'image/png',
+		'application/msword', // .doc
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+	]
 
 	const handleBeforeUpload = (file: File) => {
 		if (!allowedTypes.includes(file.type)) {
