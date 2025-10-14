@@ -4,24 +4,16 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
 import { ProfileAvatar } from '@/entities/profile'
 import { NotificationsDropdown } from '@/entities/notifications'
-import { LangSwitcher, Button } from '@/shared/ui-kit'
+import { LangSwitcher, Button, Modal } from '@/shared/ui-kit'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
-
-// Импорт иконок
-import HeaderEgov from '@/app/assets/icons/header-resourses/header-egov.svg'
-import HeaderAitu from '@/app/assets/icons/header-resourses/header-aitu.svg'
-import HeaderAdiletGov from '@/app/assets/icons/header-resourses/header-adiletGov.svg'
-import HeaderAdilet from '@/app/assets/icons/header-resourses/header-adilet.svg'
-import HeaderEnotary from '@/app/assets/icons/header-resourses/header-enotary.svg'
-import HeaderContract24 from '@/app/assets/icons/header-resourses/header-договор24.svg'
-import HeaderSupremeCourt from '@/app/assets/icons/header-resourses/header-верховный-суд.svg'
-import HeaderLe from '@/app/assets/icons/header-resourses/header-le.svg'
-import HeaderErdr from '@/app/assets/icons/header-resourses/header-erdr.svg'
-import HeaderEotinish from '@/app/assets/icons/header-resourses/header-eotinish.svg'
+import { useState } from 'react'
+import monitor from '@/app/assets/icons/monitor.webp'
 import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
+import Strelka from '@/app/assets/icons/strelka.svg'
+
 interface DashboardHeaderProps {
     language: string
     title?: string
@@ -33,6 +25,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const { personalData } = useLoginStore()
     const pathname = usePathname()
     const icon = personalData?.icon ?? ''
+    const [isModalOpen, setIsModalOpen] = useState(false)
     
     // Получаем роль пользователя из cookies
     const userRole = Cookies.get('role')
@@ -62,16 +55,18 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         return pathToTitleMap[pathWithoutLang] || 'dashboard.sidebar.main'
     }
 
-    const govServices = [
-        { name: 'AITU', icon: HeaderAitu, url: 'https://aitu.io/' },
-        { name: 'eGov', icon: HeaderEgov, url: 'https://egov.kz/cms/kk' },
-        { name: 'eOtinish', icon: HeaderEotinish, url: 'https://eotinish.kz/kk' },
-        { name: 'AdiletGov', icon: HeaderAdiletGov, url: 'https://aisoip.adilet.gov.kz/debtors' },
-        { name: 'ERDR', icon: HeaderErdr, url: 'https://erdr-public.kgp.kz/' },
-        { name: 'Верховный суд', icon: HeaderSupremeCourt, url: 'https://office.sud.kz/' },
-        { name: 'Adilet', icon: HeaderAdilet, url: 'https://adilet.zan.kz/kaz' },
-        { name: 'eNotary', icon: HeaderEnotary, url: 'https://enis.kz/?lang=kk' }
+    const sections = [
+        t('dashboard.footer.sections.forum'),
+        t('dashboard.footer.sections.database'),
+        t('dashboard.footer.sections.seminars'),
+        t('dashboard.footer.sections.digitalSignature'),
+        t('dashboard.footer.sections.videoConference'),
+        t('dashboard.footer.sections.documentManagement')
     ]
+    
+    const handleSectionClick = () => {
+        setIsModalOpen(true)
+    }
 
     return (
         <div className={s.headerWrapper}>
@@ -100,25 +95,51 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
             </header>
             
-            <div className={s.govServicesContainer}>
-                {govServices.map((service, index) => (
-                    <a 
+            <div className={s.footerSections}>
+                {sections.map((section, index) => (
+                    <button 
                         key={index} 
-                        href={service.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={s.govService}
+                        className={s.footerSection}
+                        onClick={handleSectionClick}
                     >
-                        <Image 
-                            src={service.icon} 
-                            alt={service.name}
-                            width={64}
-                            height={64}
-                            className={s.govServiceIcon}
-                        />
-                    </a>
+                        <span>{section}</span>
+                        <span className={s.footerArrow}>
+                            <Image 
+                                src={Strelka} 
+                                alt="arrow"
+                                width={28}
+                                height={28}
+                            />
+                        </span>
+                    </button>
                 ))}
             </div>
+            
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                title=""
+            >
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                    <Image
+                        src={monitor}
+                        alt="В разработке"
+                        width={200}
+                        height={150}
+                        style={{ margin: '0 auto 20px' }}
+                    />
+                    <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>
+                        Модули в разработке
+                    </h3>
+                    <Button 
+                        variant="primary" 
+                        onClick={() => setIsModalOpen(false)}
+                        style={{ minWidth: '150px' }}
+                    >
+                        Понятно
+                    </Button>
+                </div>
+            </Modal>
         </div>
     )
 }

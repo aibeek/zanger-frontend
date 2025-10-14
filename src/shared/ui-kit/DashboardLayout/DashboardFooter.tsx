@@ -4,10 +4,7 @@ import s from './DashboardFooter.module.scss'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { Modal, Button } from '@/shared/ui-kit'
 import Image from 'next/image'
-import monitor from '@/app/assets/icons/monitor.webp'
 import {
     policyURL,
     policyKzURL,
@@ -19,11 +16,20 @@ import {
     canselSubscriptionKzURL
 } from '@/shared/lib/consts/urls'
 
+// Импорт иконок
+import HeaderEgov from '@/app/assets/icons/header-resourses/header-egov.svg'
+import HeaderAitu from '@/app/assets/icons/header-resourses/header-aitu.svg'
+import HeaderAdiletGov from '@/app/assets/icons/header-resourses/header-adiletGov.svg'
+import HeaderAdilet from '@/app/assets/icons/header-resourses/header-adilet.svg'
+import HeaderEnotary from '@/app/assets/icons/header-resourses/header-enotary.svg'
+import HeaderSupremeCourt from '@/app/assets/icons/header-resourses/header-верховный-суд.svg'
+import HeaderErdr from '@/app/assets/icons/header-resourses/header-erdr.svg'
+import HeaderEotinish from '@/app/assets/icons/header-resourses/header-eotinish.svg'
+
 export const DashboardFooter = () => {
     const t = useTranslations()
     const pathname = usePathname()
     const isKz = pathname.includes('kz')
-    const [isModalOpen, setIsModalOpen] = useState(false)
     
     // Conditional URLs based on locale
     const policyHref = isKz ? policyKzURL : policyURL
@@ -31,31 +37,36 @@ export const DashboardFooter = () => {
     const termsHref = isKz ? termsKzURL : termsURL
     const canselSubscriptionHref = isKz ? canselSubscriptionKzURL : canselSubscriptionURL
     
-    const sections = [
-        t('dashboard.footer.sections.forum'),
-        t('dashboard.footer.sections.database'),
-        t('dashboard.footer.sections.seminars'),
-        t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.footer.sections.videoConference'),
-        t('dashboard.footer.sections.documentManagement')
+    const govServices = [
+        { name: 'AITU', icon: HeaderAitu, url: 'https://aitu.io/' },
+        { name: 'eGov', icon: HeaderEgov, url: 'https://egov.kz/cms/kk' },
+        { name: 'eOtinish', icon: HeaderEotinish, url: 'https://eotinish.kz/kk' },
+        { name: 'AdiletGov', icon: HeaderAdiletGov, url: 'https://aisoip.adilet.gov.kz/debtors' },
+        { name: 'ERDR', icon: HeaderErdr, url: 'https://erdr-public.kgp.kz/' },
+        { name: 'Верховный суд', icon: HeaderSupremeCourt, url: 'https://office.sud.kz/' },
+        { name: 'Adilet', icon: HeaderAdilet, url: 'https://adilet.zan.kz/kaz' },
+        { name: 'eNotary', icon: HeaderEnotary, url: 'https://enis.kz/?lang=kk' }
     ]
-    
-    const handleSectionClick = () => {
-        setIsModalOpen(true)
-    }
     
     return (
         <footer className={s.footer}>
-            <div className={s.footerSections}>
-                {sections.map((section, index) => (
-                    <button 
+            <div className={s.govServicesContainer}>
+                {govServices.map((service, index) => (
+                    <a 
                         key={index} 
-                        className={s.footerSection}
-                        onClick={handleSectionClick}
+                        href={service.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={s.govService}
                     >
-                        <span>{section}</span>
-                        <span className={s.footerArrow}>→</span>
-                    </button>
+                        <Image 
+                            src={service.icon} 
+                            alt={service.name}
+                            width={64}
+                            height={64}
+                            className={s.govServiceIcon}
+                        />
+                    </a>
                 ))}
             </div>
             
@@ -80,32 +91,6 @@ export const DashboardFooter = () => {
             <Link href={termsHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
             <Link href={canselSubscriptionHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
         </div>
-        
-        <Modal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            title=""
-        >
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-                <Image
-                    src={monitor}
-                    alt="В разработке"
-                    width={200}
-                    height={150}
-                    style={{ margin: '0 auto 20px' }}
-                />
-                <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>
-                    Модули в разработке
-                </h3>
-                <Button 
-                    variant="primary" 
-                    onClick={() => setIsModalOpen(false)}
-                    style={{ minWidth: '150px' }}
-                >
-                    Понятно
-                </Button>
-            </div>
-        </Modal>
         </footer>
     )
 }

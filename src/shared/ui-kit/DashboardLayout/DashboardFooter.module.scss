@@ -5,6 +5,62 @@
   font-family: Arial, sans-serif;
 }
 
+/* Контейнер для гос. сервисов */
+.govServicesContainer {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  padding: 0 0 1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+.govService {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.govServiceIcon {
+  width: 190px !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+/* Секция с локацией */
+.locationSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.locationButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  background-color: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #34495e;
+  }
+}
+
+.locationIcon {
+  flex-shrink: 0;
+}
+
 /* Раздел с кнопками */
 .footerSections {
   display: flex;

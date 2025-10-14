@@ -27,6 +27,16 @@ import { useLoginStore } from '@/features/auth/login'
 import Image from 'next/image'
 import avatar from '@/app/assets/icons/avatar-default.svg'
 
+// Импорт иконок для меню профиля
+import consultationIcon from '@/app/assets/icons/consultation-price.svg'
+import specializationIcon from '@/app/assets/icons/medal.svg'
+import documentsIcon from '@/app/assets/icons/user-tabs/responses-and-orders.svg'
+import subscriptionIcon from '@/app/assets/icons/rocket.svg'
+import passwordIcon from '@/app/assets/icons/lock.svg'
+import MapLocationIcon from '@/app/assets/icons/location-blue.svg'
+import supportIcon from '@/app/assets/icons/support-phone.svg'
+import paymentIcon from '@/app/assets/icons/payment-method.svg'
+
 
 
 
@@ -258,28 +268,36 @@ export default function ProfilePage() {
                     {/* Action Panel - 4x2 Grid */}
                     <div className={s.actionPanel}>
                         <button className={s.actionCard} onClick={() => openModal('consultation')}>
-                            {t('profile.menu_items.consultation_price')}
+                            <Image src={consultationIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.consultation_price')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('specialization')}>
-                            {t('profile.menu_items.specialization')}
+                            <Image src={specializationIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.specialization')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('documents')}>
-                            {t('profile.menu_items.documents')}
+                            <Image src={documentsIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.documents')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('subscription')}>
-                            {t('profile.menu_items.subscription')}
+                            <Image src={subscriptionIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.subscription')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('password')}>
-                            {t('profile.menu_items.change_password')}
+                            <Image src={passwordIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.change_password')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('cities')}>
-                            {t('profile.menu_items.servicing_cities')}
+                            <Image src={MapLocationIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.servicing_cities')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('support')}>
-                            {t('profile.menu_items.support')}
+                            <Image src={supportIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.support')}</span>
                         </button>
                         <button className={s.actionCard} onClick={() => openModal('payment')}>
-                            {t('profile.menu_items.payment_methods')}
+                            <Image src={paymentIcon} alt="" width={24} height={24} />
+                            <span>{t('profile.menu_items.payment_methods')}</span>
                         </button>
                     </div>
 
@@ -361,15 +379,21 @@ export default function ProfilePage() {
                         <h3>Ваши документы</h3>
                         <div className={s.documentsList}>
                             <div className={s.documentItem}>
-                                <div className={s.documentIcon}>�</div>
+                                <div className={s.documentIcon}>
+                                    <Image src={documentsIcon} alt="" width={24} height={24} />
+                                </div>
                                 <div className={s.documentName}>Паспорт (скан первой страницы).pdf</div>
                             </div>
                             <div className={s.documentItem}>
-                                <div className={s.documentIcon}>�</div>
+                                <div className={s.documentIcon}>
+                                    <Image src={documentsIcon} alt="" width={24} height={24} />
+                                </div>
                                 <div className={s.documentName}>Свидетельство о регистрации.pdf</div>
                             </div>
                             <div className={s.documentItem}>
-                                <div className={s.documentIcon}>🖼️</div>
+                                <div className={s.documentIcon}>
+                                    <Image src={documentsIcon} alt="" width={24} height={24} />
+                                </div>
                                 <div className={s.documentName}>Фото 3x4.jpg</div>
                             </div>
                         </div>

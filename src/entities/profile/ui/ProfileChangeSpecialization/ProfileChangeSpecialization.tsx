@@ -2,7 +2,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button, Checkbox } from '@/shared/ui-kit'
-import rocketIcon from '@/app/assets/icons/rocket.svg'
+import specializationIcon from '@/app/assets/icons/medal.svg'
 import s from './ProfileChangeSpecialization.module.scss'
 import { SpecializationForm, specializationSchema } from '@/shared/lib'
 import { useChangeSpecializationStore } from '../../model/useChangeSpecializationStore'
@@ -52,7 +52,7 @@ export const ProfileChangeSpecialization = () => {
 	return (
 		<ProfileTabWrapper
 			title={t('title')}
-			imgSrc={rocketIcon}
+			imgSrc={specializationIcon}
 			imgAlt="personalData"
 			panel_title={t('panelTitle')}
 			panel_descr={t('panelDescription')}
