@@ -12,6 +12,49 @@
   border-radius: 27px;
 }
 
+/* Раздел с кнопками модулей */
+.footerSections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0 0 0;
+  padding: 0 1.5rem;
+}
+
+.footerSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 15%;
+  min-width: 150px;
+  padding: 0.8rem 1rem;
+  background-color: rgba(96, 103, 135, 1);
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: 600;
+
+  &:hover {
+    background-color: rgba(86, 93, 125, 1);
+  }
+}
+
+.footerArrow {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 /* Контейнер для гос. сервисов */
 .govServicesContainer {
   display: flex;

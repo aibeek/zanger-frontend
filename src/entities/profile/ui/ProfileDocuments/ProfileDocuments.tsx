@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Upload, Select } from 'antd'
 import type { UploadFile } from 'antd/es/upload/interface'
 import { Button, Modal, useModal } from '@/shared/ui-kit'
-import medalIcon from '@/app/assets/icons/medal.svg'
+import documentsIcon from '@/app/assets/icons/user-tabs/responses-and-orders.svg'
 import A4 from '@/app/assets/icons/a4.svg'
 import s from './ProfileDocuments.module.scss'
 import { ProfileTabWrapper } from '../ProfileTabWrapper'
@@ -171,7 +171,7 @@ export const ProfileDocuments = () => {
 			<ProfileTabWrapper
 				defaultOpen={shouldOpen}
 				title={t('profile.documents.title')}
-				imgSrc={medalIcon}
+				imgSrc={documentsIcon}
 				imgAlt="personalData"
 				panel_title={t('profile.documents.panelTitle')}
 				panel_descr={t('profile.documents.panelDescription')}>
