@@ -100,10 +100,15 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     return (
         <aside className={s.sidebar}>
             <div className={s.sidebarHeader}>
-                <div className={s.logo}>
+                <Link
+                    href={`/${language}`}
+                    className={s.logo}
+                    onClick={onMobileClose}
+                    aria-label={t('dashboard.sidebar.main')}
+                >
                     <Image src={ZangerIcon} alt="Zanger Logo" className={s.logoIcon} width={24} height={24} />
                     <span className={s.logoText}>ZANGER</span>
-                </div>
+                </Link>
                 {onMobileClose && (
                     <button 
                         className={s.mobileCloseBtn}

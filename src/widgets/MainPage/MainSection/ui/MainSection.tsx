@@ -16,7 +16,7 @@ export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
 
 	return (
-		<section className={s.wrapper}>
+		<section id="mainSection" className={s.wrapper}>
 			<Header variant={'lending-variant'} />
 			<div className={s.abstractLandscape}>
 				<div className={s.container}>
@@ -83,6 +83,7 @@ export const MainSection = () => {
 					</div>
 				</div>
 			</div>
+			<div id="mainSectionSentinel" className={s.sentinel} aria-hidden="true" />
 		</section>
 	)
 }

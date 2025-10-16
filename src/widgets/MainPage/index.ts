@@ -1,5 +1,6 @@
 export * from './DescriptionSection'
 export * from './MainSection'
+export * from './ScrollTopButton'
 export * from './TeamSection'
 export * from './AboutSection'
 export * from './ModulesSection'

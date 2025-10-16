@@ -275,7 +275,8 @@
 			"freeConsultation": "Бесплатная первичная консультация",
 			"mobileVersionLabel": "Мобильная версия в разработке. Запуск скоро.<br/>Следите за новостями!",
 			"phoneButton": "Позвонить",
-			"createNew": "Оставить заявку"
+			"createNew": "Оставить заявку",
+			"backToTop": "Наверх"
 		},
 
 		"descriptionSection": {

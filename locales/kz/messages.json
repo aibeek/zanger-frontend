@@ -270,7 +270,8 @@
 			"freeConsultation": "Алғашқы кеңес - тегін",
 			"mobileVersionLabel": "Мобильді нұсқа әзірленуде. Жақында іске қосылады.<br/>Жаңалықтарды қадағалаңыз!",
 			"phoneButton": "Қоңырау шалу",
-			"createNew": "Өтініш беру"
+			"createNew": "Өтініш беру",
+			"backToTop": "Жоғары"
 		},
 
 		"descriptionSection": {
