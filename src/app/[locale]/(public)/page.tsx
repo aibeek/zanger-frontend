@@ -6,13 +6,13 @@ export default function Home() {
 	return (
 		<div className={s.page}>
 				<MainSection />
+				<NewsSection />
 				<ScrollTopButton />
 				<AboutSection />
 				<TeamSection />
 				<DescriptionSection />
 				<ModulesSection />
 				<ResourcesSection />
-				<NewsSection />
 				<Footer />
 				<PulseChatWidget />
 		</div>
