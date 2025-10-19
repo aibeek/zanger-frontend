@@ -4,6 +4,7 @@ import { Region } from './shared'
 type BaseProfile = {
 	id: number
 	name: string
+	email: string | null
 	phone: string
 	icon: string | null
 	language: string

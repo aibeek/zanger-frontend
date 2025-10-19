@@ -13,6 +13,7 @@ interface ClientRegisterFormStore {
 export const useClientRegisterForm = create<ClientRegisterFormStore>((set, get) => ({
 	data: {
 		name: '',
+		email: '',
 		phone: '',
 		password: '',
 		password_confirmation: '',
@@ -49,6 +50,7 @@ export const useClientRegisterForm = create<ClientRegisterFormStore>((set, get) 
 		set({
 			data: {
 				name: '',
+				email: '',
 				phone: '',
 				password: '',
 				password_confirmation: '',

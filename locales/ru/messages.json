@@ -107,6 +107,9 @@
 			"phoneLabel": "Телефон",
 			"phonePlaceholder": "Введите номер телефона",
 
+			"emailLabel": "Электронная почта",
+			"emailPlaceholder": "Введите email",
+
 			"telegramLabel": "Telegram",
 			"telegramPlaceholder": "Введите Telegram",
 
@@ -526,6 +529,8 @@
 		"registration": {
 			"title": "Регистрация",
 			"phoneLabel": "Номер телефона",
+			"emailLabel": "Электронная почта",
+			"emailPlaceholder": "Введите email",
 			"nameLabel": "Фамилия и Имя",
 			"namePlaceholder": "Укажите Имя и Фамилию",
 			"lawyerNameLabel": "Укажите ФИО",
@@ -567,6 +572,7 @@
 	"validation": {
 		"phone_too_short": "Слишком короткий номер",
 		"phone_too_long": "Номер телефона должен быть не более 15 символов",
+		"email_invalid": "Введите корректный email",
 		"password_min": "Пароль должен быть минимум 8 символов",
 		"password_pattern": "Пароль должен содержать строчные и заглавные буквы, цифры и спецсимволы (! ? $ % *)",
 		"passwords_do_not_match": "Пароли не совпадают",

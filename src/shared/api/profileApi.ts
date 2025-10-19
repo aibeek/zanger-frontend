@@ -3,6 +3,7 @@ import { httpClientWithAuth } from './httpClient'
 
 export type UpdateClientData = {
 	name?: string
+	email?: string
 	phone?: string
 	telegram?: string | null
 	whatsapp?: string | null

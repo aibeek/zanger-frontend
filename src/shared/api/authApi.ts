@@ -17,6 +17,7 @@ export interface ValidateCodeDto extends SendSmsCodeDto {
 
 export interface ClientRegisterDto {
 	name: string
+	email: string
 	phone: string
 	password: string
 	password_confirmation: string
