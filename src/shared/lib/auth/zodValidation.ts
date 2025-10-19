@@ -33,6 +33,10 @@ export const passwordSchema = z
 export const clientRegistrationSchema = z
 	.object({
 		name: z.string().min(1, { message: 'validation.name_required' }),
+		email: z
+			.string({ required_error: 'validation.required' })
+			.min(1, { message: 'validation.required' })
+			.email({ message: 'validation.email_invalid' }),
 		phone: z.string().min(10, { message: 'validation.phone_too_short' }),
 		password: z
 			.string()
@@ -58,6 +62,10 @@ export const clientRegistrationSchema = z
 export const lawyerRegistrationSchema = z
 	.object({
 		name: z.string().min(1, { message: 'validation.name_required' }),
+		email: z
+			.string({ required_error: 'validation.required' })
+			.min(1, { message: 'validation.required' })
+			.email({ message: 'validation.email_invalid' }),
 		phone: z.string().min(10, { message: 'validation.phone_too_short' }),
 		password: z
 			.string()
@@ -133,6 +141,10 @@ export const updateProfilePasswordSchema = z
 
 export const profilePersonalDataSchema = z.object({
 	name: z.string().min(1, { message: 'Required' }),
+	email: z
+		.string()
+		.min(1, { message: 'validation.required' })
+		.email({ message: 'validation.email_invalid' }),
 	phone: z
 		.string()
 		.min(10, { message: 'validation.phone_too_short' })

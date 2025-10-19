@@ -78,10 +78,51 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 		setField('phone', phone)
 	}, [phone, setField])
 
+		const renderEmailField = (extraClass = '') => (
+			<div className={`${s.email} ${s.inputBox} ${extraClass}`}>
+				<label className={s.label}>{t('auth.registration.emailLabel')}</label>
+				<Input
+					type="email"
+					placeholder={t('auth.registration.emailPlaceholder')}
+					{...register('email')}
+					hasError={!!errors.email}
+				/>
+				{errors.email && <p className={s.error}>{t(errors.email.message)}</p>}
+			</div>
+		)
+
+		const renderRegionField = (extraClass = '') => (
+			<div className={`${s.city} ${s.inputBox} ${extraClass}`}>
+				<label className={s.label}>{t('auth.registration.cityLabel')}</label>
+				<Controller
+					name="region_id"
+					control={control}
+					rules={{ required: t('auth.registration.regionRequired') }}
+					render={({ field }) => {
+						return (
+							<SearchSelect
+								className="search-select"
+								data={optionsForSelect}
+								searchData={allOptions}
+								// @ts-expect-error fix it
+								value={optionsForSelect.find((r) => r.id === field.value) || null}
+								onChange={(region) => field.onChange(region?.id)}
+								getId={(item) => item.id}
+								getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
+								renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
+								placeholder={t('auth.registration.regionPlaceholder')}
+							/>
+						)
+					}}
+				/>
+				{errors.region_id && <p className={s.error}>{t(errors.region_id.message)}</p>}
+			</div>
+		)
+
 	return (
 		<div className={s.wrapper}>
 			<div className={s.inner}>
-				<form onSubmit={handleSubmit(onSubmit)}>
+					<form onSubmit={handleSubmit(onSubmit)} className={s.form}>
 					<div className={`${s.phone} ${s.inputBox}`}>
 						<label className={s.label}>{t('auth.registration.phoneLabel')}</label>
 						<Input
@@ -91,66 +132,53 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 							disabled
 						/>
 					</div>
-					<div className={`${s.name} ${s.inputBox}`}>
-						<label className={s.label}>
-							{clientVariant ? t('auth.registration.nameLabel') : t('auth.registration.lawyerNameLabel')}
-						</label>
-						<Input
-							placeholder={
-								clientVariant
-									? t('auth.registration.namePlaceholder')
-									: t('auth.registration.lawyerNamePlaceholder')
-							}
-							{...register('name', { required: t('auth.registration.nameRequired') })}
-							hasError={!!errors.name}
-						/>
-						{errors.name && <p className={s.error}>{t(errors.name.message)}</p>}
-					</div>
+						<div className={s.inlineGroup}>
+							<div className={`${s.name} ${s.inputBox}`}>
+								<label className={s.label}>
+									{clientVariant ? t('auth.registration.nameLabel') : t('auth.registration.lawyerNameLabel')}
+								</label>
+								<Input
+									placeholder={
+										clientVariant
+											? t('auth.registration.namePlaceholder')
+											: t('auth.registration.lawyerNamePlaceholder')
+									}
+									{...register('name', { required: t('auth.registration.nameRequired') })}
+									hasError={!!errors.name}
+								/>
+								{errors.name && <p className={s.error}>{t(errors.name.message)}</p>}
+							</div>
 
-					{lawyerVariant && (
-						<div className={`${s.iin} ${s.inputBox}`}>
-							<label className={s.label}>{t('auth.registration.iinLabel')}</label>
-							<Input
-								type="text"
-								placeholder={t('auth.registration.iinPlaceholder')}
-								maxLength={12}
-								inputMode="numeric"
-								{...register('iin', { required: t('auth.registration.iinRequired') })}
-								onInput={(e) => {
-									const input = e.target as HTMLInputElement
-									input.value = input.value.replace(/\D/g, '').slice(0, 12)
-								}}
-								hasError={!!errors.iin}
-							/>
-							{errors.iin && <p className={s.error}>{t(errors.iin.message)}</p>}
-						</div>
-					)}
-
-					<div className={`${s.city} ${s.inputBox}`}>
-						<label className={s.label}>{t('auth.registration.cityLabel')}</label>
-						<Controller
-							name="region_id"
-							control={control}
-							rules={{ required: t('auth.registration.regionRequired') }}
-							render={({ field }) => {
-								return (
-									<SearchSelect
-										className="search-select"
-										data={optionsForSelect}
-										searchData={allOptions}
-										// @ts-expect-error fix it
-										value={optionsForSelect.find((r) => r.id === field.value) || null}
-										onChange={(region) => field.onChange(region?.id)}
-										getId={(item) => item.id}
-										getLabel={(item) => (item.path ? `${item.name} (${item.path})` : item.name)}
-										renderGroupLabel={(label) => <span>{label.slice(3)}</span>}
-										placeholder={t('auth.registration.regionPlaceholder')}
+							{lawyerVariant ? (
+								<div className={`${s.iin} ${s.inputBox}`}>
+									<label className={s.label}>{t('auth.registration.iinLabel')}</label>
+									<Input
+										type="text"
+										placeholder={t('auth.registration.iinPlaceholder')}
+										maxLength={12}
+										inputMode="numeric"
+										{...register('iin', { required: t('auth.registration.iinRequired') })}
+										onInput={(e) => {
+											const input = e.target as HTMLInputElement
+											input.value = input.value.replace(/\D/g, '').slice(0, 12)
+										}}
+										hasError={!!errors.iin}
 									/>
-								)
-							}}
-						/>
-						{errors.region_id && <p className={s.error}>{t(errors.region_id.message)}</p>}
-					</div>
+									{errors.iin && <p className={s.error}>{t(errors.iin.message)}</p>}
+								</div>
+							) : (
+								renderEmailField()
+							)}
+						</div>
+
+						{lawyerVariant ? (
+							<div className={s.inlineGroup}>
+								{renderEmailField()}
+								{renderRegionField()}
+							</div>
+						) : (
+							renderRegionField()
+						)}
 
 					{lawyerVariant && (
 						<div className={`${s.specialization} ${s.inputBox}`}>

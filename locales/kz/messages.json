@@ -100,6 +100,9 @@
 			"phoneLabel": "Телефон",
 			"phonePlaceholder": "Телефон нөміріңізді енгізіңіз",
 
+			"emailLabel": "Электрондық пошта",
+			"emailPlaceholder": "Email енгізіңіз",
+
 			"telegramLabel": "Telegram",
 			"telegramPlaceholder": "Telegram аккаунтыңызды енгізіңіз",
 
@@ -521,6 +524,8 @@
 		"registration": {
 			"title": "Тіркеу",
 			"phoneLabel": "Телефон нөмірі",
+			"emailLabel": "Электрондық пошта",
+			"emailPlaceholder": "Email енгізіңіз",
 			"nameLabel": "Тегі мен аты",
 			"namePlaceholder": "Атыңыз бен тегі",
 			"lawyerNameLabel": "Толық атыңызды енгізіңіз",
@@ -562,6 +567,7 @@
 	"validation": {
 		"phone_too_short": "Телефон нөмірі тым қысқа",
 		"phone_too_long": "Телефон нөмірі 15 таңбадан аспауы керек",
+		"email_invalid": "Дұрыс email енгізіңіз",
 		"password_min": "Құпиясөз кемінде 8 таңбадан тұруы керек",
 		"password_pattern": "Құпиясөзде кіші және бас әріптер, сандар және арнайы таңбалар (! ? $ % *) болуы керек",
 		"passwords_do_not_match": "Құпиясөздер сәйкес келмейді",

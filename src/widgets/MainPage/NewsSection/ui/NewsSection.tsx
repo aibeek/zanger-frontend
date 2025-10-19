@@ -34,7 +34,7 @@ export const NewsSection = () => {
 			id: 'digital-bridge',
 			title: t('digitalBridge.title'),
 			description: t('digitalBridge.description'),
-			date: '04.10.2025',
+			date: '17.10.2025',
 			image: '/assets/images/dgital.jpeg',
 			readMore: t('readMore'),
 			fullDescription: t('digitalBridge.fullDescription'),

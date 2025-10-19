@@ -28,6 +28,7 @@ type FieldConfig = {
 	placeholder: string
 	isMasked: boolean
 	mask?: string
+	type?: string
 }
 
 const phoneMask = '+{7} (000) 000-00-00'
@@ -50,6 +51,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 		mode: 'onChange',
 		defaultValues: {
 			name: personalData?.name ?? '',
+			email: personalData?.email ?? '',
 			phone: personalData?.phone ?? '',
 			region_id: personalData?.region?.id ?? null,
 			lawyer_type_ids: lawyerData?.lawyer_types?.map((type) => type.id) ?? [],
@@ -67,6 +69,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 
 	const [editableInputs, setEditableInputs] = useState(() => ({
 		name: false,
+		email: false,
 		phone: false,
 		region_id: false,
 		lawyer_type_ids: false,
@@ -132,6 +135,14 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 			placeholder: t('profile.personal_data.phonePlaceholder'),
 			isMasked: true,
 			mask: phoneMask,
+			type: 'tel',
+		},
+		{
+			field: 'email',
+			label: t('profile.personal_data.emailLabel'),
+			placeholder: t('profile.personal_data.emailPlaceholder'),
+			isMasked: false,
+			type: 'email',
 		},
 		// Статус будет добавлен через LawyerFields компонент после поля телефона
 		{
@@ -145,6 +156,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 	const onSubmitAll = handleSubmit(async (values) => {
 		const payload: any = {
 			name: values.name || undefined,
+			email: values.email || undefined,
 			phone: values.phone || undefined,
 			region_id: values.region_id ?? undefined,
 		}
@@ -243,6 +255,36 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 							</div>
 						</div>
 
+						{/* Email */}
+						<div className={s.cleanInputWrapper}>
+							<label className={s.cleanLabel} htmlFor="email">
+								{t('profile.personal_data.emailLabel')}
+							</label>
+							<div className={s.cleanInputBox}>
+								<Input
+									id="email"
+									type="email"
+									placeholder={t('profile.personal_data.emailPlaceholder')}
+									disabled={!editableInputs.email}
+									{...register('email')}
+									className={`${s.cleanInput} ${errors.email ? s.cleanInputError : ''} ${!editableInputs.email ? s.cleanInputReadOnly : ''}`}
+									style={{
+										flex: '1',
+										minWidth: '0',
+										width: 'auto',
+									}}
+								/>
+								<button
+									type="button"
+									className={s.cleanEditBtn}
+									onClick={() => setEditableInputs(prev => ({ ...prev, email: !prev.email }))}
+								>
+									<PencilIcon className={s.cleanEditIcon} />
+								</button>
+								{errors.email && <p className={s.cleanError}>{t(errors.email?.message || '')}</p>}
+							</div>
+						</div>
+
 						{/* Статус (только для юристов) */}
 						{isLawyer && (
 							<LawyerFields t={t} variant="clean" editableInputs={editableInputs} setEditableInputs={setEditableInputs} />
@@ -313,9 +355,10 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 			ref={disclosureBtnRef}>
 			<FormProvider {...methods}>
 				<form className={s.form} onSubmit={onSubmitAll}>
-					{fields.map(({ field, label, placeholder, mask, isMasked }) => {
+					{fields.map(({ field, label, placeholder, mask, isMasked, type }) => {
 						const isEditing = editableInputs[field]
 						const hasError = !!errors[field]
+						const inputType = type ?? 'text'
 
 						if (field === 'region_id') {
 							return (
@@ -383,7 +426,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 											render={({ field: { onChange, onBlur, value } }) => (
 												<Input
 													id={field}
-													type="tel"
+													type={inputType}
 													placeholder={placeholder}
 													disabled={false}
 													hasError={hasError}
@@ -402,7 +445,7 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 									) : (
 										<Input
 											id={field}
-											type="text"
+											type={inputType}
 											placeholder={placeholder}
 											disabled={false}
 											{...register(field)}

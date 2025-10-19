@@ -13,6 +13,7 @@ interface LawyerRegisterFormStore {
 export const useLawyerRegisterForm = create<LawyerRegisterFormStore>((set, get) => ({
 	data: {
 		name: '',
+		email: '',
 		phone: '',
 		password: '',
 		password_confirmation: '',
@@ -52,6 +53,7 @@ export const useLawyerRegisterForm = create<LawyerRegisterFormStore>((set, get) 
 		set({
 			data: {
 				name: '',
+				email: '',
 				phone: '',
 				password: '',
 				password_confirmation: '',
