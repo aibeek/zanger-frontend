@@ -187,12 +187,12 @@
 	touch-action: pan-y;
 
 	&:has(.memberCard:hover) .memberCard {
-		animation-play-state: paused;
+		animation-play-state: paused !important;
 	}
 
 	/* pause autoplay when hovering the carousel area */
 	&:hover .memberCard {
-		animation-play-state: paused;
+		animation-play-state: paused !important;
 	}
 
 	/* На мобильных устройствах отключаем автоматическую анимацию */
@@ -281,6 +281,8 @@
 	padding: 25px 20px 20px 20px;
 	color: white;
 	left: auto;
+	z-index: 1;
+	will-change: transform;
 
 	&[data-mobile="true"] {
 		left: 50%;
@@ -428,6 +430,8 @@
 	color: white;
 	line-height: 1.2;
 	margin: 0 0 15px 0;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
 
 	@media (max-width: 768px) {
 		font-size: 18px;
@@ -611,30 +615,30 @@
 
 @for $i from 1 through 8 {
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 80s linear infinite calc(-10s * $i);
+		animation: moveRightToLeft 80s linear infinite calc(-10s * $i) !important;
 
 		@media (max-width: 1600px) {
-			animation: moveRightToLeft 72s linear infinite calc(-9s * $i);
+			animation: moveRightToLeft 72s linear infinite calc(-9s * $i) !important;
 		}
 
 		@media (max-width: 1366px) {
-			animation: moveRightToLeft 64s linear infinite calc(-8s * $i);
+			animation: moveRightToLeft 64s linear infinite calc(-8s * $i) !important;
 		}
 
 		@media (max-width: 1024px) {
-			animation: moveRightToLeft 64s linear infinite calc(-8s * $i);
+			animation: moveRightToLeft 64s linear infinite calc(-8s * $i) !important;
 		}
 
 		@media (max-width: 768px) {
-			animation: moveRightToLeft 56s linear infinite calc(-7s * $i);
+			animation: moveRightToLeft 56s linear infinite calc(-7s * $i) !important;
 		}
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile 40s linear infinite calc(-5s * $i);
+			animation: moveRightToLeftMobile 40s linear infinite calc(-5s * $i) !important;
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall 40s linear infinite calc(-5s * $i);
+			animation: moveRightToLeftSmall 40s linear infinite calc(-5s * $i) !important;
 		}
 	}
 }
