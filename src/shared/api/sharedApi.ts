@@ -74,4 +74,11 @@ export const sharedApi = {
 			method: 'POST',
 			body: JSON.stringify({ content }),
 		}),
+
+	// Получить последние заявки (публичный эндпоинт)
+	getLatestOrders: <T = any>(): Promise<T> => {
+		return httpClient<T>(`${API_URL}/orders/latest`, {
+			method: 'GET',
+		})
+	},
 }
