@@ -14,6 +14,7 @@ class HttpError extends Error {
 
 const addAuthHeader = (token: string, options: RequestInit = {}) => {
 	const isFormData = options.body instanceof FormData
+	const method = (options.method || 'GET').toString().toUpperCase()
 
 	return {
 		...options,
@@ -22,7 +23,8 @@ const addAuthHeader = (token: string, options: RequestInit = {}) => {
 			'Accept-Language': typeof navigator !== 'undefined' ? navigator.language : 'ru',
 			...options.headers,
 			Authorization: `Bearer ${token}`,
-			...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+			// Не отправляем Content-Type для GET и FormData
+			...(isFormData || method === 'GET' ? {} : { 'Content-Type': 'application/json' }),
 		},
 	}
 }
@@ -94,12 +96,16 @@ export const httpClient = async <T>(url: string, options?: RequestInit): Promise
 	const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
 	try {
+		const method = (options?.method || 'GET').toString().toUpperCase()
+		const isFormData = options?.body instanceof FormData
+
 		const res = await fetch(url, {
 			...options,
 			headers: {
-				'Content-Type': 'application/json',
 				Accept: 'application/json',
 				'Accept-Language': typeof navigator !== 'undefined' ? navigator.language : 'ru',
+				// Не отправляем Content-Type для GET и FormData
+				...(isFormData || method === 'GET' ? {} : { 'Content-Type': 'application/json' }),
 				...(options?.headers || {}),
 			},
 			signal: controller.signal,

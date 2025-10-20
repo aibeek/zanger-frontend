@@ -9,6 +9,7 @@ import monitor from '@/app/assets/icons/monitor.webp'
 import lendingUser from '@/app/assets/icons/user-lending.svg'
 import { Button, LangSwitcher, Modal, useModal } from '@/shared/ui-kit'
 import { formatPhoneNumber, useAuthStore, useMediaQuery, isMobileOrTablet, useHydration } from '@/shared/lib'
+import { sharedApi } from '@/shared/api'
 
 import s from './Header.module.scss'
 import { useTranslations } from 'next-intl'
@@ -61,22 +62,20 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	// Состояние для Live заявок и мобильного меню
 	const [showLiveApplications, setShowLiveApplications] = useState(false)
 	const [showMobileMenu, setShowMobileMenu] = useState(false)
-	const [liveApplications, setLiveApplications] = useState([
-		{
-			id: 1,
-			title: "Консультация по трудовому праву",
-			description: "Нужна помощь в составлении трудового договора",
-			timeAgo: "2 мин назад",
-			location: "Алматы"
-		},
-		{
-			id: 2,
-			title: "Семейное право - развод",
-			description: "Консультация по разводу и разделу имущества",
-			timeAgo: "5 мин назад",
-			location: "Астана"
-		}
-	])
+	
+	// LIVE applications types and state
+	type LiveApplicationItem = {
+	  id: number
+	  title: string
+	  description: string
+	  timeAgo: string
+	  location: string
+	}
+	const [liveApplications, setLiveApplications] = useState<LiveApplicationItem[]>([])
+	const [liveLoading, setLiveLoading] = useState(false)
+	const [liveError, setLiveError] = useState<string | null>(null)
+	const isLiveFetchingRef = useRef(false)
+	const liveIntervalRef = useRef<number | null>(null)
 
 	// Закрытие дропдауна по клику вне и по Esc
 	const liveButtonRef = useRef<HTMLDivElement | null>(null)
@@ -125,6 +124,103 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 		authService.logout()
 		router.push('/auth/login')
 	}
+
+	// Helpers for LIVE
+	const formatTimeAgo = (dateStr?: string) => {
+		if (!dateStr) return ''
+		const date = new Date(dateStr)
+		const now = new Date()
+		const diffMs = now.getTime() - date.getTime()
+		const diffMin = Math.floor(diffMs / 60000)
+		if (diffMin < 1) return 'только что'
+		if (diffMin < 60) return `${diffMin} мин назад`
+		const diffHours = Math.floor(diffMin / 60)
+		if (diffHours < 24) return `${diffHours} ч назад`
+		const diffDays = Math.floor(diffHours / 24)
+		return `${diffDays} дн назад`
+	}
+
+	const mapLatestOrders = (raw: any[]): LiveApplicationItem[] => {
+		if (!Array.isArray(raw)) return []
+		return raw.map((item: any) => {
+			const title =
+				(item?.tag?.name && (typeof item.tag.name === 'string' ? item.tag.name : item.tag.name?.ru)) ||
+				item?.specialization?.name ||
+				'Заявка'
+			const description = item?.description || ''
+			const createdAt = item?.created_at || item?.createdAt || item?.created
+			const location =
+				item?.region?.name ||
+				item?.city?.name ||
+				item?.user?.region?.name ||
+				item?.location ||
+				''
+			return {
+				id: Number(item?.id ?? Math.random() * 1e9),
+				title,
+				description,
+				timeAgo: formatTimeAgo(createdAt),
+				location,
+			}
+		})
+	}
+
+	const fetchLatestOrders = async () => {
+		if (isLiveFetchingRef.current) return
+		isLiveFetchingRef.current = true
+		try {
+			setLiveLoading(true)
+			setLiveError(null)
+			const res: any = await sharedApi.getLatestOrders<any>()
+			const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
+			setLiveApplications(mapLatestOrders(data))
+		} catch (err) {
+			console.error('Ошибка загрузки последних заявок:', err)
+			setLiveError('Не удалось загрузить заявки')
+		} finally {
+			setLiveLoading(false)
+			isLiveFetchingRef.current = false
+		}
+	}
+
+	// LIVE button click handler
+	const handleLiveClick = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+		// Mobile: show modal
+		if (shouldShowMobileModal) {
+			e.preventDefault()
+			open()
+			return
+		}
+		// Desktop: toggle dropdown and fetch
+		e.preventDefault()
+		setShowLiveApplications((prev) => {
+			const next = !prev
+			if (next) fetchLatestOrders()
+			return next
+		})
+	}
+
+	// Автообновление списка заявок пока открыт диалог LIVE
+	useEffect(() => {
+		if (showLiveApplications) {
+			if (!liveIntervalRef.current) {
+				liveIntervalRef.current = window.setInterval(() => {
+					fetchLatestOrders()
+				}, 3000)
+			}
+		} else {
+			if (liveIntervalRef.current) {
+				clearInterval(liveIntervalRef.current)
+				liveIntervalRef.current = null
+			}
+		}
+		return () => {
+			if (liveIntervalRef.current) {
+				clearInterval(liveIntervalRef.current)
+				liveIntervalRef.current = null
+			}
+		}
+	}, [showLiveApplications])
 
 	if (variant === 'lending-variant') {
 		return (
@@ -230,42 +326,62 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													className={`${s.appLink} ${s.liveButton}`}
 													variant={'primary'}
 													href={'/live-applications'}
-													onClick={(e) => {
-														// На мобильных показываем модалку
-														if (shouldShowMobileModal) {
-															e.preventDefault()
-															open()
-															return
-														}
-														// На десктопе — дропдаун
-														e.preventDefault()
-														setShowLiveApplications((prev) => !prev)
-													}}>
+													prefetch={false}
+													onClick={handleLiveClick}>
 														LIVE
 													</AppLink>
 												{showLiveApplications && (
 													<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
 														<div className={s.liveDropdownHeader}>
 															<h3>
-																LIVE заявки <span className={s.demoLabel}>DEMO</span>
-															</h3>
-															<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
-														</div>
-														<div className={s.liveApplicationsList}>
-															{liveApplications.map((item) => (
-																<div key={item.id} className={s.liveApplicationItem}>
-																	<div className={s.liveAppHeader}>
-																		<h4>{item.title}</h4>
-																		<span className={s.timeAgo}>{item.timeAgo}</span>
-																	</div>
-																	<p className={s.liveAppDescription}>{item.description}</p>
-																	<div className={s.liveAppFooter}>
-																		<span className={s.location}>📍 {item.location}</span>
-																		<button className={s.respondBtn} onClick={() => setShowLiveApplications(false)}>Откликнуться</button>
-																	</div>
+																	LIVE заявки
+																</h3>
+																	<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
 																</div>
-															))}
+																<div className={s.liveApplicationsList}>
+													{liveError ? (
+														<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
+													) : liveApplications.length === 0 ? (
+														liveLoading ? (
+															<p style={{ padding: '12px' }}>Загрузка...</p>
+														) : (
+															<p style={{ padding: '12px' }}>Нет новых заявок</p>
+														)
+													) : (
+														<>
+															{liveApplications.map((item) => (
+														<div key={item.id} className={s.liveApplicationItem}>
+															<div className={s.liveAppHeader}>
+																<h4>{item.title}</h4>
+																<span className={s.timeAgo}>{item.timeAgo}</span>
+															</div>
+															<p className={s.liveAppDescription}>{item.description}</p>
+															<div className={s.liveAppFooter}>
+																<span className={s.location}>📍 {item.location || '—'}</span>
+																<button
+																	className={s.respondBtn}
+																	onClick={() => {
+																		setShowLiveApplications(false)
+																		router.push('/auth/login')
+																	}}>
+																	Откликнуться
+																</button>
+															</div>
 														</div>
+														))}
+														<div className={s.moreBtnWrapper}>
+												<button
+													className={s.respondBtn}
+													onClick={() => {
+														setShowLiveApplications(false)
+														router.push('/auth/login')
+													}}>
+													Больше
+												</button>
+											</div>
+												</>
+											)}
+										</div>
 													</div>
 												)}
 											</div>

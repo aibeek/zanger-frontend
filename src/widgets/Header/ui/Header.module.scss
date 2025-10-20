@@ -856,6 +856,22 @@
 		text-transform: uppercase !important;
 		letter-spacing: 0.5px !important;
 	}
+
+	.refreshBadge {
+		font-size: 11px;
+		color: #cbd5e1;
+		padding: 2px 8px;
+		border-radius: 6px;
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		animation: refreshPulse 1.6s ease-in-out infinite;
+	}
+
+	@keyframes refreshPulse {
+		0% { opacity: 0.4 }
+		50% { opacity: 1 }
+		100% { opacity: 0.4 }
+	}
 	
 	.closeDropdown {
 		background: rgba(255, 255, 255, 0.1);
@@ -898,6 +914,12 @@
 			background: linear-gradient(135deg, #3b82f6, #06b6d4);
 			border-radius: 3px;
 		}
+	}
+
+	.moreBtnWrapper {
+		padding: 12px 16px;
+		display: flex;
+		justify-content: center;
 	}
 	
 	.liveApplicationItem {
