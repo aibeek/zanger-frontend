@@ -64,7 +64,8 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 		watch,
 		setFocus,
 		handleSubmit,
-		formState: { errors, dirtyFields },
+		reset,
+		formState: { errors, dirtyFields, isDirty },
 	} = methods
 
 	const [editableInputs, setEditableInputs] = useState(() => ({
@@ -166,7 +167,21 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 				: undefined
 		}
 
-		await updateProfilePersonalData(payload, role, t)
+		try {
+			await updateProfilePersonalData(payload, role, t)
+			
+			// Сбрасываем статус редактирования после успешного сохранения
+			reset(values)
+			setEditableInputs({
+				name: false,
+				email: false,
+				phone: false,
+				region_id: false,
+				lawyer_type_ids: false,
+			})
+		} catch (error) {
+			console.error('Ошибка при сохранении данных:', error)
+		}
 	})
 
 	if (variant === 'clean') {
@@ -334,12 +349,14 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 							</div>
 						</div>
 
-						<div className={s.cleanBtns}>
+					<div className={s.cleanBtns}>
+						{isDirty && (
 							<Button variant="primary" size="auto" type="submit" className={s.saveBtn}>
 								{t('profile.personal_data.saveChanges')}
 							</Button>
-							<ProfileDelete />
-						</div>
+						)}
+						<ProfileDelete />
+					</div>
 					</form>
 				</FormProvider>
 			</div>
@@ -463,12 +480,14 @@ export const ProfilePersonalData = ({ role, variant = 'default' }: { role: strin
 						<LawyerFields t={t} variant="default" />
 					)}
 
-					<div className={s.btns}>
+				<div className={s.btns}>
+					{isDirty && (
 						<Button variant="primary" size="auto" type="submit">
-							{t('profile.change_password.save')}
+							{t('profile.personal_data.saveChanges')}
 						</Button>
-						<ProfileDelete />
-					</div>
+					)}
+					<ProfileDelete />
+				</div>
 				</form>
 			</FormProvider>
 		</ProfileTabWrapper>

@@ -31,6 +31,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'new-laws',
+			title: t('newLaws.title'),
+			description: t('newLaws.description'),
+			date: '20.10.2025',
+			image: '/assets/images/hub.jpg',
+			readMore: t('readMore'),
+			fullDescription: t('newLaws.fullDescription'),
+			eventDay: t('newLaws.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'digital-bridge',
 			title: t('digitalBridge.title'),
 			description: t('digitalBridge.description'),
@@ -40,17 +51,6 @@ export const NewsSection = () => {
 			fullDescription: t('digitalBridge.fullDescription'),
 			eventDay: t('digitalBridge.eventDay'),
 			instagramLink: t('digitalBridge.instagramUrl')
-		},
-		{
-			id: 'new-laws',
-			title: t('newLaws.title'),
-			description: t('newLaws.description'),
-			date: '03.08.2025',
-			image: '/assets/images/news-1.png',
-			readMore: t('readMore'),
-			fullDescription: t('newLaws.fullDescription'),
-			eventDay: t('newLaws.eventDay'),
-			instagramLink: defaultInstagramLink
 		},
 		{
 			id: 'legal-statistics',
@@ -63,17 +63,6 @@ export const NewsSection = () => {
 			eventDay: t('legalStatistics.eventDay'),
 			instagramLink: defaultInstagramLink
 		},
-		{
-			id: 'lawyer-tips',
-			title: t('lawyerTips.title'),
-			description: t('lawyerTips.description'),
-			date: '26.11.2025',
-			image: '/assets/images/news-3.png',
-			readMore: t('readMore'),
-			fullDescription: t('lawyerTips.fullDescription'),
-			eventDay: t('lawyerTips.eventDay'),
-			instagramLink: defaultInstagramLink
-		}
 	]
 
 	const handleCloseModal = () => {

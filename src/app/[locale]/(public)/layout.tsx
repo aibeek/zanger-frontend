@@ -38,7 +38,7 @@ export default async function RootLayout({
 		<NextIntlClientProvider messages={messages}>
 			<AppToaster />
 			<DeviceGuard>
-				<div className="lending-layout">
+				<div className="lending-layout" suppressHydrationWarning>
 					{children}
 					<PulseChatWidget />
 				</div>
