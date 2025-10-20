@@ -107,7 +107,7 @@ export const TeamSection = () => {
     },
     {
       id: 7,
-      name: 'Балабаев Жомарт',
+      name: 'Жомарт Балабаев',
       position: 'Юридический консультант',
       experience: 'Профессиональный опыт более 15 лет',
       moreExperience:
@@ -340,14 +340,17 @@ export const TeamSection = () => {
     const cards = gridRef.current.querySelectorAll(`.${s.memberCard}`)
     cards.forEach((card, index) => {
       const htmlCard = card as HTMLElement
+      htmlCard.setAttribute('data-index', index.toString())
       if (index === currentPage) {
         htmlCard.style.opacity = '1'
         htmlCard.style.pointerEvents = 'auto'
         htmlCard.style.zIndex = '1'
+        htmlCard.style.transform = 'translate(-50%, -50%)'
       } else {
         htmlCard.style.opacity = '0'
         htmlCard.style.pointerEvents = 'none'
         htmlCard.style.zIndex = '0'
+        htmlCard.style.transform = 'translate(-50%, -50%)'
       }
     })
   }, [currentPage, isMobile])
