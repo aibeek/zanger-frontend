@@ -7,11 +7,15 @@ const withNextIntl = createNextIntlPlugin()
 const nextConfig: NextConfig = {
 	transpilePackages: ['antd'],
 	experimental: {
-		// Disable vendor chunking for packages like 'antd' to avoid
-		// runtime requires to missing './vendor-chunks/antd.js'
 		optimizePackageImports: [],
 	},
-	webpack(config) {
+	webpack(config, { isServer }) {
+		// Ensure CSS modules are handled correctly
+		config.optimization = {
+			...config.optimization,
+			moduleIds: 'deterministic',
+		}
+
 		const oneOfRules = config.module.rules.find((rule: any) => typeof rule.oneOf === 'object')
 
 		if (oneOfRules && Array.isArray(oneOfRules.oneOf)) {
