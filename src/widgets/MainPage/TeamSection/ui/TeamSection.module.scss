@@ -177,7 +177,7 @@
 
 .teamGrid {
 	position: relative;
-	height: 500px;
+	height: 550px;
 	max-width: 1600px;
 	margin: 0 auto;
 	overflow: hidden;
@@ -199,20 +199,45 @@
 	&[data-mobile="true"] {
 		cursor: default;
 		touch-action: pan-x;
+		position: relative;
 		
 		.memberCard {
 			animation: none !important;
-			left: 50%;
-			transform: translate(-50%, -50%);
+			left: 50% !important;
+			transform: translate(-50%, -50%) !important;
 			opacity: 0;
 			pointer-events: none;
 			transition: opacity 0.3s ease-in-out;
+			z-index: 0;
 			
-			&[data-index="0"] {
-				opacity: 1;
-				pointer-events: auto;
+			&:hover {
+				transform: translate(-50%, -50%) !important;
 			}
 		}
+	}
+
+	@media (max-width: 1920px) {
+		height: 520px;
+	}
+
+	@media (max-width: 1600px) {
+		height: 500px;
+	}
+
+	@media (max-width: 1440px) {
+		height: 480px;
+	}
+
+	@media (max-width: 1366px) {
+		height: 470px;
+	}
+
+	@media (max-width: 1280px) {
+		height: 460px;
+	}
+
+	@media (max-width: 1024px) {
+		height: 440px;
 	}
 
 	@media (max-width: 768px) {
@@ -255,6 +280,12 @@
 	flex-direction: column;
 	padding: 25px 20px 20px 20px;
 	color: white;
+	left: auto;
+
+	&[data-mobile="true"] {
+		left: 50%;
+		transform: translate(-50%, -50%) !important;
+	}
 
 	&:hover {
 		transform: translateY(-50%) scale(1.03) translateY(-8px);
@@ -262,6 +293,43 @@
 			0 48px 96px rgba(0, 0, 0, 0.2),
 			0 16px 48px rgba(0, 0, 0, 0.15);
 		z-index: 10;
+		
+		&[data-mobile="true"] {
+			transform: translate(-50%, -50%) !important;
+		}
+	}
+
+	@media (max-width: 1920px) {
+		height: 440px;
+		width: 310px;
+	}
+
+	@media (max-width: 1600px) {
+		height: 430px;
+		width: 300px;
+	}
+
+	@media (max-width: 1440px) {
+		height: 420px;
+		width: 295px;
+	}
+
+	@media (max-width: 1366px) {
+		height: 415px;
+		width: 290px;
+		padding: 22px 18px 18px 18px;
+	}
+
+	@media (max-width: 1280px) {
+		height: 410px;
+		width: 285px;
+		padding: 20px 16px 16px 16px;
+	}
+
+	@media (max-width: 1024px) {
+		height: 405px;
+		width: 280px;
+		padding: 20px 15px 15px 15px;
 	}
 
 	@media (max-width: 768px) {
@@ -293,9 +361,26 @@
 	display: block;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 
+	@media (max-width: 1440px) {
+		width: 180px;
+		height: 180px;
+	}
+
+	@media (max-width: 1280px) {
+		width: 160px;
+		height: 160px;
+		margin: 0 auto 12px auto;
+	}
+
+	@media (max-width: 1024px) {
+		width: 140px;
+		height: 140px;
+		margin: 0 auto 12px auto;
+	}
+
 	@media (max-width: 768px) {
-		width: 100px;
-		height: 100px;
+		width: 120px;
+		height: 120px;
 		margin: 0 auto 12px auto;
 		border-width: 2px;
 	}
@@ -477,28 +562,28 @@
 
 @keyframes moveRightToLeft {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 160px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 400px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 360px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 700px));
 	}
 }
 
 @keyframes moveRightToLeftMobile {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 600px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 400px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 800px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 550px));
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 500px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 350px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 700px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 500px));
 	}
 }
 
@@ -526,14 +611,30 @@
 
 @for $i from 1 through 8 {
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 30s linear infinite calc(-5s * $i);
+		animation: moveRightToLeft 80s linear infinite calc(-10s * $i);
+
+		@media (max-width: 1600px) {
+			animation: moveRightToLeft 72s linear infinite calc(-9s * $i);
+		}
+
+		@media (max-width: 1366px) {
+			animation: moveRightToLeft 64s linear infinite calc(-8s * $i);
+		}
+
+		@media (max-width: 1024px) {
+			animation: moveRightToLeft 64s linear infinite calc(-8s * $i);
+		}
+
+		@media (max-width: 768px) {
+			animation: moveRightToLeft 56s linear infinite calc(-7s * $i);
+		}
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile 20s linear infinite calc(-3.2s * $i);
+			animation: moveRightToLeftMobile 40s linear infinite calc(-5s * $i);
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall 18s linear infinite calc(-2.8s * $i);
+			animation: moveRightToLeftSmall 40s linear infinite calc(-5s * $i);
 		}
 	}
 }
