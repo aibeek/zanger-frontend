@@ -138,7 +138,7 @@ export const PulseChat = ({ chatId, enabled = true }: PulseChatProps) => {
 
 
   return (
-    <div className={styles.chatContainer}>
+    <div className={styles.chatContainer} suppressHydrationWarning>
       <button
         onClick={handleChatToggle}
         className={styles.chatButton}

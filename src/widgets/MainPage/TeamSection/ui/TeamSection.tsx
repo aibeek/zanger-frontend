@@ -32,7 +32,7 @@ export const TeamSection = () => {
   const [mounted, setMounted] = useState(false)
   const scrollYRef = useRef(0)
   const [currentPage, setCurrentPage] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
   const touchStartXRef = useRef(0)
   const touchEndXRef = useRef(0)
 
@@ -126,6 +126,17 @@ export const TeamSection = () => {
       description:
         'Гражданское, административное, уголовное право, исполнительное производство',
       image: '/assets/images/rk.jpeg',
+    },
+    {
+      id: 9,
+      name: 'Максат Айтпаев',
+      position: 'Медиатор',
+      experience: 'Профессиональный опыт более 9 лет',
+      moreExperience:
+        'Урегулирование споров до суда, во время следствия и дознания, в рамках судебного процесса;\nПо вопросам невозврата долга, выезд на место ДТП, выезд на дом по г. Алматы. Онлайн и оффлайн формат работы.',
+      description:
+        'Гражданские, уголовные, бизнес споры',
+      image: '/assets/images/maksat.jpeg',
     },
   ]
 
@@ -303,17 +314,17 @@ export const TeamSection = () => {
 
   // Обработчики свайпа для мобильных устройств
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (!isMobile) return
+    if (!isMobile || isMobile === null) return
     touchStartXRef.current = e.touches[0].clientX
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMobile) return
+    if (!isMobile || isMobile === null) return
     touchEndXRef.current = e.touches[0].clientX
   }
 
   const handleTouchEnd = () => {
-    if (!isMobile) return
+    if (!isMobile || isMobile === null) return
     
     const swipeDistance = touchStartXRef.current - touchEndXRef.current
     const minSwipeDistance = 50 // минимальная дистанция для срабатывания свайпа
@@ -434,7 +445,7 @@ export const TeamSection = () => {
           ))}
         </div>
         
-        {isMobile && (
+        {mounted && isMobile && (
           <div className={s.paginationDots}>
             {teamMembers.map((_, index) => (
               <button

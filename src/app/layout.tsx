@@ -24,8 +24,8 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="ru">
-            <body className={openSans.variable}>
+        <html lang="ru" suppressHydrationWarning>
+            <body className={openSans.variable} suppressHydrationWarning>
                 {children}
             </body>
         </html>

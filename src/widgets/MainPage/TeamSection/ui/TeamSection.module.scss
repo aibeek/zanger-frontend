@@ -613,12 +613,12 @@
 	}
 }
 
-@for $i from 1 through 8 {
+@for $i from 1 through 9 {
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 80s linear infinite calc(-10s * $i) !important;
+		animation: moveRightToLeft 63s linear infinite calc(-7s * $i) !important;
 
 		@media (max-width: 1600px) {
-			animation: moveRightToLeft 72s linear infinite calc(-9s * $i) !important;
+			animation: moveRightToLeft 63s linear infinite calc(-7s * $i) !important;
 		}
 
 		@media (max-width: 1366px) {
