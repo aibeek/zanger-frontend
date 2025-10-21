@@ -14,7 +14,7 @@ export default function Home() {
 				<ModulesSection />
 				<ResourcesSection />
 				<Footer />
-				<PulseChatWidget />
+				{/* <PulseChatWidget /> */}
 		</div>
 	)
 }

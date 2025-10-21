@@ -454,11 +454,57 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	gap: 16px;
 }
 
 .memberInfoText {
 	flex-grow: 1;
+	min-height: 0;
+	max-height: 150px;
+	overflow-y: auto;
+	padding-right: 6px;
+	padding-bottom: 4px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(96, 165, 250, 0.6) transparent;
+
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 999px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: rgba(96, 165, 250, 0.6);
+		border-radius: 999px;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: rgba(96, 165, 250, 0.8);
+	}
+
+	@media (max-width: 1366px) {
+		max-height: 140px;
+	}
+
+	@media (max-width: 1024px) {
+		max-height: 130px;
+	}
+
+	@media (max-width: 768px) {
+		max-height: 120px;
+	}
+
+	@media (max-width: 480px) {
+		max-height: 110px;
+	}
 }
 
 .memberPosition {
@@ -467,7 +513,8 @@
 	font-weight: 500;
 	line-height: 1.2;
 	text-align: left;
-	margin-bottom: 8px;
+	margin: 0;
+	white-space: pre-line;
 
 	@media (max-width: 768px) {
 		font-size: 13px;
@@ -484,7 +531,8 @@
 	font-weight: 400;
 	line-height: 1.3;
 	text-align: left;
-	margin-bottom: 12px;
+	margin: 0;
+	white-space: pre-line;
 
 	@media (max-width: 768px) {
 		font-size: 11px;
@@ -508,6 +556,7 @@
 	text-align: center;
 	width: 100%;
 	min-width: 160px;
+	margin-top: auto;
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.9);
@@ -543,7 +592,8 @@
 	font-weight: 400;
 	line-height: 1.4;
 	text-align: left;
-	margin-bottom: 15px;
+	margin: 0;
+	white-space: pre-line;
 
 	@media (max-width: 768px) {
 		font-size: 10px;
@@ -566,28 +616,30 @@
 
 @keyframes moveRightToLeft {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 400px));
+		/* ещё короче трек для более плотного расположения */
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 1400px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 700px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1100px));
 	}
 }
 
 @keyframes moveRightToLeftMobile {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 400px)));
+		/* мобильный трек тоже делаем короче */
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1300px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 550px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1000px));
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 350px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1200px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 500px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 900px));
 	}
 }
 
@@ -613,32 +665,44 @@
 	}
 }
 
-@for $i from 1 through 9 {
+// равномерное распределение по всей длине трека
+$cards-count: 11;
+$duration-desktop: 51s;
+$duration-tablet: 44s;
+$duration-mobile: 37s;
+
+$step-desktop: $duration-desktop / $cards-count; // ≈4.636s
+$step-tablet: $duration-tablet / $cards-count;   // 4s
+$step-mobile: $duration-mobile / $cards-count;   // ≈3.364s
+
+@for $i from 1 through 11 {
+	$index-offset: $i - 1;
+
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft 63s linear infinite calc(-7s * $i) !important;
+		animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 
 		@media (max-width: 1600px) {
-			animation: moveRightToLeft 63s linear infinite calc(-7s * $i) !important;
+			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 		}
 
 		@media (max-width: 1366px) {
-			animation: moveRightToLeft 64s linear infinite calc(-8s * $i) !important;
+			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 		}
 
 		@media (max-width: 1024px) {
-			animation: moveRightToLeft 64s linear infinite calc(-8s * $i) !important;
+			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 		}
 
 		@media (max-width: 768px) {
-			animation: moveRightToLeft 56s linear infinite calc(-7s * $i) !important;
+			animation: moveRightToLeft $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
 		}
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile 40s linear infinite calc(-5s * $i) !important;
+			animation: moveRightToLeftMobile $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall 40s linear infinite calc(-5s * $i) !important;
+			animation: moveRightToLeftSmall $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
 		}
 	}
 }

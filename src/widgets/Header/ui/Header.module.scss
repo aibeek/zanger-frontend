@@ -283,6 +283,29 @@
 		display: flex;
 		align-items: center;
 		flex-shrink: 0;
+		gap: 32px;
+		
+		@media (max-width: 1200px) {
+			gap: 24px;
+		}
+		
+		@media (max-width: 768px) {
+			gap: 16px;
+		}
+	}
+
+	.separator {
+		width: 2px;
+		height: 40px;
+		background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+		
+		@media (max-width: 768px) {
+			height: 30px;
+		}
+		
+		@media (max-width: 480px) {
+			display: none;
+		}
 	}
 
 	.right {
@@ -317,6 +340,30 @@
 		align-items: center;
 		text-decoration: none;
 		gap: 12px;
+	}
+
+	.hubsImage {
+		transition: all 0.3s ease;
+		opacity: 0.95;
+		
+		&:hover {
+			opacity: 1;
+			transform: scale(1.02);
+		}
+		
+		@media (max-width: 1200px) {
+			width: 100px !important;
+			height: auto !important;
+		}
+		
+		@media (max-width: 768px) {
+			width: 80px !important;
+			height: auto !important;
+		}
+		
+		@media (max-width: 480px) {
+			display: none;
+		}
 	}
 
 	.logoText {
