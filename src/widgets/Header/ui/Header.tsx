@@ -70,6 +70,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	  description: string
 	  timeAgo: string
 	  location: string
+	  firstName: string
 	}
 	const [liveApplications, setLiveApplications] = useState<LiveApplicationItem[]>([])
 	const [liveLoading, setLiveLoading] = useState(false)
@@ -155,12 +156,15 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				item?.user?.region?.name ||
 				item?.location ||
 				''
+			const rawName = item?.user?.name || ''
+			const firstName = typeof rawName === 'string' ? rawName.split(' ')[0] : ''
 			return {
 				id: Number(item?.id ?? Math.random() * 1e9),
 				title,
 				description,
 				timeAgo: formatTimeAgo(createdAt),
 				location,
+				firstName,
 			}
 		})
 	}
@@ -353,7 +357,8 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 														<div key={item.id} className={s.liveApplicationItem}>
 															<div className={s.liveAppHeader}>
 																<h4>{item.title}</h4>
-																<span className={s.timeAgo}>{item.timeAgo}</span>
+																{/* <span className={s.timeAgo}>{item.timeAgo}</span> */}
+																<span className={s.userNameBadge}>{item.firstName || '—'}</span>
 															</div>
 															<p className={s.liveAppDescription}>{item.description}</p>
 															<div className={s.liveAppFooter}>
