@@ -10,10 +10,15 @@ import s from './MainSection.module.scss'
 import Iphones from '@/app/assets/images/iphones.webp'
 import GooglePlay from '@/app/assets/icons/googleplay.webp'
 import AppleStore from '@/app/assets/icons/appstore.webp'
+import HubsLogo from '../../../../../public/assets/images/hubs.png'
 
 
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
+	const hubsDimensions = {
+		width: HubsLogo.width,
+		height: HubsLogo.height,
+	}
 
 	return (
 		<section id="mainSection" className={s.wrapper}>
@@ -26,6 +31,16 @@ export const MainSection = () => {
 						</div>
 						<div className={s.descrContainer}>
 							<p className={s.descr}>{t('description')}</p>
+							<div className={s.hubsBadge}>
+									<Image
+										src={HubsLogo}
+										alt="Astana Hub"
+										width={hubsDimensions.width}
+										height={hubsDimensions.height}
+										className={s.hubsLogo}
+									/>
+								<span className={s.hubsText}>Резидент Astana Hub</span>
+							</div>
 						</div>
 						<div className={s.numberSection}>
 							<div className={s.bigNumber}>5510</div>
