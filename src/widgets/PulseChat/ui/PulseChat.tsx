@@ -11,7 +11,7 @@ interface PulseChatProps {
 
 export const PulseChat = ({ 
 	chatId = '68beb8714d31c577970ac394',
-	disabled = false,
+	disabled = true,
 	onLoad,
 	onError
 }: PulseChatProps) => {
