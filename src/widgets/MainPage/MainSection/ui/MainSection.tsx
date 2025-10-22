@@ -39,7 +39,7 @@ export const MainSection = () => {
 										height={hubsDimensions.height}
 										className={s.hubsLogo}
 									/>
-								<span className={s.hubsText}>Резидент Astana Hub</span>
+								<span className={s.hubsText}>Резидент</span>
 							</div>
 						</div>
 						<div className={s.numberSection}>
@@ -53,11 +53,11 @@ export const MainSection = () => {
 								<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
 								{t('phoneButton')}
 							</Link>
-						<div className={s.requestButtonContainer}>
+						{/* <div className={s.requestButtonContainer}>
 							<Link href="/" className={s.requestButton}>
 								{t('createNew')}
 							</Link>
-							</div>
+							</div> */}
 						</div>
 					</div>
 					<div className={s.phoneImages}>
