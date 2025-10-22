@@ -9,7 +9,7 @@ interface PulseChatProps {
   enabled?: boolean;
 }
 
-export const PulseChat = ({ chatId, enabled = true }: PulseChatProps) => {
+export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
   const [showChat, setShowChat] = useState(false);
   const [chatLoaded, setChatLoaded] = useState(false);
 
@@ -132,7 +132,6 @@ export const PulseChat = ({ chatId, enabled = true }: PulseChatProps) => {
 
   // Early return after all hooks are called
   if (!enabled) {
-    console.log('PulseChat disabled, returning null');
     return null;
   }
 
