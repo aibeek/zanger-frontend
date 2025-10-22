@@ -35,7 +35,7 @@ export const NewsSection = () => {
 			title: t('liveApplications.title'),
 			description: t('liveApplications.description'),
 			date: '21.10.2025',
-			image: '/assets/images/news.jpeg',
+			image: '/assets/images/news.png',
 			readMore: t('readMore'),
 			fullDescription: t('liveApplications.fullDescription'),
 			eventDay: t('liveApplications.eventDay'),
