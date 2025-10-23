@@ -39,7 +39,6 @@ export const MainSection = () => {
 										height={hubsDimensions.height}
 										className={s.hubsLogo}
 									/>
-								<span className={s.hubsText}>Резидент</span>
 							</div>
 						</div>
 						<div className={s.numberSection}>
