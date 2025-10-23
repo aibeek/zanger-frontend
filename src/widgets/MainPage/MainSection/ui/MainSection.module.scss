@@ -1,17 +1,25 @@
 @import '@/app/styles/vars.scss';
 
+// Header heights used to offset the hero from a fixed header
+$header-height-lg: 80px; // desktop
+$header-height-md: 64px; // tablet
+$header-height-sm: 56px; // mobile
+
 .wrapper {
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	background: transparent;
 	overflow: hidden;
-	height: 90vh;
+	// push content below fixed header and keep near full viewport height
+	padding-top: $header-height-lg;
+	min-height: calc(100vh - #{$header-height-lg});
 
 
 	.abstractLandscape {
 		position: absolute;
-		top: 40px;
+		// start the rounded card below the header
+		top: calc(40px + #{$header-height-lg});
 		left: 20px;
 		right: 20px;
 		max-width: 1680px;
@@ -27,13 +35,13 @@
 		@media (max-width: 1600px) {
 			left: 30px;
 			right: 30px;
-			top: 40px;
+			top: calc(40px + #{$header-height-lg});
 		}
 		
 		@media (max-width: 1024px) {
 			left: 20px;
 			right: 20px;
-			top: 30px;
+			top: calc(30px + #{$header-height-md});
 			height: calc(100vh - 60px);
 		}
 		
@@ -64,7 +72,7 @@
 
 	.container {
 		display: flex;
-		align-items: center;
+		align-items: flex-start; // align columns by top so hubsBadge lines up with title
 		justify-content: space-between;
 		max-width: 1600px;
 		width: 100%;
@@ -194,7 +202,7 @@
 
 	.descr {
 		font-size: 18px;
-		color: rgba(255, 255, 255, 0.8);
+		color: #AAB0BC; // per request: change only this text color
 		line-height: 1.4;
 		margin: 0 0 16px 0;
 		word-wrap: break-word;
@@ -228,7 +236,7 @@
 		border: none;
 		box-shadow: none;
 		position: relative;
-		margin-top: 6px; // sit right under subheadline
+		margin-top: 0; // align with title top
 		white-space: nowrap; // enforce single line
 	}
 
@@ -468,7 +476,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 30px;
+
 		margin-top: -60px;
 		
 		@media (max-width: 1024px) {
@@ -584,8 +592,8 @@
 
 	.developmentLabel {
 		display: block;
-		font-size: 18px;
-		font-weight: 700; // make text bold
+		font-size: 14px;
+		font-weight: 500; // make text bold
 		color: #000000; // black text per request
 		text-shadow: none; // remove glow for better contrast on white
 		line-height: 1.5;
@@ -650,6 +658,11 @@
 
 // --- Адаптация под ноутбуки 1366×768 ---
 @media (max-width: 1366px) {
+	// adjust wrapper offset for medium screens
+	& {
+		padding-top: $header-height-md;
+		min-height: calc(100vh - #{$header-height-md});
+	}
   .container {
     padding: 130px 40px 40px 40px;
     height: auto; // чтобы блок не обрезался
@@ -698,5 +711,21 @@
   .mobileVersionText {
     padding: 12px 24px;
   }
+}
+
+// Tablet: reduce header offset
+@media (max-width: 1024px) {
+	& {
+		padding-top: $header-height-md;
+		min-height: calc(100vh - #{$header-height-md});
+	}
+}
+
+// Mobile: smallest header offset
+@media (max-width: 768px) {
+	& {
+		padding-top: $header-height-sm;
+		min-height: calc(100vh - #{$header-height-sm});
+	}
 }
 }
