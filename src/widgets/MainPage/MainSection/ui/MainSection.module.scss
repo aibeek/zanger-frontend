@@ -222,12 +222,14 @@
 	.hubsBadge {
 		display: inline-flex;
 		align-items: center;
-		gap: 12px;
+		gap: 8px; // tighter so it fits one line with label
 		padding: 0;
 		background: transparent;
 		border: none;
 		box-shadow: none;
 		position: relative;
+		margin-top: 6px; // sit right under subheadline
+		white-space: nowrap; // enforce single line
 	}
 
 	.hubsLogo {
@@ -239,11 +241,11 @@
 		height: auto;
 		
 		@media (max-width: 768px) {
-			width: 110px; // increased for mobile
+			width: min(120px, 34vw); // slightly larger on tablets/phones
 		}
 		
 		@media (max-width: 480px) {
-			width: 124px; // increased for small phones
+			width: min(136px, 40vw); // slightly larger on small phones
 		}
 	}
 
