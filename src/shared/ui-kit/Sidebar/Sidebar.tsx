@@ -19,7 +19,7 @@ import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.sv
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
 import ZangerIcon from '@/app/assets/icons/dashboard-icons/ZANGER.svg'
-import LogoutIcon from '@/app/assets/icons/dashboard-icons/logout2.png'
+// removed logout icon per new design
 
 interface SidebarProps {
     language: string
@@ -152,14 +152,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
 
             <div className={s.sidebarFooter}>
                 <button className={s.logoutBtn} onClick={handleLogout}>
-                     <Image
-                                src={LogoutIcon}
-                                alt="Logout"
-                                className={s.logoutIcon}
-                                width={20}
-                                height={20}
-                            />
-                    <span className={s.logoutText}>{t('dashboard.sidebar.logout')}</span>
+                    <span className={s.logoutText}> {t('header.logout')}</span>
                 </button>
                 <div className={s.copyright}>
                     {t('dashboard.sidebar.copyright')}
