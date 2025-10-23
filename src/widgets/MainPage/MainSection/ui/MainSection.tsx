@@ -26,20 +26,12 @@ export const MainSection = () => {
 			<div className={s.abstractLandscape}>
 				<div className={s.container}>
 					<div className={s.textSection}>
+						{/* Title and content block (badge moved to phone side) */}
 						<div className={s.titleContainer}>
 							<h1 className={s.title} dangerouslySetInnerHTML={{ __html: t('title') }} />
 						</div>
 						<div className={s.descrContainer}>
 							<p className={s.descr}>{t('description')}</p>
-							<div className={s.hubsBadge}>
-									<Image
-										src={HubsLogo}
-										alt="Astana Hub"
-										width={hubsDimensions.width}
-										height={hubsDimensions.height}
-										className={s.hubsLogo}
-									/>
-							</div>
 						</div>
 						<div className={s.numberSection}>
 							<div className={s.bigNumber}>5510</div>
@@ -60,13 +52,23 @@ export const MainSection = () => {
 						</div>
 					</div>
 					<div className={s.phoneImages}>
+						{/* Astana Hub badge placed above the phone image */}
+						<div className={s.hubsBadge}>
+							<Image
+								src={HubsLogo}
+								alt="Astana Hub"
+								width={hubsDimensions.width}
+								height={hubsDimensions.height}
+								className={s.hubsLogo}
+							/>
+						</div>
 						<div className={s.phoneContainer}>
 							<Image
 								src={Iphones}
 								alt="phones"
 								className={s.phonesImg}
-								width={360}
-								height={360}
+								width={260}
+								height={260}
 								style={{ width: 'auto', height: 'auto' }}
 							/>
 						</div>

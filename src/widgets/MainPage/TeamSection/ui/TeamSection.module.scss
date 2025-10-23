@@ -666,16 +666,17 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 11;
-$duration-desktop: 51s;
-$duration-tablet: 44s;
-$duration-mobile: 37s;
+$cards-count: 12; // keep in sync with actual number of cards
+// slightly faster autoplay (~10-12% faster)
+$duration-desktop: 45s; // was 51s
+$duration-tablet: 39s;  // was 44s
+$duration-mobile: 33s;  // was 37s
 
 $step-desktop: $duration-desktop / $cards-count; // ≈4.636s
 $step-tablet: $duration-tablet / $cards-count;   // 4s
 $step-mobile: $duration-mobile / $cards-count;   // ≈3.364s
 
-@for $i from 1 through 11 {
+@for $i from 1 through $cards-count {
 	$index-offset: $i - 1;
 
 	.memberCard:nth-child(#{$i}) {
