@@ -17,7 +17,7 @@ import ApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications
 import ChatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
-import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
+// import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg' // hidden by request
 import ZangerIcon from '@/app/assets/icons/dashboard-icons/ZANGER.svg'
 // removed logout icon per new design
 
@@ -79,12 +79,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             icon: FaqIcon,
             href: `/${language}/dashboard/faq`,
         },
-        {
-            id: 'support',
-            title: t('dashboard.sidebar.support'),
-            icon: SupportIcon,
-            href: `/${language}/dashboard/support`,
-        },
+        // Support menu item hidden per requirement
     ]
 
     // Фильтруем пункты меню в зависимости от роли
