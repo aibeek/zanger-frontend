@@ -44,6 +44,16 @@ export const MainSection = () => {
 								<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
 								{t('phoneButton')}
 							</Link>
+							{/* Mobile-only Astana Hub badge placed right after the call button */}
+							<div className={s.hubsBadgeMobile}>
+								<Image
+									src={HubsLogo}
+									alt="Astana Hub"
+									width={hubsDimensions.width}
+									height={hubsDimensions.height}
+									className={s.hubsLogo}
+								/>
+							</div>
 						{/* <div className={s.requestButtonContainer}>
 							<Link href="/" className={s.requestButton}>
 								{t('createNew')}
