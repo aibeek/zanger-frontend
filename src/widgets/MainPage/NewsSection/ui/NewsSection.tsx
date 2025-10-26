@@ -31,6 +31,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'mobile-app-update',
+			title: t('mobileAppUpdate.title'),
+			description: t('mobileAppUpdate.description'),
+			date: '26.10.2025',
+			image: '/assets/images/newssss.png',
+			readMore: t('readMore'),
+			fullDescription: t('mobileAppUpdate.fullDescription'),
+			eventDay: t('mobileAppUpdate.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'live-applications',
 			title: t('liveApplications.title'),
 			description: t('liveApplications.description'),
