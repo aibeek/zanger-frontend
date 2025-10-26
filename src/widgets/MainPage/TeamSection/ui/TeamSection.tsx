@@ -18,6 +18,8 @@ interface TeamMember {
 
 export const TeamSection = () => {
   const t = useTranslations('lending.teamSection')
+  // Temporary flag to toggle filters visibility
+  const showFilters = false
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const isDraggingRef = useRef(false)
@@ -35,6 +37,14 @@ export const TeamSection = () => {
   const [isMobile, setIsMobile] = useState<boolean | null>(null)
   const touchStartXRef = useRef(0)
   const touchEndXRef = useRef(0)
+  const touchOnInteractiveRef = useRef(false)
+
+  // Utility: avoid drag/swipe when starting from interactive controls
+  const isInteractiveTarget = (target: EventTarget | null) => {
+    const el = target as HTMLElement | null
+    if (!el) return false
+    return !!el.closest(`button, a, input, select, textarea, [role="button"], .${s.moreBtn}`)
+  }
 
   const teamMembers: TeamMember[] = [
     {
@@ -289,6 +299,8 @@ export const TeamSection = () => {
   }, [])
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Do not start drag if user interacts with a button/link inside the card
+    if (isInteractiveTarget(e.target)) return
     const grid = gridRef.current
     if (!grid) return
     if (momentumRafRef.current) {
@@ -359,16 +371,25 @@ export const TeamSection = () => {
   // Обработчики свайпа для мобильных устройств
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!isMobile || isMobile === null) return
+    // If touch started on interactive, skip swipe logic
+    touchOnInteractiveRef.current = isInteractiveTarget(e.target)
+    if (touchOnInteractiveRef.current) return
     touchStartXRef.current = e.touches[0].clientX
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isMobile || isMobile === null) return
+    if (touchOnInteractiveRef.current) return
     touchEndXRef.current = e.touches[0].clientX
   }
 
   const handleTouchEnd = () => {
     if (!isMobile || isMobile === null) return
+    if (touchOnInteractiveRef.current) {
+      // Reset and allow the click to proceed without swipe handling
+      touchOnInteractiveRef.current = false
+      return
+    }
     
     const swipeDistance = touchStartXRef.current - touchEndXRef.current
     const minSwipeDistance = 50 // минимальная дистанция для срабатывания свайпа
@@ -417,29 +438,29 @@ export const TeamSection = () => {
         <div className={s.titleLine}></div>
         <h2 className={s.title}>{t('title')}</h2>
         
-        <div className={s.searchForm}>
-          <input 
-            type="text" 
-            placeholder="Найти юриста..." 
-            className={s.searchInput}
-          />
-          <select className={s.searchSelect}>
-            <option value="">Регион</option>
-            <option value="almaty">Алматы</option>
-            <option value="nur-sultan">Нур-Султан</option>
-            <option value="shymkent">Шымкент</option>
-          </select>
-          <select className={s.searchSelect}>
-            <option value="">Специализация</option>
-            <option value="civil">Гражданское право</option>
-            <option value="criminal">Уголовное право</option>
-            <option value="family">Семейное право</option>
-            <option value="corporate">Корпоративное право</option>
-          </select>
-          <button className={s.searchButton}>
-            Найти
-          </button>
-        </div>
+        {showFilters && (
+          <div className={s.searchForm}>
+            <input
+              type="text"
+              placeholder="Найти юриста..."
+              className={s.searchInput}
+            />
+            <select className={s.searchSelect}>
+              <option value="">Регион</option>
+              <option value="almaty">Алматы</option>
+              <option value="nur-sultan">Нур-Султан</option>
+              <option value="shymkent">Шымкент</option>
+            </select>
+            <select className={s.searchSelect}>
+              <option value="">Специализация</option>
+              <option value="civil">Гражданское право</option>
+              <option value="criminal">Уголовное право</option>
+              <option value="family">Семейное право</option>
+              <option value="corporate">Корпоративное право</option>
+            </select>
+            <button className={s.searchButton}>Найти</button>
+          </div>
+        )}
 
         <div
           className={s.teamGrid}
@@ -481,6 +502,8 @@ export const TeamSection = () => {
                 <button
                   className={s.moreBtn}
                   onClick={() => openModal(member)}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
                 >
                   Подробнее
                 </button>
