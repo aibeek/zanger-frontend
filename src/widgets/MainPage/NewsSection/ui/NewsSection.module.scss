@@ -96,7 +96,8 @@
 	}
 
 	@media (max-width: 768px) {
-		height: 320px;
+		height: auto; /* allow content to expand to show full title */
+		min-height: 320px;
 		border-radius: 12px;
 	}
 }
@@ -167,7 +168,10 @@
 
 	@media (max-width: 768px) {
 		font-size: 18px;
-		max-height: 47px;
+		/* show up to 3 lines on mobile */
+		line-clamp: 3;
+		-webkit-line-clamp: 3;
+		max-height: 72px;
 	}
 }
 
