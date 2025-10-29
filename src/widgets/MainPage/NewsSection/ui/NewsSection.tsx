@@ -31,6 +31,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'e-sign-module',
+			title: t('eSignModule.title'),
+			description: t('eSignModule.description'),
+			date: '01.11.2025',
+			image: '/assets/images/newsesp.jpg',
+			readMore: t('readMore'),
+			fullDescription: t('eSignModule.fullDescription'),
+			eventDay: t('eSignModule.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'mobile-app-update',
 			title: t('mobileAppUpdate.title'),
 			description: t('mobileAppUpdate.description'),
