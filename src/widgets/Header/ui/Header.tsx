@@ -246,44 +246,42 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							</div>
 						</div>
 						
-						{isHydrated && !isMobile && (
-							<nav className={s.navigation}>
-								<button 
-									onClick={() => scrollToSection('about')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>
-									{t('aboutUs')}
-								</button>
-								<button 
-									onClick={() => scrollToSection('lawyers')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>{t('lawyers')}</button>
-								<button 
-									onClick={() => scrollToSection('modules')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>{t('modules')}</button>
-								<button 
-									onClick={() => scrollToSection('info')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>{t('info')}</button>
-								<button 
-									onClick={() => scrollToSection('resources')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>{t('useful')}</button>
-								<button 
-									onClick={() => scrollToSection('news')} 
-									className={s.navLink}
-									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-								>{t('news')}</button>
-							</nav>
-						)}
-						
-						<div className={s.right}>
+					{isHydrated && !isMobile && (
+						<nav className={s.navigation}>
+							<button 
+								onClick={() => scrollToSection('news')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>
+								{t('news')}
+							</button>
+							<button 
+								onClick={() => scrollToSection('about')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>{t('aboutUs')}</button>
+							<button 
+								onClick={() => scrollToSection('lawyers')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>{t('lawyers')}</button>
+							<button 
+								onClick={() => scrollToSection('info')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>{t('info')}</button>
+							<button 
+								onClick={() => scrollToSection('modules')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>{t('modules')}</button>
+							<button 
+								onClick={() => scrollToSection('resources')} 
+								className={s.navLink}
+								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+							>{t('useful')}</button>
+						</nav>
+					)}						<div className={s.right}>
 							{isHydrated && !isMobile && (
 								<div className={s.authBtns}>
 									{isAuthenticated && personalData ? (
@@ -411,6 +409,13 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							<div className={s.mobileMenu}>
 								<div className={s.mobileNavigation}>
 									<button 
+										onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('news')}
+									</button>
+									<button 
 										onClick={() => { scrollToSection('about'); setShowMobileMenu(false); }} 
 										className={s.mobileNavLink}
 										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
@@ -425,13 +430,6 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										{t('lawyers')}
 									</button>
 									<button 
-										onClick={() => { scrollToSection('modules'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('modules')}
-									</button>
-									<button 
 										onClick={() => { scrollToSection('info'); setShowMobileMenu(false); }} 
 										className={s.mobileNavLink}
 										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
@@ -439,18 +437,18 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 										{t('info')}
 									</button>
 									<button 
+										onClick={() => { scrollToSection('modules'); setShowMobileMenu(false); }} 
+										className={s.mobileNavLink}
+										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+									>
+										{t('modules')}
+									</button>
+									<button 
 										onClick={() => { scrollToSection('resources'); setShowMobileMenu(false); }} 
 										className={s.mobileNavLink}
 										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
 									>
 										{t('useful')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('news')}
 									</button>
 								</div>
 								

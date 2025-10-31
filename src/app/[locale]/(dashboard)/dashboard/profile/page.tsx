@@ -168,6 +168,7 @@ export default function ProfilePage() {
     const { close, open, isOpen } = useModal()
     const [popupStatus, setPopupStatus] = useState<'success' | 'failed' | null>(null)
     const [popupMessage, setPopupMessage] = useState<string | null>(null)
+    const [showBanner, setShowBanner] = useState<boolean>(true)
     
     useEffect(() => {
         const checkParams = async () => {
@@ -243,6 +244,24 @@ export default function ProfilePage() {
         return (
             <div className={s.profileContent}>
                 <div className={s.profileSettings}>
+                    {/* Info Banner for Lawyers */}
+                    {showBanner && (
+                        <div className={s.infoBanner}>
+                            <div className={s.bannerIcon}>ℹ️</div>
+                            <div className={s.bannerContent}>
+                                <h4 className={s.bannerTitle}>{t('profile.lawyer_info_banner.title')}</h4>
+                                <p className={s.bannerDescription}>{t('profile.lawyer_info_banner.description')}</p>
+                            </div>
+                            <button 
+                                className={s.bannerCloseBtn}
+                                onClick={() => setShowBanner(false)}
+                                aria-label={t('profile.lawyer_info_banner.hide')}
+                            >
+                                {t('profile.lawyer_info_banner.hide')}
+                            </button>
+                        </div>
+                    )}
+
                     {/* Profile Header - 2:3 columns */}
                     <div className={s.profileHeader}>
                         {/* Left: Avatar + Rating */}
@@ -325,6 +344,24 @@ export default function ProfilePage() {
     return (
         <div className={s.profileContent}>
             <div className={s.profileSettings}>
+                {/* Info Banner for Clients */}
+                {showBanner && (
+                    <div className={s.infoBanner}>
+                        <div className={s.bannerIcon}>ℹ️</div>
+                        <div className={s.bannerContent}>
+                            <h4 className={s.bannerTitle}>{t('profile.client_info_banner.title')}</h4>
+                            <p className={s.bannerDescription}>{t('profile.client_info_banner.description')}</p>
+                        </div>
+                        <button 
+                            className={s.bannerCloseBtn}
+                            onClick={() => setShowBanner(false)}
+                            aria-label={t('profile.client_info_banner.hide')}
+                        >
+                            {t('profile.client_info_banner.hide')}
+                        </button>
+                    </div>
+                )}
+
                 {/* Profile Header - 2:3 columns для клиентов */}
                 <div className={s.profileHeader}>
                     {/* Left: Avatar */}
