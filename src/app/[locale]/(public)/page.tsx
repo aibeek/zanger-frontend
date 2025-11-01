@@ -25,7 +25,6 @@ export default async function Home() {
 						description: t('captions.v3'),
 					},
 				]}
-				description={t('sectionDescription')}
 			/>
 				<ScrollTopButton />
 				<AboutSection />
