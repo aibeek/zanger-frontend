@@ -31,10 +31,21 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'video-presentation',
+			title: t('videoPresentation.title'),
+			description: t('videoPresentation.description'),
+			date: '01.11.2025',
+			image: '/assets/images/newsvideo.png',
+			readMore: t('readMore'),
+			fullDescription: t('videoPresentation.fullDescription'),
+			eventDay: t('videoPresentation.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'e-sign-module',
 			title: t('eSignModule.title'),
 			description: t('eSignModule.description'),
-			date: '01.11.2025',
+			date: '28.10.2025',
 			image: '/assets/images/newsesp.jpg',
 			readMore: t('readMore'),
 			fullDescription: t('eSignModule.fullDescription'),
