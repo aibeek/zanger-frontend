@@ -2,6 +2,7 @@ import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSect
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { LocalVideoSection } from '@/widgets/MainPage/LocalVideoSection'
 import { Footer } from '@/widgets/Footer'
+import { WhatsAppFloat } from '@/widgets/WhatsAppFloat'
 import { getTranslations } from 'next-intl/server'
 import s from './page.module.scss'
 export default async function Home() {
@@ -30,10 +31,11 @@ export default async function Home() {
 				<AboutSection />
 				<TeamSection />
 				<DescriptionSection />
-				<ModulesSection />
-				<ResourcesSection />
-				<Footer />
-				{/* <PulseChatWidget /> */}
-		</div>
+			<ModulesSection />
+			<ResourcesSection />
+			<Footer />
+			<WhatsAppFloat />
+			{/* <PulseChatWidget /> */}
+	</div>
 	)
 }
