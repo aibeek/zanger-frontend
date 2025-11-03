@@ -31,6 +31,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'whatsapp-bot',
+			title: t('whatsappBot.title'),
+			description: t('whatsappBot.description'),
+			date: '03.11.2025',
+			image: '/assets/images/bot.png',
+			readMore: t('readMore'),
+			fullDescription: t('whatsappBot.fullDescription'),
+			eventDay: t('whatsappBot.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'video-presentation',
 			title: t('videoPresentation.title'),
 			description: t('videoPresentation.description'),
