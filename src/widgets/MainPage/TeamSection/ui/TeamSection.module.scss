@@ -616,30 +616,30 @@
 
 @keyframes moveRightToLeft {
 	0% {
-		/* ещё короче трек для более плотного расположения */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 1400px));
+		/* увеличиваем трек для 15 карточек */
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 1800px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1100px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1400px));
 	}
 }
 
 @keyframes moveRightToLeftMobile {
 	0% {
-		/* мобильный трек тоже делаем короче */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1300px)));
+		/* увеличиваем мобильный трек */
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1600px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1000px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1300px));
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1200px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1500px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 900px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1200px));
 	}
 }
 
@@ -666,11 +666,11 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 13; // keep in sync with actual number of cards
-// slightly faster autoplay (~10-12% faster)
-$duration-desktop: 45s; // was 51s
-$duration-tablet: 39s;  // was 44s
-$duration-mobile: 33s;  // was 37s
+$cards-count: 15; // keep in sync with actual number of cards
+// увеличенная продолжительность для 15 карточек
+$duration-desktop: 52s; // увеличено для лучшего расстояния
+$duration-tablet: 44s;  // увеличено для лучшего расстояния
+$duration-mobile: 38s;  // увеличено для лучшего расстояния
 
 $step-desktop: $duration-desktop / $cards-count; // ≈4.636s
 $step-tablet: $duration-tablet / $cards-count;   // 4s
