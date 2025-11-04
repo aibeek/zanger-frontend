@@ -31,6 +31,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'legal-newspaper-interview',
+			title: t('pressInterview.title'),
+			description: t('pressInterview.description'),
+			date: '04.11.2025',
+			image: '/assets/images/gaxet.jpeg',
+			readMore: t('readMore'),
+			fullDescription: t('pressInterview.fullDescription'),
+			eventDay: t('pressInterview.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'whatsapp-bot',
 			title: t('whatsappBot.title'),
 			description: t('whatsappBot.description'),
