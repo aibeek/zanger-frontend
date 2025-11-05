@@ -65,8 +65,8 @@ export const RightWidgets = () => {
                 </div>
             </div>
 
-            {/* Events Widget */}
-            <div className={s.widget}>
+            {/* Events Widget - Hidden */}
+            {/* <div className={s.widget}>
                 <div className={s.widgetHeader}>
                     <h3 className={s.widgetTitle}>{t('dashboard.events.title')}</h3>
                 </div>
@@ -78,10 +78,10 @@ export const RightWidgets = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
-            {/* AI Assistant Widget */}
-            <div className={s.widget}>
+            {/* AI Assistant Widget - Hidden */}
+            {/* <div className={s.widget}>
                 <div className={s.assistantHeader}>
                     <div className={s.assistantAvatar}>
                         <span className={s.assistantIcon}>🤖</span>
@@ -108,7 +108,7 @@ export const RightWidgets = () => {
                     />
                     <button className={s.sendBtn}>↑</button>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

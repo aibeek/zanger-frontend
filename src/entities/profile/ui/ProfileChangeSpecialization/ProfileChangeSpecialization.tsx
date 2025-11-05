@@ -57,37 +57,40 @@ export const ProfileChangeSpecialization = () => {
 			panel_title={t('panelTitle')}
 			panel_descr={t('panelDescription')}
 			ref={disclosureBtnRef}>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				<Controller
-					control={control}
-					name="specializations"
-					render={({ field }) => (
-						<div className={s.checkboxes}>
-							{specializations.map((spec) => (
-								<Checkbox
-									className={s.checkbox}
-									key={spec.id}
-									label={spec.name}
-									checked={field.value.includes(spec.id)}
-									onChange={(checked) => {
-										const newValue = checked ? [...field.value, spec.id] : field.value.filter((id) => id !== spec.id)
-										field.onChange(newValue)
-									}}
-								/>
-							))}
-						</div>
-					)}
-				/>
-				{errors.specializations && <p className={s.error}>{errors.specializations.message}</p>}
-				<Button
-					type="submit"
-					variant="primary"
-					size="auto"
-					style={{ padding: '8px 30px', marginTop: '-22px' }}
-					disabled={isSubmitting}
-					className={s.submitButton}>
-					{isSubmitting ? t('saving') : t('save')}
-				</Button>
+			<form onSubmit={handleSubmit(onSubmit)} className={s.form}>
+				<div className={s.scrollableContent}>
+					<Controller
+						control={control}
+						name="specializations"
+						render={({ field }) => (
+							<div className={s.checkboxes}>
+								{specializations.map((spec) => (
+									<Checkbox
+										className={s.checkbox}
+										key={spec.id}
+										label={spec.name}
+										checked={field.value.includes(spec.id)}
+										onChange={(checked) => {
+											const newValue = checked ? [...field.value, spec.id] : field.value.filter((id) => id !== spec.id)
+											field.onChange(newValue)
+										}}
+									/>
+								))}
+							</div>
+						)}
+					/>
+					{errors.specializations && <p className={s.error}>{errors.specializations.message}</p>}
+				</div>
+				<div className={s.stickyFooter}>
+					<Button
+						type="submit"
+						variant="primary"
+						size="auto"
+						disabled={isSubmitting}
+						className={s.submitButton}>
+						{isSubmitting ? t('saving') : t('save')}
+					</Button>
+				</div>
 			</form>
 		</ProfileTabWrapper>
 	)

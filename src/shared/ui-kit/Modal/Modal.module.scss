@@ -24,9 +24,11 @@
 	border-radius: 16px;
 	padding: 16px;
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-	max-width: 480px;
+	max-width: min(90vw, 920px);
+	max-height: 85vh;
 	width: max-content;
 	transition: all 0.3s ease;
+	overflow-y: auto;
 }
 
 .title {
