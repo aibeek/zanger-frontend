@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import instagramIcon from '@/app/assets/icons/instagram.svg'
 import { Modal, useModal } from '@/shared/ui-kit/Modal'
@@ -29,7 +29,30 @@ export const NewsSection = () => {
 	const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
 	const defaultInstagramLink = t('modal.instagramUrl')
 
+	// After 18:00 pilot mode: AI audiobot Zanger accepts applications at 5510
+	const [isAfterSix, setIsAfterSix] = useState(false)
+	useEffect(() => {
+		const check = () => setIsAfterSix(new Date().getHours() >= 18)
+		check()
+		const id = setInterval(check, 60_000)
+		return () => clearInterval(id)
+	}, [])
+
 	const newsItems: NewsItem[] = [
+		{
+			id: 'ai-audiobot-zanger',
+			title: 'ИИ аудиобот Zanger',
+			description: isAfterSix
+				? 'Сейчас в пилотном режиме аудиобот принимает заявки по короткому номеру 5510.'
+				: 'После 18:00 в пилотном режиме аудиобот будет принимать заявки по короткому номеру 5510.',
+			date: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+			image: '/assets/images/botai.jpeg',
+			readMore: t('readMore'),
+			fullDescription:
+				'В пилотном режиме после 18:00 ИИ аудиобот Zanger принимает заявки по номеру 5510. Позвоните на короткий номер и следуйте подсказкам бота.',
+			eventDay: isAfterSix ? 'Идёт приём заявок' : 'Доступно после 18:00',
+			instagramLink: defaultInstagramLink
+		},
 		{
 			id: 'legal-newspaper-interview',
 			title: t('pressInterview.title'),
@@ -228,6 +251,20 @@ export const NewsSection = () => {
 							</div>
 						</div>
 						<p className={s.modalDescription}>{selectedNews.fullDescription}</p>
+
+						{/* CTA for AI audiobot Zanger */}
+						{selectedNews.id === 'ai-audiobot-zanger' && (
+							<div className={s.modalFooter}>
+								{isAfterSix ? (
+									<Link href="tel:5510" className={s.instagramLink}>
+										<span>Позвонить 5510</span>
+									</Link>
+								) : (
+									<span className={s.metaValue}>Доступно после 18:00</span>
+								)}
+							</div>
+						)}
+
 						<div className={s.modalFooter}>
 							<span className={s.metaLabel}>{t('modal.instagramLabel')}</span>
 							<Link
@@ -236,12 +273,7 @@ export const NewsSection = () => {
 								rel="noopener noreferrer"
 								className={s.instagramLink}
 							>
-								<Image
-									src={instagramIcon}
-									alt="instagram"
-									width={32}
-									height={32}
-								/>
+								<Image src={instagramIcon} alt="instagram" width={32} height={32} />
 								<span>{t('modal.instagramCta')}</span>
 							</Link>
 						</div>

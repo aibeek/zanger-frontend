@@ -10,6 +10,18 @@
   max-width: 1200px;
 }
 
+.header {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: clamp(18px, 2vw, 24px);
+  font-weight: 700;
+  color: #e5e7eb; // gray-200
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -95,6 +107,54 @@
   line-height: 1.5;
   color: #cbd5e1; // slate-300
   border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.pageBtn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  color: #e5e7eb; // gray-200
+  font-weight: 600;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)) padding-box,
+    linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(59, 130, 246, 0.45), rgba(236, 72, 153, 0.35)) border-box;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.35);
+  transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+  cursor: pointer;
+}
+
+.pageBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.45);
+}
+
+.pageBtn:focus-visible {
+  outline: 2px solid rgba(59, 130, 246, 0.7);
+  outline-offset: 2px;
+}
+
+.pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.pageInfo {
+  min-width: 64px;
+  text-align: center;
+  font-weight: 600;
+  color: #94a3b8; // slate-400
 }
 
 @media (min-width: 768px) {
