@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import Image from 'next/image'
 import s from './WhatsAppFloat.module.scss'
 
 export const WhatsAppFloat: React.FC = () => {
@@ -12,9 +13,12 @@ export const WhatsAppFloat: React.FC = () => {
       rel="noopener noreferrer"
       aria-label="WhatsApp"
     >
-      <img 
+      <Image 
         src="https://cdn.sendpulse.com/img/messengers/sp-i-small-forms-wa.svg" 
         alt="WhatsApp"
+        width={60}
+        height={60}
+        unoptimized
       />
     </a>
   )

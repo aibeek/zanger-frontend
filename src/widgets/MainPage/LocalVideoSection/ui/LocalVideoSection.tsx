@@ -125,9 +125,7 @@ export const LocalVideoSection: React.FC<LocalVideoSectionProps> = ({
                   muted={v.muted ?? muted}
                   onError={(e) => {
                     // Helps identify 404/MIME/codec problems in DevTools
-                    // @ts-ignore
-                    const el: HTMLVideoElement = e.currentTarget
-                    // eslint-disable-next-line no-console
+                    const el = e.currentTarget as HTMLVideoElement
                     console.warn('Video failed to load:', { src: v.src, currentSrc: el.currentSrc })
                   }}
                 >
