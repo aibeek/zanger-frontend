@@ -32,13 +32,6 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
 		}
 	}, [authChecked, isAuthenticated, router])
 
-	useEffect(() => {
-		if (authChecked && isAuthenticated && isMobile && pathname !== '/') {
-			router.push('/')
-			toast.error('Скачайте приложение для взаимодействия')
-		}
-	}, [authChecked, isAuthenticated, isMobile, pathname, router])
-
 	if (!authChecked) {
 		return <Loader />
 	}
