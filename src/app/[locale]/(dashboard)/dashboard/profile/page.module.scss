@@ -119,9 +119,19 @@
 .avatarWrapper {
     width: 300px;
     height: 300px;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     margin-bottom: 16px;
+    position: relative;
+    border: 3px solid #E5E7EB;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
 }
 
 .ratingBlock {
@@ -142,22 +152,6 @@
 .rating {
     color: #0f172a;
     font-weight: 600;
-}
-
-.reviewsBtn {
-    width: 100%;
-    background: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.reviewsBtn:hover {
-    background: #0056b3;
 }
 
 /* Right side - Personal Info */
@@ -229,6 +223,52 @@
 
 .actionCard:active {
     transform: translateY(0);
+}
+
+/* Technical Support Box - под аватаркой */
+.techSupportBox {
+    margin-top: 24px;
+    padding: 20px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 1px solid #BFDBFE;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+    width: 100%;
+}
+
+.techSupportTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1E40AF;
+    margin: 0 0 8px 0;
+}
+
+.techSupportDescription {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #1E3A8A;
+    margin: 0 0 12px 0;
+}
+
+.techSupportEmail {
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #3B82F6;
+    text-decoration: none;
+    padding: 8px 16px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #93C5FD;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: #DBEAFE;
+        border-color: #3B82F6;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+    }
 }
 
 /* Client Avatar Section - упрощенная для клиентов */

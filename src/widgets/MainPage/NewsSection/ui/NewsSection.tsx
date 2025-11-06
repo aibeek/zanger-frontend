@@ -49,7 +49,7 @@ export const NewsSection = () => {
 			image: '/assets/images/botai.jpeg',
 			readMore: t('readMore'),
 			fullDescription:
-				'В пилотном режиме после 18:00 ИИ аудиобот Zanger принимает заявки по номеру 5510. Позвоните на короткий номер и следуйте подсказкам бота.',
+				'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
 			eventDay: isAfterSix ? 'Идёт приём заявок' : 'Доступно после 18:00',
 			instagramLink: defaultInstagramLink
 		},

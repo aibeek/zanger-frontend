@@ -36,6 +36,7 @@ import passwordIcon from '@/app/assets/icons/lock.svg'
 import MapLocationIcon from '@/app/assets/icons/location-blue.svg'
 import supportIcon from '@/app/assets/icons/support-phone.svg'
 import paymentIcon from '@/app/assets/icons/payment-method.svg'
+import avatarEditIcon from '@/app/assets/icons/avatar-edit.svg'
 
 
 
@@ -51,6 +52,11 @@ const ClientProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
         setImageError(true)
     }
 
+    const handleAvatarClick = () => {
+        console.log('Avatar clicked - opening modal')
+        openAvatar()
+    }
+
     // Добавляем логирование для отладки
     console.log('ClientProfileAvatar - avatarUrl:', avatarUrl)
     console.log('ClientProfileAvatar - imageError:', imageError)
@@ -64,12 +70,12 @@ const ClientProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
     return (
         <>
             <div 
-                onClick={openAvatar} 
+                onClick={handleAvatarClick}
                 style={{ 
                     cursor: 'pointer', 
                     width: '100%', 
                     height: '100%',
-                    borderRadius: '12px',
+                    borderRadius: '16px',
                     overflow: 'hidden'
                 }}
             >
@@ -110,6 +116,11 @@ const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
         setImageError(true)
     }
 
+    const handleAvatarClick = () => {
+        console.log('Lawyer Avatar clicked - opening modal')
+        openAvatar()
+    }
+
     // Добавляем логирование для отладки
     console.log('LawyerProfileAvatar - avatarUrl:', avatarUrl)
     console.log('LawyerProfileAvatar - imageError:', imageError)
@@ -123,20 +134,20 @@ const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
     return (
         <>
             <div 
-                onClick={openAvatar} 
+                onClick={handleAvatarClick}
                 style={{ 
                     cursor: 'pointer', 
                     width: '100%', 
                     height: '100%',
-                    borderRadius: '12px',
+                    borderRadius: '16px',
                     overflow: 'hidden'
                 }}
             >
                 <Image
                     src={imageSrc}
                     alt="Lawyer Avatar"
-                    width={200}
-                    height={200}
+                    width={300}
+                    height={300}
                     style={{ 
                         width: '100%', 
                         height: '100%', 
@@ -269,12 +280,15 @@ export default function ProfilePage() {
                             <div className={s.avatarWrapper}>
                                 <LawyerProfileAvatar avatarUrl={avatarUrl} />
                             </div>
-                            <div className={s.ratingBlock}>
-                                <div className={s.stars}>
-                                    <span>★ ★ ★ ★ ★</span>
-                                    <span className={s.rating}>4,9</span>
-                                </div>
-                                <button className={`btn btn-primary ${s.reviewsBtn}`}>{t('profile.reviews.title')}</button>
+                            {/* Technical Support Section */}
+                            <div className={s.techSupportBox}>
+                                <h4 className={s.techSupportTitle}>{t('profile.tech_support.title')}</h4>
+                                <p className={s.techSupportDescription}>
+                                    {t('profile.tech_support.description')}
+                                </p>
+                                <a href="mailto:info@zanger-app.kz" className={s.techSupportEmail}>
+                                    info@zanger-app.kz
+                                </a>
                             </div>
                         </div>
 
@@ -368,6 +382,16 @@ export default function ProfilePage() {
                     <div className={s.clientAvatarSection}>
                         <div className={s.avatarWrapper}>
                             <ClientProfileAvatar avatarUrl={avatarUrl} />
+                        </div>
+                        {/* Technical Support Section */}
+                        <div className={s.techSupportBox}>
+                            <h4 className={s.techSupportTitle}>{t('profile.tech_support.title')}</h4>
+                            <p className={s.techSupportDescription}>
+                                {t('profile.tech_support.description')}
+                            </p>
+                            <a href="mailto:info@zanger-app.kz" className={s.techSupportEmail}>
+                                info@zanger-app.kz
+                            </a>
                         </div>
                     </div>
 

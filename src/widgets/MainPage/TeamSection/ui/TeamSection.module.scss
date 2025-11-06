@@ -241,15 +241,15 @@
 	}
 
 	@media (max-width: 768px) {
-		height: 400px;
+		height: 420px;
 	}
 
 	@media (max-width: 480px) {
-		height: 380px;
+		height: 400px;
 	}
 
 	@media (max-width: 360px) {
-		height: 350px;
+		height: 380px;
 	}
 }
 
@@ -272,7 +272,7 @@
 	overflow: hidden;
 	background: linear-gradient(180deg, rgba(39, 54, 90, 1) 0%, rgba(27, 35, 61, 1) 100%);
 	transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-	height: 450px;
+	height: 470px;
 	width: 320px;
 	top: 50%;
 	transform: translateY(-50%);
@@ -302,52 +302,52 @@
 	}
 
 	@media (max-width: 1920px) {
-		height: 440px;
+		height: 460px;
 		width: 310px;
 	}
 
 	@media (max-width: 1600px) {
-		height: 430px;
+		height: 450px;
 		width: 300px;
 	}
 
 	@media (max-width: 1440px) {
-		height: 420px;
+		height: 440px;
 		width: 295px;
 	}
 
 	@media (max-width: 1366px) {
-		height: 415px;
+		height: 435px;
 		width: 290px;
 		padding: 22px 18px 18px 18px;
 	}
 
 	@media (max-width: 1280px) {
-		height: 410px;
+		height: 430px;
 		width: 285px;
 		padding: 20px 16px 16px 16px;
 	}
 
 	@media (max-width: 1024px) {
-		height: 405px;
+		height: 420px;
 		width: 280px;
 		padding: 20px 15px 15px 15px;
 	}
 
 	@media (max-width: 768px) {
-		height: 400px;
+		height: 410px;
 		width: 280px;
 		padding: 20px 15px 15px 15px;
 	}
 
 	@media (max-width: 480px) {
-		height: 380px;
+		height: 390px;
 		width: 240px;
 		padding: 18px 12px 12px 12px;
 	}
 
 	@media (max-width: 360px) {
-		height: 360px;
+		height: 370px;
 		width: 220px;
 		padding: 16px 10px 10px 10px;
 	}
@@ -455,56 +455,17 @@
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
+	min-height: 0;
+	justify-content: space-between;
 }
 
 .memberInfoText {
 	flex-grow: 1;
 	min-height: 0;
-	max-height: 150px;
-	overflow-y: auto;
-	padding-right: 6px;
-	padding-bottom: 4px;
+	overflow: hidden;
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
-	overscroll-behavior: contain;
-	-webkit-overflow-scrolling: touch;
-	scrollbar-width: thin;
-	scrollbar-color: rgba(96, 165, 250, 0.6) transparent;
-
-	&::-webkit-scrollbar {
-		width: 4px;
-	}
-
-	&::-webkit-scrollbar-track {
-		background: rgba(255, 255, 255, 0.05);
-		border-radius: 999px;
-	}
-
-	&::-webkit-scrollbar-thumb {
-		background: rgba(96, 165, 250, 0.6);
-		border-radius: 999px;
-	}
-
-	&::-webkit-scrollbar-thumb:hover {
-		background: rgba(96, 165, 250, 0.8);
-	}
-
-	@media (max-width: 1366px) {
-		max-height: 140px;
-	}
-
-	@media (max-width: 1024px) {
-		max-height: 130px;
-	}
-
-	@media (max-width: 768px) {
-		max-height: 120px;
-	}
-
-	@media (max-width: 480px) {
-		max-height: 110px;
-	}
 }
 
 .memberPosition {
@@ -556,7 +517,8 @@
 	text-align: center;
 	width: 100%;
 	min-width: 160px;
-	margin-top: auto;
+	margin-top: 0;
+	flex-shrink: 0;
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.9);
@@ -593,14 +555,23 @@
 	line-height: 1.4;
 	text-align: left;
 	margin: 0;
-	white-space: pre-line;
+	white-space: normal;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
 
 	@media (max-width: 768px) {
 		font-size: 10px;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 
 	@media (max-width: 480px) {
 		font-size: 9px;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
 	}
 }
 
@@ -616,30 +587,30 @@
 
 @keyframes moveRightToLeft {
 	0% {
-		/* увеличиваем трек для 15 карточек */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 1800px));
+		/* увеличиваем трек для 16 карточек */
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 2100px));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1400px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1700px));
 	}
 }
 
 @keyframes moveRightToLeftMobile {
 	0% {
 		/* увеличиваем мобильный трек */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1600px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1900px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1300px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1500px));
 	}
 }
 
 @keyframes moveRightToLeftSmall {
 	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1500px)));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1700px)));
 	}
 	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1200px));
+		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1400px));
 	}
 }
 
@@ -666,15 +637,15 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 15; // keep in sync with actual number of cards
-// увеличенная продолжительность для 15 карточек
-$duration-desktop: 52s; // увеличено для лучшего расстояния
-$duration-tablet: 44s;  // увеличено для лучшего расстояния
-$duration-mobile: 38s;  // увеличено для лучшего расстояния
+$cards-count: 16; // keep in sync with actual number of cards
+// увеличенная продолжительность для 16 карточек
+$duration-desktop: 56s; // увеличено для лучшего расстояния
+$duration-tablet: 48s;  // увеличено для лучшего расстояния
+$duration-mobile: 40s;  // увеличено для лучшего расстояния
 
-$step-desktop: $duration-desktop / $cards-count; // ≈4.636s
-$step-tablet: $duration-tablet / $cards-count;   // 4s
-$step-mobile: $duration-mobile / $cards-count;   // ≈3.364s
+$step-desktop: $duration-desktop / $cards-count; // 3.5s
+$step-tablet: $duration-tablet / $cards-count;   // 3s
+$step-mobile: $duration-mobile / $cards-count;   // 2.5s
 
 @for $i from 1 through $cards-count {
 	$index-offset: $i - 1;
