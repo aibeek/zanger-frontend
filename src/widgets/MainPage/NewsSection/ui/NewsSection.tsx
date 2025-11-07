@@ -42,15 +42,13 @@ export const NewsSection = () => {
 		{
 			id: 'ai-audiobot-zanger',
 			title: 'ИИ аудиобот Zanger',
-			description: isAfterSix
-				? 'Сейчас в пилотном режиме аудиобот принимает заявки по короткому номеру 5510.'
-				: 'После 18:00 в пилотном режиме аудиобот будет принимать заявки по короткому номеру 5510.',
+			description: 'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
 			date: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
 			image: '/assets/images/botai.jpeg',
 			readMore: t('readMore'),
 			fullDescription:
 				'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
-			eventDay: isAfterSix ? 'Идёт приём заявок' : 'Доступно после 18:00',
+			eventDay: 'Аудиобот работает в нерабочее время',
 			instagramLink: defaultInstagramLink
 		},
 		{
@@ -255,13 +253,9 @@ export const NewsSection = () => {
 						{/* CTA for AI audiobot Zanger */}
 						{selectedNews.id === 'ai-audiobot-zanger' && (
 							<div className={s.modalFooter}>
-								{isAfterSix ? (
-									<Link href="tel:5510" className={s.instagramLink}>
-										<span>Позвонить 5510</span>
-									</Link>
-								) : (
-									<span className={s.metaValue}>Доступно после 18:00</span>
-								)}
+								<Link href="tel:5510" className={s.instagramLink}>
+									<span>Позвонить 5510</span>
+								</Link>
 							</div>
 						)}
 
