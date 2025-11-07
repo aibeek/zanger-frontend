@@ -44,19 +44,20 @@
 
 .panel {
 	margin-bottom: 30px;
-	margin-top: 16px;
+	margin-top: 8px;
 	.titleBox {
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 12px;
 		border-bottom: 1px solid $light-blue-color;
-		padding-bottom: 16px;
-		margin-bottom: 30px;
+		padding-bottom: 12px;
+		margin-bottom: 16px;
 	}
 
 	.titleWrapper {
 		display: flex;
 		flex-direction: column;
+		gap: 2px;
 	}
 
 	.titleIcon {
@@ -70,7 +71,7 @@
 		font-size: 16px;
 		font-weight: 600;
 		line-height: 150%;
-		margin-bottom: 2px;
+		margin-bottom: 0;
 	}
 
 	.panelDescr {
@@ -78,5 +79,6 @@
 		line-height: 130%;
 		font-weight: 400;
 		color: rgba(156, 165, 172, 1);
+		margin-top: 0;
 	}
 }

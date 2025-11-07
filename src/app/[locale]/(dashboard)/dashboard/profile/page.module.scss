@@ -232,7 +232,7 @@
     background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
     border: 1px solid #BFDBFE;
     border-radius: 12px;
-    text-align: center;
+    text-align: left;
     box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
     width: 100%;
 }
@@ -242,6 +242,7 @@
     font-weight: 700;
     color: #1E40AF;
     margin: 0 0 8px 0;
+    text-align: left;
 }
 
 .techSupportDescription {
@@ -249,10 +250,11 @@
     line-height: 1.5;
     color: #1E3A8A;
     margin: 0 0 12px 0;
+    text-align: left;
 }
 
 .techSupportEmail {
-    display: inline-block;
+    display: block;
     font-size: 15px;
     font-weight: 600;
     color: #3B82F6;
@@ -262,6 +264,9 @@
     border-radius: 8px;
     border: 1px solid #93C5FD;
     transition: all 0.2s ease;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
 
     &:hover {
         background: #DBEAFE;

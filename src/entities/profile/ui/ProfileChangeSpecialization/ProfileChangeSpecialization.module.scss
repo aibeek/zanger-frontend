@@ -1,10 +1,14 @@
 .form {
 	display: flex;
 	flex-direction: column;
+	max-height: none;
+	overflow: visible;
 }
 
 .scrollableContent {
 	margin-bottom: 16px;
+	overflow: visible;
+	max-height: none;
 }
 
 .stickyFooter {

@@ -338,7 +338,7 @@ export default function ProfilePage() {
                 <RightWidgets />
 
                 {/* Modal for profile sections - render inline content without nested modals */}
-                <Modal isOpen={isOpen} onClose={closeModal} title={getModalTitle(activeModal) || ''}>
+                <Modal isOpen={isOpen} onClose={closeModal} title={getModalTitle(activeModal) || ''} closeButton={true}>
                     <div className={s.modalContent}>
                         {activeModal === 'consultation' && <ProfileConsultationPrice />}
                         {activeModal === 'specialization' && <ProfileChangeSpecialization />}
