@@ -286,8 +286,8 @@ export default function ProfilePage() {
                                 <p className={s.techSupportDescription}>
                                     {t('profile.tech_support.description')}
                                 </p>
-                                <a href="mailto:info@zanger-app.kz" className={s.techSupportEmail}>
-                                    info@zanger-app.kz
+                                <a href="mailto:support@zanger-app.kz " className={s.techSupportEmail}>
+                                    support@zanger-app.kz 
                                 </a>
                             </div>
                         </div>
