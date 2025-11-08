@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 
 import './styles/index.scss'
+import { GoogleAnalytics } from '@/shared/lib/analytics/GoogleAnalytics'
 
 const openSans = Open_Sans({
     variable: '--font-open-sans',
@@ -26,6 +27,7 @@ export default function RootLayout({
     return (
         <html lang="ru" suppressHydrationWarning>
             <body className={openSans.variable} suppressHydrationWarning>
+                <GoogleAnalytics />
                 {children}
             </body>
         </html>
