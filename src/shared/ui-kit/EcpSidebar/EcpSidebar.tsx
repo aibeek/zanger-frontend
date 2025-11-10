@@ -62,7 +62,7 @@ export const EcpSidebar: React.FC = () => {
 
         <div className={s.item}>🗄️ {t('archive')}</div>
         <div className={s.item}>🗑️ {t('trash')}</div>
-        <div className={s.item}>👥 {t('counterparties')}</div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/counterparties`)}>👥 {t('counterparties')}</div>
 
       </nav>
 
