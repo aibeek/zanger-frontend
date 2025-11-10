@@ -570,6 +570,132 @@
 		font-weight: 600 !important;
 	}
 
+	.mobileLiveButton {
+		background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%) !important;
+		border: 1px solid transparent !important;
+		color: white !important;
+		position: relative;
+		overflow: hidden;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		animation: liveButtonPulse 2s ease-in-out infinite;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			top: -2px;
+			left: -2px;
+			right: -2px;
+			bottom: -2px;
+			background: linear-gradient(45deg, #ff1744, #ff5722, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #ff1744);
+			background-size: 400% 400%;
+			border-radius: 10px;
+			opacity: 0.6;
+			z-index: -2;
+			animation: gradientShift 3s ease infinite;
+			filter: blur(4px);
+		}
+		
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
+			border-radius: 8px;
+			z-index: -1;
+		}
+		
+		&:hover {
+			transform: translateY(-1px) scale(1.02) !important;
+			animation: none !important;
+			box-shadow: 
+				0 4px 12px rgba(255, 23, 68, 0.3),
+				0 0 20px rgba(213, 0, 0, 0.2),
+				0 0 30px rgba(183, 28, 28, 0.1) !important;
+			
+			&::before {
+				opacity: 0.8;
+				filter: blur(6px);
+			}
+		}
+		
+		&:active {
+			transform: translateY(0) scale(1.01) !important;
+		}
+	}
+
+	.mobileLiveButtonWrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.mobileHeaderLiveBtn {
+		background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
+		border: 1px solid transparent;
+		color: white;
+		border-radius: 8px;
+		padding: 6px 12px;
+		font-size: 12px;
+		font-weight: 700;
+		cursor: pointer;
+		position: relative;
+		overflow: hidden;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		animation: liveButtonPulse 2s ease-in-out infinite;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		
+		&::before {
+			content: '';
+			position: absolute;
+			top: -2px;
+			left: -2px;
+			right: -2px;
+			bottom: -2px;
+			background: linear-gradient(45deg, #ff1744, #ff5722, #ff9800, #ffeb3b, #4caf50, #2196f3, #9c27b0, #ff1744);
+			background-size: 400% 400%;
+			border-radius: 10px;
+			opacity: 0.6;
+			z-index: -2;
+			animation: gradientShift 3s ease infinite;
+			filter: blur(4px);
+		}
+		
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: linear-gradient(135deg, #ff1744 0%, #d50000 50%, #b71c1c 100%);
+			border-radius: 8px;
+			z-index: -1;
+		}
+		
+		&:hover {
+			transform: translateY(-1px) scale(1.05);
+			animation: none;
+			box-shadow: 
+				0 4px 12px rgba(255, 23, 68, 0.4),
+				0 0 20px rgba(213, 0, 0, 0.3),
+				0 0 30px rgba(183, 28, 28, 0.2);
+			
+			&::before {
+				opacity: 0.8;
+				filter: blur(6px);
+			}
+		}
+		
+		&:active {
+			transform: translateY(0) scale(1.02);
+		}
+	}
+
 	.globalLegalTech {
 		color: rgba(255, 255, 255, 0.8);
 		font-size: 14px;
@@ -849,9 +975,21 @@
 			animation: topGlow 3s ease-in-out infinite;
 		}
 		
+		@media (max-width: 900px) {
+			width: calc(100vw - 40px);
+			max-width: 360px;
+			right: -10px;
+			left: auto;
+			top: calc(100% + 10px);
+			
+			&::before {
+				right: 20px;
+			}
+		}
+		
 		@media (max-width: 500px) {
-			width: 340px;
-			right: -20px;
+			width: calc(100vw - 30px);
+			right: -5px;
 		}
 	}
 	

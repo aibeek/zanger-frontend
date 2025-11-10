@@ -190,13 +190,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 
 	// LIVE button click handler
 	const handleLiveClick = (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
-		// Mobile: show modal
-		if (shouldShowMobileModal) {
-			e.preventDefault()
-			open()
-			return
-		}
-		// Desktop: toggle dropdown and fetch
+		// Always toggle dropdown and fetch on both desktop and mobile
 		e.preventDefault()
 		setShowLiveApplications((prev) => {
 			const next = !prev
@@ -397,14 +391,76 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 							<LangSwitcher />
 
 							{isHydrated && isMobile && (
-								<button
-									className={s.mobileMenuBtn}
-									onClick={() => setShowMobileMenu(!showMobileMenu)}
-								>
-									<span></span>
-									<span></span>
-									<span></span>
-								</button>
+								<>
+									<div className={s.mobileLiveButtonWrapper} ref={liveButtonRef}>
+										<button
+											className={`${s.mobileHeaderLiveBtn}`}
+											onClick={handleLiveClick}
+										>
+											LIVE
+										</button>
+										{showLiveApplications && (
+											<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
+												<div className={s.liveDropdownHeader}>
+													<h3>LIVE заявки</h3>
+													<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
+												</div>
+												<div className={s.liveApplicationsList}>
+													{liveError ? (
+														<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
+													) : liveApplications.length === 0 ? (
+														liveLoading ? (
+															<p style={{ padding: '12px' }}>Загрузка...</p>
+														) : (
+															<p style={{ padding: '12px' }}>Нет новых заявок</p>
+														)
+													) : (
+														<>
+															{liveApplications.map((item) => (
+																<div key={item.id} className={s.liveApplicationItem}>
+																	<div className={s.liveAppHeader}>
+																		<h4>{item.title}</h4>
+																		<span className={s.userNameBadge}>{item.firstName || '—'}</span>
+																	</div>
+																	<p className={s.liveAppDescription}>{item.description}</p>
+																	<div className={s.liveAppFooter}>
+																		<span className={s.location}>📍 {item.location || '—'}</span>
+																		<button
+																			className={s.respondBtn}
+																			onClick={() => {
+																				setShowLiveApplications(false)
+																				router.push('/auth/login')
+																			}}>
+																			Откликнуться
+																		</button>
+																	</div>
+																</div>
+															))}
+															<div className={s.moreBtnWrapper}>
+																<button
+																	className={s.respondBtn}
+																	onClick={() => {
+																		setShowLiveApplications(false)
+																		router.push('/auth/login')
+																	}}>
+																	Больше
+																</button>
+															</div>
+														</>
+													)}
+												</div>
+											</div>
+										)}
+									</div>
+									<button
+										className={s.mobileMenuBtn}
+										onClick={() => setShowMobileMenu(!showMobileMenu)}
+									>
+										<span></span>
+										<span></span>
+										<span></span>
+									</button>
+								</>
 							)}
 						</div>
 					</div>
@@ -493,6 +549,20 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													setShowMobileMenu(false)
 												}}>
 												{t('login')}
+											</AppLink>
+											<AppLink
+												className={`${s.mobileAppLink} ${s.mobileLiveButton}`}
+												variant={'primary'}
+												href={'/live-applications'}
+												prefetch={false}
+												onClick={(e) => {
+													// В мобильном меню показываем модалку
+													console.log('Клик на LIVE в мобильном меню')
+													e.preventDefault()
+													open()
+													setShowMobileMenu(false)
+												}}>
+												LIVE заявки
 											</AppLink>
 											<AppLink
 												className={s.mobileAppLink}
