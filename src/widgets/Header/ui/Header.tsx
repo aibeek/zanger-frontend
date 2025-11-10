@@ -207,19 +207,29 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 					fetchLatestOrders()
 				}, 3000)
 			}
+			
+			// Блокируем скролл на мобильных устройствах когда меню открыто
+			if (isMobile) {
+				document.body.style.overflow = 'hidden'
+			}
 		} else {
 			if (liveIntervalRef.current) {
 				clearInterval(liveIntervalRef.current)
 				liveIntervalRef.current = null
 			}
+			
+			// Восстанавливаем скролл
+			document.body.style.overflow = ''
 		}
 		return () => {
 			if (liveIntervalRef.current) {
 				clearInterval(liveIntervalRef.current)
 				liveIntervalRef.current = null
 			}
+			// Восстанавливаем скролл при размонтировании
+			document.body.style.overflow = ''
 		}
-	}, [showLiveApplications])
+	}, [showLiveApplications, isMobile])
 
 	if (variant === 'lending-variant') {
 		return (
@@ -400,12 +410,14 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 											LIVE
 										</button>
 										{showLiveApplications && (
-											<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
-												<div className={s.liveDropdownHeader}>
-													<h3>LIVE заявки</h3>
-													<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
-												</div>
-												<div className={s.liveApplicationsList}>
+											<>
+												<div className={s.liveDropdownBackdrop} onClick={() => setShowLiveApplications(false)} />
+												<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
+													<div className={s.liveDropdownHeader}>
+														<h3>LIVE заявки</h3>
+														<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
+													</div>
+													<div className={s.liveApplicationsList}>
 													{liveError ? (
 														<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
 													) : liveApplications.length === 0 ? (
@@ -450,6 +462,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 													)}
 												</div>
 											</div>
+											</>
 										)}
 									</div>
 									<button
