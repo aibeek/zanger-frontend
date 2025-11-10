@@ -1,12 +1,13 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import Image from 'next/image'
 import { useState } from 'react'
 import { Modal, Button } from '@/shared/ui-kit'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
 import s from './ModulesSection.module.scss'
+import { useRouter } from 'next/navigation'
 
 interface Module {
   id: number
@@ -17,6 +18,8 @@ interface Module {
 export const ModulesSection = () => {
   const t = useTranslations('lending.modulesSection')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const router = useRouter()
+  const locale = useLocale()
   
   // Получаем модули из переводов
   const modulesData = t.raw('modules') as Array<{title: string, description: string}>
@@ -27,7 +30,15 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
-  const handleComingSoon = () => {
+  const handleModuleClick = (module: Module) => {
+    // ЭЦП/ЭЦҚ — открываем новую страницу с новым сайдбаром и хэдером
+    const normalized = module.title.replace(/\s+/g, '').toUpperCase()
+    const isEcp = normalized.includes('ЭЦП') || normalized.includes('ЭЦҚ') || normalized.includes('ECP')
+    if (isEcp) {
+      router.push(`/${locale}/ecp`)
+      return
+    }
+    // Остальные модули пока в разработке
     setIsModalOpen(true)
   }
 
@@ -44,11 +55,11 @@ export const ModulesSection = () => {
               className={s.moduleCard}
               role="button"
               tabIndex={0}
-              onClick={handleComingSoon}
+              onClick={() => handleModuleClick(module)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
-                  handleComingSoon()
+                  handleModuleClick(module)
                 }
               }}
             >

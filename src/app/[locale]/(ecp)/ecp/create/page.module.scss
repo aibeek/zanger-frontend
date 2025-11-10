@@ -1,0 +1,89 @@
+.page {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.selectBox {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 12px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.uploadZone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  color: #334155;
+}
+
+.uploadIcon {
+  font-size: 22px;
+}
+
+.formats {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.draftBtn {
+  background: #0a1a2b;
+  color: #fff;
+}
+
+.historyTitle {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.historyEmpty {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.divider {
+  height: 1px;
+  background: #eef2f7;
+  margin: 12px 0;
+}
+
+.selectPlaceholder {
+  opacity: 0.7;
+}

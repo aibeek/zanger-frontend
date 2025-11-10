@@ -1063,7 +1063,7 @@
     "cancelButton": "Жазылымды тоқтату",
     "activeUntil": "Белсенді",
     "yourSubscription": "Сіздің жазылымыңыз",
-    "withSubscription": "ZANGER ЖАЗЫЛЫМЫМЕН СІЗ АЛАСЫЗ"
+	"withSubscription": "ZANGER ЖАЗЫЛЫМЫМЕН СІЗ АЛАСЫЗ"
   },
 	"footer": {
 		"sections": {
@@ -1083,6 +1083,44 @@
 		"payment": "Төлем ережелері",	
 		"offer": "Қоғамдық оферта",
 		"cancellation": "Жазылымды тоқтату ережелері"
+ 	}
+	},
+	"ecp": {
+		"sidebar": {
+			"home": "Басты бет",
+			"createDocument": "Құжат жасау",
+			"myStatuses": "Менің статустарым",
+			"myDocuments": "Менің құжаттарым",
+			"incoming": "Келіп түскен",
+			"sent": "Жіберілгендер",
+			"drafts": "Жобалар",
+			"archive": "Мұрағат",
+			"trash": "Себет",
+			"counterparties": "Контрагенттер",
+			"faq": "ЖҚС",
+			"support": "Қолдау"
+		},
+		"create": {
+			"signer": "Қол қоюшы",
+			"chooseSigner": "Қол қоюшыны таңдаңыз",
+			"counterparty": "Контрагентті таңдау",
+			"chooseCounterparty": "Контрагентті таңдаңыз",
+			"upload": "Құжатты жүктеу",
+			"dropText": "Құжатты осы өріске жүктеңіз немесе сүйреп әкеліңіз",
+			"allowedFormats": "Рұқсат етілген форматтар: pdf, docx",
+			"name": "Атауы",
+			"namePlaceholder": "Атауын енгізіңіз",
+			"docNumber": "Құжат нөмірі",
+			"docNumberPlaceholder": "Нөмірді енгізіңіз",
+			"createdAt": "Жасалған күні",
+			"draft": "Жоба",
+			"sendWithoutSign": "Қол қоймай жіберу",
+			"signAndSend": "Қол қойып жіберу",
+			"history": "Тарих",
+			"historyEmpty": "Әзірге жіберулер мен қол қоюлар жоқ",
+			"draftSaved": "Жоба ретінде сақталды",
+			"sentWithoutSign": "Қолтаңбасыз жіберілді",
+			"signedAndSent": "Қол қойылып жіберілді"
+		}
 	}
- }
 }

@@ -1073,8 +1073,8 @@
 					"cancelButton": "Отменить подписку",
 					"activeUntil": "Активна до",
 					"yourSubscription": "Ваша подписка",
-					"withSubscription": "С ПОДПИСКОЙ ZANGER ВЫ ПОЛУЧАЕТЕ"
-				},
+		"withSubscription": "С ПОДПИСКОЙ ZANGER ВЫ ПОЛУЧАЕТЕ"
+			},
 		"footer": {
 			"sections": {
 				"forum": "Форум",
@@ -1092,8 +1092,46 @@
 			"privacy": "Политика конфиденциальности",
 			"payment": "Правила оплаты",
 			"offer": "Публичная оферта",
-			"cancellation": "Правила отмены подписки"
+		"cancellation": "Правила отмены подписки"
 		}
-		}
-	}
+		},
+		"ecp": {
+      "sidebar": {
+        "home": "Главная",
+        "createDocument": "Создать документ",
+        "myStatuses": "Мои статусы",
+        "myDocuments": "Мои документы",
+        "incoming": "Входящие",
+        "sent": "Отправленные",
+        "drafts": "Черновики",
+        "archive": "Архив",
+        "trash": "Корзина",
+        "counterparties": "Контрагенты",
+        "faq": "FAQ",
+        "support": "Поддержка"
+      },
+      "create": {
+        "signer": "Подписант",
+        "chooseSigner": "Выберите подписанта",
+        "counterparty": "Выбор контрагента",
+        "chooseCounterparty": "Выберите контрагента",
+        "upload": "Загрузить документ",
+        "dropText": "Загрузите или перетащите документ в это поле",
+        "allowedFormats": "Допустимые форматы: pdf, docx",
+        "name": "Наименование",
+        "namePlaceholder": "Введите наименование",
+        "docNumber": "Номер документа",
+        "docNumberPlaceholder": "Введите номер",
+        "createdAt": "Дата создания",
+        "draft": "Черновик",
+        "sendWithoutSign": "Отправить без подписания",
+        "signAndSend": "Подписать и отправить",
+        "history": "История",
+        "historyEmpty": "Отправлений и подписаний пока нет",
+        "draftSaved": "Сохранено как черновик",
+        "sentWithoutSign": "Отправлено без подписи",
+        "signedAndSent": "Подписано и отправлено"
+      }
+    }
+}
 
