@@ -29,7 +29,7 @@ export const EcpSidebar: React.FC = () => {
       <nav className={s.nav}>
         <div className={s.item} onClick={() => router.push(`/${locale}/dashboard/profile`)}>🏠 {t('home')}</div>
         <div className={s.item} onClick={() => router.push(`/${locale}/ecp/create`)}>📄 {t('createDocument')}</div>
-        <div className={s.item}>📌 {t('myStatuses')}</div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/statuses`)}>📌 {t('myStatuses')}</div>
 
         <div className={s.dropdownHeader} onClick={() => setOpenDocs(!openDocs)}>
           <div className={s.dropdownTitle}>

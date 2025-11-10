@@ -38,6 +38,13 @@ export const counterpartiesApi = {
       body: JSON.stringify(payload),
     }),
 
+  // Create counterparty entry specifically for "My Statuses" section
+  storeMine: (payload: CounterpartyPayload) =>
+    httpClientWithAuth(`${API_URL}/counterparties/mine`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   update: (id: number, payload: Partial<CounterpartyPayload>) =>
     httpClientWithAuth(`${API_URL}/counterparties/${id}`, {
       method: 'PUT',
