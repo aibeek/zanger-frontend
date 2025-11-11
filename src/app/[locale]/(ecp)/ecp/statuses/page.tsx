@@ -42,7 +42,7 @@ export default function EcpStatusesPage() {
   const personalData = useLoginStore((s) => s.personalData)
   const [loading, setLoading] = React.useState(false)
   const [editId, setEditId] = React.useState<number | null>(null)
-  const [showAddPanel, setShowAddPanel] = React.useState(false) // для ЮЛ — панель добавления
+  // Убираем режим открытия панели для ЮЛ — форма всегда сверху
 
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set())
 
@@ -85,7 +85,6 @@ export default function EcpStatusesPage() {
 
   const startAdd = () => {
     resetForm()
-    setShowAddPanel(true)
   }
 
   const onAddOrSave = async () => {
@@ -94,7 +93,8 @@ export default function EcpStatusesPage() {
       return
     }
 
-    const type = detectTypeCode(name, iinbin, active)
+    // Тип контрагента строго соответствует активной вкладке
+    const type = active
 
     const payload: CounterpartyPayload = {
       name: name || t('unknownName'),
@@ -151,7 +151,6 @@ export default function EcpStatusesPage() {
             )
             toast.success(t('messages.updated'))
             resetForm()
-            setShowAddPanel(false)
             return
           }
         }
@@ -172,7 +171,6 @@ export default function EcpStatusesPage() {
       }
 
       resetForm()
-      setShowAddPanel(false)
     } catch (e: any) {
       toast.error(e?.message || t('errors.requestFailed'))
     } finally {
@@ -213,7 +211,6 @@ export default function EcpStatusesPage() {
     setPhone(item.phone || '')
     setBank(item.bank || '')
     setEditId(id)
-    setShowAddPanel(true)
     toast(t('messages.editMode'))
   }
 
@@ -252,9 +249,6 @@ export default function EcpStatusesPage() {
     <section className={s.card}>
       <div className={s.formHeader}>
         <div className={s.title}>{t('addTitle')}</div>
-        {(type === 'UL' && (showAddPanel || editId)) && (
-          <button className={s.closeBtn} onClick={() => { setShowAddPanel(false); resetForm() }}>×</button>
-        )}
       </div>
       <div className={s.subtitle}>{t('addSubtitle')}</div>
 
@@ -287,7 +281,7 @@ export default function EcpStatusesPage() {
 
       <div className={s.content}>
         {/* Верхняя панель — добавление/редактирование */}
-        {(active === 'UL' ? showAddPanel || editId : true) && renderForm(active)}
+        {renderForm(active)}
 
         {/* Таблица записей для активного типа */}
         <section className={s.tableCard}>
@@ -297,9 +291,6 @@ export default function EcpStatusesPage() {
               <Button variant="border" size="sm" onClick={selectAll} disabled={loading}>{t('selectAll')}</Button>
               <Button variant="secondary" size="sm" onClick={onEdit} disabled={loading}>{t('edit')}</Button>
               <Button variant="danger" size="sm" onClick={onDelete} disabled={loading}>{t('delete')}</Button>
-              {active === 'UL' && (
-                <Button size="sm" onClick={startAdd} disabled={loading}>{t('addOrganization')}</Button>
-              )}
             </div>
           </div>
 
