@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Button, Input } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
+import { ecpApi, EsdcaDocumentDetails } from '@/shared/api'
 
 export default function EcpCreateDocumentPage() {
   const t = useTranslations('ecp.create')
@@ -17,6 +18,9 @@ export default function EcpCreateDocumentPage() {
   const [docNumber, setDocNumber] = React.useState('')
   const [createdAt, setCreatedAt] = React.useState('')
   const [isCreated, setIsCreated] = React.useState(false)
+  const [isCreating, setIsCreating] = React.useState(false)
+  const [documentId, setDocumentId] = React.useState<number | null>(null)
+  const [details, setDetails] = React.useState<EsdcaDocumentDetails | null>(null)
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -44,14 +48,46 @@ export default function EcpCreateDocumentPage() {
     toast.success(t('signedAndSent'))
   }
 
-  const onCreate = () => {
+  const onCreate = async () => {
     // Простая валидация: нужен файл и наименование
     if (!file || !name) {
       toast.error(`${t('upload')}: ${t('dropText').split(',')[0]} · ${t('name')}`)
       return
     }
-    setIsCreated(true)
-    toast.success(t('documentCreated'))
+
+    try {
+      setIsCreating(true)
+
+      // 1) Получить типы документов и выбрать первый как дефолт
+      const types = await ecpApi.getDocumentTypes().catch(() => [])
+      const documentTypeId = Array.isArray(types) && types.length > 0 ? types[0].id : 1
+
+      // 2) Создать документ (черновик)
+      const description = `${t('docNumber')}: ${docNumber || '—'}; ${t('createdAt')}: ${createdAt || '—'}`
+      const createRes = await ecpApi.createDocument({
+        title: name,
+        description,
+        amount: null,
+        document_type_id: documentTypeId,
+        require_sender_signature: false,
+      })
+
+      setDocumentId(createRes.id)
+      setIsCreated(true)
+      toast.success(t('documentCreated'))
+
+      // 3) Загрузить файл как MAIN и привязать к документу
+      await ecpApi.uploadMainFile(createRes.id, file)
+
+      // 4) Получить детали и показать справа
+      const d = await ecpApi.getDocumentDetails(createRes.id)
+      setDetails(d)
+    } catch (e: any) {
+      const msg = e?.message || 'Ошибка'
+      toast.error(`${t('errorOccurred') || 'Ошибка'}: ${msg}`)
+    } finally {
+      setIsCreating(false)
+    }
   }
 
   return (
@@ -113,7 +149,9 @@ export default function EcpCreateDocumentPage() {
 
         {/* New Create button */}
         <div className={s.actions}>
-          <Button onClick={onCreate}>{t('createButton')}</Button>
+          <Button onClick={onCreate} disabled={isCreating}>
+            {isCreating ? t('creating') : t('createButton')}
+          </Button>
         </div>
 
         {/* Signer */}
@@ -146,11 +184,29 @@ export default function EcpCreateDocumentPage() {
         </div>
       </div>
 
-      {/* Right history card */}
+      {/* Right details/history card */}
       <div className={s.card}>
         <div className={s.historyTitle}>{t('history')}</div>
         <div className={s.divider} />
-        <div className={s.historyEmpty}>{t('historyEmpty')}</div>
+
+        {details ? (
+          <div className={s.detailsBlock}>
+            <div style={{ marginBottom: 8 }}>
+              <b>ID:</b> {details.id} · <b>{t('status')}:</b> {details.status}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>{t('name')}:</b> {details.title}
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <b>{t('upload')}:</b>{' '}
+              {details.files && details.files.length > 0
+                ? details.files.map((f) => `${f.file_name} (${f.file_type})`).join(', ')
+                : t('historyEmpty')}
+            </div>
+          </div>
+        ) : (
+          <div className={s.historyEmpty}>{t('historyEmpty')}</div>
+        )}
       </div>
     </div>
   )
