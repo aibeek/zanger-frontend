@@ -55,7 +55,7 @@ export const NewsSection = () => {
 			id: 'ai-audiobot-zanger',
 			title: 'ИИ аудиобот Zanger',
 			description: 'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
-			date: new Date().toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+			date: '08.11.2025', // фиксированная дата вместо динамической
 			image: '/assets/images/botai.jpeg',
 			readMore: t('readMore'),
 			fullDescription:
