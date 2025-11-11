@@ -13,6 +13,7 @@ export const WhatsAppFloat: React.FC = () => {
       rel="noopener noreferrer"
       aria-label="WhatsApp"
     >
+      <span className={s.waBubble}>Оставьте заявку</span>
       <Image 
         src="https://cdn.sendpulse.com/img/messengers/sp-i-small-forms-wa.svg" 
         alt="WhatsApp"

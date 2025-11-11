@@ -43,7 +43,7 @@ export const NewsSection = () => {
 			id: 'shanyraq-forum',
 			title: 'Участие в форуме "Shanyraq 2025"',
 			description: 'Команда Zanger приняла участие в ежегодном бизнес-форуме SHANYRAQ 2025',
-			date: '08.11.2025',
+			date: '10.11.2025',
 			image: '/assets/images/shanyraq.jpeg',
 			readMore: t('readMore'),
 			fullDescription:

@@ -52,10 +52,15 @@ export const LawyerApplicationsList = () => {
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 	const { personalData } = useLoginStore()
 	
-	const [applications, setApplications] = useState<LawyerApplication[]>([])
-	const [tags, setTags] = useState<Tag[]>([])  // Изменено с specializations на tags
-	const [loading, setLoading] = useState(true)
-	const [filters, setFilters] = useState<Filters>({})
+		const [applications, setApplications] = useState<LawyerApplication[]>([])
+		const [tags, setTags] = useState<Tag[]>([])  // Изменено с specializations на tags
+		const [loading, setLoading] = useState(true)
+		const [filters, setFilters] = useState<Filters>({})
+		// Параметры пагинации
+		const [page, setPage] = useState(1)
+		const perPage = 10
+		const [hasMore, setHasMore] = useState(true)
+		const [isLoadingMore, setIsLoadingMore] = useState(false)
 
 	// Проверяем наличие подписки у юриста
 	const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
@@ -87,13 +92,14 @@ export const LawyerApplicationsList = () => {
 		fetchTags()
 	}, [])
 
-	const fetchApplications = async () => {
+		const fetchApplications = async (pageToLoad: number = 1, append = false) => {
 		try {
-			setLoading(true)
-			console.log('Fetching applications with filters:', filters)
+				if (append) setIsLoadingMore(true)
+				else setLoading(true)
+				console.log('Fetching applications with filters:', { ...filters, page: pageToLoad, per_page: perPage })
 			
 			// Передаем фильтры в API
-			const response = await lawyerApi.getOrders(filters)
+				const response = await lawyerApi.getOrders({ ...filters, page: pageToLoad, per_page: perPage })
 			console.log('API Response:', response)
 			
 			// Проверяем структуру ответа
@@ -104,31 +110,45 @@ export const LawyerApplicationsList = () => {
 						: response
 				console.log('Applications data:', data)
 				
-				if (Array.isArray(data)) {
-					setApplications(data)
-				} else if (data && Array.isArray(data.data)) {
-					setApplications(data.data)
+					let list: LawyerApplication[] = []
+					if (Array.isArray(data)) {
+						list = data
+					} else if (data && Array.isArray((data as any).data)) {
+						list = (data as any).data
 				} else {
 					console.warn('Unexpected response structure:', response)
-					setApplications([])
+						list = []
 				}
+
+					if (append) {
+						setApplications(prev => [...prev, ...list])
+					} else {
+						setApplications(list)
+					}
+
+					// если пришло меньше, чем perPage — следующей страницы нет
+					setHasMore(list.length === perPage)
+					setPage(pageToLoad)
 			} else {
 				console.warn('Invalid response:', response)
-				setApplications([])
+					if (!append) setApplications([])
+					setHasMore(false)
 			}
 		} catch (error) {
 			console.error('Error fetching applications:', error)
 			toast.error(t('errorFetching'))
-			setApplications([])
+				if (!append) setApplications([])
 		} finally {
-			setLoading(false)
+				setLoading(false)
+				setIsLoadingMore(false)
 		}
 	}
 
 	// Загружаем заявки при изменении фильтров
-	useEffect(() => {
-		fetchApplications()
-	}, [filters])
+		useEffect(() => {
+			// При изменении фильтров сбрасываем страницу на 1 и перезагружаем
+			fetchApplications(1, false)
+		}, [filters.region_id, filters.tag_id, filters.date])
 
 	// Обработчики фильтров
 	const handleRegionChange = (region: any) => {
@@ -156,9 +176,9 @@ export const LawyerApplicationsList = () => {
 		setFilters({})
 	}
 
-	useEffect(() => {
-		fetchApplications()
-	}, [])
+		useEffect(() => {
+			fetchApplications(1, false)
+		}, [])
 
 	const handleRespond = async (applicationId: number) => {
 		// Проверяем наличие подписки перед откликом
@@ -324,6 +344,18 @@ export const LawyerApplicationsList = () => {
 							</div>
 						)
 					})}
+
+								{hasMore && (
+									<div className={s.loadMoreWrap}>
+										<Button
+											variant="secondary"
+											disabled={isLoadingMore}
+											onClick={() => fetchApplications(page + 1, true)}
+										>
+											{isLoadingMore ? 'Загрузка…' : 'Показать ещё'}
+										</Button>
+									</div>
+								)}
 				</div>
 			)}
 		</div>
