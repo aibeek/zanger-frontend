@@ -16,6 +16,7 @@ export default function EcpCreateDocumentPage() {
   const [name, setName] = React.useState('')
   const [docNumber, setDocNumber] = React.useState('')
   const [createdAt, setCreatedAt] = React.useState('')
+  const [isCreated, setIsCreated] = React.useState(false)
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -43,24 +44,20 @@ export default function EcpCreateDocumentPage() {
     toast.success(t('signedAndSent'))
   }
 
+  const onCreate = () => {
+    // Простая валидация: нужен файл и наименование
+    if (!file || !name) {
+      toast.error(`${t('upload')}: ${t('dropText').split(',')[0]} · ${t('name')}`)
+      return
+    }
+    setIsCreated(true)
+    toast.success(t('documentCreated'))
+  }
+
   return (
     <div className={s.page}>
       {/* Left main card (form) */}
       <div className={s.card}>
-        {/* Signer */}
-        <div className={s.sectionHeader}>🔏 {t('signer')}</div>
-        <div className={s.selectBox} onClick={() => toast(t('chooseSigner'))}>
-          <span className={signer ? '' : s.selectPlaceholder}>{signer || t('chooseSigner')}</span>
-          <span>▾</span>
-        </div>
-
-        {/* Counterparty */}
-        <div className={s.sectionHeader} style={{ marginTop: 16 }}>👥 {t('counterparty')}</div>
-        <div className={s.selectBox} onClick={() => toast(t('chooseCounterparty'))}>
-          <span className={counterparty ? '' : s.selectPlaceholder}>{counterparty || t('chooseCounterparty')}</span>
-          <span>▾</span>
-        </div>
-
         {/* Upload */}
         <div className={s.sectionHeader} style={{ marginTop: 16 }}>📎 {t('upload')}</div>
         <div
@@ -114,7 +111,34 @@ export default function EcpCreateDocumentPage() {
           />
         </div>
 
-        {/* Actions */}
+        {/* New Create button */}
+        <div className={s.actions}>
+          <Button onClick={onCreate}>{t('createButton')}</Button>
+        </div>
+
+        {/* Signer */}
+        <div className={s.sectionHeader} style={{ marginTop: 16 }}>🔏 {t('signer')}</div>
+        <div
+          className={s.selectBox}
+          style={{ opacity: isCreated ? 1 : 0.7 }}
+          onClick={() => (isCreated ? toast(t('chooseSigner')) : toast(t('createFirst')))}
+        >
+          <span className={signer ? '' : s.selectPlaceholder}>{signer || t('chooseSigner')}</span>
+          <span>▾</span>
+        </div>
+
+        {/* Counterparty */}
+        <div className={s.sectionHeader} style={{ marginTop: 16 }}>👥 {t('counterparty')}</div>
+        <div
+          className={s.selectBox}
+          style={{ opacity: isCreated ? 1 : 0.7 }}
+          onClick={() => (isCreated ? toast(t('chooseCounterparty')) : toast(t('createFirst')))}
+        >
+          <span className={counterparty ? '' : s.selectPlaceholder}>{counterparty || t('chooseCounterparty')}</span>
+          <span>▾</span>
+        </div>
+
+        {/* Existing actions at the end */}
         <div className={s.actions}>
           <Button className={s.draftBtn} onClick={onDraft}>{t('draft')}</Button>
           <Button variant="secondary" onClick={onSendWithoutSign}>{t('sendWithoutSign')}</Button>

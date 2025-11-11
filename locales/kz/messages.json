@@ -1113,6 +1113,7 @@
 			"docNumber": "Құжат нөмірі",
 			"docNumberPlaceholder": "Нөмірді енгізіңіз",
 			"createdAt": "Жасалған күні",
+			"createButton": "Құру",
 			"draft": "Жоба",
 			"sendWithoutSign": "Қол қоймай жіберу",
 			"signAndSend": "Қол қойып жіберу",
@@ -1120,7 +1121,9 @@
 			"historyEmpty": "Әзірге жіберулер мен қол қоюлар жоқ",
 			"draftSaved": "Жоба ретінде сақталды",
 			"sentWithoutSign": "Қолтаңбасыз жіберілді",
-			"signedAndSent": "Қол қойылып жіберілді"
+			"signedAndSent": "Қол қойылып жіберілді",
+			"documentCreated": "Құжат жасалды",
+			"createFirst": "Алдымен құжатты жасаңыз"
 		},
 		"counterparties": {
 			"addTitle": "Жаңа контрагентті қосу",
