@@ -11,12 +11,13 @@ interface PulseChatWidgetProps {
 
 // Globally disable PulseChat widget rendering by default, with optional env toggle
 export const PulseChatWidget = ({ className, enabled }: PulseChatWidgetProps) => {
-  const isEnabled = enabled ?? (process.env.NEXT_PUBLIC_ENABLE_PULSECHAT === 'true');
+  // По умолчанию включен, если явно не передан enabled=false
+  const isEnabled = enabled ?? (process.env.NEXT_PUBLIC_ENABLE_PULSECHAT !== 'false');
 
   console.log('PulseChatWidget: isEnabled =', isEnabled);
   console.log('PulseChatWidget: NEXT_PUBLIC_ENABLE_PULSECHAT =', process.env.NEXT_PUBLIC_ENABLE_PULSECHAT);
 
-  // If explicitly disabled or env flag not set — render nothing
+  // If explicitly disabled — render nothing
   if (!isEnabled) return null;
 
   const chatId = process.env.NEXT_PUBLIC_PULSE_CHAT_ID || '68beb8714d31c577970ac394';

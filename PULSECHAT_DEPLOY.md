@@ -2,11 +2,28 @@
 
 ## Переменные окружения для деплоя
 
-На сервере деплоя (Vercel/Netlify/etc) необходимо установить следующие переменные окружения:
+На сервере деплоя необходимо добавить в файл `.env` следующие переменные:
 
 ```bash
 NEXT_PUBLIC_PULSE_CHAT_ID=68beb8714d31c577970ac394
 NEXT_PUBLIC_ENABLE_PULSECHAT=true
+```
+
+## Для Docker деплоя:
+
+Добавьте эти переменные в файл `.env` на сервере рядом с `docker-compose.yml`:
+
+```bash
+# В файл .env на сервере
+NEXT_PUBLIC_PULSE_CHAT_ID=68beb8714d31c577970ac394
+NEXT_PUBLIC_ENABLE_PULSECHAT=true
+```
+
+После добавления переменных, пересоберите и перезапустите контейнер:
+
+```bash
+docker-compose build
+docker-compose up -d
 ```
 
 ## Проверка на продакшене
