@@ -2,10 +2,11 @@
 
 import React from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { Button, Input } from '@/shared/ui-kit'
+import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
-import { ecpApi, EsdcaDocumentDetails } from '@/shared/api'
+import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi } from '@/shared/api'
+import { useLoginStore } from '@/features/auth'
 
 export default function EcpCreateDocumentPage() {
   const t = useTranslations('ecp.create')
@@ -21,6 +22,18 @@ export default function EcpCreateDocumentPage() {
   const [isCreating, setIsCreating] = React.useState(false)
   const [documentId, setDocumentId] = React.useState<number | null>(null)
   const [details, setDetails] = React.useState<EsdcaDocumentDetails | null>(null)
+  const [documentTypes, setDocumentTypes] = React.useState<EsdcaDocumentType[]>([])
+  const [selectedDocumentTypeId, setSelectedDocumentTypeId] = React.useState<number | null>(null)
+
+  // Подписанты и поиск контрагентов
+  type CounterpartyItem = { id: number; name: string; iin_bin?: string; type?: string; email?: string; phone?: string }
+  const { personalData, getPersonalDataByToken } = useLoginStore()
+  const [signatories, setSignatories] = React.useState<CounterpartyItem[]>([])
+  const [loadingSignatories, setLoadingSignatories] = React.useState<boolean>(false)
+  const [signatoriesError, setSignatoriesError] = React.useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = React.useState<string>('')
+  const [searchResults, setSearchResults] = React.useState<CounterpartyItem[]>([])
+  const [loadingSearch, setLoadingSearch] = React.useState<boolean>(false)
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -48,6 +61,105 @@ export default function EcpCreateDocumentPage() {
     toast.success(t('signedAndSent'))
   }
 
+  React.useEffect(() => {
+    let mounted = true
+    ecpApi
+      .getDocumentTypes()
+      .then((types) => {
+        if (!mounted) return
+        const maybeObj = types as any
+        const normalized = Array.isArray(types)
+          ? types
+          : Array.isArray(maybeObj?.data)
+          ? maybeObj.data
+          : Array.isArray(maybeObj?.items)
+          ? maybeObj.items
+          : Array.isArray(maybeObj?.document_types)
+          ? maybeObj.document_types
+          : []
+        setDocumentTypes(normalized)
+        // Не выбираем автоматически, пользователь сам выберет; можно раскомментировать, чтобы ставить первый тип по умолчанию
+        // if (types && types.length > 0) setSelectedDocumentTypeId(types[0].id)
+      })
+      .catch((e: any) => {
+        const msg = e?.message || 'Ошибка загрузки типов документов'
+        toast.error(msg)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  // Убедиться, что персональные данные загружены, чтобы получить userId
+  React.useEffect(() => {
+    if (!personalData) {
+      getPersonalDataByToken().catch(() => {})
+    }
+  }, [personalData, getPersonalDataByToken])
+
+  // Загрузка подписантов по userId
+  React.useEffect(() => {
+    const userId = personalData?.id
+    if (!userId) return
+
+    let mounted = true
+    setLoadingSignatories(true)
+    setSignatoriesError(null)
+    counterpartiesApi
+      .getByUserId(userId)
+      .then((res: any) => {
+        if (!mounted) return
+        const normalized: CounterpartyItem[] = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res?.items)
+          ? res.items
+          : []
+        setSignatories(normalized)
+      })
+      .catch((e: any) => {
+        const msg = e?.message || 'Не удалось загрузить подписантов'
+        setSignatoriesError(msg)
+      })
+      .finally(() => {
+        setLoadingSignatories(false)
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [personalData])
+
+  // Поиск контрагентов (debounce)
+  React.useEffect(() => {
+    const q = searchQuery.trim()
+    if (!q) {
+      setSearchResults([])
+      return
+    }
+    setLoadingSearch(true)
+    const tId = setTimeout(async () => {
+      try {
+        const res: any = await counterpartiesApi.search({ q })
+        const normalized: CounterpartyItem[] = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res?.items)
+          ? res.items
+          : []
+        setSearchResults(normalized)
+      } catch (e: any) {
+        toast.error(e?.message || 'Ошибка поиска контрагентов')
+      } finally {
+        setLoadingSearch(false)
+      }
+    }, 350)
+
+    return () => clearTimeout(tId)
+  }, [searchQuery])
+
   const onCreate = async () => {
     // Простая валидация: нужен файл и наименование
     if (!file || !name) {
@@ -58,9 +170,8 @@ export default function EcpCreateDocumentPage() {
     try {
       setIsCreating(true)
 
-      // 1) Получить типы документов и выбрать первый как дефолт
-      const types = await ecpApi.getDocumentTypes().catch(() => [])
-      const documentTypeId = Array.isArray(types) && types.length > 0 ? types[0].id : 1
+      // 1) Определить тип документа на основе выбора пользователя (или первый как дефолт)
+      const documentTypeId = selectedDocumentTypeId ?? (documentTypes[0]?.id ?? 1)
 
       // 2) Создать документ (черновик)
       const description = `${t('docNumber')}: ${docNumber || '—'}; ${t('createdAt')}: ${createdAt || '—'}`
@@ -147,34 +258,88 @@ export default function EcpCreateDocumentPage() {
           />
         </div>
 
-        {/* New Create button */}
-        <div className={s.actions}>
-          <Button onClick={onCreate} disabled={isCreating}>
-            {isCreating ? t('creating') : t('createButton')}
-          </Button>
+        {/* Document type select */}
+        <div style={{ marginTop: 12 }}>
+          <div className={s.sectionHeader} style={{ marginBottom: 6 }}>📄 Тип документа</div>
+          <select
+            value={selectedDocumentTypeId ?? ''}
+            onChange={(e) => setSelectedDocumentTypeId(Number(e.target.value) || null)}
+            disabled={isCreating}
+            className={s.selectBox}
+          >
+            <option value="" disabled>
+              {locale === 'kz' ? 'Түрін таңдаңыз' : 'Выберите тип'}
+            </option>
+            {documentTypes.map((dt) => (
+              <option key={dt.id} value={dt.id}>
+                {locale === 'kz' ? dt.name_kaz : dt.name_rus}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Signer */}
-        <div className={s.sectionHeader} style={{ marginTop: 16 }}>🔏 {t('signer')}</div>
-        <div
-          className={s.selectBox}
-          style={{ opacity: isCreated ? 1 : 0.7 }}
-          onClick={() => (isCreated ? toast(t('chooseSigner')) : toast(t('createFirst')))}
-        >
-          <span className={signer ? '' : s.selectPlaceholder}>{signer || t('chooseSigner')}</span>
-          <span>▾</span>
-        </div>
+      {/* New Create button */}
+      <div className={s.actions}>
+        <Button onClick={onCreate} disabled={isCreating}>
+          {isCreating ? t('creating') : t('createButton')}
+        </Button>
+      </div>
 
-        {/* Counterparty */}
-        <div className={s.sectionHeader} style={{ marginTop: 16 }}>👥 {t('counterparty')}</div>
-        <div
-          className={s.selectBox}
-          style={{ opacity: isCreated ? 1 : 0.7 }}
-          onClick={() => (isCreated ? toast(t('chooseCounterparty')) : toast(t('createFirst')))}
-        >
-          <span className={counterparty ? '' : s.selectPlaceholder}>{counterparty || t('chooseCounterparty')}</span>
-          <span>▾</span>
+      {/* Signatories list */}
+      <div className={s.sectionHeader} style={{ marginTop: 16 }}>🖋️ Подписанты</div>
+      <div className={s.divider} />
+      {loadingSignatories ? (
+        <div style={{ padding: 8 }}>
+          <Loader /> Загрузка...
         </div>
+      ) : signatoriesError ? (
+        <div style={{ color: 'var(--danger)', padding: 8 }}>{signatoriesError}</div>
+      ) : signatories.length === 0 ? (
+        <div className={s.selectPlaceholder} style={{ padding: 8 }}>Нет добавленных подписантов</div>
+      ) : (
+        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+          {signatories.map((sItem) => (
+            <li key={sItem.id} className={s.userRow} style={{ padding: '8px 0', borderBottom: '1px solid #f5f6fb' }}>
+              <div style={{ fontWeight: 600 }}>{sItem.name}</div>
+              <div style={{ fontSize: 12, color: '#6b7280' }}>
+                {sItem.iin_bin ? `ИИН/БИН: ${sItem.iin_bin}` : ''}
+                {sItem.phone ? (sItem.iin_bin ? ' · ' : '') + `Тел: ${sItem.phone}` : ''}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+        {/* Counterparties search */}
+        <div className={s.sectionHeader} style={{ marginTop: 16 }}>🔎 Поиск контрагентов</div>
+        <Input
+          placeholder="Введите имя или ИИН/БИН"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {loadingSearch ? (
+          <div style={{ padding: 8 }}>
+            <Loader /> Поиск...
+          </div>
+        ) : searchQuery && (
+          <div className={s.searchDropdown} style={{ marginTop: 8, border: '1px solid #e5e7eb', borderRadius: 8 }}>
+            {searchResults.length === 0 ? (
+              <div className={s.selectPlaceholder} style={{ padding: 8 }}>Ничего не найдено</div>
+            ) : (
+              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                {searchResults.map((item) => (
+                  <li key={item.id} className={s.userRow} style={{ padding: '8px 12px', borderBottom: '1px solid #f5f6fb' }}>
+                    <div style={{ fontWeight: 600 }}>{item.name}</div>
+                    <div style={{ fontSize: 12, color: '#6b7280' }}>
+                      {item.iin_bin ? `ИИН/БИН: ${item.iin_bin}` : ''}
+                      {item.phone ? (item.iin_bin ? ' · ' : '') + `Тел: ${item.phone}` : ''}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
 
         {/* Existing actions at the end */}
         <div className={s.actions}>
