@@ -59,7 +59,9 @@
 
 @media (max-width: 768px) {
   .waBubble {
-    display: none;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 16px;
   }
   .waFloat img {
     width: 58px;
