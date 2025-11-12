@@ -79,4 +79,90 @@ export const ecpApi = {
       method: 'GET',
     })
   },
+
+  addSigners: (
+    documentId: number,
+    signers: Array<{
+      counterparty_id?: number
+      signer_iin?: string
+      signer_fio?: string
+      signer_email?: string
+      signer_number?: string
+      role: 'SIGNER' | 'APPROVER' | 'CC'
+      stage_no: number
+      due_at?: string
+    }>
+  ): Promise<{ success?: boolean }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/add-signers`, {
+      method: 'POST',
+      body: JSON.stringify({ signers }),
+    })
+  },
+
+  sendForSigning: (documentId: number): Promise<{ success?: boolean }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/send`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
+  },
+
+  firstSign: (
+    documentId: number,
+    payload: {
+      cms: string
+      initiator: {
+        signer_iin: string
+        signer_fio: string
+        signer_email?: string
+        signer_number?: string
+      }
+      counterparties: Array<{
+        counterparty_id?: number
+        signer_iin?: string
+        signer_fio?: string
+        signer_email?: string
+        signer_number?: string
+        role?: 'SIGNER' | 'APPROVER' | 'CC'
+        stage_no?: number
+        due_at?: string
+      }>
+      sign_after_all: boolean
+      certificate?: string
+    }
+  ): Promise<{ success?: boolean; status?: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/first-sign`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  signInitiate: (
+    documentId: number,
+    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_CMS'
+  ): Promise<{ operation_id: number; challenge: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign`, {
+      method: 'POST',
+      body: JSON.stringify({ method }),
+    })
+  },
+
+  signVerify: (
+    documentId: number,
+    payload: { operation_id: number; cms: string }
+  ): Promise<{ valid: boolean; status: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/verify`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
+
+  signComplete: (
+    documentId: number,
+    payload: { operation_id: number; cms: string; certificate?: string | null }
+  ): Promise<{ success: boolean; status: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/complete`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  },
 }

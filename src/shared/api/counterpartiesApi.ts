@@ -16,8 +16,13 @@ export interface CounterpartyPayload {
 }
 
 export const counterpartiesApi = {
-  search: (params?: { q?: string }) => {
-    const query = createQuery(params)
+  // Backend expects `query` param; support both but map to `query`
+  search: (params?: { query?: string; q?: string; page?: number; limit?: number }) => {
+    const effectiveParams = {
+      ...(params || {}),
+      query: params?.query ?? params?.q ?? '',
+    }
+    const query = createQuery(effectiveParams)
     const url = `${API_URL}/counterparties/search${query}`
     return httpClientWithAuth(url, { method: 'GET' })
   },
