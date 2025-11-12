@@ -39,7 +39,7 @@ export default async function Home() {
 			<ResourcesSection />
 			<Footer />
 			<WhatsAppFloat />
-			{/* <PulseChatWidget /> */}
+			<PulseChatWidget />
 	</div>
 	)
 }

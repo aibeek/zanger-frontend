@@ -10,7 +10,7 @@ interface PulseChatProps {
 }
 
 export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
-  const [showChat, setShowChat] = useState(false);
+  const [showChat, setShowChat] = useState(true); // Чат раскрыт по умолчанию
   const [chatLoaded, setChatLoaded] = useState(false);
 
   // Блокируем все оригинальные элементы Pulse
