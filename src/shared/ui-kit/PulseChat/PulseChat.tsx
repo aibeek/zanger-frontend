@@ -13,44 +13,11 @@ export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
   const [showChat, setShowChat] = useState(true); // Чат раскрыт по умолчанию
   const [chatLoaded, setChatLoaded] = useState(false);
 
-  // Блокируем все оригинальные элементы Pulse
+  // Загружаем Pulse скрипт при монтировании компонента
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || chatLoaded) return;
 
-    const blockPulseElements = () => {
-      // Скрываем все элементы Pulse, но не удаляем их
-      const selectors = [
-        '[data-live-chat-id]',
-        '[id*="pulse"]',
-        '.pulse-chat-widget',
-        '.pulse-livechat',
-        '.livechat-widget',
-        'iframe[src*="pulse"]'
-      ];
-
-      selectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach((element: Element) => {
-          const htmlElement = element as HTMLElement;
-          // Проверяем, что это не наш контейнер
-          if (!htmlElement.closest(`.${styles.chatContainer}`)) {
-            htmlElement.style.display = 'none';
-            htmlElement.style.visibility = 'hidden';
-            htmlElement.style.opacity = '0';
-          }
-        });
-      });
-    };
-
-    // Запускаем блокировку каждые 1000мс
-    const interval = setInterval(blockPulseElements, 1000);
-
-    return () => clearInterval(interval);
-  }, [enabled]);
-
-  // Загружаем Pulse скрипт только когда нужно показать чат
-  useEffect(() => {
-    if (!enabled || !showChat || chatLoaded) return;
+    console.log('PulseChat: Loading script for chatId:', chatId);
 
     const loadPulseScript = () => {
       const script = document.createElement('script');
@@ -59,6 +26,7 @@ export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
       script.async = true;
 
       script.onload = () => {
+        console.log('PulseChat: Script loaded successfully');
         setChatLoaded(true);
         
         // Через небольшую задержку показываем чат
@@ -74,12 +42,13 @@ export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
 
           selectors.forEach(selector => {
             const elements = document.querySelectorAll(selector);
+            console.log(`PulseChat: Found ${elements.length} elements for selector: ${selector}`);
             elements.forEach((element: Element) => {
               const htmlElement = element as HTMLElement;
               if (!htmlElement.closest(`.${styles.chatContainer}`)) {
-                htmlElement.style.display = 'block';
-                htmlElement.style.visibility = 'visible';
-                htmlElement.style.opacity = '1';
+                htmlElement.style.display = showChat ? 'block' : 'none';
+                htmlElement.style.visibility = showChat ? 'visible' : 'hidden';
+                htmlElement.style.opacity = showChat ? '1' : '0';
                 htmlElement.style.position = 'fixed';
                 htmlElement.style.bottom = '80px';
                 htmlElement.style.left = '20px';
@@ -91,43 +60,44 @@ export const PulseChat = ({ chatId, enabled = false }: PulseChatProps) => {
         }, 1000);
       };
 
+      script.onerror = () => {
+        console.error('PulseChat: Failed to load script');
+      };
+
       document.body.appendChild(script);
     };
 
     loadPulseScript();
-  }, [chatId, enabled, showChat, chatLoaded]);
+  }, [chatId, enabled, chatLoaded, showChat]);
+
+  // Управление видимостью чата
+  useEffect(() => {
+    if (!enabled || !chatLoaded) return;
+
+    const selectors = [
+      `[data-live-chat-id="${chatId}"]`,
+      '[id*="pulse"]',
+      '.pulse-chat-widget',
+      '.pulse-livechat',
+      '.livechat-widget',
+      'iframe[src*="pulse"]'
+    ];
+
+    selectors.forEach(selector => {
+      const elements = document.querySelectorAll(selector);
+      elements.forEach((element: Element) => {
+        const htmlElement = element as HTMLElement;
+        if (!htmlElement.closest(`.${styles.chatContainer}`)) {
+          htmlElement.style.display = showChat ? 'block' : 'none';
+          htmlElement.style.visibility = showChat ? 'visible' : 'hidden';
+          htmlElement.style.opacity = showChat ? '1' : '0';
+        }
+      });
+    });
+  }, [chatId, enabled, chatLoaded, showChat]);
 
   const handleChatToggle = () => {
-    if (showChat) {
-      // Закрываем чат - удаляем все элементы Pulse
-      setShowChat(false);
-      setChatLoaded(false);
-      
-      const scripts = document.querySelectorAll('script[src*="pulse"], script[data-live-chat-id]');
-      scripts.forEach(script => script.remove());
-      
-      const selectors = [
-        '[data-live-chat-id]',
-        '[id*="pulse"]',
-        '.pulse-chat-widget',
-        '.pulse-livechat',
-        '.livechat-widget',
-        'iframe[src*="pulse"]'
-      ];
-
-      selectors.forEach(selector => {
-        const elements = document.querySelectorAll(selector);
-        elements.forEach((element: Element) => {
-          const htmlElement = element as HTMLElement;
-          if (!htmlElement.closest(`.${styles.chatContainer}`)) {
-            htmlElement.remove();
-          }
-        });
-      });
-    } else {
-      // Открываем чат
-      setShowChat(true);
-    }
+    setShowChat(!showChat);
   };
 
   // Early return after all hooks are called

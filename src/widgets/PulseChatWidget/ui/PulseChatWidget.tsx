@@ -13,10 +13,14 @@ interface PulseChatWidgetProps {
 export const PulseChatWidget = ({ className, enabled }: PulseChatWidgetProps) => {
   const isEnabled = enabled ?? (process.env.NEXT_PUBLIC_ENABLE_PULSECHAT === 'true');
 
+  console.log('PulseChatWidget: isEnabled =', isEnabled);
+  console.log('PulseChatWidget: NEXT_PUBLIC_ENABLE_PULSECHAT =', process.env.NEXT_PUBLIC_ENABLE_PULSECHAT);
+
   // If explicitly disabled or env flag not set — render nothing
   if (!isEnabled) return null;
 
   const chatId = process.env.NEXT_PUBLIC_PULSE_CHAT_ID || '68beb8714d31c577970ac394';
+  console.log('PulseChatWidget: chatId =', chatId);
 
   return (
     <div className={`${s.pulseChatWidget} ${className || ''}`} suppressHydrationWarning>
