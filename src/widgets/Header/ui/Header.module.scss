@@ -1367,6 +1367,26 @@
 			max-width: 100%;
 		}
 	}
+
+	.createdDate {
+		font-size: 11px;
+		color: #cbd5e1;
+		font-weight: 500;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		padding: 4px 8px;
+		background: rgba(203, 213, 225, 0.15);
+		border-radius: 6px;
+		border: 1px solid rgba(203, 213, 225, 0.25);
+		white-space: nowrap;
+		
+		@media (max-width: 400px) {
+			font-size: 10px;
+			padding: 3px 6px;
+			gap: 3px;
+		}
+	}
 	
 	.respondBtn {
 		background: linear-gradient(135deg, #3b82f6, #1d4ed8);

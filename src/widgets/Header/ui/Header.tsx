@@ -70,6 +70,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 	  title: string
 	  description: string
 	  timeAgo: string
+	  createdDate: string // Добавлено: отформатированная дата создания
 	  location: string
 	  firstName: string
 	}
@@ -142,6 +143,19 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 		return `${diffDays} дн назад`
 	}
 
+	// Форматирование даты в читаемый вид: "13 ноября 2025, 12:59"
+	const formatCreatedDate = (dateStr?: string) => {
+		if (!dateStr) return ''
+		const date = new Date(dateStr)
+		const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря']
+		const day = date.getDate()
+		const month = months[date.getMonth()]
+		const year = date.getFullYear()
+		const hours = String(date.getHours()).padStart(2, '0')
+		const minutes = String(date.getMinutes()).padStart(2, '0')
+		return `${day} ${month} ${year}, ${hours}:${minutes}`
+	}
+
 	const mapLatestOrders = (raw: any[]): LiveApplicationItem[] => {
 		if (!Array.isArray(raw)) return []
 		return raw.map((item: any) => {
@@ -164,6 +178,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				title,
 				description,
 				timeAgo: formatTimeAgo(createdAt),
+				createdDate: formatCreatedDate(createdAt),
 				location,
 				firstName,
 			}
@@ -360,12 +375,12 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 														<div key={item.id} className={s.liveApplicationItem}>
 															<div className={s.liveAppHeader}>
 																<h4>{item.title}</h4>
-																{/* <span className={s.timeAgo}>{item.timeAgo}</span> */}
 																<span className={s.userNameBadge}>{item.firstName || '—'}</span>
 															</div>
 															<p className={s.liveAppDescription}>{item.description}</p>
 															<div className={s.liveAppFooter}>
 																<span className={s.location}>📍 {item.location || '—'}</span>
+																<span className={s.createdDate}>🕐 {item.createdDate}</span>
 																<button
 																	className={s.respondBtn}
 																	onClick={() => {
@@ -437,6 +452,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 																	<p className={s.liveAppDescription}>{item.description}</p>
 																	<div className={s.liveAppFooter}>
 																		<span className={s.location}>📍 {item.location || '—'}</span>
+																		<span className={s.createdDate}>🕐 {item.createdDate}</span>
 																		<button
 																			className={s.respondBtn}
 																			onClick={() => {
