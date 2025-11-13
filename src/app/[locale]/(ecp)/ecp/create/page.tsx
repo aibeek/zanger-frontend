@@ -18,7 +18,6 @@ export default function EcpCreateDocumentPage() {
   const [file, setFile] = React.useState<File | null>(null)
   const [name, setName] = React.useState('')
   const [docNumber, setDocNumber] = React.useState('')
-  const [createdAt, setCreatedAt] = React.useState('')
   const [isCreated, setIsCreated] = React.useState(false)
   const [isCreating, setIsCreating] = React.useState(false)
   const [documentId, setDocumentId] = React.useState<number | null>(null)
@@ -54,9 +53,7 @@ export default function EcpCreateDocumentPage() {
     }
   }
 
-  const onDraft = () => {
-    toast.success(t('draftSaved'))
-  }
+  // Удалено: обработчик черновика
   const onSendWithoutSign = async () => {
     if (!documentId) {
       toast.error(t('createFirst'))
@@ -254,7 +251,7 @@ export default function EcpCreateDocumentPage() {
       const documentTypeId = selectedDocumentTypeId ?? (documentTypes[0]?.id ?? 1)
 
       // 2) Создать документ (черновик)
-      const description = `${t('docNumber')}: ${docNumber || '—'}; ${t('createdAt')}: ${createdAt || '—'}`
+      const description = `${t('docNumber')}: ${docNumber || '—'}`
       const createRes = await ecpApi.createDocument({
         title: name,
         description,
@@ -307,7 +304,7 @@ export default function EcpCreateDocumentPage() {
           />
         </div>
 
-        {/* Name + Number + Date grid */}
+        {/* Name + Number grid */}
         <div className={s.grid2}>
           <div>
             <label htmlFor="name" className={s.sectionHeader} style={{ marginBottom: 6 }}>📝 {t('name')}</label>
@@ -327,15 +324,6 @@ export default function EcpCreateDocumentPage() {
               onChange={(e) => setDocNumber(e.target.value)}
             />
           </div>
-        </div>
-        <div style={{ marginTop: 12 }}>
-          <label htmlFor="date" className={s.sectionHeader} style={{ marginBottom: 6 }}>{t('createdAt')}</label>
-          <Input
-            id="date"
-            type="date"
-            value={createdAt}
-            onChange={(e) => setCreatedAt(e.target.value)}
-          />
         </div>
 
         {/* Document type select */}
@@ -358,93 +346,96 @@ export default function EcpCreateDocumentPage() {
           </select>
         </div>
 
-      {/* New Create button */}
+      {/* Create button */}
       <div className={s.actions}>
         <Button onClick={onCreate} disabled={isCreating}>
           {isCreating ? t('creating') : t('createButton')}
         </Button>
       </div>
+      {/* Блоки выбора подписанта, поиск контрагентов и кнопки — только после создания и при статусе DRAFT */}
+      {isCreated && details?.status === 'DRAFT' && (
+        <>
+          {/* Signatories dropdown */}
+          <div className={s.sectionHeader} style={{ marginTop: 16 }}>🖋️ Подписанты</div>
+          <div className={s.divider} />
+          {loadingSignatories ? (
+            <div style={{ padding: 8 }}>
+              <Loader /> Загрузка...
+            </div>
+          ) : signatoriesError ? (
+            <div style={{ color: 'var(--danger)', padding: 8 }}>{signatoriesError}</div>
+          ) : (
+            <select
+              className={s.selectBox}
+              value={selectedSignerId}
+              onChange={async (e) => {
+                const id = Number(e.target.value)
+                setSelectedSignerId(id || '')
+                const sItem = signatories.find((s) => s.id === id)
+                if (!sItem) return
+                setSigner(sItem.name)
+                setCounterparty(sItem.name)
+              }}
+              disabled={signatories.length === 0}
+            >
+              <option value="" disabled>
+                {locale === 'kz' ? 'Подписантты таңдаңыз' : 'Выберите подписанта'}
+              </option>
+              {signatories.map((sItem) => (
+                <option key={sItem.id} value={sItem.id}>
+                  {sItem.name}{sItem.iin_bin ? ` · ${sItem.iin_bin}` : ''}
+                </option>
+              ))}
+            </select>
+          )}
 
-      {/* Signatories dropdown */}
-      <div className={s.sectionHeader} style={{ marginTop: 16 }}>🖋️ Подписанты</div>
-      <div className={s.divider} />
-      {loadingSignatories ? (
-        <div style={{ padding: 8 }}>
-          <Loader /> Загрузка...
-        </div>
-      ) : signatoriesError ? (
-        <div style={{ color: 'var(--danger)', padding: 8 }}>{signatoriesError}</div>
-      ) : (
-        <select
-          className={s.selectBox}
-          value={selectedSignerId}
-          onChange={async (e) => {
-            const id = Number(e.target.value)
-            setSelectedSignerId(id || '')
-            const sItem = signatories.find((s) => s.id === id)
-            if (!sItem) return
-            setSigner(sItem.name)
-            setCounterparty(sItem.name)
-          }}
-          disabled={signatories.length === 0}
-        >
-          <option value="" disabled>
-            {locale === 'kz' ? 'Подписантты таңдаңыз' : 'Выберите подписанта'}
-          </option>
-          {signatories.map((sItem) => (
-            <option key={sItem.id} value={sItem.id}>
-              {sItem.name}{sItem.iin_bin ? ` · ${sItem.iin_bin}` : ''}
-            </option>
-          ))}
-        </select>
+          {/* Counterparties search */}
+          <div className={s.sectionHeader} style={{ marginTop: 16 }}>🔎 Поиск контрагентов</div>
+          <Input
+            placeholder="Введите имя или ИИН/БИН"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {loadingSearch ? (
+            <div style={{ padding: 8 }}>
+              <Loader /> Поиск...
+            </div>
+          ) : searchQuery && (
+            <div className={s.searchDropdown} style={{ marginTop: 8, border: '1px solid #e5e7eb', borderRadius: 8 }}>
+              {searchResults.length === 0 ? (
+                <div className={s.selectPlaceholder} style={{ padding: 8 }}>Ничего не найдено</div>
+              ) : (
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                  {searchResults.map((item) => (
+                    <li
+                      key={item.id}
+                      className={s.userRow}
+                      style={{ padding: '8px 12px', borderBottom: '1px solid #f5f6fb', cursor: 'pointer' }}
+                      onClick={async () => {
+                        setSelectedCounterpartyId(item.id)
+                        setSigner(item.name)
+                        setCounterparty(item.name)
+                      }}
+                    >
+                      <div style={{ fontWeight: 600 }}>{item.name}</div>
+                      <div style={{ fontSize: 12, color: '#6b7280' }}>
+                        {item.iin_bin ? `ИИН/БИН: ${item.iin_bin}` : ''}
+                        {item.phone ? (item.iin_bin ? ' · ' : '') + `Тел: ${item.phone}` : ''}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* Actions after creation (no draft button) */}
+          <div className={s.actions}>
+            <Button variant="secondary" onClick={onSendWithoutSign}>{t('sendWithoutSign')}</Button>
+            <Button onClick={onSignAndSend}>{t('signAndSend')}</Button>
+          </div>
+        </>
       )}
-
-        {/* Counterparties search */}
-        <div className={s.sectionHeader} style={{ marginTop: 16 }}>🔎 Поиск контрагентов</div>
-        <Input
-          placeholder="Введите имя или ИИН/БИН"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        {loadingSearch ? (
-          <div style={{ padding: 8 }}>
-            <Loader /> Поиск...
-          </div>
-        ) : searchQuery && (
-          <div className={s.searchDropdown} style={{ marginTop: 8, border: '1px solid #e5e7eb', borderRadius: 8 }}>
-            {searchResults.length === 0 ? (
-              <div className={s.selectPlaceholder} style={{ padding: 8 }}>Ничего не найдено</div>
-            ) : (
-              <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                {searchResults.map((item) => (
-                  <li
-                    key={item.id}
-                    className={s.userRow}
-                    style={{ padding: '8px 12px', borderBottom: '1px solid #f5f6fb', cursor: 'pointer' }}
-                    onClick={async () => {
-                      setSelectedCounterpartyId(item.id)
-                      setSigner(item.name)
-                      setCounterparty(item.name)
-                    }}
-                  >
-                    <div style={{ fontWeight: 600 }}>{item.name}</div>
-                    <div style={{ fontSize: 12, color: '#6b7280' }}>
-                      {item.iin_bin ? `ИИН/БИН: ${item.iin_bin}` : ''}
-                      {item.phone ? (item.iin_bin ? ' · ' : '') + `Тел: ${item.phone}` : ''}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-
-        {/* Existing actions at the end */}
-        <div className={s.actions}>
-          <Button className={s.draftBtn} onClick={onDraft}>{t('draft')}</Button>
-          <Button variant="secondary" onClick={onSendWithoutSign}>{t('sendWithoutSign')}</Button>
-          <Button onClick={onSignAndSend}>{t('signAndSend')}</Button>
-        </div>
       </div>
 
       {/* Right details/history card */}

@@ -41,18 +41,17 @@ export const EcpSidebar: React.FC = () => {
 
         {openDocs && (
           <div className={s.dropdown}>
-            <div className={s.docItem}>
+            <div className={s.docItem} onClick={() => router.push(`/${locale}/ecp/incoming`)}>
               <div className={s.docItemTitle}>
                 <span>{t('incoming')}</span>
               </div>
-              <span className={s.counter}>2</span>
             </div>
-            <div className={s.docItem}>
+            <div className={s.docItem} onClick={() => router.push(`/${locale}/ecp/sent`)}>
               <div className={s.docItemTitle}>
-                <span style={{textDecoration: 'underline'}}>{t('sent')}</span>
+                <span>{t('sent')}</span>
               </div>
             </div>
-            <div className={s.docItem}>
+            <div className={s.docItem} onClick={() => router.push(`/${locale}/ecp/drafts`)}>
               <div className={s.docItemTitle}>
                 <span>{t('drafts')}</span>
               </div>

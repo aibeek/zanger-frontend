@@ -1,5 +1,6 @@
 import { API_URL } from '../config'
 import { httpClientWithAuth } from './httpClient'
+import { createQuery } from '../lib/helpers/query'
 
 export type EsdcaDocumentCreatePayload = {
   title: string
@@ -76,6 +77,15 @@ export const ecpApi = {
 
   getDocumentDetails: (id: number): Promise<EsdcaDocumentDetails> => {
     return httpClientWithAuth(`${API_URL}/documents/${id}`, {
+      method: 'GET',
+    })
+  },
+
+  listDocuments: (
+    params?: { status?: string; inbox?: boolean; outbox?: boolean; page?: number; limit?: number }
+  ): Promise<{ data: any[]; pagination?: any }> => {
+    const query = createQuery(params || {})
+    return httpClientWithAuth(`${API_URL}/documents${query}`, {
       method: 'GET',
     })
   },
