@@ -35,7 +35,7 @@ export const ModulesSection = () => {
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
     const isEcp = normalized.includes('ЭЦП') || normalized.includes('ЭЦҚ') || normalized.includes('ECP')
     if (isEcp) {
-      router.push(`/${locale}/ecp`)
+      router.push(`/${locale}/ecp/create`)
       return
     }
     // Остальные модули пока в разработке

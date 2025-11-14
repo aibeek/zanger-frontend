@@ -63,8 +63,14 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         t('dashboard.footer.sections.videoConference'),
         t('dashboard.footer.sections.documentManagement')
     ]
-    
-    const handleSectionClick = () => {
+
+    const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
+
+    const handleSectionClick = (label: string) => {
+        if (label === digitalSignatureLabel) {
+            router.push(`/${language}/ecp/create`)
+            return
+        }
         setIsModalOpen(true)
     }
 
@@ -100,7 +106,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                     <button 
                         key={index} 
                         className={s.footerSection}
-                        onClick={handleSectionClick}
+                        onClick={() => handleSectionClick(section)}
                     >
                         <span>{section}</span>
                         <span className={s.footerArrow}>
