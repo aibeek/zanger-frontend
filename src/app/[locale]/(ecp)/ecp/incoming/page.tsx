@@ -4,6 +4,10 @@ import React from 'react'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import { ecpApi } from '@/shared/api'
+import { API_URL } from '@/shared/config'
+import { authService } from '@/features/auth'
+import { signChallengeBase64 } from '@/shared/lib/ncalayer'
+import { toast } from 'react-hot-toast'
 
 type ListItem = {
   id: number
@@ -28,7 +32,10 @@ export default function EcpIncomingPage() {
   const { data, error, isLoading } = useSWR('ecp-incoming', fetchIncoming)
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
-  const { data: details } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
+  const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
+  const [declineOpen, setDeclineOpen] = React.useState(false)
+  const [declineReason, setDeclineReason] = React.useState('')
+  const [isSigning, setIsSigning] = React.useState(false)
 
   const items: ListItem[] = data?.items || []
   const filtered = items.filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
@@ -38,6 +45,50 @@ export default function EcpIncomingPage() {
     if (s === 'PARTIALLY_SIGNED') return '#f59e0b'
     if (s === 'ROUTED' || s === 'PENDING_SIGNATURE') return '#2563eb'
     return '#6b7280'
+  }
+
+  const canSign = !!(details && Array.isArray(details.signers) && details.signers.some((s: any) => s.can_sign))
+
+  const onSign = async () => {
+    if (!selectedId) return
+    try {
+      setIsSigning(true)
+      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
+      const cms = await signChallengeBase64(init.challenge)
+      const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms })
+      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
+        toast.error('Ошибка проверки подписи')
+        setIsSigning(false)
+        return
+      }
+      await ecpApi.signComplete(selectedId, { operation_id: init.operation_id, cms })
+      const d = await ecpApi.getDocumentDetails(selectedId)
+      await mutateDetails(d, false)
+      toast.success('Подписано')
+    } catch (e: any) {
+      toast.error(e?.message || 'Не удалось подписать')
+    } finally {
+      setIsSigning(false)
+    }
+  }
+
+  const onDecline = async () => {
+    if (!selectedId || !declineReason.trim()) {
+      toast.error('Укажите причину')
+      return
+    }
+    try {
+      const res = await ecpApi.decline(selectedId, declineReason.trim())
+      if (res?.success) {
+        const d = await ecpApi.getDocumentDetails(selectedId)
+        await mutateDetails(d, false)
+        toast.success('Отклонено')
+        setDeclineOpen(false)
+        setDeclineReason('')
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'Не удалось отклонить')
+    }
   }
 
   return (
@@ -98,6 +149,54 @@ export default function EcpIncomingPage() {
                     ))}
                   </div>
                 </div>
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Файлы</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {(details.files || []).map((f: any, i: number) => (
+                      <span key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '6px 10px' }}>
+                        {f.file_name}
+                        {f.storage_object_id ? (
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = authService.ensureToken()
+                                const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                })
+                                const blob = await res.blob()
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = f.file_name || 'file'
+                                document.body.appendChild(a)
+                                a.click()
+                                a.remove()
+                                URL.revokeObjectURL(url)
+                              } catch (e: any) {
+                                toast.error(e?.message || 'Не удалось скачать файл')
+                              }
+                            }}
+                            style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
+                          >Скачать</button>
+                        ) : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {canSign && (
+                  <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                    <button onClick={onSign} disabled={isSigning} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
+                    {!declineOpen ? (
+                      <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отклонить</button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                        <input value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder={'Причина отказа'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
+                        <button onClick={onDecline} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button>
+                        <button onClick={() => { setDeclineOpen(false); setDeclineReason('') }} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ) : (
               <div style={{ color: '#666' }}>Выберите документ слева</div>

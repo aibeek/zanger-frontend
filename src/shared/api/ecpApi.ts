@@ -175,4 +175,14 @@ export const ecpApi = {
       body: JSON.stringify(payload),
     })
   },
+
+  decline: (
+    documentId: number,
+    declined_reason: string
+  ): Promise<{ success: boolean; status: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/decline`, {
+      method: 'POST',
+      body: JSON.stringify({ declined_reason }),
+    })
+  },
 }

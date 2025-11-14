@@ -4,6 +4,8 @@ import React from 'react'
 import useSWR from 'swr'
 import { useTranslations, useLocale } from 'next-intl'
 import { ecpApi, counterpartiesApi } from '@/shared/api'
+import { API_URL } from '@/shared/config'
+import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
 import { signChallengeBase64 } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
@@ -18,7 +20,7 @@ type DocItem = {
   files?: { file_name: string; file_type: string }[]
 }
 
-type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string }
+type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string; user_id?: number | null }
 
 const fetchDrafts = async () => {
   const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 50 })
@@ -43,6 +45,11 @@ export default function EcpDraftsPage() {
   const [searchResults, setSearchResults] = React.useState<CounterpartyItem[]>([])
   const [selectedCounterpartyId, setSelectedCounterpartyId] = React.useState<number | null>(null)
 
+  const selectedCounterparty = React.useMemo(() => {
+    if (!selectedCounterpartyId) return null
+    return [...signatories, ...searchResults].find((x) => x.id === selectedCounterpartyId) || null
+  }, [selectedCounterpartyId, signatories, searchResults])
+
   React.useEffect(() => {
     if (!personalData) {
       getPersonalDataByToken().catch(() => {})
@@ -55,7 +62,13 @@ export default function EcpDraftsPage() {
     let mounted = true
     counterpartiesApi.getByUserId(userId).then((res: any) => {
       if (!mounted) return
-      const normalized: CounterpartyItem[] = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []
+      const normalized: CounterpartyItem[] = Array.isArray(res)
+        ? res
+        : Array.isArray(res?.items)
+        ? res.items
+        : Array.isArray(res?.data)
+        ? res.data
+        : []
       setSignatories(normalized)
     }).catch(() => {}).finally(() => {})
     return () => { mounted = false }
@@ -67,7 +80,13 @@ export default function EcpDraftsPage() {
     const tId = setTimeout(async () => {
       try {
         const res: any = await counterpartiesApi.search({ query: q })
-        const normalized: CounterpartyItem[] = Array.isArray(res) ? res : Array.isArray(res?.data) ? res.data : []
+        const normalized: CounterpartyItem[] = Array.isArray(res)
+          ? res
+          : Array.isArray(res?.items)
+          ? res.items
+          : Array.isArray(res?.data)
+          ? res.data
+          : []
         setSearchResults(normalized)
       } catch (e: any) { toast.error(e?.message || 'Ошибка') }
     }, 350)
@@ -77,10 +96,19 @@ export default function EcpDraftsPage() {
   const items: DocItem[] = data?.items || []
   const total: number = data?.pagination?.total ?? items.length
 
+  const findCounterpartyById = (id?: number | null): CounterpartyItem | undefined => {
+    if (!id) return undefined
+    return [...signatories, ...searchResults].find((x) => x.id === id)
+  }
+
   const onSendWithoutSign = async () => {
     if (!selectedId) return
     try {
       const signersPayload: any[] = []
+      const chosenCounterparty = findCounterpartyById(selectedCounterpartyId)
+      if (selectedCounterpartyId && !chosenCounterparty?.user_id) {
+        toast.error('Контрагент не привязан к пользователю — не появится во входящих')
+      }
       if (selectedCounterpartyId && (!selectedSignerId || selectedCounterpartyId !== selectedSignerId)) {
         signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
       }
@@ -91,9 +119,13 @@ export default function EcpDraftsPage() {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
       await ecpApi.sendForSigning(selectedId)
-      const latest = await ecpApi.getDocumentDetails(selectedId)
+      let latest = await ecpApi.getDocumentDetails(selectedId)
+      if (latest?.status === 'ROUTED') {
+        await ecpApi.sendForSigning(selectedId)
+        latest = await ecpApi.getDocumentDetails(selectedId)
+      }
       await mutateDetails(latest, false)
-      toast.success(locale === 'kz' ? 'Маршрутизировано' : 'Отправлено')
+      toast.success(latest?.status === 'PENDING_SIGNATURE' ? 'Отправлено на подпись' : 'Маршрутизировано')
       setIsEditing(false)
     } catch (e: any) {
       toast.error(e?.message || 'Ошибка отправки')
@@ -104,6 +136,10 @@ export default function EcpDraftsPage() {
     if (!selectedId) return
     try {
       const signersPayload: any[] = []
+      const chosenCounterparty2 = findCounterpartyById(selectedCounterpartyId)
+      if (selectedCounterpartyId && !chosenCounterparty2?.user_id) {
+        toast.error('Контрагент не привязан к пользователю — не появится во входящих')
+      }
       if (selectedCounterpartyId && (!selectedSignerId || selectedCounterpartyId !== selectedSignerId)) {
         signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
       }
@@ -184,7 +220,37 @@ export default function EcpDraftsPage() {
                 {!isEditing ? (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button onClick={() => setIsEditing(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Продолжить редактирование</button>
-                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>{(details.files || []).map((f: any, i: number) => (<span key={i} style={{ marginRight: 8 }}>{f.file_name}</span>))}</div>
+                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
+                      {(details.files || []).map((f: any, i: number) => (
+                        <span key={i} style={{ marginRight: 12 }}>
+                          {f.file_name}
+                          {f.storage_object_id ? (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const token = authService.ensureToken()
+                                  const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  })
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  const a = document.createElement('a')
+                                  a.href = url
+                                  a.download = f.file_name || 'file'
+                                  document.body.appendChild(a)
+                                  a.click()
+                                  a.remove()
+                                  URL.revokeObjectURL(url)
+                                } catch (e: any) {
+                                  toast.error(e?.message || 'Не удалось скачать файл')
+                                }
+                              }}
+                              style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
+                            >Скачать</button>
+                          ) : null}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
@@ -198,6 +264,14 @@ export default function EcpDraftsPage() {
                     <div>
                       <div style={{ marginBottom: 6, fontWeight: 600 }}>Контрагент</div>
                       <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={'Поиск контрагента'} style={{ width: '100%', padding: '8px', borderRadius: 8, border: '1px solid #e5e7eb' }} />
+                      {selectedCounterparty && (
+                        <div style={{ marginTop: 8, marginBottom: 8 }}>
+                          <span style={{ background: '#eef2ff', border: '1px solid #e5e7eb', borderRadius: 9999, padding: '6px 10px' }}>
+                            Выбран: {`${selectedCounterparty.name} · ${selectedCounterparty.iin_bin || ''}`}
+                          </span>
+                          <button onClick={() => setSelectedCounterpartyId(null)} style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8 }}>Сбросить</button>
+                        </div>
+                      )}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 6, marginTop: 8, maxHeight: 180, overflow: 'auto' }}>
                         {searchResults.map((c) => (
                           <button key={c.id} onClick={() => setSelectedCounterpartyId(c.id)} style={{ textAlign: 'left', background: selectedCounterpartyId === c.id ? '#eff6ff' : '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 8 }}>

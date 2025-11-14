@@ -4,6 +4,8 @@ import React from 'react'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import { ecpApi } from '@/shared/api'
+import { API_URL } from '@/shared/config'
+import { authService } from '@/features/auth'
 
 type ListItem = {
   id: number
@@ -96,6 +98,40 @@ export default function EcpSentPage() {
                           <span style={{ color: '#666' }}>{new Date(l.created_at).toLocaleString()}</span>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ marginTop: 12 }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Файлы</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {(details.files || []).map((f: any, i: number) => (
+                      <span key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '6px 10px' }}>
+                        {f.file_name}
+                        {f.storage_object_id ? (
+                          <button
+                            onClick={async () => {
+                              try {
+                                const token = authService.ensureToken()
+                                const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
+                                  headers: { Authorization: `Bearer ${token}` },
+                                })
+                                const blob = await res.blob()
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = f.file_name || 'file'
+                                document.body.appendChild(a)
+                                a.click()
+                                a.remove()
+                                URL.revokeObjectURL(url)
+                              } catch (e: any) {
+                                // graceful
+                              }
+                            }}
+                            style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
+                          >Скачать</button>
+                        ) : null}
+                      </span>
                     ))}
                   </div>
                 </div>
