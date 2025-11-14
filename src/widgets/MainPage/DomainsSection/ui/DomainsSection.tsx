@@ -24,20 +24,11 @@ export const DomainsSection = () => {
 					</a>
 					<a
 						className={s.domainCard}
-						href="https://zanger-5510.kz"
-						target="_blank"
-						rel="noreferrer noopener"
-					>
-						<span className={s.domainLabel}>{t('supportDomain')}</span>
-						<span className={s.domainName}>zanger-5510.kz</span>
-					</a>
-					<a
-						className={s.domainCard}
 						href="https://zanger5510.kz"
 						target="_blank"
 						rel="noreferrer noopener"
 					>
-						<span className={s.domainLabel}>{t('supportDomain')}</span>
+						<span className={s.domainLabel}>{t('newDomain')}</span>
 						<span className={s.domainName}>zanger5510.kz</span>
 					</a>
 				</div>
