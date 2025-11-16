@@ -188,13 +188,32 @@ export default function EcpDraftsPage() {
             {error && <div>Ошибка загрузки</div>}
             {items.map((doc) => (
               <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
-                <div style={{ background: '#2563eb', color: '#fff', padding: '6px 10px', fontWeight: 600 }}>Черновик</div>
-                <div style={{ padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: 16, fontWeight: 600 }}>{doc.title}</div>
-                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8 }}>Открыть</button>
+                <div style={{ background: '#2563eb', color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Черновик</span>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={() => {
+                        ecpApi.deleteDocument(doc.id).then(() => window.location.reload()).catch(() => {})
+                      }}
+                      title="Удалить"
+                      style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 13 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                </div>
+                <div style={{ padding: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
+                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
+                  </div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -203,67 +222,97 @@ export default function EcpDraftsPage() {
           <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
             {selectedId && details ? (
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{details.title}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 12 }}>
-                  {(details.signers || []).map((s: any, idx: number) => (
-                    <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{s.fio || 'Подписант'}</div>
-                          <div style={{ fontSize: 12, color: '#666' }}>Стадия {s.stage_no || 1}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
+                  <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 12 }}>
+                      {(details.signers || []).map((s: any, idx: number) => (
+                        <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <div style={{ fontWeight: 700 }}>{s.fio || 'Подписант'}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>Стадия {s.stage_no || 1}</div>
+                            </div>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: '#6b7280' }}>{s.status || 'Не отправлен'}</span>
+                          </div>
                         </div>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#6b7280' }}>{s.status || 'Не отправлен'}</span>
+                      ))}
+                    </div>
+                    {/* Панель действий под подписантами — для черновиков */}
+                  </div>
+                  <div>
+                    {/* История справа */}
+                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                        {(details.log || []).map((l: any, i: number) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
+                            <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                            <div>
+                              <div style={{ fontWeight: 700 }}>{l.event_code}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))}
-                </div>
-
-                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10, marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Файлы:</div>
-                  {(details.files || []).length === 0 ? (
-                    <div style={{ color: '#999', fontSize: 13 }}>Нет файлов</div>
-                  ) : (
-                    (details.files || []).map((f: any, i: number) => {
-                      const fileId = f.storage_object_id ?? f.object_id ?? f.document_file_id
-                      return (
-                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
-                          <span style={{ fontSize: 14 }}>{f.file_name}</span>
-                          {fileId ? (
-                            <button
-                              onClick={async () => {
-                                try {
-                                  const token = authService.ensureToken()
-                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
-                                    headers: { Authorization: `Bearer ${token}` },
-                                  })
-                                  const blob = await res.blob()
-                                  const url = URL.createObjectURL(blob)
-                                  const a = document.createElement('a')
-                                  a.href = url
-                                  a.download = f.file_name || 'file'
-                                  document.body.appendChild(a)
-                                  a.click()
-                                  a.remove()
-                                  URL.revokeObjectURL(url)
-                                } catch (e: any) {
-                                  toast.error(e?.message || 'Не удалось скачать файл')
-                                }
-                              }}
-                              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
-                              title="Скачать файл"
-                            >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
-                              </svg>
-                              Скачать
-                            </button>
-                          ) : null}
-                        </div>
-                      )
-                    })
-                  )}
+                    {/* Файлы под историей */}
+                    <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Файлы:</div>
+                      {(details.files || []).length === 0 ? (
+                        <div style={{ color: '#999', fontSize: 13 }}>Нет файлов</div>
+                      ) : (
+                        (details.files || []).map((f: any, i: number) => {
+                          const rawId = f.storage_object_id ?? f.object_id ?? f.document_file_id
+                          const fileId = typeof rawId === 'string' ? parseInt(rawId, 10) : rawId
+                          const disabled = !(typeof fileId === 'number' && isFinite(fileId) && fileId > 0)
+                          return (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                              <span style={{ fontSize: 14 }}>{f.file_name}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }} title="Посмотреть">
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
+                                    <circle cx="12" cy="12" r="3" />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      const token = authService.ensureToken()
+                                      const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
+                                        headers: { Authorization: `Bearer ${token}` },
+                                      })
+                                      if (!res.ok) throw new Error('Ошибка запроса на скачивание')
+                                      const blob = await res.blob()
+                                      const url = URL.createObjectURL(blob)
+                                      const a = document.createElement('a')
+                                      a.href = url
+                                      a.download = f.file_name || 'file'
+                                      document.body.appendChild(a)
+                                      a.click()
+                                      a.remove()
+                                      URL.revokeObjectURL(url)
+                                    } catch (e: any) {
+                                      toast.error(e?.message || 'Не удалось скачать файл')
+                                    }
+                                  }}
+                                  style={{ background: '#93c5fd', border: 'none', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                                  title="Скачать"
+                                >
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="7 10 12 15 17 10" />
+                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {!isEditing ? (

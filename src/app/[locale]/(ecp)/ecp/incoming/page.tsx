@@ -50,6 +50,16 @@ export default function EcpIncomingPage() {
 
   const canSign = !!(details && Array.isArray(details.signers) && details.signers.some((s: any) => s.can_sign))
 
+  const eventLabel = (code: string) => {
+    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
+    if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+    if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+    if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
+    if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+    if (code === 'SIGN_COMPLETED') return 'Подписан'
+    return code
+  }
+
   const onSign = async () => {
     if (!selectedId) return
     try {
@@ -108,13 +118,26 @@ export default function EcpIncomingPage() {
             {error && <div>Ошибка загрузки</div>}
             {filtered.map((doc) => (
               <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
-                <div style={{ background: color(doc.status), color: '#fff', padding: '6px 10px', fontWeight: 600 }}>{doc.status === 'SIGNED' ? 'Подписан' : doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Получен'}</div>
-                <div style={{ padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: 16, fontWeight: 600 }}>{doc.title}</div>
-                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8 }}>Открыть</button>
+                <div style={{ background: color(doc.status), color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>{doc.status === 'SIGNED' ? 'Подписан' : doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Получен'}</span>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button title="Удалить" style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'not-allowed' }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+                      </svg>
+                    </button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 13 }}>Дата получения: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                </div>
+                <div style={{ padding: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
+                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
+                  </div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -123,54 +146,65 @@ export default function EcpIncomingPage() {
           <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
             {selectedId && details ? (
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{details.title}</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
-                  {(details.signers || []).map((s: any, idx: number) => (
-                    <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{s.fio || 'Подписант'}</div>
-                          <div style={{ fontSize: 12, color: '#666' }}>Стадия {s.stage_no || 1}</div>
-                        </div>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : '#6b7280' }}>{s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 12 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>История</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
-                    {(details.log || []).map((l: any, i: number) => (
-                      <div key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span>{l.event_code}</span>
-                          <span style={{ color: '#666' }}>{new Date(l.created_at).toLocaleString()}</span>
+                <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                    {(details.signers || []).map((s: any, idx: number) => (
+                      <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div>
+                            <div style={{ fontWeight: 700 }}>{s.fio || 'Подписант'}</div>
+                            <div style={{ fontSize: 12, color: '#666' }}>Стадия {s.stage_no || 1}</div>
+                          </div>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#f59e0b' : '#6b7280' }}>{s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'}</span>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
-                <div style={{ marginTop: 12 }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Файлы</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
-                    {(details.files || []).map((f: any, i: number) => {
-                      const fileId = f.storage_object_id ?? f.object_id ?? f.document_file_id
-                      return (
-                        <div key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: 14, fontWeight: 500 }}>{f.file_name}</span>
-                          {fileId ? (
+                  <div>
+                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                        {(details.log || []).map((l: any, i: number) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
+                            <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                            <div>
+                              <div style={{ fontWeight: 700 }}>{eventLabel(l.event_code)}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString()}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
+                      {(() => {
+                        const f = (details.files || [])[0] || null
+                        const rawId = f ? (f.storage_object_id ?? f.object_id ?? f.document_file_id) : null
+                        const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+                        const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
+                        return (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
+                                <circle cx="12" cy="12" r="3" />
+                              </svg>
+                            </button>
                             <button
                               onClick={async () => {
                                 try {
+                                  if (disabled) { toast.error('Файл недоступен для скачивания'); return }
                                   const token = authService.ensureToken()
                                   const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
                                     headers: { Authorization: `Bearer ${token}` },
                                   })
+                                  if (!res.ok) throw new Error('Ошибка запроса на скачивание')
                                   const blob = await res.blob()
                                   const url = URL.createObjectURL(blob)
                                   const a = document.createElement('a')
                                   a.href = url
-                                  a.download = f.file_name || 'file'
+                                  a.download = f?.file_name || 'file'
                                   document.body.appendChild(a)
                                   a.click()
                                   a.remove()
@@ -179,35 +213,34 @@ export default function EcpIncomingPage() {
                                   toast.error(e?.message || 'Не удалось скачать файл')
                                 }
                               }}
-                              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
-                              title="Скачать файл"
+                              style={{ background: '#93c5fd', border: 'none', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                              title="Скачать"
                             >
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
                               </svg>
-                              Скачать
                             </button>
-                          ) : null}
-                        </div>
-                      )
-                    })}
+                          </div>
+                        )
+                      })()}
+                    </div>
                   </div>
                 </div>
                 {canSign && (
-                  <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                    <button onClick={onSign} disabled={isSigning} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
-                    {!declineOpen ? (
-                      <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отклонить</button>
-                    ) : (
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <input value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder={'Причина отказа'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
-                        <button onClick={onDecline} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button>
-                        <button onClick={() => { setDeclineOpen(false); setDeclineReason('') }} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
-                      </div>
-                    )}
-                  </div>
+                  !declineOpen ? (
+                    <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                      <button onClick={onSign} disabled={isSigning} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
+                      <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>Отклонить</button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 12 }}>
+                      <input value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder={'Причина отказа'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px', width: 300 }} />
+                      <button onClick={onDecline} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>Отправить</button>
+                      <button onClick={() => { setDeclineOpen(false); setDeclineReason('') }} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '12px 18px', borderRadius: 12 }}>Отмена</button>
+                    </div>
+                  )
                 )}
               </div>
             ) : (

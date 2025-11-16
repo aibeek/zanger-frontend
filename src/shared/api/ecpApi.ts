@@ -185,4 +185,10 @@ export const ecpApi = {
       body: JSON.stringify({ declined_reason }),
     })
   },
+
+  deleteDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}`, {
+      method: 'DELETE',
+    })
+  },
 }
