@@ -62,17 +62,15 @@ export const LocalVideoSection: React.FC<LocalVideoSectionProps> = ({
     },
     [locale]
   )
-  // Ensure erzhan.mp4 is FIRST: move to front if provided, otherwise prepend
+  // Ensure warning video (moshenniki.mp4) is FIRST: move to front if provided
   const items = React.useMemo(() => {
     const list = [...videos]
-    const idx = list.findIndex(v => v.src?.toLowerCase().includes('erzhan.mp4'))
+    const idx = list.findIndex(v => v.src?.toLowerCase().includes('moshenniki.mp4'))
     if (idx >= 0) {
-      const [erzhan] = list.splice(idx, 1)
-      return [erzhan, ...list]
+      const [warning] = list.splice(idx, 1)
+      return [warning, ...list]
     }
-    // Fallback path from current project usage
-    const erzhanFallback: VideoItem = { src: '/assets/images/erzhan.mp4' }
-    return [erzhanFallback, ...list]
+    return list
   }, [videos])
 
   // Build a few common fallbacks for potential path/case issues
