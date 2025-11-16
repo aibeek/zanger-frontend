@@ -15,11 +15,10 @@ export const WhatsAppFloat: React.FC = () => {
     >
       <span className={s.waBubble}>Оставьте заявку</span>
       <Image 
-        src="https://cdn.sendpulse.com/img/messengers/sp-i-small-forms-wa.svg" 
+        src="/assets/icons/whatsapp.svg" 
         alt="WhatsApp"
         width={60}
         height={60}
-        unoptimized
       />
     </a>
   )

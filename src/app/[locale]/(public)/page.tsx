@@ -1,4 +1,4 @@
-import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection, ScrollTopButton } from '@/widgets/MainPage'
+import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection, ScrollTopButton, DomainsSection } from '@/widgets/MainPage'
 import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { LocalVideoSection } from '@/widgets/MainPage/LocalVideoSection'
 import { Footer } from '@/widgets/Footer'
@@ -11,6 +11,7 @@ export default async function Home() {
 		<div className={s.page}>
 				<MainSection />
 			<NewsSection />
+			<DomainsSection />
 			<LocalVideoSection
 				videos={[
 					{
