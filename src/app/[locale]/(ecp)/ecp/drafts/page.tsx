@@ -217,19 +217,23 @@ export default function EcpDraftsPage() {
                     </div>
                   ))}
                 </div>
-                {!isEditing ? (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <button onClick={() => setIsEditing(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Продолжить редактирование</button>
-                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10 }}>
-                      {(details.files || []).map((f: any, i: number) => (
-                        <span key={i} style={{ marginRight: 12 }}>
-                          {f.file_name}
-                          {f.storage_object_id ? (
+
+                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10, marginBottom: 12 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Файлы:</div>
+                  {(details.files || []).length === 0 ? (
+                    <div style={{ color: '#999', fontSize: 13 }}>Нет файлов</div>
+                  ) : (
+                    (details.files || []).map((f: any, i: number) => {
+                      const fileId = f.storage_object_id ?? f.object_id ?? f.document_file_id
+                      return (
+                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
+                          <span style={{ fontSize: 14 }}>{f.file_name}</span>
+                          {fileId ? (
                             <button
                               onClick={async () => {
                                 try {
                                   const token = authService.ensureToken()
-                                  const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
+                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
                                     headers: { Authorization: `Bearer ${token}` },
                                   })
                                   const blob = await res.blob()
@@ -245,12 +249,26 @@ export default function EcpDraftsPage() {
                                   toast.error(e?.message || 'Не удалось скачать файл')
                                 }
                               }}
-                              style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
-                            >Скачать</button>
+                              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 10px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}
+                              title="Скачать файл"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                              Скачать
+                            </button>
                           ) : null}
-                        </span>
-                      ))}
-                    </div>
+                        </div>
+                      )
+                    })
+                  )}
+                </div>
+
+                {!isEditing ? (
+                  <div>
+                    <button onClick={() => setIsEditing(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Продолжить редактирование</button>
                   </div>
                 ) : (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>

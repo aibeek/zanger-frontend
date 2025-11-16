@@ -17,7 +17,7 @@ type ListItem = {
   signers_count: number
 }
 
-const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED'])
+const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED'])
 
 const fetchIncoming = async () => {
   const res: any = await ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100 })
@@ -42,6 +42,7 @@ export default function EcpIncomingPage() {
   const total = filtered.length
 
   const color = (s: string) => {
+    if (s === 'SIGNED') return '#22c55e'
     if (s === 'PARTIALLY_SIGNED') return '#f59e0b'
     if (s === 'ROUTED' || s === 'PENDING_SIGNATURE') return '#2563eb'
     return '#6b7280'
@@ -107,7 +108,7 @@ export default function EcpIncomingPage() {
             {error && <div>Ошибка загрузки</div>}
             {filtered.map((doc) => (
               <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
-                <div style={{ background: color(doc.status), color: '#fff', padding: '6px 10px', fontWeight: 600 }}>{doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Получен'}</div>
+                <div style={{ background: color(doc.status), color: '#fff', padding: '6px 10px', fontWeight: 600 }}>{doc.status === 'SIGNED' ? 'Подписан' : doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Получен'}</div>
                 <div style={{ padding: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 16, fontWeight: 600 }}>{doc.title}</div>
@@ -151,36 +152,47 @@ export default function EcpIncomingPage() {
                 </div>
                 <div style={{ marginTop: 12 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Файлы</div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {(details.files || []).map((f: any, i: number) => (
-                      <span key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '6px 10px' }}>
-                        {f.file_name}
-                        {f.storage_object_id ? (
-                          <button
-                            onClick={async () => {
-                              try {
-                                const token = authService.ensureToken()
-                                const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
-                                  headers: { Authorization: `Bearer ${token}` },
-                                })
-                                const blob = await res.blob()
-                                const url = URL.createObjectURL(blob)
-                                const a = document.createElement('a')
-                                a.href = url
-                                a.download = f.file_name || 'file'
-                                document.body.appendChild(a)
-                                a.click()
-                                a.remove()
-                                URL.revokeObjectURL(url)
-                              } catch (e: any) {
-                                toast.error(e?.message || 'Не удалось скачать файл')
-                              }
-                            }}
-                            style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
-                          >Скачать</button>
-                        ) : null}
-                      </span>
-                    ))}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+                    {(details.files || []).map((f: any, i: number) => {
+                      const fileId = f.storage_object_id ?? f.object_id ?? f.document_file_id
+                      return (
+                        <div key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontSize: 14, fontWeight: 500 }}>{f.file_name}</span>
+                          {fileId ? (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const token = authService.ensureToken()
+                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  })
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  const a = document.createElement('a')
+                                  a.href = url
+                                  a.download = f.file_name || 'file'
+                                  document.body.appendChild(a)
+                                  a.click()
+                                  a.remove()
+                                  URL.revokeObjectURL(url)
+                                } catch (e: any) {
+                                  toast.error(e?.message || 'Не удалось скачать файл')
+                                }
+                              }}
+                              style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                              title="Скачать файл"
+                            >
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                              </svg>
+                              Скачать
+                            </button>
+                          ) : null}
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
                 {canSign && (

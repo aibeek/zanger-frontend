@@ -104,35 +104,37 @@ export default function EcpSentPage() {
                 <div style={{ marginTop: 12 }}>
                   <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Файлы</div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {(details.files || []).map((f: any, i: number) => (
-                      <span key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '6px 10px' }}>
-                        {f.file_name}
-                        {f.storage_object_id ? (
-                          <button
-                            onClick={async () => {
-                              try {
-                                const token = authService.ensureToken()
-                                const res = await fetch(`${API_URL}/storage/${f.storage_object_id}/download`, {
-                                  headers: { Authorization: `Bearer ${token}` },
-                                })
-                                const blob = await res.blob()
-                                const url = URL.createObjectURL(blob)
-                                const a = document.createElement('a')
-                                a.href = url
-                                a.download = f.file_name || 'file'
-                                document.body.appendChild(a)
-                                a.click()
-                                a.remove()
-                                URL.revokeObjectURL(url)
-                              } catch (e: any) {
-                                // graceful
-                              }
-                            }}
-                            style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
-                          >Скачать</button>
-                        ) : null}
-                      </span>
-                    ))}
+                    {(details.files || []).map((f: any, i: number) => {
+                      const fileId = f.storage_object_id ?? f.object_id ?? f.document_file_id
+                      return (
+                        <span key={i} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10, padding: '6px 10px' }}>
+                          {f.file_name}
+                          {fileId ? (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const token = authService.ensureToken()
+                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, {
+                                    headers: { Authorization: `Bearer ${token}` },
+                                  })
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  const a = document.createElement('a')
+                                  a.href = url
+                                  a.download = f.file_name || 'file'
+                                  document.body.appendChild(a)
+                                  a.click()
+                                  a.remove()
+                                  URL.revokeObjectURL(url)
+                                } catch (e: any) {
+                                }
+                              }}
+                              style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}
+                            >Скачать</button>
+                          ) : null}
+                        </span>
+                      )
+                    })}
                   </div>
                 </div>
               </div>
