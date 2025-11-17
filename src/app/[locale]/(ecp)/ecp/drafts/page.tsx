@@ -119,11 +119,7 @@ export default function EcpDraftsPage() {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
       await ecpApi.sendForSigning(selectedId)
-      let latest = await ecpApi.getDocumentDetails(selectedId)
-      if (latest?.status === 'ROUTED') {
-        await ecpApi.sendForSigning(selectedId)
-        latest = await ecpApi.getDocumentDetails(selectedId)
-      }
+      const latest = await ecpApi.getDocumentDetails(selectedId)
       await mutateDetails(latest, false)
       toast.success(latest?.status === 'PENDING_SIGNATURE' ? 'Отправлено на подпись' : 'Маршрутизировано')
       setIsEditing(false)
@@ -136,25 +132,23 @@ export default function EcpDraftsPage() {
     if (!selectedId) return
     try {
       const signersPayload: any[] = []
-      const chosenCounterparty2 = findCounterpartyById(selectedCounterpartyId)
-      if (selectedCounterpartyId && !chosenCounterparty2?.user_id) {
-        toast.error('Контрагент не привязан к пользователю — не появится во входящих')
+      if (!selectedSignerId || typeof selectedSignerId !== 'number') {
+        toast.error('Сначала выберите подписанта')
+        return
       }
-      if (selectedCounterpartyId && (!selectedSignerId || selectedCounterpartyId !== selectedSignerId)) {
-        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
-      }
-      if (selectedSignerId && typeof selectedSignerId === 'number') {
-        signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 2 })
+      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
+      if (selectedCounterpartyId) {
+        const cp = findCounterpartyById(selectedCounterpartyId)
+        if (!cp?.user_id) {
+          toast.error('Контрагент не привязан к пользователю — не появится во входящих')
+        }
+        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 2 })
       }
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
       await ecpApi.sendForSigning(selectedId)
-      let latest = await ecpApi.getDocumentDetails(selectedId)
-      if (latest?.status === 'ROUTED') {
-        await ecpApi.sendForSigning(selectedId)
-        latest = await ecpApi.getDocumentDetails(selectedId)
-      }
+      const latest = await ecpApi.getDocumentDetails(selectedId)
       const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
       const cmsBase64 = await signChallengeBase64(init.challenge)
       const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms: cmsBase64 })

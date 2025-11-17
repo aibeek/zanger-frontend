@@ -60,6 +60,25 @@ export default function EcpIncomingPage() {
     return code
   }
 
+  const formatAt = (s?: string) => {
+    if (!s) return ''
+    try {
+      const iso = String(s).includes('T') ? String(s) : String(s).replace(' ', 'T')
+      const d = new Date(iso)
+      return new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Asia/Almaty',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }).format(d)
+    } catch {
+      return String(s)
+    }
+  }
+
   const onSign = async () => {
     if (!selectedId) return
     try {
@@ -137,7 +156,7 @@ export default function EcpIncomingPage() {
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                     <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {new Date(doc.created_at).toLocaleDateString('ru-RU')} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {formatAt(doc.created_at).split(',')[0]} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -181,7 +200,7 @@ export default function EcpIncomingPage() {
                                 const name = l.subject_fio || l.actor?.fio || ''
                                 return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600 }}>{name}</div> : null
                               })()}
-                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString('ru-RU')}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
                             </div>
                           </div>
                         ))}
@@ -253,6 +272,7 @@ export default function EcpIncomingPage() {
                     </div>
                   )
                 )}
+                
               </div>
             ) : (
               <div style={{ color: '#666' }}>Выберите документ слева</div>

@@ -91,26 +91,23 @@ export default function EcpCreateDocumentPage() {
       return
     }
     try {
-      // 1) Добавить подписантов: контрагенты (stage 1) + выбранный подписант (stage 2)
+      // 1) Добавить подписантов: текущий подписант (stage 1) + контрагенты (stage 2)
       const signersPayload: any[] = []
-      selectedCounterparties.forEach((cp) => {
-        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
-      })
-      if (selectedSignerId && typeof selectedSignerId === 'number') {
-        signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 2 })
+      if (!selectedSignerId || typeof selectedSignerId !== 'number') {
+        toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
+        return
       }
+      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
+      selectedCounterparties.forEach((cp) => {
+        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 2 })
+      })
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(documentId, signersPayload)
       }
 
-      // 2) Обеспечить статус для подписи
-      // Первый send: DRAFT -> ROUTED; Второй send: ROUTED -> PENDING_SIGNATURE
+      // 2) Отправить на подпись одной операцией
       await ecpApi.sendForSigning(documentId)
-      let latest = await ecpApi.getDocumentDetails(documentId)
-      if (latest?.status === 'ROUTED') {
-        await ecpApi.sendForSigning(documentId)
-        latest = await ecpApi.getDocumentDetails(documentId)
-      }
+      const latest = await ecpApi.getDocumentDetails(documentId)
       setDetails(latest)
 
       // 3) Инициализировать подпись для текущего пользователя
