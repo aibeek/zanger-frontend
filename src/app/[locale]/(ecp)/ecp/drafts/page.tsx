@@ -226,17 +226,24 @@ export default function EcpDraftsPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
                   <div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 12 }}>
-                      {(details.signers || []).map((s: any, idx: number) => (
-                        <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                              <div style={{ fontWeight: 700 }}>{s.fio || 'Подписант'}</div>
-                              <div style={{ fontSize: 12, color: '#666' }}>Стадия {s.stage_no || 1}</div>
+                      {(details.signers || []).map((s: any, idx: number) => {
+                        const statusColor = s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : '#6b7280'
+                        const statusLabel = s.status ? (s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status) : 'Не отправлен'
+                        return (
+                          <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div>
+                                <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
+                                {s.email ? <div style={{ fontSize: 12, color: '#666' }}>{s.email}</div> : null}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                                <span style={{ width: 10, height: 10, borderRadius: 9999, background: statusColor }}></span>
+                                <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusLabel}</span>
+                              </div>
                             </div>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: '#6b7280' }}>{s.status || 'Не отправлен'}</span>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                     {/* Панель действий под подписантами — для черновиков */}
                   </div>

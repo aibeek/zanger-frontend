@@ -28,7 +28,7 @@ export type EsdcaDocumentDetails = {
   status: string
   document_type?: string | null
   created_by?: { id: number | null; fio: string | null }
-  signers?: { id: number; fio: string | null; role: string | null; status: string | null; signed_at: string | null; stage_no: number | null }[]
+  signers?: { id: number; fio: string | null; iin_bin?: string | null; email?: string | null; role: string | null; status: string | null; signed_at: string | null; stage_no: number | null }[]
   files?: { file_name: string; file_type: string; storage_object_id?: number; object_id?: number; document_file_id?: number }[]
   signatures?: { signer_iin: string | null; signer_fio: string | null; signed_at: string | null; format: string | null }[]
   log?: { event_code: string; created_at: string }[]
