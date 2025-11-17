@@ -137,7 +137,7 @@ export default function EcpIncomingPage() {
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                     <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {new Date(doc.created_at).toLocaleDateString('ru-RU')} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -176,8 +176,12 @@ export default function EcpIncomingPage() {
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
                             <div>
-                              <div style={{ fontWeight: 700 }}>{eventLabel(l.event_code)}</div>
-                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString()}</div>
+                              <div style={{ fontWeight: 700 }}>{l.label || eventLabel(l.event_code)}</div>
+                              {(() => {
+                                const name = l.subject_fio || l.actor?.fio || ''
+                                return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600 }}>{name}</div> : null
+                              })()}
+                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString('ru-RU')}</div>
                             </div>
                           </div>
                         ))}

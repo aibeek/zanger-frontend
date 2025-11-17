@@ -36,6 +36,7 @@ export default function EcpCreateDocumentPage() {
   const [searchResults, setSearchResults] = React.useState<CounterpartyItem[]>([])
   const [loadingSearch, setLoadingSearch] = React.useState<boolean>(false)
   const [selectedCounterpartyId, setSelectedCounterpartyId] = React.useState<number | null>(null)
+  const [selectedCounterparties, setSelectedCounterparties] = React.useState<CounterpartyItem[]>([])
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -62,10 +63,9 @@ export default function EcpCreateDocumentPage() {
     try {
       // 1) Сформировать список подписантов: контрагенты (stage 1) + инициатор (stage 2, последним)
       const signersPayload: any[] = []
-      // Контрагенты — стадия 1
-      if (selectedCounterpartyId && (!selectedSignerId || selectedCounterpartyId !== selectedSignerId)) {
-        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
-      }
+      selectedCounterparties.forEach((cp) => {
+        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
+      })
       // Подписант — стадия 2 (последним)
       if (selectedSignerId && typeof selectedSignerId === 'number') {
         signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 2 })
@@ -93,9 +93,9 @@ export default function EcpCreateDocumentPage() {
     try {
       // 1) Добавить подписантов: контрагенты (stage 1) + выбранный подписант (stage 2)
       const signersPayload: any[] = []
-      if (selectedCounterpartyId && (!selectedSignerId || selectedCounterpartyId !== selectedSignerId)) {
-        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
-      }
+      selectedCounterparties.forEach((cp) => {
+        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
+      })
       if (selectedSignerId && typeof selectedSignerId === 'number') {
         signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 2 })
       }
@@ -139,32 +139,6 @@ export default function EcpCreateDocumentPage() {
   }
 
   React.useEffect(() => {
-    let mounted = true
-    ecpApi
-      .getDocumentTypes()
-      .then((types) => {
-        if (!mounted) return
-        const maybeObj = types as any
-        const normalized = Array.isArray(types)
-          ? types
-          : Array.isArray(maybeObj?.data)
-          ? maybeObj.data
-          : Array.isArray(maybeObj?.items)
-          ? maybeObj.items
-          : Array.isArray(maybeObj?.document_types)
-          ? maybeObj.document_types
-          : []
-        setDocumentTypes(normalized)
-        // Не выбираем автоматически, пользователь сам выберет; можно раскомментировать, чтобы ставить первый тип по умолчанию
-        // if (types && types.length > 0) setSelectedDocumentTypeId(types[0].id)
-      })
-      .catch((e: any) => {
-        const msg = e?.message || 'Ошибка загрузки типов документов'
-        toast.error(msg)
-      })
-    return () => {
-      mounted = false
-    }
   }, [])
 
   // Убедиться, что персональные данные загружены, чтобы получить userId
@@ -248,10 +222,10 @@ export default function EcpCreateDocumentPage() {
       setIsCreating(true)
 
       // 1) Определить тип документа на основе выбора пользователя (или первый как дефолт)
-      const documentTypeId = selectedDocumentTypeId ?? (documentTypes[0]?.id ?? 1)
+      const documentTypeId = 1
 
       // 2) Создать документ (черновик)
-      const description = `${t('docNumber')}: ${docNumber || '—'}`
+      const description = docNumber ? `№${docNumber}` : '—'
       const createRes = await ecpApi.createDocument({
         title: name,
         description,
@@ -304,7 +278,6 @@ export default function EcpCreateDocumentPage() {
           />
         </div>
 
-        {/* Name + Number grid */}
         <div className={s.grid2}>
           <div>
             <label htmlFor="name" className={s.sectionHeader} style={{ marginBottom: 6 }}>📝 {t('name')}</label>
@@ -326,32 +299,15 @@ export default function EcpCreateDocumentPage() {
           </div>
         </div>
 
-        {/* Document type select */}
-        <div style={{ marginTop: 12 }}>
-          <div className={s.sectionHeader} style={{ marginBottom: 6 }}>📄 Тип документа</div>
-          <select
-            value={selectedDocumentTypeId ?? ''}
-            onChange={(e) => setSelectedDocumentTypeId(Number(e.target.value) || null)}
-            disabled={isCreating}
-            className={s.selectBox}
-          >
-            <option value="" disabled>
-              {locale === 'kz' ? 'Түрін таңдаңыз' : 'Выберите тип'}
-            </option>
-            {documentTypes.map((dt) => (
-              <option key={dt.id} value={dt.id}>
-                {locale === 'kz' ? dt.name_kaz : dt.name_rus}
-              </option>
-            ))}
-          </select>
-        </div>
+        
 
-      {/* Create button */}
-      <div className={s.actions}>
-        <Button onClick={onCreate} disabled={isCreating}>
-          {isCreating ? t('creating') : t('createButton')}
-        </Button>
-      </div>
+      {!isCreated && (
+        <div className={s.actions}>
+          <Button onClick={onCreate} disabled={isCreating}>
+            {isCreating ? t('creating') : t('createButton')}
+          </Button>
+        </div>
+      )}
       {/* Блоки выбора подписанта, поиск контрагентов и кнопки — только после создания и при статусе DRAFT */}
       {isCreated && details?.status === 'DRAFT' && (
         <>
@@ -396,6 +352,19 @@ export default function EcpCreateDocumentPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {selectedCounterparties.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {selectedCounterparties.map((cp) => (
+                <div key={cp.id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#eef2ff', border: '1px solid #e5e7eb', borderRadius: 9999, padding: '6px 10px' }}>
+                  <span style={{ fontWeight: 600 }}>{cp.name}{cp.iin_bin ? ` · ${cp.iin_bin}` : ''}</span>
+                  <button
+                    onClick={() => setSelectedCounterparties(selectedCounterparties.filter((x) => x.id !== cp.id))}
+                    style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '4px 8px' }}
+                  >Сбросить</button>
+                </div>
+              ))}
+            </div>
+          )}
           {loadingSearch ? (
             <div style={{ padding: 8 }}>
               <Loader /> Поиск...
@@ -412,7 +381,9 @@ export default function EcpCreateDocumentPage() {
                       className={s.userRow}
                       style={{ padding: '8px 12px', borderBottom: '1px solid #f5f6fb', cursor: 'pointer' }}
                       onClick={async () => {
-                        setSelectedCounterpartyId(item.id)
+                        const exists = selectedCounterparties.some((x) => x.id === item.id)
+                        const next = exists ? selectedCounterparties : [...selectedCounterparties, item]
+                        setSelectedCounterparties(next)
                         setSigner(item.name)
                         setCounterparty(item.name)
                       }}
@@ -446,7 +417,34 @@ export default function EcpCreateDocumentPage() {
         {details ? (
           <div className={s.detailsBlock}>
             <div style={{ marginBottom: 8 }}>
-              <b>ID:</b> {details.id} · <b>{t('status')}:</b> {details.status}
+              <b>ID:</b> {details.id} · <b>{(() => { const k = t('status'); return k === 'ecp.create.status' ? (locale === 'kz' ? 'Күйі' : 'Статус') : k })()}:</b> {(() => {
+                const s = String(details.status)
+                if (locale === 'kz') {
+                  if (s === 'SIGNED') return 'Қол қойылған'
+                  if (s === 'PARTIALLY_SIGNED') return 'Ішінара қол қойылған'
+                  if (s === 'PENDING_SIGNATURE') return 'Қол қоюда'
+                  if (s === 'ROUTED') return 'Маршрутталды'
+                  if (s === 'DRAFT') return 'Жоба'
+                  if (s === 'DECLINED') return 'Қабылданбады'
+                  if (s === 'CANCELLED') return 'Болдырмау'
+                  if (s === 'EXPIRED') return 'Мерзімі өтті'
+                  if (s === 'ARCHIVED') return 'Мұрағатталған'
+                  if (s === 'WAITING_CREATOR_SIGNATURE') return 'Инициатор қолын күтуде'
+                  return s
+                } else {
+                  if (s === 'SIGNED') return 'Подписан'
+                  if (s === 'PARTIALLY_SIGNED') return 'Частично подписан'
+                  if (s === 'PENDING_SIGNATURE') return 'На подписи'
+                  if (s === 'ROUTED') return 'Маршрутизирован'
+                  if (s === 'DRAFT') return 'Черновик'
+                  if (s === 'DECLINED') return 'Отклонён'
+                  if (s === 'CANCELLED') return 'Отменён'
+                  if (s === 'EXPIRED') return 'Истёк'
+                  if (s === 'ARCHIVED') return 'В архиве'
+                  if (s === 'WAITING_CREATOR_SIGNATURE') return 'Ожидает подпись инициатора'
+                  return s
+                }
+              })()}
             </div>
             <div style={{ marginBottom: 8 }}>
               <b>{t('name')}:</b> {details.title}
