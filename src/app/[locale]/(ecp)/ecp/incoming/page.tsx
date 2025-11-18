@@ -8,6 +8,8 @@ import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { signChallengeBase64 } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
+import { Input, Button } from '@/shared/ui-kit'
+import { ConfirmModal } from '@/shared/ui-kit'
 
 type ListItem = {
   id: number
@@ -37,10 +39,14 @@ export default function EcpIncomingPage() {
   const { data, error, isLoading } = useSWR(['ecp-incoming', page, limit], ([, p, l]) => fetchIncoming(p as number, l as number))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
+  const [queryDraft, setQueryDraft] = React.useState('')
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
   const [declineOpen, setDeclineOpen] = React.useState(false)
   const [declineReason, setDeclineReason] = React.useState('')
   const [isSigning, setIsSigning] = React.useState(false)
+  const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
+  const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
 
   const items: ListItem[] = data?.items || []
   const filtered = items.filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
@@ -151,11 +157,24 @@ export default function EcpIncomingPage() {
   return (
     <div style={{ padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 20, fontWeight: 600 }}>Документы — Входящие <span style={{ color: '#888', fontWeight: 400 }}>Всего: {total}</span></div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%', margin: '12px 0 16px 0' }}>
+          <div style={{ flex: 1 }}>
+            <Input
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
+              placeholder={'Поиск'}
+              onKeyDown={(e: any) => { if (e.key === 'Enter') setQuery(queryDraft) }}
+            />
           </div>
+          <Button onClick={() => setQuery(queryDraft)} title="Искать">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 16 }}>
@@ -175,10 +194,7 @@ export default function EcpIncomingPage() {
                   }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        ecpApi.archiveDocument(doc.id).then(() => window.location.reload()).catch(() => {})
-                      }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmArchiveId(doc.id) }}
                       title="Архивировать"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
@@ -188,7 +204,7 @@ export default function EcpIncomingPage() {
                         <path d="M10 12h4v4h-4z" />
                       </svg>
                     </button>
-                    <button title="Удалить" onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}>
+                    <button title="Удалить" onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(doc.id) }} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -354,6 +370,54 @@ export default function EcpIncomingPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmArchiveId !== null}
+        onClose={() => setConfirmArchiveId(null)}
+        title={"Переместить документ в архив?"}
+        message={"Вы уверены, что хотите переместить документ в архив?"}
+        confirmText={"В архив"}
+        confirmVariant={'primary'}
+        loading={isConfirmLoading}
+        onConfirm={async () => {
+          if (confirmArchiveId == null) return
+          try {
+            setIsConfirmLoading(true)
+            await ecpApi.archiveDocument(confirmArchiveId)
+            toast.success('Перемещён в архив')
+            setConfirmArchiveId(null)
+            window.location.reload()
+          } catch (e: any) {
+            toast.error(e?.message || 'Не удалось переместить')
+          } finally {
+            setIsConfirmLoading(false)
+          }
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        title={"Переместить документ в корзину?"}
+        message={"Документ будет перемещён в корзину"}
+        confirmText={"В корзину"}
+        confirmVariant={'danger'}
+        loading={isConfirmLoading}
+        onConfirm={async () => {
+          if (confirmDeleteId == null) return
+          try {
+            setIsConfirmLoading(true)
+            await ecpApi.removeDocument(confirmDeleteId)
+            toast.success('Перемещён в корзину')
+            setConfirmDeleteId(null)
+            window.location.reload()
+          } catch (e: any) {
+            toast.error(e?.message || 'Не удалось переместить')
+          } finally {
+            setIsConfirmLoading(false)
+          }
+        }}
+      />
     </div>
   )
 }

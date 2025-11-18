@@ -6,6 +6,8 @@ import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
+import { Input, Button } from '@/shared/ui-kit'
+import { ConfirmModal } from '@/shared/ui-kit'
 
 type ListItem = { id: number; title: string; status: string; created_at: string; description?: string }
 
@@ -23,6 +25,7 @@ export default function EcpTrashPage() {
   const [page, setPage] = React.useState(1)
   const [limit] = React.useState(10)
   const [query, setQuery] = React.useState('')
+  const [queryDraft, setQueryDraft] = React.useState('')
   const [selected, setSelected] = React.useState<Set<number>>(new Set())
   const { data, error, isLoading } = useSWR(['ecp-trash', page, limit], ([, p, l]) => fetchRemoved(p as number, l as number))
 
@@ -31,6 +34,9 @@ export default function EcpTrashPage() {
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const color = (s: string) => (s === 'REMOVED' ? '#ef4444' : '#6b7280')
+  const [confirmRestoreOpen, setConfirmRestoreOpen] = React.useState(false)
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false)
+  const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
 
   const toggle = (id: number) => {
     setSelected((prev) => {
@@ -44,44 +50,38 @@ export default function EcpTrashPage() {
   const clearAll = () => setSelected(new Set())
 
   const onRestore = async () => {
-    try {
-      const ids = Array.from(selected)
-      if (!ids.length) { toast.error('Выберите документы'); return }
-      await ecpApi.trashRestore(ids)
-      toast.success('Восстановлено')
-      clearAll()
-      window.location.reload()
-    } catch (e: any) {
-      toast.error(e?.message || 'Не удалось восстановить')
-    }
+    setConfirmRestoreOpen(true)
   }
 
   const onPurge = async () => {
-    try {
-      const ids = Array.from(selected)
-      if (!ids.length) { toast.error('Выберите документы'); return }
-      const ok = window.confirm('Удалить выбранные документы безвозвратно?')
-      if (!ok) return
-      await ecpApi.trashPurge(ids)
-      toast.success('Удалено')
-      clearAll()
-      window.location.reload()
-    } catch (e: any) {
-      toast.error(e?.message || 'Не удалось удалить')
-    }
+    setConfirmDeleteOpen(true)
   }
 
   return (
+    <>
     <div style={{ padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 20, fontWeight: 600 }}>Документы — Корзина <span style={{ color: '#888', fontWeight: 400 }}>Всего: {total}</span></div>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
-            <button onClick={selectAll} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Выбрать все</button>
-            <button onClick={onRestore} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Восстановить</button>
-            <button onClick={onPurge} style={{ background: 'transparent', border: 'none', color: '#ef4444', fontWeight: 700 }}>Удалить</button>
+        </div>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', width: '100%', margin: '12px 0 16px 0' }}>
+          <div style={{ flex: 1 }}>
+            <Input
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
+              placeholder={'Поиск'}
+              onKeyDown={(e: any) => { if (e.key === 'Enter') setQuery(queryDraft) }}
+            />
           </div>
+          <Button onClick={() => setQuery(queryDraft)} title="Искать">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Button>
+          <button onClick={selectAll} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Выбрать все</button>
+          <button onClick={onRestore} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Восстановить</button>
+          <button onClick={onPurge} style={{ background: 'transparent', border: 'none', color: '#ef4444', fontWeight: 700 }}>Удалить</button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
@@ -109,5 +109,58 @@ export default function EcpTrashPage() {
         </div>
       </div>
     </div>
+
+    <ConfirmModal
+      isOpen={confirmRestoreOpen}
+      onClose={() => setConfirmRestoreOpen(false)}
+      title={"Восстановить выбранные документы?"}
+      message={`Восстановить все выбранные документы?`}
+      confirmText={"Восстановить"}
+      confirmVariant={'primary'}
+      loading={isConfirmLoading}
+      onConfirm={async () => {
+        try {
+          const ids = Array.from(selected)
+          if (!ids.length) { toast.error('Выберите документы'); return }
+          setIsConfirmLoading(true)
+          await ecpApi.trashRestore(ids)
+          toast.success('Восстановлено')
+          clearAll()
+          setConfirmRestoreOpen(false)
+          window.location.reload()
+        } catch (e: any) {
+          toast.error(e?.message || 'Не удалось восстановить')
+        } finally {
+          setIsConfirmLoading(false)
+        }
+      }}
+    />
+
+    <ConfirmModal
+      isOpen={confirmDeleteOpen}
+      onClose={() => setConfirmDeleteOpen(false)}
+      title={"Удалить выбранные документы безвозвратно?"}
+      message={`Удалить все выбранные документы безвозвратно?`}
+      confirmText={"Удалить"}
+      confirmVariant={'danger'}
+      loading={isConfirmLoading}
+      onConfirm={async () => {
+        try {
+          const ids = Array.from(selected)
+          if (!ids.length) { toast.error('Выберите документы'); return }
+          setIsConfirmLoading(true)
+          await ecpApi.trashPurge(ids)
+          toast.success('Удалено')
+          clearAll()
+          setConfirmDeleteOpen(false)
+          window.location.reload()
+        } catch (e: any) {
+          toast.error(e?.message || 'Не удалось удалить')
+        } finally {
+          setIsConfirmLoading(false)
+        }
+      }}
+    />
+    </>
   )
 }

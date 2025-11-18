@@ -6,6 +6,8 @@ import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
+import { Input, Button } from '@/shared/ui-kit'
+import { ConfirmModal } from '@/shared/ui-kit'
 
 type ListItem = { id: number; title: string; status: string; created_at: string; description?: string }
 
@@ -24,6 +26,7 @@ export default function EcpArchivePage() {
   const [limit] = React.useState(5)
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
+  const [queryDraft, setQueryDraft] = React.useState('')
   const { data, error, isLoading } = useSWR(['ecp-archive', page, limit], ([, p, l]) => fetchArchived(p as number, l as number))
   const { data: details } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
 
@@ -32,6 +35,9 @@ export default function EcpArchivePage() {
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const color = (s: string) => (s === 'ARCHIVED' ? '#6b7280' : '#6b7280')
+  const [confirmUnarchiveId, setConfirmUnarchiveId] = React.useState<number | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
+  const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
 
   const eventLabel = (code: string) => {
     if (code === 'DOCUMENT_CREATED') return 'Создан'
@@ -77,13 +83,27 @@ export default function EcpArchivePage() {
   }
 
   return (
+    <>
     <div style={{ padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 20, fontWeight: 600 }}>Документы — Архив <span style={{ color: '#888', fontWeight: 400 }}>Всего: {total}</span></div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%', margin: '12px 0 16px 0' }}>
+          <div style={{ flex: 1 }}>
+            <Input
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
+              placeholder={'Поиск'}
+              onKeyDown={(e: any) => { if (e.key === 'Enter') setQuery(queryDraft) }}
+            />
           </div>
+          <Button onClick={() => setQuery(queryDraft)} title="Искать">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 16 }}>
@@ -96,7 +116,7 @@ export default function EcpArchivePage() {
                   <span>Архивирован</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      onClick={(e) => { e.stopPropagation(); ecpApi.unarchiveDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmUnarchiveId(doc.id) }}
                       title="Разархивировать"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
@@ -108,7 +128,7 @@ export default function EcpArchivePage() {
                       </svg>
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(doc.id) }}
                       title="Удалить"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
@@ -249,5 +269,54 @@ export default function EcpArchivePage() {
         </div>
       </div>
     </div>
+
+    <ConfirmModal
+      isOpen={confirmUnarchiveId !== null}
+      onClose={() => setConfirmUnarchiveId(null)}
+      title={"Восстановить документ?"}
+      message={"Документ будет разархивирован"}
+      confirmText={"Восстановить"}
+      confirmVariant={'primary'}
+      loading={isConfirmLoading}
+      onConfirm={async () => {
+        if (confirmUnarchiveId == null) return
+        try {
+          setIsConfirmLoading(true)
+          await ecpApi.unarchiveDocument(confirmUnarchiveId)
+          toast.success('Разархивирован')
+          setConfirmUnarchiveId(null)
+          window.location.reload()
+        } catch (e: any) {
+          toast.error(e?.message || 'Не удалось восстановить')
+        } finally {
+          setIsConfirmLoading(false)
+        }
+      }}
+    />
+
+    <ConfirmModal
+      isOpen={confirmDeleteId !== null}
+      onClose={() => setConfirmDeleteId(null)}
+      title={"Удалить документ?"}
+      message={"Удаление переместит документ в корзину"}
+      confirmText={"Удалить"}
+      confirmVariant={'danger'}
+      loading={isConfirmLoading}
+      onConfirm={async () => {
+        if (confirmDeleteId == null) return
+        try {
+          setIsConfirmLoading(true)
+          await ecpApi.removeDocument(confirmDeleteId)
+          toast.success('Перемещён в корзину')
+          setConfirmDeleteId(null)
+          window.location.reload()
+        } catch (e: any) {
+          toast.error(e?.message || 'Не удалось удалить')
+        } finally {
+          setIsConfirmLoading(false)
+        }
+      }}
+    />
+    </>
   )
 }

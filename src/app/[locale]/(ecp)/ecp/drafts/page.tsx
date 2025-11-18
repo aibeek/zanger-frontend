@@ -9,6 +9,8 @@ import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
 import { signChallengeBase64 } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
+import { Input, Button } from '@/shared/ui-kit'
+import { ConfirmModal } from '@/shared/ui-kit'
 
 type DocItem = {
   id: number
@@ -39,6 +41,7 @@ export default function EcpDraftsPage() {
   const [page, setPage] = React.useState(1)
   const [limit, setLimit] = React.useState(5)
   const [query, setQuery] = React.useState('')
+  const [queryDraft, setQueryDraft] = React.useState('')
   const { data, error, isLoading } = useSWR(['ecp-drafts', page, limit], ([, p, l]) => fetchDrafts(p as number, l as number))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
@@ -101,6 +104,9 @@ export default function EcpDraftsPage() {
   const items: DocItem[] = (data?.items || []).filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
   const total: number = data?.pagination?.total ?? items.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
+  const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
+  const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
 
   const eventLabel = (code: string) => {
     if (code === 'DOCUMENT_CREATED') return 'Создан'
@@ -218,11 +224,24 @@ export default function EcpDraftsPage() {
   return (
     <div style={{ padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontSize: 20, fontWeight: 600 }}>Документы — Черновики <span style={{ color: '#888', fontWeight: 400 }}>Всего: {total}</span></div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', width: '100%', margin: '12px 0 16px 0' }}>
+          <div style={{ flex: 1 }}>
+            <Input
+              value={queryDraft}
+              onChange={(e) => setQueryDraft(e.target.value)}
+              placeholder={'Поиск'}
+              onKeyDown={(e: any) => { if (e.key === 'Enter') setQuery(queryDraft) }}
+            />
           </div>
+          <Button onClick={() => setQuery(queryDraft)} title="Искать">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </Button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 16 }}>
@@ -235,7 +254,7 @@ export default function EcpDraftsPage() {
                   <span>Черновик</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      onClick={(e) => { e.stopPropagation(); ecpApi.archiveDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmArchiveId(doc.id) }}
                       title="Архивировать"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
@@ -246,7 +265,7 @@ export default function EcpDraftsPage() {
                       </svg>
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(doc.id) }}
                       title="В корзину"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
@@ -444,6 +463,54 @@ export default function EcpDraftsPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmArchiveId !== null}
+        onClose={() => setConfirmArchiveId(null)}
+        title={"Переместить документ в архив?"}
+        message={"Вы уверены, что хотите переместить документ в архив?"}
+        confirmText={"В архив"}
+        confirmVariant={'primary'}
+        loading={isConfirmLoading}
+        onConfirm={async () => {
+          if (confirmArchiveId == null) return
+          try {
+            setIsConfirmLoading(true)
+            await ecpApi.archiveDocument(confirmArchiveId)
+            toast.success('Перемещён в архив')
+            setConfirmArchiveId(null)
+            window.location.reload()
+          } catch (e: any) {
+            toast.error(e?.message || 'Не удалось переместить')
+          } finally {
+            setIsConfirmLoading(false)
+          }
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        title={"Переместить документ в корзину?"}
+        message={"Документ будет перемещён в корзину"}
+        confirmText={"В корзину"}
+        confirmVariant={'danger'}
+        loading={isConfirmLoading}
+        onConfirm={async () => {
+          if (confirmDeleteId == null) return
+          try {
+            setIsConfirmLoading(true)
+            await ecpApi.removeDocument(confirmDeleteId)
+            toast.success('Перемещён в корзину')
+            setConfirmDeleteId(null)
+            window.location.reload()
+          } catch (e: any) {
+            toast.error(e?.message || 'Не удалось переместить')
+          } finally {
+            setIsConfirmLoading(false)
+          }
+        }}
+      />
     </div>
   )
 }
