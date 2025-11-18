@@ -59,13 +59,24 @@ export default function EcpIncomingPage() {
   const canSign = !!(details && Array.isArray(details.signers) && details.signers.some((s: any) => s.can_sign))
 
   const eventLabel = (code: string) => {
+    if (code === 'DOCUMENT_CREATED') return 'Создан'
+    if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
     if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
     if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+    if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
     if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
     if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
     if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+    if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
     if (code === 'SIGN_COMPLETED') return 'Подписан'
     if (code === 'SIGN_DECLINED' || code === 'DOCUMENT_DECLINED') return 'Отклонено'
+    if (code === 'DOCUMENT_ARCHIVED') return 'Архивирован'
+    if (code === 'DOCUMENT_RESTORED') return 'Разархивирован'
+    if (code === 'DOCUMENT_DELETED') return 'Удалён'
+    if (code === 'DOCUMENT_TRASHED') return 'Перемещён в корзину'
+    if (code === 'DOCUMENT_VIEWED') return 'Просмотрен'
+    if (code === 'COMMENT_ADDED') return 'Комментарий добавлен'
+    if (code === 'FILE_ADDED') return 'Файл добавлен'
     return code
   }
 
@@ -210,7 +221,7 @@ export default function EcpIncomingPage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxWidth: 520, alignSelf: 'start' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxWidth: 520, alignSelf: 'start', maxHeight: 360, overflow: 'auto', paddingRight: 8 }}>
                     {(details.signers || []).map((s: any, idx: number) => {
                       const statusColor =
                         s.status === 'SIGNED' ? '#22c55e' :
@@ -240,7 +251,7 @@ export default function EcpIncomingPage() {
                   <div>
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
                         {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

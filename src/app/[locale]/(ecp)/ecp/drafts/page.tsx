@@ -102,6 +102,49 @@ export default function EcpDraftsPage() {
   const total: number = data?.pagination?.total ?? items.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
+  const eventLabel = (code: string) => {
+    if (code === 'DOCUMENT_CREATED') return 'Создан'
+    if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
+    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
+    if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+    if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
+    if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+    if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
+    if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+    if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
+    if (code === 'SIGN_COMPLETED') return 'Подписан'
+    if (code === 'SIGN_DECLINED' || code === 'DOCUMENT_DECLINED') return 'Отклонено'
+    if (code === 'DOCUMENT_ARCHIVED') return 'Архивирован'
+    if (code === 'DOCUMENT_RESTORED') return 'Разархивирован'
+    if (code === 'DOCUMENT_DELETED') return 'Удалён'
+    if (code === 'DOCUMENT_TRASHED') return 'Перемещён в корзину'
+    if (code === 'DOCUMENT_VIEWED') return 'Просмотрен'
+    if (code === 'COMMENT_ADDED') return 'Комментарий добавлен'
+    if (code === 'FILE_ADDED') return 'Файл добавлен'
+    return code
+  }
+
+  const formatAt = (s?: string) => {
+    if (!s) return ''
+    try {
+      let iso = String(s).trim()
+      if (!iso.includes('T')) iso = iso.replace(' ', 'T')
+      iso = iso.replace(/\s\+(\d{2}:\d{2})$/, '+$1').replace(/\sZ$/, 'Z')
+      if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
+      const d = new Date(iso)
+      return new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Asia/Almaty',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(d)
+    } catch {
+      return String(s)
+    }
+  }
+
   const findCounterpartyById = (id?: number | null): CounterpartyItem | undefined => {
     if (!id) return undefined
     return [...signatories, ...searchResults].find((x) => x.id === id)
@@ -266,13 +309,30 @@ export default function EcpDraftsPage() {
                     {/* История справа */}
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number) => (
-                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
-                            <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
+                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                              {i < arr.length - 1 ? (
+                                <>
+                                  <div style={{ width: 2, height: 18, background: '#2563eb', marginTop: 4 }}></div>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" style={{ marginTop: -2 }}>
+                                    <polyline points="6 9 12 15 18 9" />
+                                  </svg>
+                                </>
+                              ) : null}
+                            </div>
                             <div>
-                              <div style={{ fontWeight: 700 }}>{l.event_code}</div>
-                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString(undefined, { timeZone: 'Asia/Almaty' })}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
+                              {(() => {
+                                const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
+                                return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
+                              })()}
+                              {(() => {
+                                const name = l.subject_fio || l.actor?.fio || ''
+                                return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600, marginTop: 2 }}>{name}</div> : null
+                              })()}
                             </div>
                           </div>
                         ))}
