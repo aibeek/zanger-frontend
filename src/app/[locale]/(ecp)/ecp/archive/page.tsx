@@ -53,19 +53,6 @@ export default function EcpArchivePage() {
                   <span>Архивирован</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
-                      title="Удалить"
-                      style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                        <path d="M10 11v6" />
-                        <path d="M14 11v6" />
-                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-                      </svg>
-                    </button>
-                    <button
                       onClick={(e) => { e.stopPropagation(); ecpApi.unarchiveDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
                       title="Разархивировать"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
@@ -75,6 +62,19 @@ export default function EcpArchivePage() {
                         <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8" />
                         <polyline points="12 14 9 11 12 8" />
                         <polyline points="12 14 15 11 12 8" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      title="Удалить"
+                      style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11в6" />
+                        <path d="M14 11в6" />
+                        <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
                   </div>

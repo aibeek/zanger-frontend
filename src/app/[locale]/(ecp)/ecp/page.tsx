@@ -10,7 +10,7 @@ export default function EcpPage() {
         padding: 16,
         boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
       }}>
-        Контент ЭЦП (каркас готов: Header и Sidebar)
+        Контент ЭЦП
       </div>
     </div>
   )

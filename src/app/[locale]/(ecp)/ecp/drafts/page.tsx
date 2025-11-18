@@ -22,11 +22,13 @@ type DocItem = {
 
 type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string; user_id?: number | null }
 
-const fetchDrafts = async () => {
-  const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 50 })
+const fetchDrafts = async (page: number, limit: number) => {
+  const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 100 })
   const items: DocItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
-  const pagination = res?.pagination || null
-  return { items, pagination }
+  const start = Math.max(0, (page - 1) * limit)
+  const paged = items.slice(start, start + limit)
+  const pagination = { page, limit, total: items.length }
+  return { items: paged, pagination }
 }
 
 export default function EcpDraftsPage() {
@@ -34,7 +36,10 @@ export default function EcpDraftsPage() {
   const locale = useLocale()
   const { personalData, getPersonalDataByToken } = useLoginStore()
 
-  const { data, error, isLoading } = useSWR('ecp-drafts', fetchDrafts)
+  const [page, setPage] = React.useState(1)
+  const [limit, setLimit] = React.useState(5)
+  const [query, setQuery] = React.useState('')
+  const { data, error, isLoading } = useSWR(['ecp-drafts', page, limit], ([, p, l]) => fetchDrafts(p as number, l as number))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
 
@@ -93,8 +98,9 @@ export default function EcpDraftsPage() {
     return () => clearTimeout(tId)
   }, [searchQuery])
 
-  const items: DocItem[] = data?.items || []
+  const items: DocItem[] = (data?.items || []).filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
   const total: number = data?.pagination?.total ?? items.length
+  const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const findCounterpartyById = (id?: number | null): CounterpartyItem | undefined => {
     if (!id) return undefined
@@ -172,7 +178,7 @@ export default function EcpDraftsPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ fontSize: 20, fontWeight: 600 }}>Документы — Черновики <span style={{ color: '#888', fontWeight: 400 }}>Всего: {total}</span></div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <input placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={'Поиск'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '8px 12px', width: 260 }} />
           </div>
         </div>
 
@@ -181,15 +187,24 @@ export default function EcpDraftsPage() {
             {isLoading && <div>Загрузка…</div>}
             {error && <div>Ошибка загрузки</div>}
             {items.map((doc) => (
-              <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
+              <div key={doc.id} onClick={() => setSelectedId(doc.id)} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
                 <div style={{ background: '#2563eb', color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>Черновик</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
-                      onClick={() => {
-                        ecpApi.deleteDocument(doc.id).then(() => window.location.reload()).catch(() => {})
-                      }}
-                      title="Удалить"
+                      onClick={(e) => { e.stopPropagation(); ecpApi.archiveDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      title="Архивировать"
+                      style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="4" />
+                        <path d="M5 8h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8" />
+                        <path d="M10 12h4v4h-4z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }}
+                      title="В корзину"
                       style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
                     >
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
@@ -205,12 +220,18 @@ export default function EcpDraftsPage() {
                 <div style={{ padding: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
-                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
                   <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+              <div style={{ color: '#666', fontSize: 12 }}>Стр. {page} из {pages} · Всего: {total}</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8, opacity: page <= 1 ? 0.6 : 1 }}>Назад</button>
+                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page >= pages} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8, opacity: page >= pages ? 0.6 : 1 }}>Вперёд</button>
+              </div>
+            </div>
           </div>
 
           <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
