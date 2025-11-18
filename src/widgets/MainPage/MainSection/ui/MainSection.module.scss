@@ -25,8 +25,6 @@ $header-height-sm: 56px; // mobile
 		max-width: 1680px;
 		width: auto;
 		margin: 0 auto;
-		background: url('/assets/images/mainLEFT.jpg') center center/100% no-repeat;
-		background-position: center 5%;
 		z-index: 1;
 		border-radius: 20px;
 		overflow: hidden;
@@ -68,6 +66,16 @@ $header-height-sm: 56px; // mobile
 			background-size: cover;
 			background-position: center top;
 		}
+	}
+
+	.bgVideo {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 20%;
+		z-index: 0;
 	}
 
 	.container {
