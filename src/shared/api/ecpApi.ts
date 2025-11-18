@@ -207,6 +207,20 @@ export const ecpApi = {
     })
   },
 
+  trashRestore: (ids: number[]): Promise<{ success?: boolean; restored?: number; errors?: any[] }> => {
+    return httpClientWithAuth(`${API_URL}/documents/trash/restore`, {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    })
+  },
+
+  trashPurge: (ids: number[]): Promise<{ success?: boolean; deleted?: number; errors?: any[] }> => {
+    return httpClientWithAuth(`${API_URL}/documents/trash/purge`, {
+      method: 'POST',
+      body: JSON.stringify({ ids }),
+    })
+  },
+
   deleteDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
     return httpClientWithAuth(`${API_URL}/documents/${documentId}`, {
       method: 'DELETE',
