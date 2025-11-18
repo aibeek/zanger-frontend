@@ -17,7 +17,7 @@ type ListItem = {
   signers_count: number
 }
 
-const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED'])
+const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED', 'DECLINED', 'CANCELLED'])
 
 const fetchIncoming = async () => {
   const res: any = await ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100 })
@@ -45,6 +45,8 @@ export default function EcpIncomingPage() {
     if (s === 'SIGNED') return '#22c55e'
     if (s === 'PARTIALLY_SIGNED') return '#f59e0b'
     if (s === 'ROUTED' || s === 'PENDING_SIGNATURE') return '#2563eb'
+    if (s === 'DECLINED') return '#ef4444'
+    if (s === 'CANCELLED') return '#6b7280'
     return '#6b7280'
   }
 
@@ -63,7 +65,10 @@ export default function EcpIncomingPage() {
   const formatAt = (s?: string) => {
     if (!s) return ''
     try {
-      const iso = String(s).includes('T') ? String(s) : String(s).replace(' ', 'T')
+      let iso = String(s).trim()
+      if (!iso.includes('T')) iso = iso.replace(' ', 'T')
+      iso = iso.replace(/\s\+(\d{2}:\d{2})$/, '+$1').replace(/\sZ$/, 'Z')
+      if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
       const d = new Date(iso)
       return new Intl.DateTimeFormat('ru-RU', {
         timeZone: 'Asia/Almaty',
@@ -77,6 +82,11 @@ export default function EcpIncomingPage() {
     } catch {
       return String(s)
     }
+  }
+
+  const truncate = (str: string, max = 28) => {
+    const s = String(str)
+    return s.length > max ? s.slice(0, max - 1) + '…' : s
   }
 
   const onSign = async () => {
@@ -138,7 +148,14 @@ export default function EcpIncomingPage() {
             {filtered.map((doc) => (
               <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
                 <div style={{ background: color(doc.status), color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>{doc.status === 'SIGNED' ? 'Подписан' : doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Получен'}</span>
+                  <span>{
+                    doc.status === 'SIGNED' ? 'Подписан' :
+                    doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' :
+                    doc.status === 'PENDING_SIGNATURE' ? 'На подписи' :
+                    doc.status === 'DECLINED' ? 'Отклонён' :
+                    doc.status === 'CANCELLED' ? 'Отменён' :
+                    'Получен'
+                  }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button title="Удалить" style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'not-allowed' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
@@ -153,10 +170,10 @@ export default function EcpIncomingPage() {
                 </div>
                 <div style={{ padding: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{truncate(doc.title)}</div>
                     <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {formatAt(doc.created_at).split(',')[0]} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {String(doc.created_at).split(' ')[0]} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -170,16 +187,14 @@ export default function EcpIncomingPage() {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
                     {(details.signers || []).map((s: any, idx: number) => {
                       const statusColor = s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : '#6b7280'
-                      const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'
+                      const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTЕД' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'
                       return (
-                        <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div>
-                              <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
-                              {s.email ? <div style={{ fontSize: 12, color: '#666' }}>{s.email}</div> : null}
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <span style={{ width: 10, height: 10, borderRadius: 9999, background: statusColor }}></span>
+                        <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                          <div>
+                            <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
+                            {s.email ? <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>{s.email}</div> : null}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                              <span style={{ width: 8, height: 8, borderRadius: 9999, background: statusColor }}></span>
                               <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusLabel}</span>
                             </div>
                           </div>
@@ -191,7 +206,7 @@ export default function EcpIncomingPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                        {(details.log || []).map((l: any, i: number) => (
+                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
                             <div>
@@ -200,7 +215,7 @@ export default function EcpIncomingPage() {
                                 const name = l.subject_fio || l.actor?.fio || ''
                                 return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600 }}>{name}</div> : null
                               })()}
-                              <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{String(l.created_at)}</div>
                             </div>
                           </div>
                         ))}

@@ -246,12 +246,12 @@ export default function EcpDraftsPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                        {(details.log || []).map((l: any, i: number) => (
+                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
                             <div>
                               <div style={{ fontWeight: 700 }}>{l.event_code}</div>
-                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString()}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString(undefined, { timeZone: 'Asia/Almaty' })}</div>
                             </div>
                           </div>
                         ))}

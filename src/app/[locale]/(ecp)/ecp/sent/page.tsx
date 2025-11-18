@@ -16,7 +16,7 @@ type ListItem = {
   signers_count: number
 }
 
-const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED'])
+const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED', 'DECLINED', 'CANCELLED'])
 
 const fetchSent = async () => {
   const res: any = await ecpApi.listDocuments({ outbox: true, inbox: false, page: 1, limit: 100 })
@@ -48,6 +48,40 @@ export default function EcpSentPage() {
     return '#6b7280'
   }
 
+  const truncate = (str: string, max = 28) => {
+    const s = String(str)
+    return s.length > max ? s.slice(0, max - 1) + '…' : s
+  }
+
+  const eventLabel = (code: string) => {
+    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
+    if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+    if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+    if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
+    if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+    if (code === 'SIGN_COMPLETED') return 'Подписан'
+    return code
+  }
+
+  const formatAt = (s?: string) => {
+    if (!s) return ''
+    try {
+      const iso = String(s).includes('T') ? String(s) : String(s).replace(' ', 'T')
+      const d = new Date(iso)
+      return new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Asia/Almaty',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      }).format(d)
+    } catch {
+      return String(s)
+    }
+  }
+
   return (
     <div style={{ padding: 16 }}>
       <div style={{ background: '#fff', borderRadius: 16, padding: 16, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
@@ -65,7 +99,14 @@ export default function EcpSentPage() {
             {filtered.map((doc) => (
               <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
                 <div style={{ background: color(doc.status), color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>{doc.status === 'SIGNED' ? 'Подписан' : doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' : doc.status === 'PENDING_SIGNATURE' ? 'На подписи' : 'Направлен контрагенту'}</span>
+                  <span>{
+                    doc.status === 'SIGNED' ? 'Подписан' :
+                    doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' :
+                    doc.status === 'PENDING_SIGNATURE' ? 'На подписи' :
+                    doc.status === 'DECLINED' ? 'Отклонён' :
+                    doc.status === 'CANCELLED' ? 'Отменён' :
+                    'Направлен контрагенту'
+                  }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <button
                       onClick={() => {
@@ -88,10 +129,10 @@ export default function EcpSentPage() {
                 </div>
                 <div style={{ padding: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
+                    <div style={{ fontSize: 15, fontWeight: 600 }}>{truncate(doc.title)}</div>
                     <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {String(doc.created_at).split(' ')[0]} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -103,19 +144,17 @@ export default function EcpSentPage() {
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
                   <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
                       {(details.signers || []).map((s: any, idx: number) => {
                         const statusColor = s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : '#6b7280'
-                        const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'
+                        const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTЕД' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'
                         return (
-                          <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <div>
-                                <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
-                                {s.email ? <div style={{ fontSize: 12, color: '#666' }}>{s.email}</div> : null}
-                              </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span style={{ width: 10, height: 10, borderRadius: 9999, background: statusColor }}></span>
+                          <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                            <div>
+                              <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
+                              {s.email ? <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>{s.email}</div> : null}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                                <span style={{ width: 8, height: 8, borderRadius: 9999, background: statusColor }}></span>
                                 <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusLabel}</span>
                               </div>
                             </div>
@@ -132,12 +171,12 @@ export default function EcpSentPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                        {(details.log || []).map((l: any, i: number) => (
+                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
                             <div>
-                              <div style={{ fontWeight: 700 }}>{l.event_code}</div>
-                              <div style={{ fontSize: 12, color: '#666' }}>{new Date(l.created_at).toLocaleString()}</div>
+                              <div style={{ fontWeight: 700 }}>{l.label || eventLabel(l.event_code)}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{String(l.created_at)}</div>
                             </div>
                           </div>
                         ))}
