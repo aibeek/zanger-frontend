@@ -186,6 +186,27 @@ export const ecpApi = {
     })
   },
 
+  archiveDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/archive`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
+  },
+
+  removeDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/remove`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
+  },
+
+  unarchiveDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    return httpClientWithAuth(`${API_URL}/documents/${documentId}/unarchive`, {
+      method: 'POST',
+      body: JSON.stringify({}),
+    })
+  },
+
   deleteDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
     return httpClientWithAuth(`${API_URL}/documents/${documentId}`, {
       method: 'DELETE',

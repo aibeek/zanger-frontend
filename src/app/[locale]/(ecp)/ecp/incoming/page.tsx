@@ -15,21 +15,26 @@ type ListItem = {
   status: string
   created_at: string
   signers_count: number
+  description?: string
 }
 
 const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED', 'DECLINED', 'CANCELLED'])
 
-const fetchIncoming = async () => {
+const fetchIncoming = async (page: number, limit: number) => {
   const res: any = await ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100 })
   const items: ListItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
   const filtered = items.filter((d) => ALLOWED.has(String(d.status)))
-  const pagination = res?.pagination || null
-  return { items: filtered, pagination }
+  const start = Math.max(0, (page - 1) * limit)
+  const paged = filtered.slice(start, start + limit)
+  const pagination = { page, limit, total: filtered.length }
+  return { items: paged, pagination }
 }
 
 export default function EcpIncomingPage() {
   const t = useTranslations('ecp.sidebar')
-  const { data, error, isLoading } = useSWR('ecp-incoming', fetchIncoming)
+  const [page, setPage] = React.useState(1)
+  const [limit, setLimit] = React.useState(5)
+  const { data, error, isLoading } = useSWR(['ecp-incoming', page, limit], ([, p, l]) => fetchIncoming(p as number, l as number))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
@@ -39,7 +44,8 @@ export default function EcpIncomingPage() {
 
   const items: ListItem[] = data?.items || []
   const filtered = items.filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
-  const total = filtered.length
+  const total = (data?.pagination?.total as number) || filtered.length
+  const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const color = (s: string) => {
     if (s === 'SIGNED') return '#22c55e'
@@ -59,6 +65,7 @@ export default function EcpIncomingPage() {
     if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
     if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
     if (code === 'SIGN_COMPLETED') return 'Подписан'
+    if (code === 'SIGN_DECLINED' || code === 'DOCUMENT_DECLINED') return 'Отклонено'
     return code
   }
 
@@ -77,7 +84,6 @@ export default function EcpIncomingPage() {
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit',
       }).format(d)
     } catch {
       return String(s)
@@ -141,12 +147,12 @@ export default function EcpIncomingPage() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {isLoading && <div>Загрузка…</div>}
             {error && <div>Ошибка загрузки</div>}
             {filtered.map((doc) => (
-              <div key={doc.id} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden' }}>
+              <div key={doc.id} onClick={() => setSelectedId(doc.id)} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
                 <div style={{ background: color(doc.status), color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>{
                     doc.status === 'SIGNED' ? 'Подписан' :
@@ -157,7 +163,7 @@ export default function EcpIncomingPage() {
                     'Получен'
                   }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <button title="Удалить" style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'not-allowed' }}>
+                    <button title="Удалить" onClick={(e) => { e.stopPropagation(); ecpApi.removeDocument(doc.id).then(() => window.location.reload()).catch(() => {}) }} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -166,17 +172,37 @@ export default function EcpIncomingPage() {
                         <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
                       </svg>
                     </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        ecpApi.archiveDocument(doc.id).then(() => window.location.reload()).catch(() => {})
+                      }}
+                      title="Архивировать"
+                      style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: 4, borderRadius: 6, cursor: 'pointer' }}
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="4" />
+                        <path d="M5 8h14v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8" />
+                        <path d="M10 12h4v4h-4z" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
-                <div style={{ padding: 10 }}>
+                <div style={{ padding: 8 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{truncate(doc.title)}</div>
-                    <button onClick={() => setSelectedId(doc.id)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '4px 8px', borderRadius: 8 }}>Открыть</button>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {String(doc.created_at).split(' ')[0]} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+              <div style={{ color: '#666', fontSize: 12 }}>Стр. {page} из {pages} · Всего: {total}</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8, opacity: page <= 1 ? 0.6 : 1 }}>Назад</button>
+                <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page >= pages} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8, opacity: page >= pages ? 0.6 : 1 }}>Вперёд</button>
+              </div>
+            </div>
           </div>
 
           <div style={{ background: '#f8fafc', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
@@ -184,10 +210,19 @@ export default function EcpIncomingPage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxWidth: 520, alignSelf: 'start' }}>
                     {(details.signers || []).map((s: any, idx: number) => {
-                      const statusColor = s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : '#6b7280'
-                      const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTЕД' || s.status === 'PENDING' ? 'На рассмотрении' : s.status || '—'
+                      const statusColor =
+                        s.status === 'SIGNED' ? '#22c55e' :
+                        s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' :
+                        s.status === 'DECLINED' ? '#ef4444' :
+                        '#6b7280'
+                      const statusLabel =
+                        s.status === 'SIGNED' ? 'Подписан' :
+                        s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' :
+                        s.status === 'DECLINED' ? 'Отклонён' :
+                        s.status === 'EXPIRED' ? 'Истёк' :
+                        s.status || '—'
                       return (
                         <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
                           <div>
@@ -206,16 +241,29 @@ export default function EcpIncomingPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
-                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number) => (
-                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'center', gap: 10 }}>
-                            <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                          <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                              {i < arr.length - 1 ? (
+                                <>
+                                  <div style={{ width: 2, height: 18, background: '#2563eb', marginTop: 4 }}></div>
+                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" style={{ marginTop: -2 }}>
+                                    <polyline points="6 9 12 15 18 9" />
+                                  </svg>
+                                </>
+                              ) : null}
+                            </div>
                             <div>
-                              <div style={{ fontWeight: 700 }}>{l.label || eventLabel(l.event_code)}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
+                              {(() => {
+                                const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
+                                return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
+                              })()}
                               {(() => {
                                 const name = l.subject_fio || l.actor?.fio || ''
-                                return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600 }}>{name}</div> : null
+                                return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600, marginTop: 2 }}>{name}</div> : null
                               })()}
-                              <div style={{ fontSize: 12, color: '#666' }}>{String(l.created_at)}</div>
                             </div>
                           </div>
                         ))}
