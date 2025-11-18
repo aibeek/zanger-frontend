@@ -13,8 +13,8 @@ type ListItem = { id: number; title: string; status: string; created_at: string;
 
 const ALLOWED = new Set(['ARCHIVED'])
 
-const fetchArchived = async (page: number, limit: number) => {
-  const res: any = await ecpApi.listDocuments({ page, limit, status: 'ARCHIVED' })
+const fetchArchived = async (page: number, limit: number, q?: string) => {
+  const res: any = await ecpApi.listDocuments({ page, limit, status: 'ARCHIVED', q })
   const items: ListItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
   const filtered = items.filter((d) => ALLOWED.has(String(d.status)))
   const pagination = res?.pagination || { page, limit, total: filtered.length }
@@ -27,10 +27,10 @@ export default function EcpArchivePage() {
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
-  const { data, error, isLoading } = useSWR(['ecp-archive', page, limit], ([, p, l]) => fetchArchived(p as number, l as number))
+  const { data, error, isLoading } = useSWR(['ecp-archive', page, limit, query], ([, p, l, q]) => fetchArchived(p as number, l as number, q as string))
   const { data: details } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
 
-  const items: ListItem[] = (data?.items || []).filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
+  const items: ListItem[] = (data?.items || [])
   const total = (data?.pagination?.total as number) || items.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
@@ -104,6 +104,9 @@ export default function EcpArchivePage() {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </Button>
+          {query && (
+            <Button variant="secondary" onClick={() => { setQuery(''); setQueryDraft('') }} title="Очистить">Очистить</Button>
+          )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 16 }}>

@@ -82,7 +82,7 @@ export const ecpApi = {
   },
 
   listDocuments: (
-    params?: { status?: string; inbox?: boolean; outbox?: boolean; page?: number; limit?: number }
+    params?: { status?: string; inbox?: boolean; outbox?: boolean; page?: number; limit?: number; q?: string }
   ): Promise<{ data: any[]; pagination?: any }> => {
     const query = createQuery(params || {})
     return httpClientWithAuth(`${API_URL}/documents${query}`, {

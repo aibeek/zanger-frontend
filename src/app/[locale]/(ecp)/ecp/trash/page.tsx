@@ -13,8 +13,8 @@ type ListItem = { id: number; title: string; status: string; created_at: string;
 
 const ALLOWED = new Set(['REMOVED'])
 
-const fetchRemoved = async (page: number, limit: number) => {
-  const res: any = await ecpApi.listDocuments({ page, limit, status: 'REMOVED' })
+const fetchRemoved = async (page: number, limit: number, q?: string) => {
+  const res: any = await ecpApi.listDocuments({ page, limit, status: 'REMOVED', q })
   const items: ListItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
   const filtered = items.filter((d) => ALLOWED.has(String(d.status)))
   const pagination = res?.pagination || { page, limit, total: filtered.length }
@@ -27,9 +27,9 @@ export default function EcpTrashPage() {
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
   const [selected, setSelected] = React.useState<Set<number>>(new Set())
-  const { data, error, isLoading } = useSWR(['ecp-trash', page, limit], ([, p, l]) => fetchRemoved(p as number, l as number))
+  const { data, error, isLoading } = useSWR(['ecp-trash', page, limit, query], ([, p, l, q]) => fetchRemoved(p as number, l as number, q as string))
 
-  const items: ListItem[] = (data?.items || []).filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
+  const items: ListItem[] = (data?.items || [])
   const total = (data?.pagination?.total as number) || items.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
@@ -79,6 +79,9 @@ export default function EcpTrashPage() {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </Button>
+          {query && (
+            <Button variant="secondary" onClick={() => { setQuery(''); setQueryDraft('') }} title="Очистить">Очистить</Button>
+          )}
           <button onClick={selectAll} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Выбрать все</button>
           <button onClick={onRestore} style={{ background: 'transparent', border: 'none', color: '#2563eb', fontWeight: 700 }}>Восстановить</button>
           <button onClick={onPurge} style={{ background: 'transparent', border: 'none', color: '#ef4444', fontWeight: 700 }}>Удалить</button>

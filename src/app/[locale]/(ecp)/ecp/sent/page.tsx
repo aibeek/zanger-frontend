@@ -21,8 +21,8 @@ type ListItem = {
 
 const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED', 'DECLINED', 'CANCELLED'])
 
-const fetchSent = async (page: number, limit: number) => {
-  const res: any = await ecpApi.listDocuments({ outbox: true, inbox: false, page: 1, limit: 100 })
+const fetchSent = async (page: number, limit: number, q?: string) => {
+  const res: any = await ecpApi.listDocuments({ outbox: true, inbox: false, page: 1, limit: 100, q })
   const items: ListItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
   const filtered = items.filter((d) => ALLOWED.has(String(d.status)))
   const start = Math.max(0, (page - 1) * limit)
@@ -35,10 +35,10 @@ export default function EcpSentPage() {
   const t = useTranslations('ecp.sidebar')
   const [page, setPage] = React.useState(1)
   const [limit, setLimit] = React.useState(5)
-  const { data, error, isLoading } = useSWR(['ecp-sent', page, limit], ([, p, l]) => fetchSent(p as number, l as number))
-  const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
+  const { data, error, isLoading } = useSWR(['ecp-sent', page, limit, query], ([, p, l, q]) => fetchSent(p as number, l as number, q as string))
+  const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const refresh = React.useCallback(() => {
     // simple trigger by mutate of SWR key
     // useSWR returns revalidate via mutate; to keep minimal, rely on key change below
@@ -49,8 +49,8 @@ export default function EcpSentPage() {
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
 
   const items: ListItem[] = data?.items || []
-  const filtered = items.filter((i) => i.title.toLowerCase().includes(query.toLowerCase()))
-  const total = (data?.pagination?.total as number) || filtered.length
+  const filtered = items
+  const total = (data?.pagination?.total as number) || items.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const color = (s: string) => {
@@ -127,6 +127,9 @@ export default function EcpSentPage() {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </Button>
+          {query && (
+            <Button variant="secondary" onClick={() => { setQuery(''); setQueryDraft('') }} title="Очистить">Очистить</Button>
+          )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 16 }}>

@@ -24,8 +24,8 @@ type DocItem = {
 
 type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string; user_id?: number | null }
 
-const fetchDrafts = async (page: number, limit: number) => {
-  const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 100 })
+const fetchDrafts = async (page: number, limit: number, q?: string) => {
+  const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 100, q })
   const items: DocItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
   const start = Math.max(0, (page - 1) * limit)
   const paged = items.slice(start, start + limit)
@@ -42,7 +42,7 @@ export default function EcpDraftsPage() {
   const [limit, setLimit] = React.useState(5)
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
-  const { data, error, isLoading } = useSWR(['ecp-drafts', page, limit], ([, p, l]) => fetchDrafts(p as number, l as number))
+  const { data, error, isLoading } = useSWR(['ecp-drafts', page, limit, query], ([, p, l, q]) => fetchDrafts(p as number, l as number, q as string))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
 
@@ -242,6 +242,9 @@ export default function EcpDraftsPage() {
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
             </svg>
           </Button>
+          {query && (
+            <Button variant="secondary" onClick={() => { setQuery(''); setQueryDraft('') }} title="Очистить">Очистить</Button>
+          )}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 16 }}>
