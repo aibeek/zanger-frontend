@@ -1,6 +1,11 @@
 .aside {
   width: 260px;
-  min-height: 100vh;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  overflow-y: auto;
   background: linear-gradient(180deg, #0b1728 0%, #121e31 100%);
   color: #fff;
   display: flex;
