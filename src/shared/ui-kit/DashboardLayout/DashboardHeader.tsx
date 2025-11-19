@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import monitor from '@/app/assets/icons/monitor.webp'
 import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
+import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
 import Strelka from '@/app/assets/icons/strelka.svg'
 
 interface DashboardHeaderProps {
@@ -47,6 +48,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             '/dashboard/subscription': 'dashboard.sidebar.subscription',
             '/dashboard/faq': 'dashboard.sidebar.faq',
             '/dashboard/support': 'dashboard.sidebar.support',
+            '/dashboard/video-conference': 'Видео-конференц связь',
         }
 
         // Удаляем язык из пути для поиска
@@ -60,7 +62,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         t('dashboard.footer.sections.database'),
         t('dashboard.footer.sections.seminars'),
         t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.footer.sections.videoConference'),
+        t('dashboard.sidebar.vcMyConferences'),
         t('dashboard.footer.sections.documentManagement')
     ]
 
@@ -75,20 +77,49 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         setIsModalOpen(true)
     }
 
+    const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+    const isVideoConferencePage = pathWithoutLang === '/dashboard/video-conference'
+
+    const roleCode = (personalData as any)?.role_id?.code
+    const roleName = roleCode === 'lawyer' ? 'Юрист' : roleCode === 'client' ? 'Клиент' : ''
+    const avatarUrl = personalData?.icon || DefaultAvatar
+
     return (
-        <div className={s.headerWrapper}>
+        <div className={s.headerWrapper} suppressHydrationWarning>
             <header className={s.header}>
                 <div className={s.headerLeft}>
-                    <Image 
-                        src={HeaderAvatar} 
-                        alt="Profile Icon"
-                        className={s.profileIcon}
-                    />
+                    {isVideoConferencePage ? (
+                        <Image 
+                            src="/assets/icons/vks.svg" 
+                            alt="Видеоконференцсвязь"
+                            className={s.profileIcon}
+                            width={35}
+                            height={35}
+                        />
+                    ) : (
+                        <Image 
+                            src={HeaderAvatar} 
+                            alt="Profile Icon"
+                            className={s.profileIcon}
+                            onClick={() => router.push(`/${language}/dashboard/profile`)}
+                            width={35}
+                            height={35}
+                        />
+                    )}
                     <h1>{t(getPageTitle())}</h1>
                 </div>
                 
                 <div className={s.headerRight}>
-                    {isLawyer && hasSubscription && personalData && 'lawyer' in personalData && personalData.lawyer?.subscription && (
+                    {isVideoConferencePage && (
+                        <div className={s.profileCard} onClick={() => router.push(`/${language}/dashboard/profile`)}>
+                            <Image src={avatarUrl} alt="avatar" width={40} height={40} className={s.profilePic} />
+                            <div className={s.profileInfo}>
+                                <div className={s.profileName}>{personalData?.name}</div>
+                                <div className={s.profileRole}>{roleName}</div>
+                            </div>
+                        </div>
+                    )}
+                    {isLawyer && hasSubscription && personalData && 'lawyer' in personalData && personalData.lawyer?.subscription && !isVideoConferencePage && (
                         <div className={s.subscriptionBtn}>
                             {t('header.subscriptionActive')} {new Date(personalData.lawyer.subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                         </div>

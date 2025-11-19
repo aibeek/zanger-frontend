@@ -17,7 +17,7 @@ import ApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications
 import ChatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
-// import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg' // hidden by request
+import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
 import ZangerIcon from '@/app/assets/icons/dashboard-icons/ZANGER.svg'
 // removed logout icon per new design
 
@@ -82,8 +82,61 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
         // Support menu item hidden per requirement
     ]
 
+    // Контекст видео-конференций
+    const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+    const inVideoContext = pathWithoutLang.startsWith('/dashboard/video-conference')
+
+    const vcMenuItems = [
+        {
+            id: 'vc-main',
+            title: t('dashboard.sidebar.main'),
+            icon: MainIcon,
+            href: `/${language}`,
+        },
+        {
+            id: 'vc-my',
+            title: t('dashboard.sidebar.vcMyConferences'),
+            icon: '/assets/icons/myconf.svg',
+            href: `/${language}/dashboard/video-conference?view=my`,
+        },
+        {
+            id: 'vc-feed',
+            title: t('dashboard.sidebar.vcLiveFeed'),
+            icon: '/assets/icons/lenta.svg',
+            href: `/${language}/dashboard/video-conference?view=feed`,
+            disabled: true,
+        },
+        {
+            id: 'vc-events',
+            title: t('dashboard.sidebar.vcEvents'),
+            icon: '/assets/icons/event.svg',
+            href: `/${language}/dashboard/video-conference?view=events`,
+            disabled: true,
+        },
+        {
+            id: 'vc-settings',
+            title: t('dashboard.sidebar.vcSettings'),
+            icon: '/assets/icons/settings.svg',
+            href: `/${language}/dashboard/video-conference?view=settings`,
+            disabled: true,
+        },
+        {
+            id: 'faq',
+            title: t('dashboard.sidebar.faq'),
+            icon: FaqIcon,
+            href: `/${language}/dashboard/faq`,
+        },
+        {
+            id: 'support',
+            title: t('dashboard.sidebar.support'),
+            icon: SupportIcon,
+            href: `/${language}/dashboard/support`,
+        },
+        // Support hidden globally — keep FAQ only per current design
+    ]
+
     // Фильтруем пункты меню в зависимости от роли
-    const menuItems = allMenuItems.filter(item => {
+    const defaultMenuItems = allMenuItems.filter(item => {
         // Для клиентов скрываем подписку
         if (role === 'client' && item.id === 'subscription') {
             return false
@@ -92,8 +145,10 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
         return true
     })
 
+    const menuItems = inVideoContext ? vcMenuItems.filter(i => !['faq','support'].includes(i.id)) : defaultMenuItems
+
     return (
-        <aside className={s.sidebar}>
+        <aside className={`${s.sidebar} ${inVideoContext ? s.vc : ''}`}>
             <div className={s.sidebarHeader}>
                 <Link
                     href={`/${language}`}
@@ -114,6 +169,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     </button>
                 )}
             </div>
+            {!inVideoContext && (
             <div className={s.userProfile}>
                     <div className={s.avatarWrapper}>
                         <ProfileAvatar avatarUrl={icon} />
@@ -127,16 +183,29 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                         </div>
                     </div>
             </div>
+            )}
 
 
             <nav className={s.navigation}>
                 {menuItems.map((item) => {
+                    const isDefaultVC = inVideoContext && pathWithoutLang === '/dashboard/video-conference'
+                    const isActive = inVideoContext ? (isDefaultVC ? item.id === 'vc-my' : false) : pathname === item.href.split('?')[0]
+                    const className = `${s.navItem} ${isActive ? s.navItemActive : ''} ${item.disabled ? s.navItemDisabled : ''}`
+                    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+                        if (item.disabled) {
+                            e.preventDefault()
+                            return
+                        }
+                        onMobileClose?.()
+                    }
                     return (
                         <Link 
                             key={item.id}
                             href={item.href}
-                            className={`${s.navItem} ${pathname === item.href ? s.navItemActive : ''}`}
-                            onClick={onMobileClose}
+                            className={className}
+                            onClick={handleClick}
+                            aria-disabled={item.disabled ? true : undefined}
+                            title={item.disabled ? 'В разработке' : undefined}
                         >
                             <Image src={item.icon} alt={item.title} className={s.navIcon} width={20} height={20} />
                             <span className={s.navText}>{item.title}</span>
@@ -145,14 +214,30 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                 })}
             </nav>
 
-            <div className={s.sidebarFooter}>
-                <button className={s.logoutBtn} onClick={handleLogout}>
-                    <span className={s.logoutText}> {t('header.logout')}</span>
-                </button>
-                <div className={s.copyright}>
-                    {t('dashboard.sidebar.copyright')}
+            {!inVideoContext ? (
+                <div className={s.sidebarFooter}>
+                    <button className={s.logoutBtn} onClick={handleLogout}>
+                        <span className={s.logoutText}> {t('header.logout')}</span>
+                    </button>
+                    <div className={s.copyright}>
+                        {t('dashboard.sidebar.copyright')}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className={s.sidebarFooter}>
+                    <Link href={`/${language}/dashboard/faq`} className={s.navItem}>
+                        <Image src={FaqIcon} alt={t('dashboard.sidebar.faq')} className={s.navIcon} width={20} height={20} />
+                        <span className={s.navText}>{t('dashboard.sidebar.faq')}</span>
+                    </Link>
+                    <Link href={`/${language}/dashboard/video-conference?view=settings`} className={`${s.navItem} ${s.navItemDisabled}`} aria-disabled>
+                        <Image src={'/assets/icons/settings.svg'} alt={t('dashboard.sidebar.vcSettings')} className={s.navIcon} width={20} height={20} />
+                        <span className={s.navText}>{t('dashboard.sidebar.vcSettings')}</span>
+                    </Link>
+                    <div className={s.copyright}>
+                        {t('dashboard.sidebar.copyright')}
+                    </div>
+                </div>
+            )}
         </aside>
     )
 }

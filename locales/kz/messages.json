@@ -958,7 +958,11 @@
 		"logout": "Шығу",
 		"lawyerRole": "Заңгер",
 		"clientRole": "Клиент",
-		"copyright": "© 2025 Zanger.\nБарлық құқықтар қорғалған"
+		"copyright": "© 2025 Zanger.\nБарлық құқықтар қорғалған",
+		"vcMyConferences": "Менің конференцияларым",
+		"vcLiveFeed": "Эфирлер лентасы",
+		"vcEvents": "Іс-шаралар",
+		"vcSettings": "Параметрлер"
 		},
     "home": {
       "title": "Dashboard негізгі беті",
