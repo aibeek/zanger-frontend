@@ -1,11 +1,13 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import useSWR from 'swr'
 import { useTranslations } from 'next-intl'
 import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
+import { useLoginStore } from '@/features/auth'
 import { signChallengeBase64 } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
@@ -18,17 +20,44 @@ type ListItem = {
   created_at: string
   signers_count: number
   description?: string
+  created_by?: number
 }
 
-const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'SIGNED', 'DECLINED', 'CANCELLED'])
+const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE'])
 
-const fetchIncoming = async (page: number, limit: number, q?: string) => {
-  const res: any = await ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100, q })
-  const items: ListItem[] = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
-  const filtered = items.filter((d) => ALLOWED.has(String(d.status)))
+const fetchIncoming = async (page: number, limit: number, q?: string, userId?: number | null) => {
+  const [inboxRes, ownerRes] = await Promise.all([
+    ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100, q }),
+    ecpApi.listDocuments({ inbox: false, outbox: true, status: 'WAITING_CREATOR_SIGNATURE', page: 1, limit: 100, q }),
+  ])
+  const inboxItems: ListItem[] = Array.isArray(inboxRes?.data) ? inboxRes.data : Array.isArray(inboxRes) ? inboxRes : []
+  const ownerItems: ListItem[] = Array.isArray(ownerRes?.data) ? ownerRes.data : Array.isArray(ownerRes) ? ownerRes : []
+  const map = new Map<number, ListItem>()
+  for (const it of [...inboxItems, ...ownerItems]) { map.set(it.id, it) }
+  let merged: ListItem[] = Array.from(map.values())
+  if (userId) {
+    const authorCandidates = merged.filter((d) => typeof d.created_by === 'number' && d.created_by === userId && String(d.status) === 'PARTIALLY_SIGNED')
+    const authorIds = authorCandidates.map((d) => d.id)
+    const detailsList = await Promise.all(authorIds.map((id) => ecpApi.getDocumentDetails(id).catch(() => null)))
+    const authorCanSignIds = new Set<number>(detailsList.filter((d: any) => d && Array.isArray(d.signers) && d.signers.some((s: any) => s.is_me && s.can_sign)).map((d: any) => d.id))
+    merged = merged.filter((d) => {
+      const status = String(d.status)
+      const statusOk = ['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'].includes(status)
+      if (!statusOk) return false
+      if (typeof d.created_by === 'number' && d.created_by === userId) {
+        if (status === 'PARTIALLY_SIGNED') {
+          return authorCanSignIds.has(d.id)
+        }
+        return status === 'WAITING_CREATOR_SIGNATURE'
+      }
+      return true
+    })
+  } else {
+    merged = merged.filter((d) => ['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'].includes(String(d.status)))
+  }
   const start = Math.max(0, (page - 1) * limit)
-  const paged = filtered.slice(start, start + limit)
-  const pagination = { page, limit, total: filtered.length }
+  const paged = merged.slice(start, start + limit)
+  const pagination = { page, limit, total: merged.length }
   return { items: paged, pagination }
 }
 
@@ -38,7 +67,8 @@ export default function EcpIncomingPage() {
   const [limit, setLimit] = React.useState(5)
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
-  const { data, error, isLoading } = useSWR(['ecp-incoming', page, limit, query], ([, p, l, q]) => fetchIncoming(p as number, l as number, q as string))
+  const { personalData, getPersonalDataByToken } = useLoginStore()
+  const { data, error, isLoading, mutate: mutateList } = useSWR(['ecp-incoming', page, limit, query, personalData?.id || null], ([, p, l, q, uid]) => fetchIncoming(p as number, l as number, q as string, (uid as number | null)))
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
   const [declineOpen, setDeclineOpen] = React.useState(false)
@@ -47,16 +77,33 @@ export default function EcpIncomingPage() {
   const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  React.useEffect(() => {
+    if (!personalData) {
+      getPersonalDataByToken()
+    }
+  }, [personalData, getPersonalDataByToken])
 
   const items: ListItem[] = data?.items || []
-  const filtered = items
-  const total = (data?.pagination?.total as number) || items.length
+  const userId = typeof personalData?.id === 'number' ? personalData.id : null
+  const filtered = React.useMemo(() => {
+    const inclForNonCreator = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'])
+    const inclForCreator = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE'])
+    return items.filter((d: any) => {
+      const status = String(d.status)
+      const creatorId = typeof d?.created_by === 'number' ? d.created_by : null
+      if (creatorId && userId && creatorId === userId) {
+        return inclForCreator.has(status)
+      }
+      return inclForNonCreator.has(status)
+    })
+  }, [items, userId])
+  const total = filtered.length
   const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
 
   const color = (s: string) => {
     if (s === 'SIGNED') return '#22c55e'
     if (s === 'PARTIALLY_SIGNED') return '#f59e0b'
-    if (s === 'ROUTED' || s === 'PENDING_SIGNATURE') return '#2563eb'
+    if (s === 'ROUTED' || s === 'PENDING_SIGNATURE' || s === 'WAITING_CREATOR_SIGNATURE') return '#2563eb'
     if (s === 'DECLINED') return '#ef4444'
     if (s === 'CANCELLED') return '#6b7280'
     return '#6b7280'
@@ -127,6 +174,7 @@ export default function EcpIncomingPage() {
       await ecpApi.signComplete(selectedId, { operation_id: init.operation_id, cms })
       const d = await ecpApi.getDocumentDetails(selectedId)
       await mutateDetails(d, false)
+      await mutateList()
       toast.success('Подписано')
     } catch (e: any) {
       toast.error(e?.message || 'Не удалось подписать')
@@ -190,7 +238,7 @@ export default function EcpIncomingPage() {
                   <span>{
                     doc.status === 'SIGNED' ? 'Подписан' :
                     doc.status === 'PARTIALLY_SIGNED' ? 'Частично подписан' :
-                    doc.status === 'PENDING_SIGNATURE' ? 'На подписи' :
+                    (doc.status === 'PENDING_SIGNATURE' || doc.status === 'WAITING_CREATOR_SIGNATURE') ? 'На подписи' :
                     doc.status === 'DECLINED' ? 'Отклонён' :
                     doc.status === 'CANCELLED' ? 'Отменён' :
                     'Получен'
@@ -222,7 +270,7 @@ export default function EcpIncomingPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{truncate(doc.title)}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата получения: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}
@@ -308,11 +356,8 @@ export default function EcpIncomingPage() {
                         const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
-                                <circle cx="12" cy="12" r="3" />
-                              </svg>
+                            <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                              <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                             </button>
                             <button
                               onClick={async () => {
@@ -336,14 +381,10 @@ export default function EcpIncomingPage() {
                                   toast.error(e?.message || 'Не удалось скачать файл')
                                 }
                               }}
-                              style={{ background: '#93c5fd', border: 'none', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                              style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
                               title="Скачать"
                             >
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="7 10 12 15 17 10" />
-                                <line x1="12" y1="15" x2="12" y2="3" />
-                              </svg>
+                              <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
                             </button>
                           </div>
                         )

@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
 import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
@@ -8,6 +9,8 @@ import { toast } from 'react-hot-toast'
 import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi } from '@/shared/api'
 import { signChallengeBase64 } from '@/shared/lib/ncalayer'
 import { useLoginStore } from '@/features/auth'
+import { API_URL } from '@/shared/config'
+import { authService } from '@/features/auth'
 
 export default function EcpCreateDocumentPage() {
   const t = useTranslations('ecp.create')
@@ -291,7 +294,9 @@ export default function EcpCreateDocumentPage() {
               id="number"
               placeholder={t('docNumberPlaceholder')}
               value={docNumber}
-              onChange={(e) => setDocNumber(e.target.value)}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onChange={(e) => setDocNumber(e.target.value.replace(/\D+/g, ''))}
             />
           </div>
         </div>
@@ -406,16 +411,16 @@ export default function EcpCreateDocumentPage() {
       )}
       </div>
 
-      {/* Right details/history card */}
       <div className={s.card}>
         <div className={s.historyTitle}>{t('history')}</div>
         <div className={s.divider} />
 
         {details ? (
-          <div className={s.detailsBlock}>
-            <div style={{ marginBottom: 8 }}>
-              <b>ID:</b> {details.id} · <b>{(() => { const k = t('status'); return k === 'ecp.create.status' ? (locale === 'kz' ? 'Күйі' : 'Статус') : k })()}:</b> {(() => {
-                const s = String(details.status)
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>{details.title}</div>
+            {(() => {
+              const s = String(details.status)
+              const label = (() => {
                 if (locale === 'kz') {
                   if (s === 'SIGNED') return 'Қол қойылған'
                   if (s === 'PARTIALLY_SIGNED') return 'Ішінара қол қойылған'
@@ -441,16 +446,89 @@ export default function EcpCreateDocumentPage() {
                   if (s === 'WAITING_CREATOR_SIGNATURE') return 'Ожидает подпись инициатора'
                   return s
                 }
-              })()}
-            </div>
-            <div style={{ marginBottom: 8 }}>
-              <b>{t('name')}:</b> {details.title}
-            </div>
-            <div style={{ marginBottom: 8 }}>
-              <b>{t('upload')}:</b>{' '}
-              {details.files && details.files.length > 0
-                ? details.files.map((f) => `${f.file_name} (${f.file_type})`).join(', ')
-                : t('historyEmpty')}
+              })()
+              return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+                  <span style={{ background: '#2563eb', color: '#fff', borderRadius: 9999, padding: '6px 10px', fontWeight: 700 }}>{label}</span>
+                  <span style={{ color: '#666', fontSize: 12 }}>ID: {details.id}</span>
+                </div>
+              )
+            })()}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
+                  {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
+                        {i < arr.length - 1 ? (
+                          <>
+                            <div style={{ width: 2, height: 18, background: '#2563eb', marginTop: 4 }}></div>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" style={{ marginTop: -2 }}>
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </>
+                        ) : null}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
+                        {(() => {
+                          const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
+                          return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
+                        })()}
+                        {(() => {
+                          const name = l.subject_fio || l.actor?.fio || ''
+                          return name ? <div style={{ fontSize: 12, color: '#2563eb', fontWeight: 600, marginTop: 2 }}>{name}</div> : null
+                        })()}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 0, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
+                {(() => {
+                  const f = (details.files || [])[0] || null
+                  const rawId = f ? (f as any).storage_object_id ?? (f as any).object_id ?? (f as any).document_file_id : null
+                  const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+                  const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                        <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            if (disabled) { toast.error('Файл недоступен для скачивания'); return }
+                            const token = authService.ensureToken()
+                            const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                            if (!res.ok) throw new Error('Ошибка запроса на скачивание')
+                            const blob = await res.blob()
+                            const url = URL.createObjectURL(blob)
+                            const a = document.createElement('a')
+                            a.href = url
+                            a.download = f?.file_name || 'file'
+                            document.body.appendChild(a)
+                            a.click()
+                            a.remove()
+                            URL.revokeObjectURL(url)
+                          } catch (e: any) {
+                            toast.error(e?.message || 'Не удалось скачать файл')
+                          }
+                        }}
+                        style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                        title="Скачать"
+                      >
+                        <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
+                      </button>
+                    </div>
+                  )
+                })()}
+              </div>
             </div>
           </div>
         ) : (
@@ -459,4 +537,47 @@ export default function EcpCreateDocumentPage() {
       </div>
     </div>
   )
+}
+
+const eventLabel = (code: string) => {
+  if (code === 'DOCUMENT_CREATED') return 'Создан'
+  if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
+  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
+  if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+  if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
+  if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+  if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
+  if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+  if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
+  if (code === 'SIGN_COMPLETED') return 'Подписан'
+  if (code === 'SIGN_DECLINED' || code === 'DOCUMENT_DECLINED') return 'Отклонено'
+  if (code === 'DOCUMENT_ARCHIVED') return 'Архивирован'
+  if (code === 'DOCUMENT_RESTORED') return 'Разархивирован'
+  if (code === 'DOCUMENT_DELETED') return 'Удалён'
+  if (code === 'DOCUMENT_TRASHED') return 'Перемещён в корзину'
+  if (code === 'DOCUMENT_VIEWED') return 'Просмотрен'
+  if (code === 'COMMENT_ADDED') return 'Комментарий добавлен'
+  if (code === 'FILE_ADDED') return 'Файл добавлен'
+  return code
+}
+
+const formatAt = (s?: string) => {
+  if (!s) return ''
+  try {
+    let iso = String(s).trim()
+    if (!iso.includes('T')) iso = iso.replace(' ', 'T')
+    iso = iso.replace(/\s\+(\d{2}:\d{2})$/, '+$1').replace(/\sZ$/, 'Z')
+    if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
+    const d = new Date(iso)
+    return new Intl.DateTimeFormat('ru-RU', {
+      timeZone: 'Asia/Almaty',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(d)
+  } catch {
+    return String(s)
+  }
 }

@@ -29,7 +29,9 @@ export const EcpHeader: React.FC<EcpHeaderProps> = ({ title }) => {
     <div className={s.headerWrapper}>
       <header className={s.header}>
         <div className={s.left}>
-          <div className={s.key}>🔑</div>
+          <div className={s.key}>
+            <Image src="/assets/ecp/header/key.svg" alt="key" width={20} height={20} />
+          </div>
           <h1 className={s.title}>{headerTitle}</h1>
         </div>
 

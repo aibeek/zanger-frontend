@@ -27,13 +27,22 @@ export const EcpSidebar: React.FC = () => {
       </div>
 
       <nav className={s.nav}>
-        <div className={s.item} onClick={() => router.push(`/${locale}/dashboard/profile`)}>🏠 {t('home')}</div>
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/create`)}>📄 {t('createDocument')}</div>
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/statuses`)}>📌 {t('myStatuses')}</div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/dashboard/profile`)}>
+          <Image src="/assets/ecp/sidebar-icons/home.svg" alt="home" width={18} height={18} />
+          <span>{t('home')}</span>
+        </div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/create`)}>
+          <Image src="/assets/ecp/sidebar-icons/create-document.svg" alt="create" width={18} height={18} />
+          <span>{t('createDocument')}</span>
+        </div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/statuses`)}>
+          <Image src="/assets/ecp/sidebar-icons/my-statuses.svg" alt="statuses" width={18} height={18} />
+          <span>{t('myStatuses')}</span>
+        </div>
 
         <div className={s.dropdownHeader} onClick={() => setOpenDocs(!openDocs)}>
           <div className={s.dropdownTitle}>
-            <span>🗂️</span>
+            <Image src="/assets/ecp/sidebar-icons/my-documents.svg" alt="my-documents" width={18} height={18} />
             <span>{t('myDocuments')}</span>
           </div>
           <span className={s.chevron}>{openDocs ? '▾' : '▸'}</span>
@@ -59,15 +68,30 @@ export const EcpSidebar: React.FC = () => {
           </div>
         )}
 
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/archive`)}>🗄️ {t('archive')}</div>
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/trash`)}>🗑️ {t('trash')}</div>
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/counterparties`)}>👥 {t('counterparties')}</div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/archive`)}>
+          <Image src="/assets/ecp/sidebar-icons/archive.svg" alt="archive" width={18} height={18} />
+          <span>{t('archive')}</span>
+        </div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/trash`)}>
+          <Image src="/assets/ecp/sidebar-icons/trash.svg" alt="trash" width={18} height={18} />
+          <span>{t('trash')}</span>
+        </div>
+        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/counterparties`)}>
+          <Image src="/assets/ecp/sidebar-icons/countryparties.svg" alt="counterparties" width={18} height={18} />
+          <span>{t('counterparties')}</span>
+        </div>
 
       </nav>
 
       <div className={s.footer}>
-        <div className={s.item}>❓ {t('faq')}</div>
-        <div className={s.item}>🔔 {t('support')}</div>
+        <div className={s.item}>
+          <Image src="/assets/ecp/sidebar-icons/faq.svg" alt="faq" width={18} height={18} />
+          <span>{t('faq')}</span>
+        </div>
+        <div className={s.item}>
+          <Image src="/assets/ecp/sidebar-icons/support.svg" alt="support" width={18} height={18} />
+          <span>{t('support')}</span>
+        </div>
       </div>
     </aside>
   )

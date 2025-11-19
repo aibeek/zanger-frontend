@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import useSWR from 'swr'
 import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
@@ -149,7 +150,7 @@ export default function EcpArchivePage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}
@@ -224,11 +225,8 @@ export default function EcpArchivePage() {
                 <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
+                    <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                      <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                     </button>
                     <button
                       onClick={async () => {
@@ -253,14 +251,10 @@ export default function EcpArchivePage() {
                           toast.error(e?.message || 'Не удалось скачать файл')
                         }
                       }}
-                      style={{ background: '#93c5fd', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                      style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                       title="Скачать"
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                      </svg>
+                      <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
                     </button>
                   </div>
                 </div>

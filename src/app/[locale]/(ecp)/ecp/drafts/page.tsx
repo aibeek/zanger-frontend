@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import useSWR from 'swr'
 import { useTranslations, useLocale } from 'next-intl'
 import { ecpApi, counterpartiesApi } from '@/shared/api'
@@ -374,11 +375,8 @@ export default function EcpDraftsPage() {
                             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                               <span style={{ fontSize: 14 }}>{f.file_name}</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }} title="Посмотреть">
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
-                                    <circle cx="12" cy="12" r="3" />
-                                  </svg>
+                                <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }} title="Посмотреть">
+                                  <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                                 </button>
                                 <button
                                   onClick={async () => {
@@ -401,14 +399,10 @@ export default function EcpDraftsPage() {
                                       toast.error(e?.message || 'Не удалось скачать файл')
                                     }
                                   }}
-                                  style={{ background: '#93c5fd', border: 'none', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                                  style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
                                   title="Скачать"
                                 >
-                                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="7 10 12 15 17 10" />
-                                    <line x1="12" y1="15" x2="12" y2="3" />
-                                  </svg>
+                                  <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
                                 </button>
                               </div>
                             </div>
