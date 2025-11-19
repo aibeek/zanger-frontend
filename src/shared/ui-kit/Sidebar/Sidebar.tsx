@@ -26,6 +26,14 @@ interface SidebarProps {
     onMobileClose?: () => void
 }
 
+interface MenuItem {
+    id: string
+    title: string
+    icon: any
+    href: string
+    disabled?: boolean
+}
+
 export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const { personalData, reset } = useLoginStore()
     const pathname = usePathname()
@@ -42,7 +50,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
         router.push(`/${language}`)
     }
 
-    const allMenuItems = [
+    const allMenuItems: MenuItem[] = [
         {
             id: 'main',
             title: t('dashboard.sidebar.main'),
@@ -86,7 +94,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
     const inVideoContext = pathWithoutLang.startsWith('/dashboard/video-conference')
 
-    const vcMenuItems = [
+    const vcMenuItems: MenuItem[] = [
         {
             id: 'vc-main',
             title: t('dashboard.sidebar.main'),

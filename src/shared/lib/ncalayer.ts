@@ -1,5 +1,5 @@
-// NCALayer client wrapper based on official ncalayer-js-client
-import { NCALayerClient } from 'ncalayer-js-client'
+// NCALayer client wrapper. Uses local stub to avoid build-time dependency issues.
+import { NCALayerClient } from './ncalayerClient'
 
 export async function signChallengeBase64(challengeBase64: string): Promise<string> {
   const client = new NCALayerClient('wss://127.0.0.1:13579/')
