@@ -8,7 +8,7 @@ import { ecpApi, counterpartiesApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
-import { signChallengeBase64 } from '@/shared/lib/ncalayer'
+import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
@@ -64,6 +64,7 @@ export default function EcpDraftsPage() {
       getPersonalDataByToken().catch(() => {})
     }
   }, [personalData, getPersonalDataByToken])
+  
 
   React.useEffect(() => {
     const userId = personalData?.id
@@ -186,6 +187,8 @@ export default function EcpDraftsPage() {
 
   const onSignAndSend = async () => {
     if (!selectedId) return
+    const ok = await isNcaLayerAvailable()
+    if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
       const signersPayload: any[] = []
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {

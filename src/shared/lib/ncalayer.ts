@@ -24,3 +24,13 @@ export async function signChallengeBase64(challengeBase64: string): Promise<stri
   // Создаём CMS подпись из Base64
   return await client.createCAdESFromBase64(storageType, challengeBase64)
 }
+
+export async function isNcaLayerAvailable(): Promise<boolean> {
+  try {
+    const client = new NCALayerClient('wss://127.0.0.1:13579/')
+    await client.connect()
+    return true
+  } catch {
+    return false
+  }
+}

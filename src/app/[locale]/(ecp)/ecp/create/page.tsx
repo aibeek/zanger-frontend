@@ -7,7 +7,7 @@ import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
 import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi } from '@/shared/api'
-import { signChallengeBase64 } from '@/shared/lib/ncalayer'
+import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { useLoginStore } from '@/features/auth'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
@@ -40,6 +40,7 @@ export default function EcpCreateDocumentPage() {
   const [loadingSearch, setLoadingSearch] = React.useState<boolean>(false)
   const [selectedCounterpartyId, setSelectedCounterpartyId] = React.useState<number | null>(null)
   const [selectedCounterparties, setSelectedCounterparties] = React.useState<CounterpartyItem[]>([])
+  
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
 
@@ -93,6 +94,8 @@ export default function EcpCreateDocumentPage() {
       toast.error(t('createFirst'))
       return
     }
+    const ok = await isNcaLayerAvailable()
+    if (!ok) { toast.error(locale === 'kz' ? 'NCALayer қосыңыз' : 'Подключите NCALayer'); return }
     try {
       // 1) Добавить подписантов: текущий подписант (stage 1) + контрагенты (stage 2)
       const signersPayload: any[] = []
@@ -147,6 +150,8 @@ export default function EcpCreateDocumentPage() {
       getPersonalDataByToken().catch(() => {})
     }
   }, [personalData, getPersonalDataByToken])
+
+  
 
   // Загрузка подписантов по userId
   React.useEffect(() => {

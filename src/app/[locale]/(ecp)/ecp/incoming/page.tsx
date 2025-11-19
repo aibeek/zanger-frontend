@@ -8,7 +8,7 @@ import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
-import { signChallengeBase64 } from '@/shared/lib/ncalayer'
+import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
@@ -82,6 +82,7 @@ export default function EcpIncomingPage() {
       getPersonalDataByToken()
     }
   }, [personalData, getPersonalDataByToken])
+  
 
   const items: ListItem[] = data?.items || []
   const userId = typeof personalData?.id === 'number' ? personalData.id : null
@@ -161,6 +162,8 @@ export default function EcpIncomingPage() {
 
   const onSign = async () => {
     if (!selectedId) return
+    const ok = await isNcaLayerAvailable()
+    if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
       setIsSigning(true)
       const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
