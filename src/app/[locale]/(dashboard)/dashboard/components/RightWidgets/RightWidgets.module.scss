@@ -57,9 +57,9 @@
 }
 
 .scheduleAction {
-    margin-top: 12px;
-    display: flex;
-    justify-content: center;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
 }
 .calendarActionBtn {
     display: inline-flex;
@@ -78,6 +78,11 @@
 .calendarActionBtn:hover {
     background: rgba(29, 110, 216, 1);
 }
+.calendarActionBtnDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .calendarIcon {
     display: block;
 }
@@ -90,13 +95,22 @@
 }
 .formRowTwo {
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.formRowCopy {
+  display: grid;
+  grid-template-columns: 1fr 40px;
   gap: 8px;
   margin-bottom: 12px;
 }
 .formRowLabel {
-  font-weight: 600;
-  margin: 6px 0;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
+  color: #0f172a;
+  margin: 10px 0 6px;
 }
 .input {
   width: 100%;
@@ -106,6 +120,9 @@
   border-radius: 12px;
   outline: none;
   background: #eef3f7;
+  font-size: 16px;
+  color: #0f172a;
+  font-weight: 500;
 }
 .formActions {
   display: flex;
@@ -120,18 +137,13 @@
   border-radius: 12px;
   background: #eef3f7;
   cursor: pointer;
-  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-.copyBtn::before, .copyBtn::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: #64748b;
-}
-.copyBtn::before { width: 14px; height: 10px; border: 2px solid #64748b; border-radius: 2px; background: transparent; }
-.copyBtn::after { width: 12px; height: 2px; top: calc(50% + 6px); }
+.copyBtn:hover { background: #e9eff4; }
+.copyBtn:disabled { cursor: not-allowed; opacity: 0.6; }
+.copyIcon { display: block; }
 
 .calendarWeekdays {
     display: grid;
@@ -315,3 +327,47 @@
         background-color: #2563eb;
     }
 }
+.scheduledCard {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.scheduledCardHeader {
+  background: #1d6ed8;
+  color: #fff;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.scheduledCardBody {
+  padding: 12px 16px;
+}
+.scheduledTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+.scheduledMeta { font-size: 13px; color: #334155; margin-bottom: 6px; }
+.scheduledCancelRow { display: flex; justify-content: flex-end; }
+.scheduledCancelBtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #0f172a;
+  background: #fff;
+  color: #0f172a;
+  cursor: pointer;
+}
+.scheduledCancelBtn:hover { background: #f1f5f9; }
+.resultGrid { display: grid; gap: 8px; margin-top: 8px; }
+.apiSection { margin-top: 12px; padding: 10px; border: 1px solid #e6eef6; border-radius: 12px; background: #f8fbff; }
+.apiTitle { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+.apiRows { display: grid; gap: 8px; }
+.apiRow { display: grid; grid-template-columns: 140px 1fr; align-items: center; gap: 8px; }
+.apiLabel { font-size: 12px; font-weight: 600; color: #64748b; }
+.apiValue { display: grid; grid-template-columns: 1fr 40px; gap: 8px; }
+.apiInput { height: 36px; }
+.apiMono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; letter-spacing: 0.2px; }
+.apiPill { height: 36px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; padding: 0 12px; background: #eaf3ff; color: #1d4ed8; font-weight: 600; }

@@ -68,10 +68,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     
     const handleSectionClick = (sectionLabel: string) => {
         if (sectionLabel === t('dashboard.sidebar.vcMyConferences')) {
-            if (isLawyer) {
-                router.push(`/${language}/dashboard/video-conference`)
-                return
-            }
             setIsModalOpen(true)
             return
         }

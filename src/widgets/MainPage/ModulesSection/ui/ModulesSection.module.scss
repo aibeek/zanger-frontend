@@ -149,6 +149,12 @@
   }
 }
 
+.moduleCardDisabled {
+  cursor: default;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 .cardContent {
   flex: 1;
 }

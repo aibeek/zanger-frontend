@@ -19,6 +19,7 @@ export default function VideoConferencePage() {
   const t = useTranslations('footer.sections')
 
   const [conferenceId, setConferenceId] = useState('')
+  const [codeInput, setCodeInput] = useState('')
   const [userId, setUserId] = useState('')
   const [joining, setJoining] = useState(false)
   const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string }>(null)
@@ -34,8 +35,15 @@ export default function VideoConferencePage() {
   const [joinMode, setJoinMode] = useState<'manual' | 'api'>('manual')
   const [manualUrl, setManualUrl] = useState('wss://video.zanger-app.kz')
   const [manualToken, setManualToken] = useState('')
+  const [scheduledList, setScheduledList] = useState<Array<{ code: string; link: string; topic: string; type: string; planned_time: string; user_name?: string }>>([])
+  const [mounted, setMounted] = useState(false)
+  const [cameraOn, setCameraOn] = useState(false)
+  const [micOn, setMicOn] = useState(false)
+  const [debug, setDebug] = useState<{ url?: string; tokenLen?: number; canPublish?: boolean } | null>(null)
+  const [showManagePanel] = useState(false)
   const personalData = useLoginStore((s) => s.personalData)
 
+  useEffect(() => { setMounted(true) }, [])
   useEffect(() => {
     const role = Cookies.get('role')
     if (role !== 'lawyer') {
@@ -44,6 +52,78 @@ export default function VideoConferencePage() {
   }, [router, language])
 
   const isLawyer = Boolean((personalData as any)?.role_id?.code === 'lawyer')
+
+  function extractConferenceId(input: string) {
+    const trimmed = (input || '').trim()
+    const m = trimmed.match(/video\/(\w[\w-]+)/i)
+    if (m && m[1]) return m[1]
+    return trimmed
+  }
+
+  function handleCodeChange(v: string) {
+    setCodeInput(v)
+    const cid = extractConferenceId(v)
+    setConferenceId(cid)
+  }
+
+  function handleCodeSubmit() {
+    if (!conferenceId) {
+      setError('Введите код конференции или ссылку')
+      return
+    }
+    setJoinMode('api')
+    joinRoom()
+  }
+
+  function handleCreateClick() {
+    if (!conferenceId) {
+      setError('Введите код конференции или ссылку')
+      return
+    }
+    createRoom()
+  }
+
+  useEffect(() => {
+    try {
+      const key = 'vc_scheduled'
+      const raw = localStorage.getItem(key)
+      const arr = raw ? JSON.parse(raw) : []
+      setScheduledList(Array.isArray(arr) ? arr : [])
+    } catch {}
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'vc_scheduled') {
+        try { setScheduledList(JSON.parse(e.newValue || '[]') || []) } catch {}
+      }
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
+  function formatDT(s: string) {
+    if (!mounted) return ''
+    const d = new Date(s)
+    const ds = d.toLocaleDateString(language === 'kz' ? 'kk-KZ' : 'ru-RU', { day: 'numeric', month: 'long' })
+    const ts = d.toLocaleTimeString(language === 'kz' ? 'kk-KZ' : 'ru-RU', { hour: '2-digit', minute: '2-digit' })
+    return `${ds}, ${ts}`
+  }
+
+  const plannedItems = scheduledList.filter(i => {
+    const t = new Date(i.planned_time).getTime()
+    return !isNaN(t) && t >= Date.now()
+  }).sort((a,b) => new Date(a.planned_time).getTime() - new Date(b.planned_time).getTime())
+
+  const archivedItems = scheduledList.filter(i => {
+    const t = new Date(i.planned_time).getTime()
+    return !isNaN(t) && t < Date.now()
+  }).sort((a,b) => new Date(b.planned_time).getTime() - new Date(a.planned_time).getTime())
+
+  function joinScheduled(it: any) {
+    const cid = String(it.conference_id || it.code || '')
+    if (!cid) return
+    setConferenceId(cid)
+    setJoinMode('api')
+    joinRoom()
+  }
 
   useEffect(() => {
     const uid = (personalData as any)?.id
@@ -80,6 +160,7 @@ export default function VideoConferencePage() {
         body: JSON.stringify({ conference_id: conferenceId, user_id: Number(userId || (personalData as any)?.id || 0) }),
       })
       const { token, url, canPublish, identity, topic: tp } = data
+      setDebug({ url, tokenLen: token ? String(token).length : 0, canPublish })
 
       await ensureLiveKit()
       const LKC = (window as any).LivekitClient || (window as any).LiveKit
@@ -102,8 +183,12 @@ export default function VideoConferencePage() {
       await room.connect(url, token)
 
       if (canPublish) {
-        await room.localParticipant.setCameraEnabled(true)
-        await room.localParticipant.setMicrophoneEnabled(true)
+        try {
+          await room.localParticipant.setCameraEnabled(true)
+          await room.localParticipant.setMicrophoneEnabled(true)
+          setCameraOn(true)
+          setMicOn(true)
+        } catch {}
 
         const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
         if (camPub?.videoTrack && videoRef.current) {
@@ -118,6 +203,30 @@ export default function VideoConferencePage() {
     } finally {
       setJoining(false)
     }
+  }
+
+  async function toggleCamera() {
+    try {
+      const room = roomRef.current
+      if (!room) return
+      await room.localParticipant.setCameraEnabled(!cameraOn)
+      setCameraOn(!cameraOn)
+      const LKC = (window as any).LivekitClient || (window as any).LiveKit
+      const { Track } = LKC
+      const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
+      if (camPub?.videoTrack && videoRef.current) {
+        camPub.videoTrack.attach(videoRef.current)
+      }
+    } catch {}
+  }
+
+  async function toggleMic() {
+    try {
+      const room = roomRef.current
+      if (!room) return
+      await room.localParticipant.setMicrophoneEnabled(!micOn)
+      setMicOn(!micOn)
+    } catch {}
   }
 
   async function joinByToken() {
@@ -234,15 +343,71 @@ export default function VideoConferencePage() {
             <span className={s.pillIconLive}></span>
             <span className={s.pillText}>Запустить эфир</span>
           </button>
-          <button className={`${s.pill} ${s.pillGreen}`}> 
+          <button className={`${s.pill} ${s.pillGreen}`} onClick={handleCreateClick}> 
             <span className={s.pillIconPlus}></span>
             <span className={s.pillText}>Создать встречу</span>
           </button>
           <div className={s.codeInput}>
-            <input type="text" placeholder="Введите код или ссылку" />
-            <button className={s.sendBtn} aria-label="Отправить"></button>
+            <input type="text" placeholder="Введите код или ссылку" value={codeInput} onChange={e => handleCodeChange(e.target.value)} />
+            <button className={s.sendBtn} aria-label="Отправить" onClick={handleCodeSubmit}></button>
           </div>
         </div>
+
+        {mounted && plannedItems.length > 0 && (
+          <div className={s.tableWrap}>
+            <table className={s.table}>
+              <thead>
+                <tr>
+                  <th className={s.th}>Тема</th>
+                  <th className={s.th}>Код</th>
+                  <th className={s.th}>Дата</th>
+                  <th className={s.th}>Тип</th>
+                  <th className={s.th}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {plannedItems.map((it, idx) => (
+                  <tr key={`t-${idx}`}>
+                    <td className={s.td}>{it.topic || 'Без темы'}</td>
+                    <td className={s.td}>{it.code}</td>
+                    <td className={s.td} suppressHydrationWarning>{formatDT(it.planned_time)}</td>
+                    <td className={s.td}>{it.type}</td>
+                    <td className={`${s.td} ${s.rowAction}`}>
+                      <Button variant="primary" className={s.smallBtn} onClick={() => joinScheduled(it)}>Войти</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {mounted && (plannedItems.length > 0 || plannedItems.length === 0) && (
+          <div className={s.listsColumns}>
+            <div className={s.listColumn}>
+              <div className={s.listTitle}>Запланированные</div>
+              <div className={s.cardsGrid}>
+                {plannedItems.length === 0 ? (
+                  <div className={s.emptyBox}>Пока нет запланированных встреч</div>
+                ) : plannedItems.map((it, idx) => (
+                  <div key={`p-${idx}`} className={s.card}>
+                    <div className={s.cardHeader}>{it.user_name || 'Конференция'}</div>
+                    <div className={s.cardBody}>
+                      <div className={s.cardTitle}>{it.topic || 'Без темы'}</div>
+                      <div className={s.cardMeta} suppressHydrationWarning>Дата: {formatDT(it.planned_time)}</div>
+                      <div className={s.cardMeta}>Тип: {it.type}</div>
+                    </div>
+                    <div className={s.cardFooter}>
+                      <button className={s.watchBtn} onClick={() => window.open(it.link, '_blank')}>Смотреть запись</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Архив записей временно скрыт */}
+          </div>
+        )}
 
 
         <div className={s.placeholder}>
@@ -298,26 +463,35 @@ export default function VideoConferencePage() {
               <div ref={remoteContainerRef} className={s.remoteGrid}></div>
 
               <div className={s.status}>Комната: {connectedInfo.room} • Участник: {String(connectedInfo.is_member)} • Identity: {connectedInfo.identity} • Тема: {connectedInfo.topic}</div>
-
-              <div className={s.participantsPanel}>
-                <div className={s.fieldRow}>
-                  <Button variant="secondary" onClick={loadParticipants}>Обновить участников</Button>
-                  <div className={s.field}>
-                    <label>kick user_id</label>
-                    <input type="number" value={kickUserId} onChange={e => setKickUserId(e.target.value)} />
-                  </div>
-                  <Button variant="secondary" onClick={kick}>Кикнуть</Button>
-                </div>
-                {participants.length > 0 && (
-                  <div className={s.participantsList}>
-                    {participants.map((p: any, idx: number) => (
-                      <div key={idx} className={s.participantItem}>
-                        <span>{String(p.identity || p.name || p.user_id || '')}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
+              {debug && (
+                <div className={s.status}>Server: {debug.url} • Token: {debug.tokenLen} символов • Публикация: {String(debug.canPublish)}</div>
+              )}
+              <div className={s.actions}>
+                <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? 'Выключить камеру' : 'Включить камеру'}</Button>
+                <Button variant="secondary" onClick={toggleMic}>{micOn ? 'Выключить микрофон' : 'Включить микрофон'}</Button>
               </div>
+
+              {showManagePanel && (
+                <div className={s.participantsPanel}>
+                  <div className={s.fieldRow}>
+                    <Button variant="secondary" onClick={loadParticipants}>Обновить участников</Button>
+                    <div className={s.field}>
+                      <label>kick user_id</label>
+                      <input type="number" value={kickUserId} onChange={e => setKickUserId(e.target.value)} />
+                    </div>
+                    <Button variant="secondary" onClick={kick}>Кикнуть</Button>
+                  </div>
+                  {participants.length > 0 && (
+                    <div className={s.participantsList}>
+                      {participants.map((p: any, idx: number) => (
+                        <div key={idx} className={s.participantItem}>
+                          <span>{String(p.identity || p.name || p.user_id || '')}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -267,3 +267,33 @@
     min-width: 220px;
   }
 }
+.listsColumns {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: start;
+  gap: 24px;
+  margin: 12px 0 20px;
+}
+.listColumn { display: grid; gap: 14px; }
+.listTitle { font-size: 16px; font-weight: 700; color: #0f172a; padding: 6px 0; border-bottom: 2px solid #e2e8f0; }
+.cardsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.card { background: #fff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid #e6eef6; }
+.cardHeader { background: #2563eb; color: #fff; padding: 10px 14px; font-weight: 700; font-size: 14px; border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.cardBody { padding: 12px 14px; line-height: 1.45; }
+.cardTitle { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 8px; }
+.cardMeta { font-size: 13px; color: #334155; margin-bottom: 6px; }
+.cardFooter { padding: 12px 14px; display: flex; justify-content: flex-end; }
+.watchBtn { height: 34px; padding: 0 14px; border-radius: 8px; border: none; background: #ef4444; color: #fff; cursor: pointer; font-weight: 600; box-shadow: 0 2px 6px rgba(239,68,68,0.25); }
+.watchBtn:hover { background: #dc2626; }
+.emptyBox { border: 1px dashed #cbd5e1; border-radius: 12px; padding: 16px; color: #64748b; font-size: 14px; }
+
+@media (max-width: 768px) {
+  .listsColumns { grid-template-columns: 1fr; }
+}
+.tableWrap { margin: 12px 0 18px; }
+.table { width: 100%; border-collapse: collapse; }
+.th, .td { padding: 10px 12px; border-bottom: 1px solid #e6eef6; font-size: 14px; }
+.th { color: #0f172a; font-weight: 700; background: #f8fbff; }
+.td { color: #334155; }
+.rowAction { text-align: right; }
+.smallBtn { height: 30px; padding: 0 12px; border-radius: 8px; }
