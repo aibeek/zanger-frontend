@@ -8,6 +8,7 @@ import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
 import s from './ModulesSection.module.scss'
 import { useRouter } from 'next/navigation'
+import { authService } from '@/features/auth'
 
 interface Module {
   id: number
@@ -30,12 +31,17 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
-  const handleModuleClick = (module: Module) => {
+  const handleModuleClick = async (module: Module) => {
     // ЭЦП/ЭЦҚ — открываем новую страницу с новым сайдбаром и хэдером
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
     const isEcp = normalized.includes('ЭЦП') || normalized.includes('ЭЦҚ') || normalized.includes('ECP')
     if (isEcp) {
-      router.push(`/${locale}/ecp/create`)
+      const res = await authService.check()
+      if (res?.isAuthenticated) {
+        router.push(`/${locale}/ecp/create`)
+      } else {
+        router.push(`/${locale}/auth/login`)
+      }
       return
     }
     // Остальные модули пока в разработке
