@@ -1084,8 +1084,8 @@
 					"cancelButton": "Отменить подписку",
 					"activeUntil": "Активна до",
 					"yourSubscription": "Ваша подписка",
-					"withSubscription": "С ПОДПИСКОЙ ZANGER ВЫ ПОЛУЧАЕТЕ"
-				},
+		"withSubscription": "С ПОДПИСКОЙ ZANGER ВЫ ПОЛУЧАЕТЕ"
+			},
 		"footer": {
 			"sections": {
 				"forum": "Форум",
@@ -1103,8 +1103,147 @@
 			"privacy": "Политика конфиденциальности",
 			"payment": "Правила оплаты",
 			"offer": "Публичная оферта",
-			"cancellation": "Правила отмены подписки"
+		"cancellation": "Правила отмены подписки"
 		}
-		}
-	}
+		},
+		"ecp": {
+      "sidebar": {
+        "home": "Главная",
+        "createDocument": "Создать документ",
+        "myStatuses": "Мои статусы",
+        "myDocuments": "Мои документы",
+        "incoming": "Входящие",
+        "sent": "Отправленные",
+        "drafts": "Черновики",
+        "archive": "Архив",
+        "trash": "Корзина",
+        "counterparties": "Контрагенты",
+        "faq": "FAQ",
+        "support": "Поддержка"
+      },
+      "create": {
+        "signer": "Подписант",
+        "chooseSigner": "Выберите подписанта",
+        "counterparty": "Выбор контрагента",
+        "chooseCounterparty": "Выберите контрагента",
+        "upload": "Загрузить документ",
+        "dropText": "Загрузите или перетащите документ в это поле",
+        "allowedFormats": "Допустимые форматы: pdf, docx",
+        "name": "Наименование",
+        "namePlaceholder": "Введите наименование",
+        "docNumber": "Номер документа",
+        "docNumberPlaceholder": "Введите номер",
+      "createdAt": "Дата создания",
+      "createButton": "Создать",
+      "draft": "Черновик",
+      "sendWithoutSign": "Отправить без подписания",
+      "signAndSend": "Подписать и отправить",
+      "history": "История",
+      "historyEmpty": "Отправлений и подписаний пока нет",
+      "draftSaved": "Сохранено как черновик",
+      "sentWithoutSign": "Отправлено без подписи",
+      "signedAndSent": "Подписано и отправлено",
+      "documentCreated": "Документ создан",
+      "createFirst": "Сначала создайте документ"
+      },
+      "counterparties": {
+        "addTitle": "Добавить нового контрагента",
+        "addSubtitle": "Для добавления нового контрагента (юр. лицо, ИП или физ. лицо) введите его ИИН или БИН.",
+        "fields": {
+          "name": "ФИО/Наименование",
+          "iinbin": "ИИН/БИН",
+          "legalAddress": "Юридический адрес",
+          "email": "Электронная почта",
+          "phone": "Номер телефона",
+          "bankDetails": "Банковские реквизиты"
+        },
+        "addButton": "Добавить",
+        "saveButton": "Сохранить",
+        "listTitle": "Мои контрагенты",
+        "selectAll": "Выбрать все",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "typeLabels": {
+          "UL": "ЮЛ",
+          "IP": "ИП",
+          "FL": "ФЛ"
+        },
+        "columns": {
+          "name": "Наименование",
+          "type": "Тип",
+          "region": "Регион",
+          "iinbin": "ИИН/БИН",
+          "emailPhone": "Email / Телефон",
+          "phone": "Телефон"
+        },
+        "messages": {
+          "added": "Контрагент добавлен",
+          "updated": "Контрагент обновлён",
+          "deleted": "Выбранные контрагенты удалены",
+          "editMode": "Режим редактирования: данные заполнены из выбранного"
+        },
+        "errors": {
+          "iinbinRequired": "Укажите ИИН/БИН",
+          "selectAtLeastOne": "Выберите хотя бы одного контрагента",
+          "selectOneForEdit": "Выберите одного контрагента для редактирования"
+        },
+        "empty": "Список контрагентов пуст",
+        "unknownName": "Без названия"
+      },
+      "statuses": {
+        "tabs": {
+          "fl": "Физ. лицо",
+          "ip": "ИП",
+          "ul": "Юр. лицо"
+        },
+        "addTitle": "Добавить данные",
+        "addSubtitle": "Заполните поля для выбранного типа.",
+        "fields": {
+          "name": "ФИО/Наименование",
+          "iinbin": "ИИН/БИН",
+          "iin": "ИИН",
+          "legalAddress": "Юридический адрес",
+          "email": "Электронная почта",
+          "phone": "Номер телефона",
+          "bankDetails": "Банковские реквизиты"
+        },
+        "saveButton": "Сохранить",
+        "signAndAdd": "Подписать ЭЦП и добавить",
+        "addOrganization": "Добавить организацию",
+        "listTitle": "Мои статусы",
+        "listTitleOrgs": "Мои организации",
+        "selectAll": "Выбрать все",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "typeLabels": {
+          "UL": "ЮЛ",
+          "IP": "ИП",
+          "FL": "ФЛ"
+        },
+        "columns": {
+          "name": "Наименование",
+          "address": "Адрес",
+          "iinbin": "ИИН/БИН",
+          "iin": "ИИН",
+          "phone": "Телефон"
+        },
+        "messages": {
+          "added": "Запись добавлена",
+          "updated": "Запись обновлена",
+          "deleted": "Выбранные записи удалены",
+          "editMode": "Режим редактирования: данные заполнены"
+        },
+        "errors": {
+          "iinbinRequired": "Укажите ИИН/БИН",
+          "selectAtLeastOne": "Выберите хотя бы одну запись",
+          "selectOneForEdit": "Выберите одну запись для редактирования",
+          "requestFailed": "Ошибка запроса",
+          "deleteFailed": "Ошибка удаления",
+          "loadFailed": "Ошибка загрузки"
+        },
+        "empty": "Нет записей",
+        "unknownName": "Без названия"
+      }
+    }
+}
 

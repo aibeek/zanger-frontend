@@ -1,0 +1,21 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.message {
+  font-size: 18px;
+  line-height: 150%;
+  font-weight: 600;
+  color: #0b1728;
+  max-width: 720px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}

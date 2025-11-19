@@ -1074,7 +1074,7 @@
     "cancelButton": "Жазылымды тоқтату",
     "activeUntil": "Белсенді",
     "yourSubscription": "Сіздің жазылымыңыз",
-    "withSubscription": "ZANGER ЖАЗЫЛЫМЫМЕН СІЗ АЛАСЫЗ"
+	"withSubscription": "ZANGER ЖАЗЫЛЫМЫМЕН СІЗ АЛАСЫЗ"
   },
 	"footer": {
 		"sections": {
@@ -1094,6 +1094,145 @@
 		"payment": "Төлем ережелері",	
 		"offer": "Қоғамдық оферта",
 		"cancellation": "Жазылымды тоқтату ережелері"
+ 	}
+	},
+	"ecp": {
+		"sidebar": {
+			"home": "Басты бет",
+			"createDocument": "Құжат жасау",
+			"myStatuses": "Менің статустарым",
+			"myDocuments": "Менің құжаттарым",
+			"incoming": "Келіп түскен",
+			"sent": "Жіберілгендер",
+			"drafts": "Жобалар",
+			"archive": "Мұрағат",
+			"trash": "Себет",
+			"counterparties": "Контрагенттер",
+			"faq": "ЖҚС",
+			"support": "Қолдау"
+		},
+		"create": {
+			"signer": "Қол қоюшы",
+			"chooseSigner": "Қол қоюшыны таңдаңыз",
+			"counterparty": "Контрагентті таңдау",
+			"chooseCounterparty": "Контрагентті таңдаңыз",
+			"upload": "Құжатты жүктеу",
+			"dropText": "Құжатты осы өріске жүктеңіз немесе сүйреп әкеліңіз",
+			"allowedFormats": "Рұқсат етілген форматтар: pdf, docx",
+			"name": "Атауы",
+			"namePlaceholder": "Атауын енгізіңіз",
+			"docNumber": "Құжат нөмірі",
+			"docNumberPlaceholder": "Нөмірді енгізіңіз",
+			"createdAt": "Жасалған күні",
+			"createButton": "Құру",
+			"draft": "Жоба",
+			"sendWithoutSign": "Қол қоймай жіберу",
+			"signAndSend": "Қол қойып жіберу",
+			"history": "Тарих",
+			"historyEmpty": "Әзірге жіберулер мен қол қоюлар жоқ",
+			"draftSaved": "Жоба ретінде сақталды",
+			"sentWithoutSign": "Қолтаңбасыз жіберілді",
+			"signedAndSent": "Қол қойылып жіберілді",
+			"documentCreated": "Құжат жасалды",
+			"createFirst": "Алдымен құжатты жасаңыз"
+		},
+		"counterparties": {
+			"addTitle": "Жаңа контрагентті қосу",
+			"addSubtitle": "Жаңа контрагентті қосу үшін (заңды тұлға, ЖК немесе жеке тұлға) ИИН немесе БИН енгізіңіз.",
+			"fields": {
+				"name": "ФИО/Атауы",
+				"iinbin": "ИИН/БИН",
+				"legalAddress": "Заңды мекенжай",
+				"email": "Электрондық пошта",
+				"phone": "Телефон нөмірі",
+				"bankDetails": "Банк деректемелері"
+			},
+			"addButton": "Қосу",
+			"saveButton": "Сақтау",
+			"listTitle": "Менің контрагенттерім",
+			"selectAll": "Барлығын таңдау",
+			"edit": "Өңдеу",
+			"delete": "Жою",
+			"typeLabels": {
+				"UL": "ЮЛ",
+				"IP": "ИП",
+				"FL": "ФЛ"
+			},
+			"columns": {
+				"name": "Атауы",
+				"type": "Түрі",
+				"region": "Өңір",
+				"iinbin": "ИИН/БИН",
+				"emailPhone": "Email / Телефон",
+				"phone": "Телефон"
+			},
+			"messages": {
+				"added": "Контрагент қосылды",
+				"deleted": "Таңдалған контрагенттер жойылды",
+				"updated": "Контрагент жаңартылды",
+				"editMode": "Өңдеу режимі: деректер таңдалғаннан толтырылды"
+			},
+			"errors": {
+				"iinbinRequired": "ИИН/БИН енгізіңіз",
+				"selectAtLeastOne": "Кемінде бір контрагентті таңдаңыз",
+				"selectOneForEdit": "Өңдеу үшін бір контрагентті таңдаңыз"
+			},
+			"empty": "Контрагенттер тізімі бос",
+			"unknownName": "Атаусыз"
+		},
+		"statuses": {
+			"tabs": {
+				"fl": "Жеке тұлға",
+				"ip": "ЖК",
+				"ul": "Заңды тұлға"
+			},
+			"addTitle": "Деректерді қосу",
+			"addSubtitle": "Таңдалған түр үшін өрістерді толтырыңыз.",
+			"fields": {
+				"name": "Т.А.Ә/Атауы",
+				"iinbin": "ЖСН/БСН",
+				"iin": "ЖСН",
+				"legalAddress": "Заңды мекенжай",
+				"email": "Электрондық пошта",
+				"phone": "Телефон нөмірі",
+				"bankDetails": "Банк деректемелері"
+			},
+			"saveButton": "Сақтау",
+			"signAndAdd": "ЭЦҚ-мен қол қойып қосу",
+			"addOrganization": "Ұйым қосу",
+			"listTitle": "Менің статусым",
+			"listTitleOrgs": "Менің ұйымдарым",
+			"selectAll": "Барлығын таңдау",
+			"edit": "Өңдеу",
+			"delete": "Жою",
+			"typeLabels": {
+				"UL": "ЮЛ",
+				"IP": "ИП",
+				"FL": "ФЛ"
+			},
+			"columns": {
+				"name": "Атауы",
+				"address": "Мекенжай",
+				"iinbin": "ЖСН/БСН",
+				"iin": "ЖСН",
+				"phone": "Телефон"
+			},
+			"messages": {
+				"added": "Жазба қосылды",
+				"updated": "Жазба жаңартылды",
+				"deleted": "Таңдалған жазбалар жойылды",
+				"editMode": "Өңдеу режимі: деректер толтырылды"
+			},
+			"errors": {
+				"iinbinRequired": "ЖСН/БСН енгізіңіз",
+				"selectAtLeastOne": "Кемінде бір жазбаны таңдаңыз",
+				"selectOneForEdit": "Өңдеу үшін бір жазбаны таңдаңыз",
+				"requestFailed": "Сұрау қатесі",
+				"deleteFailed": "Жою қатесі",
+				"loadFailed": "Жүктеу қатесі"
+			},
+			"empty": "Жазбалар жоқ",
+			"unknownName": "Атаусыз"
+		}
 	}
- }
 }
