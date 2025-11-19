@@ -31,7 +31,7 @@ export const EcpSidebar: React.FC = () => {
           <Image src="/assets/ecp/sidebar-icons/home.svg" alt="home" width={18} height={18} />
           <span>{t('home')}</span>
         </div>
-        <div className={s.item} onClick={() => router.push(`/${locale}/ecp/create`)}>
+        <div className={s.item} onClick={() => { /* router.push(`/${locale}/ecp/create`) */ }}>
           <Image src="/assets/ecp/sidebar-icons/create-document.svg" alt="create" width={18} height={18} />
           <span>{t('createDocument')}</span>
         </div>

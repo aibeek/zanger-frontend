@@ -36,13 +36,14 @@ export const ModulesSection = () => {
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
     const isEcp = normalized.includes('ЭЦП') || normalized.includes('ЭЦҚ') || normalized.includes('ECP')
     if (isEcp) {
-      const res = await authService.check()
-      if (res?.isAuthenticated) {
-        router.push(`/${locale}/ecp/create`)
-      } else {
-        router.push(`/${locale}/auth/login`)
-      }
+      await authService.check()
+      setIsModalOpen(true)
       return
+      // if (res?.isAuthenticated) {
+      //   router.push(`/${locale}/ecp/create`)
+      // } else {
+      //   router.push(`/${locale}/auth/login`)
+      // }
     }
     // Остальные модули пока в разработке
     setIsModalOpen(true)
