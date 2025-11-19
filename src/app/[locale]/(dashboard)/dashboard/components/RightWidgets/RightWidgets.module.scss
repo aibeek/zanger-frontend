@@ -56,6 +56,83 @@
     gap: 8px;
 }
 
+.scheduleAction {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+}
+.calendarActionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #fff;
+    background: rgba(29, 110, 216, 1);
+    box-shadow: 0 4px 12px rgba(29, 110, 216, 0.3);
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.calendarActionBtn:hover {
+    background: rgba(29, 110, 216, 1);
+}
+.calendarIcon {
+    display: block;
+}
+
+.scheduleForm {
+  padding: 8px 0;
+}
+.formRow {
+  margin-bottom: 12px;
+}
+.formRowTwo {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.formRowLabel {
+  font-weight: 600;
+  margin: 6px 0;
+}
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d5dee7;
+  border-radius: 12px;
+  outline: none;
+  background: #eef3f7;
+}
+.formActions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.copyBtn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d5dee7;
+  border-radius: 12px;
+  background: #eef3f7;
+  cursor: pointer;
+  position: relative;
+}
+.copyBtn::before, .copyBtn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #64748b;
+}
+.copyBtn::before { width: 14px; height: 10px; border: 2px solid #64748b; border-radius: 2px; background: transparent; }
+.copyBtn::after { width: 12px; height: 2px; top: calc(50% + 6px); }
+
 .calendarWeekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);

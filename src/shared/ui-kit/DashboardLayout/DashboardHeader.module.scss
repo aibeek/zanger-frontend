@@ -120,6 +120,40 @@
   gap: 1.5rem;
 }
 
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #0b1f34;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.profilePic {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.profileName {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.profileRole {
+  color: #cbd5e1;
+  font-size: 0.8rem;
+}
+
 .subscriptionBtn {
   background-color: #1e69d7; /* Синий цвет кнопки */
   color: #fff;

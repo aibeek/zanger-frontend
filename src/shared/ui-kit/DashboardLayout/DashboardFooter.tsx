@@ -30,6 +30,8 @@ export const DashboardFooter = () => {
     const t = useTranslations()
     const pathname = usePathname()
     const isKz = pathname.includes('kz')
+    const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+    const isVideoConferencePage = pathWithoutLang === '/dashboard/video-conference'
     
     // Conditional URLs based on locale
     const policyHref = isKz ? policyKzURL : policyURL
@@ -50,25 +52,27 @@ export const DashboardFooter = () => {
     
     return (
         <footer className={s.footer}>
-            <div className={s.govServicesContainer}>
-                {govServices.map((service, index) => (
-                    <a 
-                        key={index} 
-                        href={service.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={s.govService}
-                    >
-                        <Image 
-                            src={service.icon} 
-                            alt={service.name}
-                            width={64}
-                            height={64}
-                            className={s.govServiceIcon}
-                        />
-                    </a>
-                ))}
-            </div>
+            {!isVideoConferencePage && (
+                <div className={s.govServicesContainer}>
+                    {govServices.map((service, index) => (
+                        <a 
+                            key={index} 
+                            href={service.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={s.govService}
+                        >
+                            <Image 
+                                src={service.icon} 
+                                alt={service.name}
+                                width={64}
+                                height={64}
+                                className={s.govServiceIcon}
+                            />
+                        </a>
+                    ))}
+                </div>
+            )}
             
             <div className={s.footerStats}>
                 <div className={s.stat}>

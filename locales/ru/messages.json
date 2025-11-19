@@ -972,7 +972,11 @@
 					"logout": "Выйти",
 					"lawyerRole": "Юрист",
 					"clientRole": "Клиент",
-					"copyright": "© 2025 Zanger.\nВсе права защищены"
+					"copyright": "© 2025 Zanger.\nВсе права защищены",
+					"vcMyConferences": "Мои конференции",
+					"vcLiveFeed": "Лента эфиров",
+					"vcEvents": "Мероприятия",
+					"vcSettings": "Настройки"
 		},
 		"calendar": {
 			"mon": "Пн",
