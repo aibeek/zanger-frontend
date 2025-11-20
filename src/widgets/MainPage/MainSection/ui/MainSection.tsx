@@ -26,12 +26,12 @@ export const MainSection = () => {
 			<div className={s.abstractLandscape}>
 				<video
 					className={s.bgVideo}
-					src="/assets/images/mainvideo.mp4"
+					src="/assets/images/mainn.mp4"
 					autoPlay
 					loop
 					muted
 					playsInline
-				/>
+				/>	
 				<div className={s.container}>
 					<div className={s.textSection}>
 						{/* Title and content block (badge moved to phone side) */}
