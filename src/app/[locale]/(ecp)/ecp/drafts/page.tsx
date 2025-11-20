@@ -12,6 +12,7 @@ import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type DocItem = {
   id: number
@@ -109,6 +110,11 @@ export default function EcpDraftsPage() {
   const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [isPreviewLoading, setIsPreviewLoading] = React.useState(false)
+  const [previewError, setPreviewError] = React.useState<string | null>(null)
+  const [previewName, setPreviewName] = React.useState<string | null>(null)
 
   const eventLabel = (code: string) => {
     if (code === 'DOCUMENT_CREATED') return 'Создан'
@@ -378,7 +384,30 @@ export default function EcpDraftsPage() {
                             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                               <span style={{ fontSize: 14 }}>{f.file_name}</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }} title="Посмотреть">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      if (disabled) { toast.error('Файл недоступен для просмотра'); return }
+                                      setPreviewName(f.file_name || null)
+                                      setPreviewError(null)
+                                      setPreviewUrl(null)
+                                      setIsPreviewLoading(true)
+                                      const token = authService.ensureToken()
+                                      const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                                      if (!res.ok) throw new Error('Ошибка загрузки файла')
+                                      const blob = await res.blob()
+                                      const url = URL.createObjectURL(blob)
+                                      setPreviewUrl(url)
+                                      openPreview()
+                                    } catch (e: any) {
+                                      setPreviewError(e?.message || 'Не удалось открыть файл')
+                                    } finally {
+                                      setIsPreviewLoading(false)
+                                    }
+                                  }}
+                                  style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                                  title="Посмотреть"
+                                >
                                   <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                                 </button>
                                 <button
@@ -487,6 +516,18 @@ export default function EcpDraftsPage() {
           }
         }}
       />
+
+      <Modal isOpen={isPreviewOpen} onClose={() => { if (previewUrl) { URL.revokeObjectURL(previewUrl); setPreviewUrl(null) } closePreview() }} title={previewName || 'Просмотр файла'} closeButton>
+        {isPreviewLoading ? (
+          <div style={{ padding: 12 }}>Загрузка файла…</div>
+        ) : previewError ? (
+          <div style={{ padding: 12, color: '#ef4444' }}>{previewError}</div>
+        ) : previewUrl ? (
+          <iframe src={previewUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+        ) : (
+          <div style={{ padding: 12, color: '#666' }}>Файл отсутствует</div>
+        )}
+      </Modal>
 
       <ConfirmModal
         isOpen={confirmDeleteId !== null}

@@ -8,6 +8,7 @@ import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type ListItem = { id: number; title: string; status: string; created_at: string; description?: string }
 
@@ -39,6 +40,11 @@ export default function EcpTrashPage() {
   const [confirmRestoreOpen, setConfirmRestoreOpen] = React.useState(false)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [isPreviewLoading, setIsPreviewLoading] = React.useState(false)
+  const [previewError, setPreviewError] = React.useState<string | null>(null)
+  const [previewName, setPreviewName] = React.useState<string | null>(null)
 
   const toggle = (id: number) => {
     setSelected((prev) => {
@@ -180,7 +186,34 @@ export default function EcpTrashPage() {
                         const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const f = (details.files || [])[0] || null
+                                  const rawId = f ? (f.storage_object_id ?? (f as any).object_id ?? f.document_file_id) : null
+                                  const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+                                  const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
+                                  if (disabled) { toast.error('Файл недоступен для просмотра'); return }
+                                  setPreviewName(f?.file_name || null)
+                                  setPreviewError(null)
+                                  setPreviewUrl(null)
+                                  setIsPreviewLoading(true)
+                                  const token = authService.ensureToken()
+                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                                  if (!res.ok) throw new Error('Ошибка загрузки файла')
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  setPreviewUrl(url)
+                                  openPreview()
+                                } catch (e: any) {
+                                  setPreviewError(e?.message || 'Не удалось открыть файл')
+                                } finally {
+                                  setIsPreviewLoading(false)
+                                }
+                              }}
+                              style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                              title="Посмотреть"
+                            >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
                                 <circle cx="12" cy="12" r="3" />
@@ -281,6 +314,18 @@ export default function EcpTrashPage() {
         }
       }}
     />
+
+    <Modal isOpen={isPreviewOpen} onClose={() => { if (previewUrl) { URL.revokeObjectURL(previewUrl); setPreviewUrl(null) } closePreview() }} title={previewName || 'Просмотр файла'} closeButton>
+      {isPreviewLoading ? (
+        <div style={{ padding: 12 }}>Загрузка файла…</div>
+      ) : previewError ? (
+        <div style={{ padding: 12, color: '#ef4444' }}>{previewError}</div>
+      ) : previewUrl ? (
+        <iframe src={previewUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+      ) : (
+        <div style={{ padding: 12, color: '#666' }}>Файл отсутствует</div>
+      )}
+    </Modal>
     </>
   )
 }

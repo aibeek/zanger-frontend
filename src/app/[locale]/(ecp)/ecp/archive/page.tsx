@@ -9,6 +9,7 @@ import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type ListItem = { id: number; title: string; status: string; created_at: string; description?: string }
 
@@ -34,6 +35,7 @@ export default function EcpArchivePage() {
   const [isPdfLoading, setIsPdfLoading] = React.useState(false)
   const [pdfError, setPdfError] = React.useState<string | null>(null)
   const viewerRef = React.useRef<HTMLDivElement | null>(null)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
 
   const items: ListItem[] = (data?.items || [])
   const total = (data?.pagination?.total as number) || items.length
@@ -287,7 +289,7 @@ export default function EcpArchivePage() {
                     <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <button onClick={() => { viewerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                        <button onClick={() => { openPreview() }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
                           <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                         </button>
                         <button
@@ -380,6 +382,18 @@ export default function EcpArchivePage() {
         }
       }}
     />
+
+    <Modal isOpen={isPreviewOpen} onClose={closePreview} title={"Просмотр файла"} closeButton>
+      {isPdfLoading ? (
+        <div style={{ padding: 12 }}>Загрузка документа…</div>
+      ) : pdfError ? (
+        <div style={{ padding: 12, color: '#ef4444' }}>{pdfError}</div>
+      ) : pdfUrl ? (
+        <iframe src={pdfUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+      ) : (
+        <div style={{ padding: 12, color: '#666' }}>Документ отсутствует</div>
+      )}
+    </Modal>
     </>
   )
 }

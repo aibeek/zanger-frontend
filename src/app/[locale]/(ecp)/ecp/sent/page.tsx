@@ -10,6 +10,7 @@ import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type ListItem = {
   id: number
@@ -52,6 +53,7 @@ export default function EcpSentPage() {
   const [isPdfLoading, setIsPdfLoading] = React.useState(false)
   const [pdfError, setPdfError] = React.useState<string | null>(null)
   const viewerRef = React.useRef<HTMLDivElement | null>(null)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
 
   const items: ListItem[] = data?.items || []
   const filtered = items
@@ -332,7 +334,7 @@ export default function EcpSentPage() {
                         const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button onClick={() => { viewerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                            <button onClick={() => { openPreview() }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
                               <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                             </button>
                             <button
@@ -400,6 +402,18 @@ export default function EcpSentPage() {
         }
       }}
     />
+
+    <Modal isOpen={isPreviewOpen} onClose={closePreview} title={"Просмотр файла"} closeButton>
+      {isPdfLoading ? (
+        <div style={{ padding: 12 }}>Загрузка документа…</div>
+      ) : pdfError ? (
+        <div style={{ padding: 12, color: '#ef4444' }}>{pdfError}</div>
+      ) : pdfUrl ? (
+        <iframe src={pdfUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+      ) : (
+        <div style={{ padding: 12, color: '#666' }}>Документ отсутствует</div>
+      )}
+    </Modal>
 
     <ConfirmModal
       isOpen={confirmDeleteId !== null}
