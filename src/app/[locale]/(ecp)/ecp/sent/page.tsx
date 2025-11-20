@@ -197,8 +197,17 @@ export default function EcpSentPage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                  <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, maxWidth: 520, alignSelf: 'start' }}>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr',
+                        gap: 10,
+                        ...(((details.signers || []).length > 2)
+                          ? { maxHeight: 220, overflow: 'auto', paddingRight: 8 }
+                          : {})
+                      }}
+                    >
                       {(details.signers || []).map((s: any, idx: number) => {
                         const statusColor =
                           s.status === 'SIGNED' ? '#22c55e' :
@@ -225,10 +234,7 @@ export default function EcpSentPage() {
                         )
                       })}
                     </div>
-                    {/* Панель действий под подписантами */}
-                    <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                      {/* На отправленных чаще всего нет доступных действий; оставляем пусто или будущие кнопки */}
-                    </div>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 12 }}></div>
                   </div>
                   <div>
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>

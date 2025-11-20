@@ -168,8 +168,17 @@ export default function EcpArchivePage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10 }}>
+                  <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, maxWidth: 520, alignSelf: 'start' }}>
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr',
+                        gap: 10,
+                        ...(((details.signers || []).length > 2)
+                          ? { maxHeight: 220, overflow: 'auto', paddingRight: 8 }
+                          : {})
+                      }}
+                    >
                       {(details.signers || []).map((s: any, idx: number) => {
                         const statusColor = s.status === 'SIGNED' ? '#22c55e' : s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' : s.status === 'DECLINED' ? '#ef4444' : '#6b7280'
                         const statusLabel = s.status === 'SIGNED' ? 'Подписан' : s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' : s.status === 'DECLINED' ? 'Отклонён' : s.status || '—'
