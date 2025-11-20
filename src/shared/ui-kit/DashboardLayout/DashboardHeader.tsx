@@ -134,23 +134,29 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             </header>
             
             <div className={s.footerSections}>
-                {sections.map((section, index) => (
-                    <button 
-                        key={index} 
-                        className={s.footerSection}
-                        onClick={() => handleSectionClick(section)}
-                    >
-                        <span>{section}</span>
-                        <span className={s.footerArrow}>
-                            <Image 
-                                src={Strelka} 
-                                alt="arrow"
-                                width={28}
-                                height={28}
-                            />
-                        </span>
-                    </button>
-                ))}
+                    {sections.map((section, index) => {
+                        const isPilot = section === t('dashboard.footer.sections.digitalSignature') || section === t('dashboard.sidebar.vcMyConferences')
+                        const label = section === t('dashboard.sidebar.vcMyConferences') ? 'ВКС' : section
+                        return (
+                        <button 
+                            key={index} 
+                            className={s.footerSection}
+                            onClick={() => handleSectionClick(section)}
+                        >
+                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                {label}
+                                {isPilot && <span className={s.pilotPill}>Пилот</span>}
+                            </span>
+                            <span className={s.footerArrow}>
+                                <Image 
+                                    src={Strelka} 
+                                    alt="arrow"
+                                    width={28}
+                                    height={28}
+                                />
+                            </span>
+                        </button>
+                    )})}
             </div>
             
             <Modal

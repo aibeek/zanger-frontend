@@ -27,19 +27,21 @@
   align-items: center;
   justify-content: space-between;
   width: 15%;
-  min-width: 150px;
-  padding: 0.8rem 1rem;
-  background-color: rgba(96, 103, 135, 1);
+  min-width: 180px;
+  padding: 0.9rem 1.1rem;
+  background: linear-gradient(135deg, #274b9f 0%, #16366f 100%);
   color: #fff;
-  border-radius: 5px;
+  border-radius: 16px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(22, 54, 111, 0.35);
 
   &:hover {
-    background-color: rgba(86, 93, 125, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(22, 54, 111, 0.45);
   }
 }
 
@@ -53,6 +55,20 @@
   height: 34px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: #0b1f34;
+}
+
+.pilotPill {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4f5bd5 0%, #5e72eb 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 /* Контейнер для гос. сервисов */
