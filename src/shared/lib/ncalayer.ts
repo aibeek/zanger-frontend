@@ -1,34 +1,49 @@
-// NCALayer client wrapper. Uses local stub to avoid build-time dependency issues.
-import { NCALayerClient } from './ncalayerClient'
+import { NCALayerClient } from 'ncalayer-js-client'
+
+const endpoints = [
+  process.env.NEXT_PUBLIC_NCALAYER_URL,
+  'wss://127.0.0.1:13579/',
+  'wss://localhost:13579/',
+].filter(Boolean) as string[]
+
+const withTimeout = <T>(p: Promise<T>, ms: number) =>
+  new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error('NCALAYER_TIMEOUT')), ms)
+    p.then((v) => {
+      clearTimeout(t)
+      resolve(v)
+    }).catch((e) => {
+      clearTimeout(t)
+      reject(e)
+    })
+  })
+
+async function connectNca(): Promise<NCALayerClient> {
+  for (const url of endpoints) {
+    const client = new NCALayerClient(url)
+    try {
+      await withTimeout(client.connect(), 2500)
+      return client
+    } catch {}
+  }
+  throw new Error('NCALayer is not responding')
+}
 
 export async function signChallengeBase64(challengeBase64: string): Promise<string> {
-  const client = new NCALayerClient('wss://127.0.0.1:13579/')
-
-  // Проверяем доступность NCALayer
-  try {
-    await client.connect()
-  } catch (e: any) {
-    throw new Error(e?.message || 'NCALayer is not responding')
-  }
-
-  // Получаем доступные токены/носители
+  const client = await connectNca()
   let storageType = 'PKCS12'
   try {
     const tokens = await client.getActiveTokens()
     storageType = tokens?.[0] || (NCALayerClient as any).fileStorageType || 'PKCS12'
   } catch {
-    // Fallback на файловое хранилище
     storageType = (NCALayerClient as any).fileStorageType || 'PKCS12'
   }
-
-  // Создаём CMS подпись из Base64
   return await client.createCAdESFromBase64(storageType, challengeBase64)
 }
 
 export async function isNcaLayerAvailable(): Promise<boolean> {
   try {
-    const client = new NCALayerClient('wss://127.0.0.1:13579/')
-    await client.connect()
+    await connectNca()
     return true
   } catch {
     return false
