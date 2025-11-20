@@ -13,6 +13,7 @@ export interface CounterpartyPayload {
   legal_address?: string
   bank_details?: string
   user_id?: number | null
+  is_active?: boolean
   is_verified?: boolean
 }
 
