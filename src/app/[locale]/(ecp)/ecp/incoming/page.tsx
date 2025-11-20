@@ -77,11 +77,52 @@ export default function EcpIncomingPage() {
   const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null)
+  const [isPdfLoading, setIsPdfLoading] = React.useState(false)
+  const [pdfError, setPdfError] = React.useState<string | null>(null)
+  const viewerRef = React.useRef<HTMLDivElement | null>(null)
   React.useEffect(() => {
     if (!personalData) {
       getPersonalDataByToken()
     }
   }, [personalData, getPersonalDataByToken])
+  React.useEffect(() => {
+    const f = (details?.files || [])[0] || null
+    const rawId = f ? (f.storage_object_id ?? f.object_id ?? f.document_file_id) : null
+    const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+    if (!(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)) {
+      setPdfUrl(null)
+      setPdfError(null)
+      setIsPdfLoading(false)
+      return
+    }
+    let cancelled = false
+    let localUrl: string | null = null
+    const load = async () => {
+      try {
+        setIsPdfLoading(true)
+        setPdfError(null)
+        const token = authService.ensureToken()
+        const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+        if (!res.ok) throw new Error('Ошибка загрузки файла')
+        const blob = await res.blob()
+        if (cancelled) return
+        localUrl = URL.createObjectURL(blob)
+        setPdfUrl(localUrl)
+      } catch (e: any) {
+        if (cancelled) return
+        setPdfError(e?.message || 'Не удалось загрузить документ')
+        setPdfUrl(null)
+      } finally {
+        if (!cancelled) setIsPdfLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+      if (localUrl) URL.revokeObjectURL(localUrl)
+    }
+  }, [details?.files, selectedId])
   
 
   const items: ListItem[] = data?.items || []
@@ -291,42 +332,55 @@ export default function EcpIncomingPage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, maxWidth: 520, alignSelf: 'start' }}>
-                    <div
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr',
-                        gap: 10,
-                        ...(((details.signers || []).length > 2)
-                          ? { maxHeight: 220, overflow: 'auto', paddingRight: 8 }
-                          : {})
-                      }}
-                    >
-                      {(details.signers || []).map((s: any, idx: number) => {
-                      const statusColor =
-                        s.status === 'SIGNED' ? '#22c55e' :
-                        s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' :
-                        s.status === 'DECLINED' ? '#ef4444' :
-                        '#6b7280'
-                      const statusLabel =
-                        s.status === 'SIGNED' ? 'Подписан' :
-                        s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' :
-                        s.status === 'DECLINED' ? 'Отклонён' :
-                        s.status === 'EXPIRED' ? 'Истёк' :
-                        s.status || '—'
-                      return (
-                        <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
-                          <div>
-                            <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
-                            {s.email ? <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>{s.email}</div> : null}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
-                              <span style={{ width: 8, height: 8, borderRadius: 9999, background: statusColor }}></span>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusLabel}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, maxWidth: 520, alignSelf: 'start' }}>
+                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
+                      <div
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '1fr',
+                          gap: 10,
+                          ...(((details.signers || []).length > 2)
+                            ? { maxHeight: 220, overflow: 'auto', paddingRight: 8 }
+                            : {})
+                        }}
+                      >
+                        {(details.signers || []).map((s: any, idx: number) => {
+                          const statusColor =
+                            s.status === 'SIGNED' ? '#22c55e' :
+                            s.status === 'REQUESTED' || s.status === 'PENDING' ? '#2563eb' :
+                            s.status === 'DECLINED' ? '#ef4444' :
+                            '#6b7280'
+                          const statusLabel =
+                            s.status === 'SIGNED' ? 'Подписан' :
+                            s.status === 'REQUESTED' || s.status === 'PENDING' ? 'На рассмотрении' :
+                            s.status === 'DECLINED' ? 'Отклонён' :
+                            s.status === 'EXPIRED' ? 'Истёк' :
+                            s.status || '—'
+                          return (
+                            <div key={idx} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                              <div>
+                                <div style={{ fontWeight: 700 }}>{(s.iin_bin ? `${s.iin_bin} · ` : '') + (s.fio || 'Подписант')}</div>
+                                {s.email ? <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>{s.email}</div> : null}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                                  <span style={{ width: 8, height: 8, borderRadius: 9999, background: statusColor }}></span>
+                                  <span style={{ fontSize: 12, fontWeight: 700, color: statusColor }}>{statusLabel}</span>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      )
-                    })}
+                          )
+                        })}
+                      </div>
+                    </div>
+                    <div ref={viewerRef} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                      {isPdfLoading ? (
+                        <div style={{ padding: 12 }}>Загрузка документа…</div>
+                      ) : pdfError ? (
+                        <div style={{ padding: 12, color: '#ef4444' }}>{pdfError}</div>
+                      ) : pdfUrl ? (
+                        <iframe src={pdfUrl} style={{ width: 430, height: 400, border: 'none', borderRadius: 8 }} />
+                      ) : (
+                        <div style={{ padding: 12, color: '#666' }}>Документ отсутствует</div>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -370,7 +424,7 @@ export default function EcpIncomingPage() {
                         const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                            <button onClick={() => { viewerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
                               <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                             </button>
                             <button
@@ -406,9 +460,10 @@ export default function EcpIncomingPage() {
                     </div>
                   </div>
                 </div>
+                
                 {canSign && (
                   !declineOpen ? (
-                    <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                  <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
                       <button onClick={onSign} disabled={isSigning} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
                       <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>Отклонить</button>
                     </div>

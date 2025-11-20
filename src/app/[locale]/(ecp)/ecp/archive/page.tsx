@@ -30,6 +30,10 @@ export default function EcpArchivePage() {
   const [queryDraft, setQueryDraft] = React.useState('')
   const { data, error, isLoading } = useSWR(['ecp-archive', page, limit, query], ([, p, l, q]) => fetchArchived(p as number, l as number, q as string))
   const { data: details } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
+  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null)
+  const [isPdfLoading, setIsPdfLoading] = React.useState(false)
+  const [pdfError, setPdfError] = React.useState<string | null>(null)
+  const viewerRef = React.useRef<HTMLDivElement | null>(null)
 
   const items: ListItem[] = (data?.items || [])
   const total = (data?.pagination?.total as number) || items.length
@@ -82,6 +86,44 @@ export default function EcpArchivePage() {
       return String(s)
     }
   }
+
+  React.useEffect(() => {
+    const f = (details?.files || [])[0] || null
+    const rawId = f ? (f.storage_object_id ?? (f as any).object_id ?? f.document_file_id) : null
+    const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+    if (!(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)) {
+      setPdfUrl(null)
+      setPdfError(null)
+      setIsPdfLoading(false)
+      return
+    }
+    let cancelled = false
+    let localUrl: string | null = null
+    const load = async () => {
+      try {
+        setIsPdfLoading(true)
+        setPdfError(null)
+        const token = authService.ensureToken()
+        const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+        if (!res.ok) throw new Error('Ошибка загрузки файла')
+        const blob = await res.blob()
+        if (cancelled) return
+        localUrl = URL.createObjectURL(blob)
+        setPdfUrl(localUrl)
+      } catch (e: any) {
+        if (cancelled) return
+        setPdfError(e?.message || 'Не удалось загрузить документ')
+        setPdfUrl(null)
+      } finally {
+        if (!cancelled) setIsPdfLoading(false)
+      }
+    }
+    load()
+    return () => {
+      cancelled = true
+      if (localUrl) URL.revokeObjectURL(localUrl)
+    }
+  }, [details?.files, selectedId])
 
   return (
     <>
@@ -168,7 +210,8 @@ export default function EcpArchivePage() {
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>{details.title}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 16 }}>
-                  <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, maxWidth: 520, alignSelf: 'start' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12, maxWidth: 520, alignSelf: 'start' }}>
+                    <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                     <div
                       style={{
                         display: 'grid',
@@ -195,6 +238,18 @@ export default function EcpArchivePage() {
                           </div>
                         )
                       })}
+                    </div>
+                    </div>
+                    <div ref={viewerRef} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10 }}>
+                      {isPdfLoading ? (
+                        <div style={{ padding: 12 }}>Загрузка документа…</div>
+                      ) : pdfError ? (
+                        <div style={{ padding: 12, color: '#ef4444' }}>{pdfError}</div>
+                      ) : pdfUrl ? (
+                        <iframe src={pdfUrl} style={{ width: 430, height: 400, border: 'none', borderRadius: 8 }} />
+                      ) : (
+                        <div style={{ padding: 12, color: '#666' }}>Документ отсутствует</div>
+                      )}
                     </div>
                   </div>
                   <div>
@@ -229,44 +284,46 @@ export default function EcpArchivePage() {
                         ))}
                       </div>
                     </div>
+                    <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <button onClick={() => { viewerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                          <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
+                        </button>
+                        <button
+                          onClick={async () => {
+                            try {
+                              const f = (details.files || [])[0] || null
+                              const rawId = f ? (f.storage_object_id ?? (f as any).object_id ?? f.document_file_id) : null
+                              const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+                              if (!(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)) { toast.error('Файл недоступен для скачивания'); return }
+                              const token = authService.ensureToken()
+                              const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                              if (!res.ok) throw new Error('Ошибка запроса на скачивание')
+                              const blob = await res.blob()
+                              const url = URL.createObjectURL(blob)
+                              const a = document.createElement('a')
+                              a.href = url
+                              a.download = f?.file_name || 'file'
+                              document.body.appendChild(a)
+                              a.click()
+                              a.remove()
+                              URL.revokeObjectURL(url)
+                            } catch (e: any) {
+                              toast.error(e?.message || 'Не удалось скачать файл')
+                            }
+                          }}
+                          style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                          title="Скачать"
+                        >
+                          <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                  
                 </div>
-                <div style={{ marginTop: 12, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: 14, fontWeight: 600 }}>{(details.files || [])[0]?.file_name || 'Файл отсутствует'}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
-                      <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
-                    </button>
-                    <button
-                      onClick={async () => {
-                        try {
-                          const f = (details.files || [])[0] || null
-                          const rawId = f ? (f.storage_object_id ?? (f as any).object_id ?? f.document_file_id) : null
-                          const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
-                          if (!(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)) { toast.error('Файл недоступен для скачивания'); return }
-                          const token = authService.ensureToken()
-                          const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
-                          if (!res.ok) throw new Error('Ошибка запроса на скачивание')
-                          const blob = await res.blob()
-                          const url = URL.createObjectURL(blob)
-                          const a = document.createElement('a')
-                          a.href = url
-                          a.download = f?.file_name || 'file'
-                          document.body.appendChild(a)
-                          a.click()
-                          a.remove()
-                          URL.revokeObjectURL(url)
-                        } catch (e: any) {
-                          toast.error(e?.message || 'Не удалось скачать файл')
-                        }
-                      }}
-                      style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-                      title="Скачать"
-                    >
-                      <Image src="/assets/ecp/document-file/download.svg" alt="download" width={18} height={18} />
-                    </button>
-                  </div>
-                </div>
+                
               </div>
             ) : (
               <div style={{ color: '#666' }}>Выберите документ слева</div>
