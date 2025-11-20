@@ -147,7 +147,7 @@ export default function EcpDraftsPage() {
       if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
       const d = new Date(iso)
       return new Intl.DateTimeFormat('ru-RU', {
-        timeZone: 'Asia/Almaty',
+        timeZone: 'UTC',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -296,7 +296,7 @@ export default function EcpDraftsPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {formatAt(doc.created_at)} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}

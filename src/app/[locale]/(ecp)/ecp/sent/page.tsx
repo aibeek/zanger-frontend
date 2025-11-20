@@ -100,7 +100,7 @@ export default function EcpSentPage() {
       const iso = String(s).includes('T') ? String(s) : String(s).replace(' ', 'T')
       const d = new Date(iso)
       return new Intl.DateTimeFormat('ru-RU', {
-        timeZone: 'Asia/Almaty',
+        timeZone: 'UTC',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -223,7 +223,7 @@ export default function EcpSentPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{truncate(doc.title)}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {formatAt(doc.created_at)}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}

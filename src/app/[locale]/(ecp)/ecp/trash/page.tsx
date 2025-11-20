@@ -107,7 +107,7 @@ export default function EcpTrashPage() {
                 </div>
                 <div style={{ padding: 8 }}>
                   <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {formatAt(doc.created_at)}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}

@@ -77,7 +77,7 @@ export default function EcpArchivePage() {
       if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
       const d = new Date(iso)
       return new Intl.DateTimeFormat('ru-RU', {
-        timeZone: 'Asia/Almaty',
+        timeZone: 'UTC',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -194,7 +194,7 @@ export default function EcpArchivePage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {formatAt(doc.created_at)}{doc.description ? ` · ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}
