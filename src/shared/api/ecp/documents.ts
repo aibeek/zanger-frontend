@@ -1,6 +1,6 @@
-import { API_URL } from '../config'
-import { httpClientWithAuth } from './httpClient'
-import { createQuery } from '../lib/helpers/query'
+import { API_URL } from '../../config'
+import { httpClientWithAuth } from '../httpClient'
+import { createQuery } from '../../lib/helpers/query'
 
 export type EsdcaDocumentCreatePayload = {
   title: string

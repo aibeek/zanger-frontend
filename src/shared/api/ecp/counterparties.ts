@@ -1,6 +1,6 @@
-import { API_URL } from '../config'
-import { httpClientWithAuth } from './httpClient'
-import { createQuery } from '../lib/helpers/query'
+import { API_URL } from '../../config'
+import { httpClientWithAuth } from '../httpClient'
+import { createQuery } from '../../lib/helpers/query'
 
 export type CounterpartyTypeCode = 'UL' | 'IP' | 'FL'
 
@@ -16,7 +16,6 @@ export interface CounterpartyPayload {
 }
 
 export const counterpartiesApi = {
-  // Backend expects `query` param; support both but map to `query`
   search: (params?: { query?: string; q?: string; page?: number; limit?: number }) => {
     const effectiveParams = {
       ...(params || {}),
@@ -43,7 +42,6 @@ export const counterpartiesApi = {
       body: JSON.stringify(payload),
     }),
 
-  // Create counterparty entry specifically for "My Statuses" section
   storeMine: (payload: CounterpartyPayload) =>
     httpClientWithAuth(`${API_URL}/counterparties/mine`, {
       method: 'POST',
