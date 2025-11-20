@@ -13,6 +13,7 @@ export interface CounterpartyPayload {
   legal_address?: string
   bank_details?: string
   user_id?: number | null
+  is_verified?: boolean
 }
 
 export const counterpartiesApi = {
@@ -33,6 +34,11 @@ export const counterpartiesApi = {
 
   getByCreatorId: (userId: number) =>
     httpClientWithAuth(`${API_URL}/counterparties/by-creator/${userId}`, {
+      method: 'GET',
+    }),
+
+  getMatchesForMe: () =>
+    httpClientWithAuth(`${API_URL}/counterparties/matches/mine`, {
       method: 'GET',
     }),
 
