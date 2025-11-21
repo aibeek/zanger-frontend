@@ -209,30 +209,47 @@ export default function EcpDraftsPage() {
       }
 
       const signersPayload: any[] = []
-      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
       if (selectedCounterpartyId) {
         const cp = findCounterpartyById(selectedCounterpartyId)
         if (!cp?.user_id) {
           toast.error('Контрагент не привязан к пользователю — не появится во входящих')
         }
-        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 2 })
-      }
-      if (signersPayload.length > 0) {
-        await ecpApi.addSigners(selectedId, signersPayload)
+        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
       }
 
-      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
+      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
       const { operation_id, challenge } = init
       const cmsBase64 = await signChallengeBase64(challenge)
 
-      const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
-      if (!verify?.valid) {
-        toast.error(verify?.message || 'Ошибка проверки подписи')
+      let verifyOk = false
+      try {
+        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        verifyOk = !!verify?.valid
+        if (!verifyOk) {
+          toast.error(verify?.message || 'Ошибка проверки подписи')
+        }
+      } catch (err: any) {
+        toast.error(err?.message || 'Ошибка проверки подписи')
+        verifyOk = false
+      }
+      if (!verifyOk) {
+        try { await signingApi.rollbackInitiate(selectedId, { counterparty_id: selectedSignerId, operation_id }) } catch {}
         return
       }
 
-      await ecpApi.signComplete(selectedId, { operation_id, cms: cmsBase64 })
+      const opVerify = await ecpApi.signVerify(selectedId, { operation_id, cms: cmsBase64, tax_id: taxId })
+      if (!opVerify?.valid || opVerify?.status !== 'VERIFIED') {
+        toast.error('Ошибка серверной верификации операции')
+        try {
+          await signingApi.rollbackInitiate(selectedId, { counterparty_id: selectedSignerId, operation_id })
+        } catch {}
+        return
+      }
 
+
+      if (signersPayload.length > 0) {
+        await ecpApi.addSigners(selectedId, signersPayload)
+      }
       await ecpApi.sendForSigning(selectedId)
 
       const d = await ecpApi.getDocumentDetails(selectedId)

@@ -148,18 +148,21 @@ export const ecpApi = {
 
   signInitiate: (
     documentId: number,
-    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_CMS'
+    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_CMS',
+    options?: { counterparty_id?: number }
   ): Promise<{ operation_id: number; challenge: string }> => {
+    const body: any = { method }
+    if (options?.counterparty_id) body.counterparty_id = options.counterparty_id
     return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign`, {
       method: 'POST',
-      body: JSON.stringify({ method }),
+      body: JSON.stringify(body),
     })
   },
 
   signVerify: (
     documentId: number,
-    payload: { operation_id: number; cms: string }
-  ): Promise<{ valid: boolean; status: string }> => {
+    payload: { operation_id: number; cms: string; tax_id: string }
+  ): Promise<{ valid: boolean; status: string; document_status?: string }> => {
     return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/verify`, {
       method: 'POST',
       body: JSON.stringify(payload),

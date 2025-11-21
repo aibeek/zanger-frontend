@@ -36,26 +36,8 @@ const fetchIncoming = async (page: number, limit: number, q?: string, userId?: n
   const map = new Map<number, ListItem>()
   for (const it of [...inboxItems, ...ownerItems]) { map.set(it.id, it) }
   let merged: ListItem[] = Array.from(map.values())
-  if (userId) {
-    const authorCandidates = merged.filter((d) => typeof d.created_by === 'number' && d.created_by === userId && String(d.status) === 'PARTIALLY_SIGNED')
-    const authorIds = authorCandidates.map((d) => d.id)
-    const detailsList = await Promise.all(authorIds.map((id) => ecpApi.getDocumentDetails(id).catch(() => null)))
-    const authorCanSignIds = new Set<number>(detailsList.filter((d: any) => d && Array.isArray(d.signers) && d.signers.some((s: any) => s.is_me && s.can_sign)).map((d: any) => d.id))
-    merged = merged.filter((d) => {
-      const status = String(d.status)
-      const statusOk = ['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'].includes(status)
-      if (!statusOk) return false
-      if (typeof d.created_by === 'number' && d.created_by === userId) {
-        if (status === 'PARTIALLY_SIGNED') {
-          return authorCanSignIds.has(d.id)
-        }
-        return status === 'WAITING_CREATOR_SIGNATURE'
-      }
-      return true
-    })
-  } else {
-    merged = merged.filter((d) => ['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'].includes(String(d.status)))
-  }
+  const statusSet = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'])
+  merged = merged.filter((d) => statusSet.has(String(d.status)))
   const start = Math.max(0, (page - 1) * limit)
   const paged = merged.slice(start, start + limit)
   const pagination = { page, limit, total: merged.length }
@@ -69,9 +51,17 @@ export default function EcpIncomingPage() {
   const [query, setQuery] = React.useState('')
   const [queryDraft, setQueryDraft] = React.useState('')
   const { personalData, getPersonalDataByToken } = useLoginStore()
-  const { data, error, isLoading, mutate: mutateList } = useSWR(['ecp-incoming', page, limit, query, personalData?.id || null], ([, p, l, q, uid]) => fetchIncoming(p as number, l as number, q as string, (uid as number | null)))
+  const { data, error, isLoading, mutate: mutateList } = useSWR(
+    ['ecp-incoming', page, limit, query, personalData?.id || null],
+    ([, p, l, q, uid]) => fetchIncoming(p as number, l as number, q as string, (uid as number | null)),
+    { revalidateOnFocus: false, revalidateOnReconnect: false, refreshInterval: 0, revalidateIfStale: false }
+  )
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
-  const { data: details, mutate: mutateDetails } = useSWR(selectedId ? ['ecp-doc-details', selectedId] : null, ([, id]) => ecpApi.getDocumentDetails(id as number))
+  const { data: details, mutate: mutateDetails } = useSWR(
+    selectedId ? ['ecp-doc-details', selectedId] : null,
+    ([, id]) => ecpApi.getDocumentDetails(id as number),
+    { revalidateOnFocus: false, revalidateOnReconnect: false, refreshInterval: 0, revalidateIfStale: false }
+  )
   const [declineOpen, setDeclineOpen] = React.useState(false)
   const [declineReason, setDeclineReason] = React.useState('')
   const [isSigning, setIsSigning] = React.useState(false)
@@ -211,13 +201,19 @@ export default function EcpIncomingPage() {
       setIsSigning(true)
       const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
       const cms = await signChallengeBase64(init.challenge)
-      const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms })
+      const mySigner = (details?.signers || []).find((s: any) => s?.can_sign || s?.is_me)
+      const taxId = String(mySigner?.iin_bin || '').trim()
+      if (!taxId) {
+        toast.error('ИИН/БИН не найден для подписанта')
+        setIsSigning(false)
+        return
+      }
+      const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms, tax_id: taxId })
       if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
         toast.error('Ошибка проверки подписи')
         setIsSigning(false)
         return
       }
-      await ecpApi.signComplete(selectedId, { operation_id: init.operation_id, cms })
       const d = await ecpApi.getDocumentDetails(selectedId)
       await mutateDetails(d, false)
       await mutateList()

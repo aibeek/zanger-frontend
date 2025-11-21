@@ -25,4 +25,10 @@ export const signingApi = {
     httpClientWithAuth(`${API_URL}/signing/ncanode/ping`, {
       method: 'GET',
     }),
+
+  rollbackInitiate: (documentId: number, payload: { counterparty_id: number; operation_id?: number }) =>
+    httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/rollback-init`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 }

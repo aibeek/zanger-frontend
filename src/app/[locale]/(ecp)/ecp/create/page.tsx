@@ -110,26 +110,43 @@ export default function EcpCreateDocumentPage() {
       }
 
       const signersPayload: any[] = []
-      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
       selectedCounterparties.forEach((cp) => {
-        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 2 })
+        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
       })
-      if (signersPayload.length > 0) {
-        await ecpApi.addSigners(documentId, signersPayload)
-      }
 
-      const init = await ecpApi.signInitiate(documentId, 'SIGN_CMS')
+      const init = await ecpApi.signInitiate(documentId, 'SIGN_CMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
       const { operation_id, challenge } = init
       const cmsBase64 = await signChallengeBase64(challenge)
 
-      const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
-      if (!verify?.valid) {
-        toast.error(verify?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+      let verifyOk = false
+      try {
+        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        verifyOk = !!verify?.valid
+        if (!verifyOk) {
+          toast.error(verify?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+        }
+      } catch (err: any) {
+        toast.error(err?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+        verifyOk = false
+      }
+      if (!verifyOk) {
+        try { await signingApi.rollbackInitiate(documentId, { counterparty_id: selectedSignerId, operation_id }) } catch {}
         return
       }
 
-      await ecpApi.signComplete(documentId, { operation_id, cms: cmsBase64 })
+      const opVerify = await ecpApi.signVerify(documentId, { operation_id, cms: cmsBase64, tax_id: taxId })
+      if (!opVerify?.valid || opVerify?.status !== 'VERIFIED') {
+        toast.error(locale === 'kz' ? 'Операция тексеру қатесі' : 'Ошибка серверной верификации операции')
+        try {
+          await signingApi.rollbackInitiate(documentId, { counterparty_id: selectedSignerId, operation_id })
+        } catch {}
+        return
+      }
 
+
+      if (signersPayload.length > 0) {
+        await ecpApi.addSigners(documentId, signersPayload)
+      }
       await ecpApi.sendForSigning(documentId)
 
       const d = await ecpApi.getDocumentDetails(documentId)
