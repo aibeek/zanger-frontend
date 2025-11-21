@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
-import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi } from '@/shared/api'
+import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi, signingApi } from '@/shared/api'
 import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { useLoginStore } from '@/features/auth'
 import { API_URL } from '@/shared/config'
@@ -97,12 +97,19 @@ export default function EcpCreateDocumentPage() {
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error(locale === 'kz' ? 'NCALayer қосыңыз' : 'Подключите NCALayer'); return }
     try {
-      // 1) Добавить подписантов: текущий подписант (stage 1) + контрагенты (stage 2)
-      const signersPayload: any[] = []
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
         toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
         return
       }
+
+      const signerItem = signatories.find((s) => s.id === selectedSignerId)
+      const taxId = signerItem?.iin_bin?.trim()
+      if (!taxId) {
+        toast.error(locale === 'kz' ? 'Қол қоюшыда ИИН/БИН жоқ' : 'У выбранного подписанта отсутствует ИИН/БИН')
+        return
+      }
+
+      const signersPayload: any[] = []
       signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
       selectedCounterparties.forEach((cp) => {
         signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 2 })
@@ -111,27 +118,19 @@ export default function EcpCreateDocumentPage() {
         await ecpApi.addSigners(documentId, signersPayload)
       }
 
-      // 2) Отправить на подпись одной операцией
-      await ecpApi.sendForSigning(documentId)
-      const latest = await ecpApi.getDocumentDetails(documentId)
-      setDetails(latest)
-
-      // 3) Инициализировать подпись для текущего пользователя
       const init = await ecpApi.signInitiate(documentId, 'SIGN_CMS')
       const { operation_id, challenge } = init
-
-      // 4) Подписать challenge через NCALayer
       const cmsBase64 = await signChallengeBase64(challenge)
 
-      // 5) Верифицировать подпись на сервере
-      const verifyRes = await ecpApi.signVerify(documentId, { operation_id, cms: cmsBase64 })
-      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
-        toast.error(locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи')
+      const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+      if (!verify?.valid) {
+        toast.error(verify?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
         return
       }
 
-      // 6) Завершить подпись: записать подпись и обновить статусы
       await ecpApi.signComplete(documentId, { operation_id, cms: cmsBase64 })
+
+      await ecpApi.sendForSigning(documentId)
 
       const d = await ecpApi.getDocumentDetails(documentId)
       setDetails(d)

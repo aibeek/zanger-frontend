@@ -4,7 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import { useTranslations, useLocale } from 'next-intl'
-import { ecpApi, counterpartiesApi } from '@/shared/api'
+import { ecpApi, counterpartiesApi, signingApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
@@ -196,11 +196,19 @@ export default function EcpDraftsPage() {
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
-      const signersPayload: any[] = []
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
         toast.error('Сначала выберите подписанта')
         return
       }
+
+      const signer = findCounterpartyById(selectedSignerId)
+      const taxId = signer?.iin_bin?.trim()
+      if (!taxId) {
+        toast.error('У выбранного подписанта отсутствует ИИН/БИН')
+        return
+      }
+
+      const signersPayload: any[] = []
       signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
       if (selectedCounterpartyId) {
         const cp = findCounterpartyById(selectedCounterpartyId)
@@ -212,16 +220,21 @@ export default function EcpDraftsPage() {
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
-      await ecpApi.sendForSigning(selectedId)
-      const latest = await ecpApi.getDocumentDetails(selectedId)
+
       const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
-      const cmsBase64 = await signChallengeBase64(init.challenge)
-      const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms: cmsBase64 })
-      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
-        toast.error('Ошибка проверки подписи')
+      const { operation_id, challenge } = init
+      const cmsBase64 = await signChallengeBase64(challenge)
+
+      const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+      if (!verify?.valid) {
+        toast.error(verify?.message || 'Ошибка проверки подписи')
         return
       }
-      await ecpApi.signComplete(selectedId, { operation_id: init.operation_id, cms: cmsBase64 })
+
+      await ecpApi.signComplete(selectedId, { operation_id, cms: cmsBase64 })
+
+      await ecpApi.sendForSigning(selectedId)
+
       const d = await ecpApi.getDocumentDetails(selectedId)
       await mutateDetails(d, false)
       toast.success('Подписано и отправлено')
