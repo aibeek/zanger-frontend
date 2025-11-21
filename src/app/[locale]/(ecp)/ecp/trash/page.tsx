@@ -149,7 +149,12 @@ export default function EcpTrashPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
-                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                        {((details.log || []).filter((l: any) => {
+                          const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code)
+                          const labelStr = String(l.label || '')
+                          const labelExcluded = /версия/i.test(labelStr) && /qr/i.test(labelStr)
+                          return !(codeExcluded || labelExcluded)
+                        })).map((l: any, i: number, arr: any[]) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                               <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
