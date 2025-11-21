@@ -6,7 +6,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
-import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi } from '@/shared/api'
+import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi, signingApi } from '@/shared/api'
 import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { useLoginStore } from '@/features/auth'
 import { API_URL } from '@/shared/config'
@@ -97,41 +97,57 @@ export default function EcpCreateDocumentPage() {
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error(locale === 'kz' ? 'NCALayer қосыңыз' : 'Подключите NCALayer'); return }
     try {
-      // 1) Добавить подписантов: текущий подписант (stage 1) + контрагенты (stage 2)
-      const signersPayload: any[] = []
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
         toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
         return
       }
-      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
-      selectedCounterparties.forEach((cp) => {
-        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 2 })
-      })
-      if (signersPayload.length > 0) {
-        await ecpApi.addSigners(documentId, signersPayload)
-      }
 
-      // 2) Отправить на подпись одной операцией
-      await ecpApi.sendForSigning(documentId)
-      const latest = await ecpApi.getDocumentDetails(documentId)
-      setDetails(latest)
-
-      // 3) Инициализировать подпись для текущего пользователя
-      const init = await ecpApi.signInitiate(documentId, 'SIGN_CMS')
-      const { operation_id, challenge } = init
-
-      // 4) Подписать challenge через NCALayer
-      const cmsBase64 = await signChallengeBase64(challenge)
-
-      // 5) Верифицировать подпись на сервере
-      const verifyRes = await ecpApi.signVerify(documentId, { operation_id, cms: cmsBase64 })
-      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
-        toast.error(locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи')
+      const signerItem = signatories.find((s) => s.id === selectedSignerId)
+      const taxId = signerItem?.iin_bin?.trim()
+      if (!taxId) {
+        toast.error(locale === 'kz' ? 'Қол қоюшыда ИИН/БИН жоқ' : 'У выбранного подписанта отсутствует ИИН/БИН')
         return
       }
 
-      // 6) Завершить подпись: записать подпись и обновить статусы
-      await ecpApi.signComplete(documentId, { operation_id, cms: cmsBase64 })
+      const signersPayload: any[] = []
+      selectedCounterparties.forEach((cp) => {
+        signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
+      })
+
+      const init = await ecpApi.signInitiate(documentId, 'SIGN_CMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
+      const { operation_id, challenge } = init
+      const cmsBase64 = await signChallengeBase64(challenge)
+
+      let verifyOk = false
+      try {
+        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        verifyOk = !!verify?.valid
+        if (!verifyOk) {
+          toast.error(verify?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+        }
+      } catch (err: any) {
+        toast.error(err?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+        verifyOk = false
+      }
+      if (!verifyOk) {
+        try { await signingApi.rollbackInitiate(documentId, { counterparty_id: selectedSignerId, operation_id }) } catch {}
+        return
+      }
+
+      const opVerify = await ecpApi.signVerify(documentId, { operation_id, cms: cmsBase64, tax_id: taxId })
+      if (!opVerify?.valid || opVerify?.status !== 'VERIFIED') {
+        toast.error(locale === 'kz' ? 'Операция тексеру қатесі' : 'Ошибка серверной верификации операции')
+        try {
+          await signingApi.rollbackInitiate(documentId, { counterparty_id: selectedSignerId, operation_id })
+        } catch {}
+        return
+      }
+
+
+      if (signersPayload.length > 0) {
+        await ecpApi.addSigners(documentId, signersPayload)
+      }
+      await ecpApi.sendForSigning(documentId)
 
       const d = await ecpApi.getDocumentDetails(documentId)
       setDetails(d)
@@ -464,7 +480,12 @@ export default function EcpCreateDocumentPage() {
               <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
-                  {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                  {((details.log || []).filter((l: any) => {
+                    const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code)
+                    const labelStr = String(l.label || '')
+                    const labelExcluded = /версия/i.test(labelStr) && /qr/i.test(labelStr)
+                    return !(codeExcluded || labelExcluded)
+                  })).map((l: any, i: number, arr: any[]) => (
                     <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>

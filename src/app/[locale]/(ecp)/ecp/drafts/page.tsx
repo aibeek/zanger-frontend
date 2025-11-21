@@ -4,7 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import { useTranslations, useLocale } from 'next-intl'
-import { ecpApi, counterpartiesApi } from '@/shared/api'
+import { ecpApi, counterpartiesApi, signingApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
@@ -12,6 +12,7 @@ import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type DocItem = {
   id: number
@@ -109,6 +110,11 @@ export default function EcpDraftsPage() {
   const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [isPreviewLoading, setIsPreviewLoading] = React.useState(false)
+  const [previewError, setPreviewError] = React.useState<string | null>(null)
+  const [previewName, setPreviewName] = React.useState<string | null>(null)
 
   const eventLabel = (code: string) => {
     if (code === 'DOCUMENT_CREATED') return 'Создан'
@@ -141,7 +147,7 @@ export default function EcpDraftsPage() {
       if (iso.endsWith('+00:00')) iso = iso.replace('+00:00', 'Z')
       const d = new Date(iso)
       return new Intl.DateTimeFormat('ru-RU', {
-        timeZone: 'Asia/Almaty',
+        timeZone: 'UTC',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -190,32 +196,62 @@ export default function EcpDraftsPage() {
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
-      const signersPayload: any[] = []
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
         toast.error('Сначала выберите подписанта')
         return
       }
-      signersPayload.push({ counterparty_id: selectedSignerId, role: 'SIGNER', stage_no: 1 })
+
+      const signer = findCounterpartyById(selectedSignerId)
+      const taxId = signer?.iin_bin?.trim()
+      if (!taxId) {
+        toast.error('У выбранного подписанта отсутствует ИИН/БИН')
+        return
+      }
+
+      const signersPayload: any[] = []
       if (selectedCounterpartyId) {
         const cp = findCounterpartyById(selectedCounterpartyId)
         if (!cp?.user_id) {
           toast.error('Контрагент не привязан к пользователю — не появится во входящих')
         }
-        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 2 })
+        signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
       }
+
+      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
+      const { operation_id, challenge } = init
+      const cmsBase64 = await signChallengeBase64(challenge)
+
+      let verifyOk = false
+      try {
+        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        verifyOk = !!verify?.valid
+        if (!verifyOk) {
+          toast.error(verify?.message || 'Ошибка проверки подписи')
+        }
+      } catch (err: any) {
+        toast.error(err?.message || 'Ошибка проверки подписи')
+        verifyOk = false
+      }
+      if (!verifyOk) {
+        try { await signingApi.rollbackInitiate(selectedId, { counterparty_id: selectedSignerId, operation_id }) } catch {}
+        return
+      }
+
+      const opVerify = await ecpApi.signVerify(selectedId, { operation_id, cms: cmsBase64, tax_id: taxId })
+      if (!opVerify?.valid || opVerify?.status !== 'VERIFIED') {
+        toast.error('Ошибка серверной верификации операции')
+        try {
+          await signingApi.rollbackInitiate(selectedId, { counterparty_id: selectedSignerId, operation_id })
+        } catch {}
+        return
+      }
+
+
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
       await ecpApi.sendForSigning(selectedId)
-      const latest = await ecpApi.getDocumentDetails(selectedId)
-      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
-      const cmsBase64 = await signChallengeBase64(init.challenge)
-      const verifyRes = await ecpApi.signVerify(selectedId, { operation_id: init.operation_id, cms: cmsBase64 })
-      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
-        toast.error('Ошибка проверки подписи')
-        return
-      }
-      await ecpApi.signComplete(selectedId, { operation_id: init.operation_id, cms: cmsBase64 })
+
       const d = await ecpApi.getDocumentDetails(selectedId)
       await mutateDetails(d, false)
       toast.success('Подписано и отправлено')
@@ -290,7 +326,7 @@ export default function EcpDraftsPage() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
                   </div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {new Date(doc.created_at).toLocaleDateString()} · Подписанты: {doc.signers_count}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата создания: {formatAt(doc.created_at)} · Подписанты: {doc.signers_count}</div>
                 </div>
               </div>
             ))}
@@ -336,7 +372,12 @@ export default function EcpDraftsPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
-                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                        {((details.log || []).filter((l: any) => {
+                          const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code)
+                          const labelStr = String(l.label || '')
+                          const labelExcluded = /версия/i.test(labelStr) && /qr/i.test(labelStr)
+                          return !(codeExcluded || labelExcluded)
+                        })).map((l: any, i: number, arr: any[]) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                               <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
@@ -378,7 +419,30 @@ export default function EcpDraftsPage() {
                             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 6 }}>
                               <span style={{ fontSize: 14 }}>{f.file_name}</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <button onClick={() => {}} style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }} title="Посмотреть">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      if (disabled) { toast.error('Файл недоступен для просмотра'); return }
+                                      setPreviewName(f.file_name || null)
+                                      setPreviewError(null)
+                                      setPreviewUrl(null)
+                                      setIsPreviewLoading(true)
+                                      const token = authService.ensureToken()
+                                      const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                                      if (!res.ok) throw new Error('Ошибка загрузки файла')
+                                      const blob = await res.blob()
+                                      const url = URL.createObjectURL(blob)
+                                      setPreviewUrl(url)
+                                      openPreview()
+                                    } catch (e: any) {
+                                      setPreviewError(e?.message || 'Не удалось открыть файл')
+                                    } finally {
+                                      setIsPreviewLoading(false)
+                                    }
+                                  }}
+                                  style={{ background: '#fff', border: '1px solid #e5e7eb', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', opacity: disabled ? 0.6 : 1 }}
+                                  title="Посмотреть"
+                                >
                                   <Image src="/assets/ecp/document-file/see.svg" alt="see" width={18} height={18} />
                                 </button>
                                 <button
@@ -487,6 +551,18 @@ export default function EcpDraftsPage() {
           }
         }}
       />
+
+      <Modal isOpen={isPreviewOpen} onClose={() => { if (previewUrl) { URL.revokeObjectURL(previewUrl); setPreviewUrl(null) } closePreview() }} title={previewName || 'Просмотр файла'} closeButton>
+        {isPreviewLoading ? (
+          <div style={{ padding: 12 }}>Загрузка файла…</div>
+        ) : previewError ? (
+          <div style={{ padding: 12, color: '#ef4444' }}>{previewError}</div>
+        ) : previewUrl ? (
+          <iframe src={previewUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+        ) : (
+          <div style={{ padding: 12, color: '#666' }}>Файл отсутствует</div>
+        )}
+      </Modal>
 
       <ConfirmModal
         isOpen={confirmDeleteId !== null}

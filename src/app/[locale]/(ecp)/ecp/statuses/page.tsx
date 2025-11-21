@@ -3,8 +3,9 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Button, Input, Checkbox } from '@/shared/ui-kit'
-import { counterpartiesApi, type CounterpartyPayload } from '@/shared/api/counterpartiesApi'
+import { counterpartiesApi, type CounterpartyPayload, signingApi } from '@/shared/api/ecp'
 import { useLoginStore } from '@/features/auth/login'
+import { ncalayerUtils } from '@/shared/lib/ncalayer'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
 
@@ -39,8 +40,10 @@ export default function EcpStatusesPage() {
   const [bank, setBank] = React.useState('')
 
   const [items, setItems] = React.useState<Counterparty[]>([])
+  const [matches, setMatches] = React.useState<Counterparty[]>([])
   const personalData = useLoginStore((s) => s.personalData)
   const [loading, setLoading] = React.useState(false)
+  const [verificationStep, setVerificationStep] = React.useState<'idle' | 'generating' | 'signing' | 'verifying' | 'success' | 'error'>('idle')
   const [editId, setEditId] = React.useState<number | null>(null)
   // Убираем режим открытия панели для ЮЛ — форма всегда сверху
 
@@ -81,10 +84,67 @@ export default function EcpStatusesPage() {
     setPhone('')
     setBank('')
     setEditId(null)
+    setVerificationStep('idle')
   }
 
   const startAdd = () => {
     resetForm()
+  }
+
+  /**
+   * Получение текста состояния верификации
+   */
+  const getVerificationStatusText = (): string => {
+    switch (verificationStep) {
+      case 'generating':
+        return 'Генерация челленджа...'
+      case 'signing':
+        return 'Ожидание подписания через NCALayer...'
+      case 'verifying':
+        return 'Проверка подписи...'
+      case 'success':
+        return 'Верификация успешна ✓'
+      case 'error':
+        return 'Ошибка верификации ✗'
+      default:
+        return ''
+    }
+  }
+
+  /**
+   * Генерация челленджа для подписания
+   */
+  const generateChallenge = (taxId: string, type: string): string => {
+    const now = new Date().toISOString()
+    const nonce = Math.random().toString(36).substring(2, 15)
+    const data = {
+      taxId,
+      type,
+      timestamp: now,
+      nonce,
+      purpose: 'COUNTERPARTY_VERIFICATION',
+    }
+    return btoa(JSON.stringify(data))
+  }
+
+  /**
+   * Подписание челленджа через NCALayer
+   */
+  const signChallengeWithNCALayer = async (challenge: string): Promise<string> => {
+    try {
+      setVerificationStep('signing')
+      // Проверяем доступность NCALayer
+      const isAvailable = await ncalayerUtils.isNCALayerAvailable()
+      if (!isAvailable) {
+        throw new Error('NCALayer не доступен')
+      }
+
+      // Подписываем челлендж
+      const signature = await ncalayerUtils.signData(challenge)
+      return signature
+    } catch (error) {
+      throw new Error(`Ошибка при подписании: ${error.message}`)
+    }
   }
 
   const onAddOrSave = async () => {
@@ -96,18 +156,67 @@ export default function EcpStatusesPage() {
     // Тип контрагента строго соответствует активной вкладке
     const type = active
 
-    const payload: CounterpartyPayload = {
-      name: name || t('unknownName'),
-      iin_bin: iinbin,
-      type,
-      email: email || undefined,
-      phone: phone || undefined,
-      legal_address: legalAddress || undefined,
-      bank_details: bank || undefined,
-    }
-
     try {
       setLoading(true)
+
+      // Для новых записей (не редактирование) требуется верификация ЭЦП
+      if (!editId) {
+        // Проверяем доступность NCALayer перед началом процесса
+        try {
+          const isAvailable = await ncalayerUtils.isNCALayerAvailable()
+          if (!isAvailable) {
+            toast.error('NCALayer не доступен. Пожалуйста, установите и запустите NCALayer.')
+            return
+          }
+        } catch (ncaError) {
+          toast.error('Ошибка при проверке NCALayer: ' + ncaError.message)
+          return
+        }
+
+        setVerificationStep('generating')
+        // Генерируем челлендж
+        const challenge = generateChallenge(iinbin, type)
+        
+        try {
+          // Подписываем челлендж через NCALayer
+          const signature = await signChallengeWithNCALayer(challenge)
+          
+          setVerificationStep('verifying')
+          // Верифицируем подпись с ИИН/БИН
+          const verification = await signingApi.verifyWithTaxId({
+            tax_id: iinbin,
+            cms: signature,
+            challenge: challenge,
+          })
+          
+          if (!verification.valid) {
+            setVerificationStep('error')
+            toast.error(verification.message || 'Верификация ЭЦП не удалась')
+            return
+          }
+          
+          setVerificationStep('success')
+          toast.success('ЭЦП верификация успешна')
+        } catch (verificationError) {
+          setVerificationStep('error')
+          toast.error(`Ошибка верификации ЭЦП: ${verificationError.message}`)
+          return
+        } finally {
+          // Всегда сбрасываем состояние верификации после завершения
+          setTimeout(() => setVerificationStep('idle'), 3000)
+        }
+      }
+
+      const payload: CounterpartyPayload = {
+        name: name || t('unknownName'),
+        iin_bin: iinbin,
+        type,
+        email: email || undefined,
+        phone: phone || undefined,
+        legal_address: legalAddress || undefined,
+        bank_details: bank || undefined,
+      }
+
       if (editId) {
         const updated = await counterpartiesApi.update(editId, payload)
         setItems((prev) =>
@@ -155,9 +264,10 @@ export default function EcpStatusesPage() {
           }
         }
         const created = await counterpartiesApi.storeMine(payload)
+        const createdAny = created as any
+        const createdId = Number(createdAny?.item?.id ?? createdAny?.id ?? Math.max(0, ...items.map((i) => i.id)) + 1)
         const createdItem: Counterparty = {
-          // @ts-expect-error server may return id
-          id: created?.id ?? Math.max(0, ...items.map((i) => i.id)) + 1,
+          id: createdId,
           name: payload.name,
           type: payload.type,
           region: (created as any)?.legal_address || payload.legal_address || '—',
@@ -172,6 +282,7 @@ export default function EcpStatusesPage() {
 
       resetForm()
     } catch (e: any) {
+      setVerificationStep('error')
       toast.error(e?.message || t('errors.requestFailed'))
     } finally {
       setLoading(false)
@@ -245,6 +356,87 @@ export default function EcpStatusesPage() {
     load()
   }, [personalData?.id])
 
+  React.useEffect(() => {
+    const fetchMatches = async () => {
+      try {
+        const res = await counterpartiesApi.getMatchesForMe()
+        const items = Array.isArray((res as any)?.items)
+          ? (res as any).items
+          : Array.isArray(res as any)
+          ? (res as any)
+          : []
+        const mapped: Counterparty[] = items.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          type: (d.type || 'UL') as 'UL' | 'IP' | 'FL',
+          region: d.legal_address || '—',
+          iinbin: d.iin_bin || d.iin || '',
+          email: d.email || '',
+          phone: d.phone || '',
+          bank: d.bank_details || '',
+        }))
+        setMatches(mapped)
+      } catch (_) {
+        // тихо игнорируем
+      }
+    }
+    fetchMatches()
+  }, [])
+
+  const activeMatches = React.useMemo(() => {
+    const arr = matches.filter((m) => m.type === active)
+    return arr.sort((a, b) => {
+      const byName = (a.name || '').localeCompare(b.name || '')
+      if (byName !== 0) return byName
+      return (a.iinbin || '').localeCompare(b.iinbin || '')
+    })
+  }, [matches, active])
+
+  const confirmMatch = async (activeMatch: Counterparty) => {
+    try {
+      setLoading(true)
+      setVerificationStep('generating')
+      const challenge = generateChallenge(activeMatch.iinbin, activeMatch.type)
+      const signature = await signChallengeWithNCALayer(challenge)
+      setVerificationStep('verifying')
+      const verification = await signingApi.verifyWithTaxId({
+        tax_id: activeMatch.iinbin,
+        cms: signature,
+        challenge,
+      })
+      if (!verification.valid) {
+        setVerificationStep('error')
+        toast.error(verification.message || 'Верификация ЭЦП не удалась')
+        return
+      }
+      setVerificationStep('success')
+      await counterpartiesApi.update(activeMatch.id, {
+        user_id: personalData?.id,
+        is_active: true,
+        is_verified: true,
+      })
+      toast.success('Контрагент подтвержден и привязан к вашему профилю')
+
+      // Обновляем локальные списки: удаляем из матчей и добавляем в items
+      setMatches((prev) => prev.filter((m) => m.id !== activeMatch.id))
+      setItems((prev) => {
+        const next = prev.filter((i) => !(i.type !== 'UL' && i.type === activeMatch.type))
+        return [
+          {
+            ...activeMatch,
+          },
+          ...next,
+        ]
+      })
+    } catch (e: any) {
+      setVerificationStep('error')
+      toast.error(e?.message || 'Ошибка подтверждения контрагента')
+    } finally {
+      setLoading(false)
+      setTimeout(() => setVerificationStep('idle'), 3000)
+    }
+  }
+
   const renderForm = (type: 'FL' | 'IP' | 'UL') => (
     <section className={s.card}>
       <div className={s.formHeader}>
@@ -264,8 +456,13 @@ export default function EcpStatusesPage() {
       </div>
 
       <div className={s.actions}>
-        <Button onClick={onAddOrSave} loading={loading}>
-          {editId ? t('saveButton') : (type === 'UL' ? t('signAndAdd') : t('saveButton'))}
+        {verificationStep !== 'idle' && (
+          <div className={s.verificationStatus}>
+            {getVerificationStatusText()}
+          </div>
+        )}
+        <Button onClick={onAddOrSave} loading={loading} disabled={verificationStep === 'signing'}>
+          {editId ? t('saveButton') : t('signAndAdd')}
         </Button>
       </div>
     </section>
@@ -331,6 +528,32 @@ export default function EcpStatusesPage() {
             </table>
           </div>
         </section>
+
+        {/* Уведомления о найденных записях для текущего типа */}
+        {activeMatches.length > 0 && (
+          <div className={s.content}>
+            {activeMatches.map((m) => (
+              <section key={m.id} className={s.noticeCard}>
+                <div className={s.noticeTitle}>Найдена запись, совпадающая с вашими данными</div>
+                <div className={s.noticeList}>
+                  <div className={s.noticeItem}>{`Тип: ${typeLabels[m.type]}`}</div>
+                  <div className={s.noticeItem}>{`Наименование: ${m.name}`}</div>
+                  <div className={s.noticeItem}>{`ИИН/БИН: ${m.iinbin}`}</div>
+                  <div className={s.noticeItem}>{`Email: ${m.email || '—'}`}</div>
+                  <div className={s.noticeItem}>{`Телефон: ${m.phone || '—'}`}</div>
+                </div>
+                <div className={s.noticeActions}>
+                  {verificationStep !== 'idle' && (
+                    <div className={s.verificationStatus}>{getVerificationStatusText()}</div>
+                  )}
+                  <Button onClick={() => confirmMatch(m)} loading={loading} disabled={verificationStep === 'signing'}>
+                    Подтвердить
+                  </Button>
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
