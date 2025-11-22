@@ -8,6 +8,7 @@ import { authService } from '@/features/auth'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
+import { Modal, useModal } from '@/shared/ui-kit'
 
 type ListItem = { id: number; title: string; status: string; created_at: string; description?: string }
 
@@ -39,6 +40,11 @@ export default function EcpTrashPage() {
   const [confirmRestoreOpen, setConfirmRestoreOpen] = React.useState(false)
   const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
+  const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
+  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null)
+  const [isPreviewLoading, setIsPreviewLoading] = React.useState(false)
+  const [previewError, setPreviewError] = React.useState<string | null>(null)
+  const [previewName, setPreviewName] = React.useState<string | null>(null)
 
   const toggle = (id: number) => {
     setSelected((prev) => {
@@ -101,7 +107,7 @@ export default function EcpTrashPage() {
                 </div>
                 <div style={{ padding: 8 }}>
                   <div style={{ fontSize: 15, fontWeight: 600 }}>{doc.title}</div>
-                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {String(doc.created_at).split(' ')[0]}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
+                  <div style={{ color: '#666', fontSize: 12, marginTop: 4 }}>Дата: {formatAt(doc.created_at)}{doc.description ? ` · № ${String(doc.description)}` : ''}</div>
                 </div>
               </div>
             ))}
@@ -143,7 +149,12 @@ export default function EcpTrashPage() {
                     <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12 }}>
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
-                        {((details.log || []).filter((l: any) => !['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code))).map((l: any, i: number, arr: any[]) => (
+                        {((details.log || []).filter((l: any) => {
+                          const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED', 'SIGN_INIT_ROLLBACK'].includes(l.event_code)
+                          const labelStr = String(l.label || '')
+                          const labelExcluded = /версия/i.test(labelStr) && /qr/i.test(labelStr)
+                          return !(codeExcluded || labelExcluded)
+                        })).map((l: any, i: number, arr: any[]) => (
                           <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', alignItems: 'start', gap: 10 }}>
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                               <div style={{ width: 34, height: 34, borderRadius: 9999, background: '#2563eb', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>{i + 1}</div>
@@ -180,7 +191,34 @@ export default function EcpTrashPage() {
                         const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
                         return (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button onClick={() => {}} style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Посмотреть">
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const f = (details.files || [])[0] || null
+                                  const rawId = f ? (f.storage_object_id ?? (f as any).object_id ?? f.document_file_id) : null
+                                  const fileId = typeof rawId === 'string' ? parseInt(rawId as any, 10) : rawId
+                                  const disabled = !(typeof fileId === 'number' && isFinite(fileId as any) && (fileId as any) > 0)
+                                  if (disabled) { toast.error('Файл недоступен для просмотра'); return }
+                                  setPreviewName(f?.file_name || null)
+                                  setPreviewError(null)
+                                  setPreviewUrl(null)
+                                  setIsPreviewLoading(true)
+                                  const token = authService.ensureToken()
+                                  const res = await fetch(`${API_URL}/storage/${fileId}/download`, { headers: { Authorization: `Bearer ${token}` } })
+                                  if (!res.ok) throw new Error('Ошибка загрузки файла')
+                                  const blob = await res.blob()
+                                  const url = URL.createObjectURL(blob)
+                                  setPreviewUrl(url)
+                                  openPreview()
+                                } catch (e: any) {
+                                  setPreviewError(e?.message || 'Не удалось открыть файл')
+                                } finally {
+                                  setIsPreviewLoading(false)
+                                }
+                              }}
+                              style={{ background: '#e5e7eb', border: 'none', padding: 8, borderRadius: 8, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                              title="Посмотреть"
+                            >
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M1 12s4-8 11-8 11 8-11 8-11-8-11-8z" transform="translate(1)" />
                                 <circle cx="12" cy="12" r="3" />
@@ -281,6 +319,18 @@ export default function EcpTrashPage() {
         }
       }}
     />
+
+    <Modal isOpen={isPreviewOpen} onClose={() => { if (previewUrl) { URL.revokeObjectURL(previewUrl); setPreviewUrl(null) } closePreview() }} title={previewName || 'Просмотр файла'} closeButton>
+      {isPreviewLoading ? (
+        <div style={{ padding: 12 }}>Загрузка файла…</div>
+      ) : previewError ? (
+        <div style={{ padding: 12, color: '#ef4444' }}>{previewError}</div>
+      ) : previewUrl ? (
+        <iframe src={previewUrl} style={{ width: 820, height: 620, border: 'none', borderRadius: 8 }} />
+      ) : (
+        <div style={{ padding: 12, color: '#666' }}>Файл отсутствует</div>
+      )}
+    </Modal>
     </>
   )
 }

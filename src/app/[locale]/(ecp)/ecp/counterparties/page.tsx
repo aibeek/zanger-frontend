@@ -3,7 +3,7 @@
 import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Button, Input, Checkbox } from '@/shared/ui-kit'
-import { counterpartiesApi, type CounterpartyPayload } from '@/shared/api/counterpartiesApi'
+import { counterpartiesApi, type CounterpartyPayload } from '@/shared/api/ecp'
 import { useLoginStore } from '@/features/auth/login'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
@@ -107,9 +107,10 @@ export default function CounterpartiesPage() {
         toast.success(t('messages.updated'))
       } else {
         const created = await counterpartiesApi.store(payload)
+        const createdAny = created as any
+        const createdId = Number(createdAny?.item?.id ?? createdAny?.id ?? Math.max(0, ...items.map(i => i.id)) + 1)
         const createdItem: Counterparty = {
-          // @ts-expect-error server may return id
-          id: created?.id ?? Math.max(0, ...items.map(i => i.id)) + 1,
+          id: createdId,
           name: payload.name,
           type: payload.type,
           region: (created as any)?.legal_address || payload.legal_address || '—',

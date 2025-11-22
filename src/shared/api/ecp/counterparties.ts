@@ -1,6 +1,6 @@
-import { API_URL } from '../config'
-import { httpClientWithAuth } from './httpClient'
-import { createQuery } from '../lib/helpers/query'
+import { API_URL } from '../../config'
+import { httpClientWithAuth } from '../httpClient'
+import { createQuery } from '../../lib/helpers/query'
 
 export type CounterpartyTypeCode = 'UL' | 'IP' | 'FL'
 
@@ -13,10 +13,11 @@ export interface CounterpartyPayload {
   legal_address?: string
   bank_details?: string
   user_id?: number | null
+  is_active?: boolean
+  is_verified?: boolean
 }
 
 export const counterpartiesApi = {
-  // Backend expects `query` param; support both but map to `query`
   search: (params?: { query?: string; q?: string; page?: number; limit?: number }) => {
     const effectiveParams = {
       ...(params || {}),
@@ -37,13 +38,17 @@ export const counterpartiesApi = {
       method: 'GET',
     }),
 
+  getMatchesForMe: () =>
+    httpClientWithAuth(`${API_URL}/counterparties/matches/mine`, {
+      method: 'GET',
+    }),
+
   store: (payload: CounterpartyPayload) =>
     httpClientWithAuth(`${API_URL}/counterparties`, {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
 
-  // Create counterparty entry specifically for "My Statuses" section
   storeMine: (payload: CounterpartyPayload) =>
     httpClientWithAuth(`${API_URL}/counterparties/mine`, {
       method: 'POST',
