@@ -150,7 +150,7 @@ export default function EcpTrashPage() {
                       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>История</div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 10, maxHeight: 420, overflow: 'auto', paddingRight: 8 }}>
                         {((details.log || []).filter((l: any) => {
-                          const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED'].includes(l.event_code)
+                          const codeExcluded = ['SIGN_OPERATION_CREATED', 'SIGN_VERIFY_SUCCESS', 'SIGN_VERIFY_FAILED', 'SIGN_INIT_ROLLBACK'].includes(l.event_code)
                           const labelStr = String(l.label || '')
                           const labelExcluded = /версия/i.test(labelStr) && /qr/i.test(labelStr)
                           return !(codeExcluded || labelExcluded)
