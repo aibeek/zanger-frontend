@@ -119,8 +119,8 @@ export default function EcpDraftsPage() {
   const eventLabel = (code: string) => {
     if (code === 'DOCUMENT_CREATED') return 'Создан'
     if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
-    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
-    if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен на подписание'
+    if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
     if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
     if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
     if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
@@ -223,10 +223,10 @@ export default function EcpDraftsPage() {
 
       let verifyOk = false
       try {
-        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        const verify = await ecpApi.signVerify(selectedId, { operation_id, cms: cmsBase64, tax_id: taxId })
         verifyOk = !!verify?.valid
         if (!verifyOk) {
-          toast.error(verify?.message || 'Ошибка проверки подписи')
+          toast.error('Ошибка проверки подписи')
         }
       } catch (err: any) {
         toast.error(err?.message || 'Ошибка проверки подписи')
@@ -386,8 +386,10 @@ export default function EcpDraftsPage() {
                             <div>
                               <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
                               {(() => {
-                                const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
-                                return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
+                              const displayLabel = (new Set(['DOCUMENT_SENT_FOR_SIGNATURE', 'DOCUMENT_ROUTED']).has(String(l.event_code)))
+                                ? eventLabel(l.event_code)
+                                : ((l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code))
+                              return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
                               })()}
                               {(() => {
                                 const name = l.subject_fio || l.actor?.fio || ''

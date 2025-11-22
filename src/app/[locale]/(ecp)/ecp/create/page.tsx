@@ -47,14 +47,27 @@ export default function EcpCreateDocumentPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files[0]) {
-      setFile(files[0])
+      const f = files[0]
+      const isPdf = (f.type && f.type.toLowerCase() === 'application/pdf') || /\.pdf$/i.test(f.name)
+      if (!isPdf) {
+        toast.error('Разрешён только PDF')
+        e.target.value = ''
+        return
+      }
+      setFile(f)
     }
   }
 
   const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault()
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
+      const f = e.dataTransfer.files[0]
+      const isPdf = (f.type && f.type.toLowerCase() === 'application/pdf') || /\.pdf$/i.test(f.name)
+      if (!isPdf) {
+        toast.error('Разрешён только PDF')
+        return
+      }
+      setFile(f)
     }
   }
 
@@ -98,7 +111,7 @@ export default function EcpCreateDocumentPage() {
     if (!ok) { toast.error(locale === 'kz' ? 'NCALayer қосыңыз' : 'Подключите NCALayer'); return }
     try {
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
-        toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
+        toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз(Тіркелген статустан таңдаңыз)' : 'Сначала выберите подписанта(Выберите из вашего статуса)')
         return
       }
 
@@ -120,10 +133,10 @@ export default function EcpCreateDocumentPage() {
 
       let verifyOk = false
       try {
-        const verify = await signingApi.verifyWithTaxId({ tax_id: taxId, cms: cmsBase64, challenge })
+        const verify = await ecpApi.signVerify(documentId, { operation_id, cms: cmsBase64, tax_id: taxId })
         verifyOk = !!verify?.valid
         if (!verifyOk) {
-          toast.error(verify?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
+          toast.error(locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи')
         }
       } catch (err: any) {
         toast.error(err?.message || (locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи'))
@@ -286,7 +299,7 @@ export default function EcpCreateDocumentPage() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            accept="application/pdf,.pdf"
             style={{ display: 'none' }}
             onChange={handleFileSelect}
           />
@@ -351,7 +364,7 @@ export default function EcpCreateDocumentPage() {
               disabled={signatories.length === 0}
             >
               <option value="" disabled>
-                {locale === 'kz' ? 'Подписантты таңдаңыз' : 'Выберите подписанта'}
+                {locale === 'kz' ? 'Подписантты таңдаңыз(Тіркелген статустан таңдаңыз)' : 'Выберите подписанта(Выберите из вашего статуса)'}
               </option>
               {signatories.map((sItem) => (
                 <option key={sItem.id} value={sItem.id}>
@@ -494,7 +507,9 @@ export default function EcpCreateDocumentPage() {
                       <div>
                         <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
                         {(() => {
-                          const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
+                          const displayLabel = (new Set(['DOCUMENT_SENT_FOR_SIGNATURE', 'DOCUMENT_ROUTED']).has(String(l.event_code)))
+                            ? eventLabel(l.event_code)
+                            : ((l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code))
                           return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
                         })()}
                         {(() => {
@@ -561,8 +576,8 @@ export default function EcpCreateDocumentPage() {
 const eventLabel = (code: string) => {
   if (code === 'DOCUMENT_CREATED') return 'Создан'
   if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
-  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
-  if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен на подписание'
+  if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
   if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
   if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
   if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'

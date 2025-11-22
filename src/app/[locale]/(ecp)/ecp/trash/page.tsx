@@ -170,8 +170,10 @@ export default function EcpTrashPage() {
                             <div>
                               <div style={{ fontSize: 12, color: '#666' }}>{formatAt(l.created_at)}</div>
                               {(() => {
-                                const displayLabel = (l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code)
-                                return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
+                              const displayLabel = (new Set(['DOCUMENT_SENT_FOR_SIGNATURE', 'DOCUMENT_ROUTED']).has(String(l.event_code)))
+                                ? eventLabel(l.event_code)
+                                : ((l.label && !/^[A-Z_]+$/.test(String(l.label))) ? l.label : eventLabel(l.event_code))
+                              return <div style={{ fontWeight: 700, marginTop: 2 }}>{displayLabel}</div>
                               })()}
                               {(() => {
                                 const name = l.subject_fio || l.actor?.fio || ''
@@ -338,8 +340,8 @@ export default function EcpTrashPage() {
 const eventLabel = (code: string) => {
   if (code === 'DOCUMENT_CREATED') return 'Создан'
   if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
-  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен'
-  if (code === 'DOCUMENT_ROUTED') return 'Маршрутизирован'
+  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен на подписание'
+  if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
   if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
   if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
   if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'

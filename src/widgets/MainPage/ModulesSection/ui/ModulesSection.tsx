@@ -37,7 +37,7 @@ export const ModulesSection = () => {
     if (isEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
-        router.push(`/${locale}/ecp/create`)
+        router.push(`/${locale}/ecp/statuses`)
       } else {
         router.push(`/${locale}/auth/login`)
       }
