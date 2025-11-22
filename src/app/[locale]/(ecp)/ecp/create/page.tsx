@@ -47,14 +47,27 @@ export default function EcpCreateDocumentPage() {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (files && files[0]) {
-      setFile(files[0])
+      const f = files[0]
+      const isPdf = (f.type && f.type.toLowerCase() === 'application/pdf') || /\.pdf$/i.test(f.name)
+      if (!isPdf) {
+        toast.error('Разрешён только PDF')
+        e.target.value = ''
+        return
+      }
+      setFile(f)
     }
   }
 
   const handleDrop: React.DragEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault()
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFile(e.dataTransfer.files[0])
+      const f = e.dataTransfer.files[0]
+      const isPdf = (f.type && f.type.toLowerCase() === 'application/pdf') || /\.pdf$/i.test(f.name)
+      if (!isPdf) {
+        toast.error('Разрешён только PDF')
+        return
+      }
+      setFile(f)
     }
   }
 
@@ -286,7 +299,7 @@ export default function EcpCreateDocumentPage() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            accept="application/pdf,.pdf"
             style={{ display: 'none' }}
             onChange={handleFileSelect}
           />
