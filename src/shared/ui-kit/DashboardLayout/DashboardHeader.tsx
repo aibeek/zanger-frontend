@@ -70,7 +70,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
-            router.push(`/${language}/ecp/create`)
+            router.push(`/${language}/ecp/statuses`)
             return
         }
         setIsModalOpen(true)
