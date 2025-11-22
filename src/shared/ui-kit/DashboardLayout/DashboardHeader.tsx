@@ -58,11 +58,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     }
 
     const sections = [
+        t('dashboard.footer.sections.digitalSignature'),
+        t('dashboard.sidebar.vcMyConferences'),
         t('dashboard.footer.sections.forum'),
         t('dashboard.footer.sections.database'),
         t('dashboard.footer.sections.seminars'),
-        t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.sidebar.vcMyConferences'),
         t('dashboard.footer.sections.documentManagement')
     ]
 
