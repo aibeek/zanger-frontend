@@ -1,4 +1,5 @@
-.wrapper {
+@use "sass:math";
+ .wrapper {
 	position: relative;
 	overflow: hidden;
 
@@ -643,9 +644,9 @@ $duration-desktop: 56s; // увеличено для лучшего рассто
 $duration-tablet: 48s;  // увеличено для лучшего расстояния
 $duration-mobile: 40s;  // увеличено для лучшего расстояния
 
-$step-desktop: $duration-desktop / $cards-count; // 3.5s
-$step-tablet: $duration-tablet / $cards-count;   // 3s
-$step-mobile: $duration-mobile / $cards-count;   // 2.5s
+$step-desktop: math.div($duration-desktop, $cards-count);
+$step-tablet: math.div($duration-tablet, $cards-count);
+$step-mobile: math.div($duration-mobile, $cards-count);
 
 @for $i from 1 through $cards-count {
 	$index-offset: $i - 1;
