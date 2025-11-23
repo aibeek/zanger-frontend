@@ -31,15 +31,17 @@ const nextConfig: NextConfig = {
 							typeof loader === 'object' &&
 							loader?.loader?.includes('sass-loader')
 						) {
-							loader.options = {
-								...loader.options,
-								additionalData: `
-									@use "@/app/styles/vars.scss" as *;
-								`,
-								sassOptions: {
-									includePaths: [path.join(__dirname, 'src')],
-								},
-							}
+                            loader.options = {
+                                ...loader.options,
+                                additionalData: `
+                                    @use "@/app/styles/vars.scss" as *;
+                                `,
+                                sassOptions: {
+                                    includePaths: [path.join(__dirname, 'src')],
+                                    silenceDeprecations: ['legacy-js-api'],
+                                    quietDeps: true,
+                                },
+                            }
 						}
 					})
 				}
