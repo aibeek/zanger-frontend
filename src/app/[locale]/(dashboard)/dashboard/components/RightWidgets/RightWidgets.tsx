@@ -7,6 +7,7 @@ import { useLoginStore } from '@/features/auth/login'
 import { Modal, Button } from '@/shared/ui-kit'
 import Image from 'next/image'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
+import { API_URL } from '@/shared/config'
 import s from './RightWidgets.module.scss'
 
 export const RightWidgets = () => {
@@ -19,7 +20,7 @@ export const RightWidgets = () => {
     const [currentMonth, setCurrentMonth] = useState<string>('')
     const { personalData } = useLoginStore()
     const [isScheduleOpen, setIsScheduleOpen] = useState(false)
-    const [scheduleType, setScheduleType] = useState<'Консультация' | 'Вебинар' | 'Совещание'>('Консультация')
+    const [scheduleType, setScheduleType] = useState<'consultation' | 'meeting'>('consultation')
     const [topic, setTopic] = useState('')
     const [plannedDate, setPlannedDate] = useState('')
     const [plannedTime, setPlannedTime] = useState('')
@@ -27,7 +28,7 @@ export const RightWidgets = () => {
     const [scheduledCode, setScheduledCode] = useState<string>('')
     const [scheduledLink, setScheduledLink] = useState<string>('')
     const [scheduledData, setScheduledData] = useState<any | null>(null)
-    const BASE = 'https://api.zanger-app.kz/api/livekit'
+    const BASE = `${API_URL}/livekit`
     
     const monthNames = [
         'january', 'february', 'march', 'april', 'may', 'june',
@@ -50,6 +51,12 @@ export const RightWidgets = () => {
         setCurrentMonth(m || '')
     }, [mounted, locale, t])
 
+    useEffect(() => {
+        const handler = () => setIsScheduleOpen(true)
+        window.addEventListener('open-vc-schedule', handler as any)
+        return () => window.removeEventListener('open-vc-schedule', handler as any)
+    }, [])
+
 
     const onCopy = async (text: string) => {
         try { await navigator.clipboard.writeText(text) } catch {}
@@ -65,12 +72,13 @@ export const RightWidgets = () => {
                 user_id: uid,
                 type: scheduleType,
                 topic,
-                planned_time: `${plannedDate} ${plannedTime}:00`,
+                planned_date: plannedDate,
+                planned_time_value: plannedTime,
             }
             const d = await httpClientWithAuth<any>(`${BASE}/schedule`, { method: 'POST', body: JSON.stringify(payload) })
             setScheduledData(d)
             if (d.code) setScheduledCode(d.code)
-            if (d.code) setScheduledLink(`https://app.zanger-app.kz/video/${encodeURIComponent(d.code)}`)
+            if (d.conference_id) setScheduledLink(`https://zanger-app.kz/ru/dashboard/video-conference/${encodeURIComponent(d.conference_id)}`)
             try {
                 const item = {
                     conference_id: String(d.conference_id || ''),
@@ -79,8 +87,8 @@ export const RightWidgets = () => {
                     url: String(d.url || ''),
                     identity: String(d.identity || ''),
                     canPublish: Boolean(d.canPublish),
-                    planned_time: String(d.planned_time || `${plannedDate}T${plannedTime}:00`),
-                    link: `https://app.zanger-app.kz/video/${encodeURIComponent(d.code || '')}`,
+                    planned_time: String(d.planned_time || `${plannedDate} ${plannedTime}:00`),
+                    link: `https://zanger-app.kz/ru/dashboard/video-conference/${encodeURIComponent(d.conference_id || '')}`,
                     topic,
                     type: scheduleType,
                     user_name: (personalData as any)?.name || '',
@@ -213,71 +221,7 @@ export const RightWidgets = () => {
                             <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
                         </button>
                     </div>
-                    {scheduledData && (
-                        <div className={s.apiSection}>
-                            <div className={s.apiTitle}>Данные API</div>
-                            <div className={s.apiRows}>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>conference_id</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput} ${s.apiMono}`} readOnly value={scheduledData?.conference_id || ''} />
-                                        <button className={s.copyBtn} onClick={() => onCopy(scheduledData?.conference_id || '')} aria-label="Копировать" disabled={!scheduledData?.conference_id}>
-                                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>code</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput} ${s.apiMono}`} readOnly value={scheduledData?.code || ''} />
-                                        <button className={s.copyBtn} onClick={() => onCopy(scheduledData?.code || '')} aria-label="Копировать" disabled={!scheduledData?.code}>
-                                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>token</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput} ${s.apiMono}`} readOnly value={scheduledData?.token || ''} />
-                                        <button className={s.copyBtn} onClick={() => onCopy(scheduledData?.token || '')} aria-label="Копировать" disabled={!scheduledData?.token}>
-                                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>url</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput} ${s.apiMono}`} readOnly value={scheduledData?.url || ''} />
-                                        <button className={s.copyBtn} onClick={() => onCopy(scheduledData?.url || '')} aria-label="Копировать" disabled={!scheduledData?.url}>
-                                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>identity</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput}`} readOnly value={scheduledData?.identity || ''} />
-                                        <button className={s.copyBtn} onClick={() => onCopy(scheduledData?.identity || '')} aria-label="Копировать" disabled={!scheduledData?.identity}>
-                                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                                        </button>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>planned_time</div>
-                                    <div className={s.apiValue}>
-                                        <input className={`${s.input} ${s.apiInput}`} readOnly value={scheduledData?.planned_time || ''} />
-                                        <div></div>
-                                    </div>
-                                </div>
-                                <div className={s.apiRow}>
-                                    <div className={s.apiLabel}>canPublish</div>
-                                    <div>
-                                        <span className={s.apiPill}>{typeof scheduledData?.canPublish === 'boolean' ? String(scheduledData?.canPublish) : ''}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    
                         <div className={s.formActions}>
                             <Button variant="secondary" onClick={() => setIsScheduleOpen(false)}>Отменить</Button>
                             <Button variant="primary" disabled={scheduling} onClick={onSchedule}>{scheduling ? '...' : 'Запланировать'}</Button>

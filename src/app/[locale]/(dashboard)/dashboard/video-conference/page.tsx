@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/shared/ui-kit'
 import { RightWidgets } from '../components/RightWidgets'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
+import { API_URL } from '@/shared/config'
 import { useLoginStore } from '@/features/auth/login'
 import s from './page.module.scss'
 
@@ -31,10 +32,7 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'https://api.zanger-app.kz/api/livekit'
-  const [joinMode, setJoinMode] = useState<'manual' | 'api'>('manual')
-  const [manualUrl, setManualUrl] = useState('wss://video.zanger-app.kz')
-  const [manualToken, setManualToken] = useState('')
+  const BASE = `${API_URL}/livekit`
   const [scheduledList, setScheduledList] = useState<Array<{ code: string; link: string; topic: string; type: string; planned_time: string; user_name?: string }>>([])
   const [mounted, setMounted] = useState(false)
   const [cameraOn, setCameraOn] = useState(false)
@@ -55,9 +53,11 @@ export default function VideoConferencePage() {
 
   function extractConferenceId(input: string) {
     const trimmed = (input || '').trim()
-    const m = trimmed.match(/video\/(\w[\w-]+)/i)
+    const m = trimmed.match(/video-conference\/([0-9a-fA-F-]{36})$/)
     if (m && m[1]) return m[1]
-    return trimmed
+    const isUuid = /^[0-9a-fA-F-]{36}$/.test(trimmed)
+    if (isUuid) return trimmed
+    return ''
   }
 
   function handleCodeChange(v: string) {
@@ -67,20 +67,23 @@ export default function VideoConferencePage() {
   }
 
   function handleCodeSubmit() {
-    if (!conferenceId) {
+    if (conferenceId) {
+      joinRoom()
+      return
+    }
+    const raw = (codeInput || '').trim()
+    if (!raw) {
       setError('Введите код конференции или ссылку')
       return
     }
-    setJoinMode('api')
-    joinRoom()
+    findConferenceAndJoin(raw)
   }
 
   function handleCreateClick() {
-    if (!conferenceId) {
-      setError('Введите код конференции или ссылку')
-      return
-    }
-    createRoom()
+    try {
+      const ev = new CustomEvent('open-vc-schedule')
+      window.dispatchEvent(ev)
+    } catch {}
   }
 
   useEffect(() => {
@@ -121,7 +124,6 @@ export default function VideoConferencePage() {
     const cid = String(it.conference_id || it.code || '')
     if (!cid) return
     setConferenceId(cid)
-    setJoinMode('api')
     joinRoom()
   }
 
@@ -199,9 +201,63 @@ export default function VideoConferencePage() {
       setConnectedInfo({ room: room.name, is_member: canPublish, topic: tp, identity })
 
     } catch (e: any) {
-      setError(e?.message || 'Ошибка подключения')
+      setError(e?.message || 'Не удалось получить токен, попробуйте позже')
     } finally {
       setJoining(false)
+    }
+  }
+
+  async function goLive() {
+    try {
+      const uid = Number(userId || (personalData as any)?.id || 0)
+      const now = new Date()
+      const yyyy = now.getFullYear()
+      const mm = String(now.getMonth() + 1).padStart(2, '0')
+      const dd = String(now.getDate()).padStart(2, '0')
+      const hh = String(now.getHours()).padStart(2, '0')
+      const mi = String(now.getMinutes()).padStart(2, '0')
+      const payload = { user_id: uid, type: 'meeting', topic: '', planned_date: `${yyyy}-${mm}-${dd}`, planned_time_value: `${hh}:${mi}` }
+      const d = await httpClientWithAuth<any>(`${BASE}/schedule`, { method: 'POST', body: JSON.stringify(payload) })
+      setConferenceId(String(d.conference_id || ''))
+      try {
+        const item = {
+          conference_id: String(d.conference_id || ''),
+          code: String(d.code || ''),
+          token: String(d.token || ''),
+          url: String(d.url || ''),
+          identity: String(d.identity || ''),
+          canPublish: Boolean(d.canPublish),
+          planned_time: String(d.planned_time || `${yyyy}-${mm}-${dd} ${hh}:${mi}:00`),
+          link: `https://zanger-app.kz/ru/dashboard/video-conference/${String(d.conference_id || '')}`,
+          topic: '',
+          type: 'meeting',
+          user_name: (personalData as any)?.name || '',
+        }
+        const key = 'vc_scheduled'
+        const prev = JSON.parse(localStorage.getItem(key) || '[]')
+        localStorage.setItem(key, JSON.stringify([item, ...prev]))
+      } catch {}
+      await joinRoom()
+    } catch (e: any) {
+      setError(e?.message || 'Ошибка LiveKit, повторите попытку')
+    }
+  }
+
+  async function addMember() {
+    if (!conferenceId || !kickUserId) return
+    try {
+      const res = await httpClientWithAuth<any>(`${BASE}/members/add`, { method: 'POST', body: JSON.stringify({ conference_id: conferenceId, user_id: Number(kickUserId) }) })
+      if (res?.error) {
+        const msg = res?.type ? 'Добавление доступно только для консультаций и совещаний' : String(res.error)
+        setError(msg)
+      } else if (res?.already_member) {
+        setError('Участник уже добавлен')
+      } else if (res?.ok) {
+        setError(null)
+      }
+      await loadParticipants()
+    } catch (e: any) {
+      setError(e?.message || 'Ошибка LiveKit, повторите попытку')
     }
   }
 
@@ -229,58 +285,20 @@ export default function VideoConferencePage() {
     } catch {}
   }
 
-  async function joinByToken() {
-    if (!manualUrl || !manualToken) {
-      setError('Введите Server URL и Token')
-      return
-    }
-    setError(null)
-    setJoining(true)
+  async function findConferenceAndJoin(raw: string) {
     try {
-      await ensureLiveKit()
-      const LKC = (window as any).LivekitClient || (window as any).LiveKit
-      const { Room, RoomEvent, Track } = LKC
-      const room = new Room()
-      roomRef.current = room
-      room.on(RoomEvent.TrackSubscribed, (track: any) => {
-        const el = track.attach()
-        el.autoplay = true
-        el.playsInline = true
-        remoteContainerRef.current?.appendChild(el)
-      })
-      room.on(RoomEvent.TrackUnsubscribed, track => {
-        track.detach().forEach((el: any) => el.remove())
-      })
-      await room.connect(manualUrl, manualToken)
-      try {
-        await room.localParticipant.setCameraEnabled(true)
-        await room.localParticipant.setMicrophoneEnabled(true)
-        const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
-        if (camPub?.videoTrack && videoRef.current) {
-          camPub.videoTrack.attach(videoRef.current)
-        }
-      } catch {}
-      setConnectedInfo({ room: room.name, is_member: true })
+      const qs = new URLSearchParams({ limit: '50' }).toString()
+      const res = await httpClientWithAuth<any>(`${BASE}/conferences?${qs}`, { method: 'GET' })
+      const items = Array.isArray(res?.items) ? res.items : []
+      const found = items.find((it: any) => String(it.code || '').trim() === raw)
+      if (!found) {
+        setError('Проверьте ссылку/UUID или обновите список запланированных')
+        return
+      }
+      setConferenceId(String(found.id))
+      joinRoom()
     } catch (e: any) {
-      setError(e?.message || 'Ошибка подключения по токену')
-    } finally {
-      setJoining(false)
-    }
-  }
-
-  async function createRoom() {
-    if (!conferenceId) {
-      setError('Введите conference_id')
-      return
-    }
-    setError(null)
-    try {
-      await httpClientWithAuth(`${BASE}/rooms`, {
-        method: 'POST',
-        body: JSON.stringify({ conference_id: conferenceId }),
-      })
-    } catch (e: any) {
-      setError(e?.message || 'Ошибка создания комнаты')
+      setError(e?.message || 'Ошибка LiveKit, повторите попытку')
     }
   }
 
@@ -339,7 +357,7 @@ export default function VideoConferencePage() {
         </div>
 
         <div className={s.actionBar}>
-          <button className={`${s.pill} ${s.pillRed}`}> 
+          <button className={`${s.pill} ${s.pillRed}`} onClick={goLive}> 
             <span className={s.pillIconLive}></span>
             <span className={s.pillText}>Запустить эфир</span>
           </button>
@@ -411,64 +429,39 @@ export default function VideoConferencePage() {
 
 
         <div className={s.placeholder}>
-          {!connectedInfo ? (
-            <div className={s.joinForm}>
-              <div className={s.segmented}>
-                <button className={joinMode === 'manual' ? s.segmentActive : s.segment} onClick={() => setJoinMode('manual')}>Войти по токену</button>
-                <button className={joinMode === 'api' ? s.segmentActive : s.segment} onClick={() => setJoinMode('api')}>Войти через API</button>
-              </div>
-
-              {joinMode === 'manual' ? (
-                <>
-                  <div className={s.fieldRow}>
-                    <div className={s.field}>
-                      <label>Server URL</label>
-                      <input type="text" value={manualUrl} onChange={e => setManualUrl(e.target.value)} />
-                    </div>
-                    <div className={s.field}>
-                      <label>Token</label>
-                      <input type="text" value={manualToken} onChange={e => setManualToken(e.target.value)} />
-                    </div>
-                  </div>
-                  <div className={s.fieldRow}>
-                    <Button variant="primary" disabled={joining} onClick={joinByToken}>{joining ? 'Подключение...' : 'Войти'}</Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className={s.fieldRow}>
-                    <div className={s.field}>
-                      <label>conference_id (UUID)</label>
-                      <input type="text" value={conferenceId} onChange={e => setConferenceId(e.target.value)} />
-                    </div>
-                    {!isLawyer && (
-                      <div className={s.field}>
-                        <label>user_id (число)</label>
-                        <input type="number" value={userId} onChange={e => setUserId(e.target.value)} />
-                      </div>
-                    )}
-                  </div>
-                  <div className={s.fieldRow}>
-                    <Button variant="secondary" onClick={createRoom}>Создать комнату</Button>
-                    <Button variant="primary" disabled={joining} onClick={joinRoom}>{joining ? 'Подключение...' : 'Войти в комнату'}</Button>
-                  </div>
-                </>
-              )}
-
-              {error && <div className={s.error}>{error}</div>}
-            </div>
-          ) : (
+          {connectedInfo && (
             <div className={s.videoContainer}>
               <video ref={videoRef} autoPlay muted playsInline />
               <div ref={remoteContainerRef} className={s.remoteGrid}></div>
 
-              <div className={s.status}>Комната: {connectedInfo.room} • Участник: {String(connectedInfo.is_member)} • Identity: {connectedInfo.identity} • Тема: {connectedInfo.topic}</div>
-              {debug && (
-                <div className={s.status}>Server: {debug.url} • Token: {debug.tokenLen} символов • Публикация: {String(debug.canPublish)}</div>
-              )}
+              
               <div className={s.actions}>
                 <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? 'Выключить камеру' : 'Включить камеру'}</Button>
                 <Button variant="secondary" onClick={toggleMic}>{micOn ? 'Выключить микрофон' : 'Включить микрофон'}</Button>
+              </div>
+
+              <div className={s.participantsPanel}>
+                <div className={s.fieldRow}>
+                  <Button variant="secondary" onClick={loadParticipants}>Список участников</Button>
+                </div>
+                {participants.length > 0 && (
+                  <div className={s.participantsList}>
+                    {participants.map((p: any, idx: number) => (
+                      <div key={idx} className={s.participantItem}>
+                        <span>{String(p.identity || '')}</span>
+                        <span>{String(p.isPublisher)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className={s.fieldRow}>
+                  <div className={s.field}>
+                    <label>user_id</label>
+                    <input type="number" value={kickUserId} onChange={e => setKickUserId(e.target.value)} />
+                  </div>
+                  <Button variant="secondary" onClick={addMember}>Добавить участника</Button>
+                  <Button variant="secondary" onClick={kick}>Исключить участника</Button>
+                </div>
               </div>
 
               {showManagePanel && (
