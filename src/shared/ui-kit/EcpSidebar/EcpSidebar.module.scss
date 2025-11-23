@@ -93,10 +93,13 @@
   justify-content: space-between;
   padding: 8px 12px;
   border-radius: 8px;
+  cursor: pointer;
+  color: #cbd5e1;
 }
 
 .docItem:hover {
   background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .docItemTitle {
