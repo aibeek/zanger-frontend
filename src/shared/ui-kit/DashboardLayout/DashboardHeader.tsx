@@ -73,11 +73,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             router.push(`/${language}/ecp/statuses`)
             return
         }
-        const vcLabel = t('dashboard.sidebar.vcMyConferences')
-        if (label === vcLabel) {
-            router.push(`/${language}/dashboard/video-conference`)
-            return
-        }
         setIsModalOpen(true)
     }
 
