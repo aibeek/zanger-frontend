@@ -52,7 +52,7 @@ export default function VideoConferencePage() {
 
   function extractConferenceId(input: string) {
     const trimmed = (input || '').trim()
-    const m = trimmed.match(/video\/(\w[\w-]+)/i)
+    const m = trimmed.match(/(?:video-conference|vks)\/(\w[\w-]+)/i)
     if (m && m[1]) return m[1]
     return trimmed
   }
@@ -92,6 +92,8 @@ export default function VideoConferencePage() {
     const ts = d.toLocaleTimeString(language === 'kz' ? 'kk-KZ' : 'ru-RU', { hour: '2-digit', minute: '2-digit' })
     return `${ds}, ${ts}`
   }
+
+  
 
   const plannedItems = scheduledList.filter(i => {
     const t = new Date(i.planned_time).getTime()
@@ -207,10 +209,17 @@ export default function VideoConferencePage() {
     }
     setError(null)
     try {
-      await httpClientWithAuth(`${BASE}/rooms`, {
+      const payload = {
+        type: 'consultation',
+        topic: codeInput ? `Встреча: ${codeInput}` : 'Встреча',
+        planned_time: new Date(Date.now() + 60_000).toISOString(),
+        user_id: Number(userId || (personalData as any)?.id || 0),
+      }
+      await httpClientWithAuth(`${BASE}/schedule`, {
         method: 'POST',
-        body: JSON.stringify({ conference_id: conferenceId }),
+        body: JSON.stringify(payload),
       })
+      await loadConferences()
     } catch (e: any) {
       setError(e?.message || 'Ошибка создания комнаты')
     }
@@ -326,7 +335,7 @@ export default function VideoConferencePage() {
                     <td className={s.td} suppressHydrationWarning>{formatDT(it.planned_time)}</td>
                     <td className={s.td}>{it.type}</td>
                     <td className={`${s.td} ${s.rowAction}`}>
-                      <Button variant="primary" className={s.smallBtn} onClick={() => joinScheduled(it)}>Войти</Button>
+                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; setConferenceId(cid); joinRoom(); }}>Войти</Button>
                     </td>
                   </tr>
                 ))}
@@ -344,7 +353,7 @@ export default function VideoConferencePage() {
                   <div className={s.emptyBox}>Пока нет запланированных встреч</div>
                 ) : plannedItems.map((it, idx) => (
                   <div key={`p-${idx}`} className={s.card}>
-                    <div className={s.cardHeader}>{it.user_name || 'Конференция'}</div>
+                    <div className={s.cardHeader}>Конференция</div>
                     <div className={s.cardBody}>
                       <div className={s.cardTitle}>{it.topic || 'Без темы'}</div>
                       <div className={s.cardMeta} suppressHydrationWarning>Дата: {formatDT(it.planned_time)}</div>
