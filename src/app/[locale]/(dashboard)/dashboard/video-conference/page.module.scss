@@ -297,3 +297,14 @@
 .td { color: #334155; }
 .rowAction { text-align: right; }
 .smallBtn { height: 30px; padding: 0 12px; border-radius: 8px; }
+
+/* VC page [id] right panel styles */
+.vcLayoutRow { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+.vcRight { display: grid; gap: 12px; }
+.vcFieldBlock { display: grid; }
+.vcInput { height: 40px; border: 1px solid #cfd8dc; border-radius: 10px; padding: 0 12px; outline: none; }
+.vcInfo { display: grid; gap: 6px; font-size: 14px; color: #0f172a; }
+.vcInfoRow { display: flex; align-items: center; gap: 8px; }
+.vcCopy { width: 24px; height: 24px; border-radius: 6px; border: 1px solid #cfd8dc; background: #fff; cursor: pointer; }
+.vcLink { color: #2563eb; cursor: pointer; text-decoration: underline; }
+.vcActionsRight { display: grid; gap: 10px; }

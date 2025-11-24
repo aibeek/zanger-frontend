@@ -48,7 +48,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             '/dashboard/subscription': 'dashboard.sidebar.subscription',
             '/dashboard/faq': 'dashboard.sidebar.faq',
             '/dashboard/support': 'dashboard.sidebar.support',
-            '/dashboard/video-conference': 'Видео-конференц связь',
+            '/dashboard/video-conference': 'dashboard.sidebar.vcMyConferences',
         }
 
         // Удаляем язык из пути для поиска
@@ -77,7 +77,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     }
 
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
-    const isVideoConferencePage = pathWithoutLang === '/dashboard/video-conference'
+    const isVideoConferencePage = pathWithoutLang.startsWith('/dashboard/video-conference')
 
     const roleCode = (personalData as any)?.role_id?.code
     const roleName = roleCode === 'lawyer' ? 'Юрист' : roleCode === 'client' ? 'Клиент' : ''
