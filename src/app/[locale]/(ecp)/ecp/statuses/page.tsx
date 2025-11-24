@@ -32,6 +32,7 @@ export default function EcpStatusesPage() {
   const t = useTranslations('ecp.statuses')
 
   const [active, setActive] = React.useState<'FL' | 'IP' | 'UL'>('FL')
+  const [showBanner, setShowBanner] = React.useState(true)
   const [name, setName] = React.useState('')
   const [iinbin, setIinbin] = React.useState('')
   const [legalAddress, setLegalAddress] = React.useState('')
@@ -445,9 +446,9 @@ export default function EcpStatusesPage() {
       <div className={s.subtitle}>{t('addSubtitle')}</div>
 
       <div className={s.formGrid}>
-        <Input placeholder={t('fields.name')} value={name} onChange={(e) => setName(e.target.value)} />
+        <Input placeholder={t(type === 'FL' ? 'fields.fullName' : type === 'UL' ? 'fields.orgName' : 'fields.name')} value={name} onChange={(e) => setName(e.target.value)} />
         <Input placeholder={t('fields.email')} value={email} onChange={(e) => setEmail(e.target.value)} />
-        <Input placeholder={t(type === 'FL' ? 'fields.iin' : 'fields.iinbin')} value={iinbin} onChange={(e) => setIinbin(e.target.value)} />
+        <Input placeholder={t(type === 'UL' ? 'fields.bin' : 'fields.iin')} value={iinbin} onChange={(e) => setIinbin(e.target.value)} />
         <Input placeholder={t('fields.phone')} value={phone} onChange={(e) => setPhone(e.target.value)} />
         <Input placeholder={t('fields.legalAddress')} value={legalAddress} onChange={(e) => setLegalAddress(e.target.value)} />
         {type !== 'FL' && (
@@ -477,6 +478,20 @@ export default function EcpStatusesPage() {
       </div>
 
       <div className={s.content}>
+        {showBanner && (
+          <div className={s.infoBanner}>
+            <div className={s.bannerIcon}>ℹ️</div>
+            <div className={s.bannerContent}>
+              <h4 className={s.bannerTitle}>{t('info_banner.title')}</h4>
+              <p className={s.bannerDescription}>{t('info_banner.description1')}</p>
+              <p className={s.bannerDescription}>{t('info_banner.description2')}</p>
+              <p className={s.bannerDescription}>{t('info_banner.description3')}</p>
+            </div>
+            <button className={s.bannerCloseBtn} onClick={() => setShowBanner(false)} aria-label={t('info_banner.hide')}>
+              {t('info_banner.hide')}
+            </button>
+          </div>
+        )}
         {/* Верхняя панель — добавление/редактирование */}
         {renderForm(active)}
 
@@ -498,7 +513,7 @@ export default function EcpStatusesPage() {
                   <th className={`${s.th} ${s.selectCol}`}></th>
                   <th className={s.th}>{t('columns.name')}</th>
                   {active === 'UL' && <th className={s.th}>{t('columns.address')}</th>}
-                  <th className={s.th}>{t(active === 'FL' ? 'columns.iin' : 'columns.iinbin')}</th>
+                  <th className={s.th}>{t(active === 'UL' ? 'columns.bin' : 'columns.iin')}</th>
                   <th className={s.th}>Email</th>
                   <th className={s.th}>{t('columns.phone')}</th>
                 </tr>
@@ -538,7 +553,7 @@ export default function EcpStatusesPage() {
                 <div className={s.noticeList}>
                   <div className={s.noticeItem}>{`Тип: ${typeLabels[m.type]}`}</div>
                   <div className={s.noticeItem}>{`Наименование: ${m.name}`}</div>
-                  <div className={s.noticeItem}>{`ИИН/БИН: ${m.iinbin}`}</div>
+                  <div className={s.noticeItem}>{`${m.type === 'UL' ? t('columns.bin') : t('columns.iin')}: ${m.iinbin}`}</div>
                   <div className={s.noticeItem}>{`Email: ${m.email || '—'}`}</div>
                   <div className={s.noticeItem}>{`Телефон: ${m.phone || '—'}`}</div>
                 </div>
