@@ -37,6 +37,70 @@
   gap: 16px;
 }
 
+.infoBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+  border: 1px solid #BFDBFE;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+  position: relative;
+}
+
+.bannerIcon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.bannerContent {
+  flex: 1;
+  padding-right: 80px;
+}
+
+.bannerTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1E40AF;
+  margin: 0 0 8px 0;
+}
+
+.bannerDescription {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1E3A8A;
+  margin: 0;
+}
+
+.bannerCloseBtn {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: #1E40AF;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.bannerCloseBtn:hover {
+  background: #1E3A8A;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+}
+
+.bannerCloseBtn:active {
+  transform: translateY(0);
+}
+
 .card {
   background: #fff;
   border-radius: 16px;
