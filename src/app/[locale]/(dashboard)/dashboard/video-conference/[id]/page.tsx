@@ -33,6 +33,8 @@ export default function VideoConferenceLinkPage() {
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
   const [conf, setConf] = useState<{ topic?: string; planned_time?: string; code?: string } | null>(null)
+  const [addUserId, setAddUserId] = useState('')
+  const [participants, setParticipants] = useState<any[]>([])
   const personalData = useLoginStore((s) => s.personalData)
 
   useEffect(() => {
@@ -109,6 +111,8 @@ export default function VideoConferenceLinkPage() {
         const el = track.attach()
         el.autoplay = true
         el.playsInline = true
+        ;(el as any).muted = false
+        ;(el as any).play?.().catch(() => {})
         remoteContainerRef.current?.appendChild(el)
       })
 
@@ -199,6 +203,16 @@ export default function VideoConferenceLinkPage() {
               <div className={s.vcInfoRow}>или</div>
               <div className={s.vcInfoRow}>Пригласить по ссылке: <a className={s.vcLink} onClick={() => navigator.clipboard.writeText(String(conf?.code || ''))}>скопировать</a></div>
             </div>
+            {canPublish && (
+              <div className={s.vcInfo}>
+                <div className={s.vcInfoRow}>
+                  <input className={s.vcInput} placeholder="user_id участника" value={addUserId} onChange={e => setAddUserId(e.target.value)} />
+                </div>
+                <div className={s.vcActionsRight}>
+                  <Button variant="secondary" onClick={async () => { try { const body = { conference_id: conferenceId, user_id: Number(addUserId) }; await httpClientWithAuth(`${BASE}/add-member`, { method: 'POST', body: JSON.stringify(body) }); const qs = new URLSearchParams({ conference_id: conferenceId }).toString(); const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); setParticipants(Array.isArray(res?.participants) ? res.participants : []); } catch {} }}>Добавить участника</Button>
+                </div>
+              </div>
+            )}
             <div className={s.vcActionsRight}>
               {canPublish ? (
                 <Button variant="primary" onClick={async () => { try { await httpClientWithAuth(`${BASE}/rooms`, { method: 'POST', body: JSON.stringify({ conference_id: conferenceId }) }); await joinRoom(); } catch (e) {} }}>Запустить прямой эфир</Button>
@@ -207,6 +221,15 @@ export default function VideoConferenceLinkPage() {
               )}
               <Button variant="secondary" onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>Выйти</Button>
             </div>
+            {participants.length > 0 && (
+              <div className={s.participantsList}>
+                {participants.map((p: any, idx: number) => (
+                  <div key={idx} className={s.participantItem}>
+                    <span>{String(p.identity || p.name || '')}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </aside>
         </div>
       </div>
