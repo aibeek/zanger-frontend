@@ -45,6 +45,46 @@
   }
 }
 
+.footerSectionEdo {
+  border: none;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.footerSectionEdo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.footerDocIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  justify-self: center;
+}
+.footerDocSign {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 2px;
+  height: 16px;
+  stroke: #22c55e;
+  stroke-width: 3;
+  fill: none;
+}
+
 .footerArrow {
   font-size: 1rem;
   margin-left: 0.5rem;

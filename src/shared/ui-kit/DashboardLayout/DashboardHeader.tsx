@@ -14,6 +14,7 @@ import monitor from '@/app/assets/icons/monitor.webp'
 import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
 import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
 import Strelka from '@/app/assets/icons/strelka.svg'
+import docIcon from '@/app/assets/icons/document.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -135,15 +136,21 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             <div className={s.footerSections}>
                     {sections.map((section, index) => {
                         const isPilot = section === t('dashboard.sidebar.vcMyConferences')
+                        const isDigital = section === digitalSignatureLabel
                         const label = section === t('dashboard.sidebar.vcMyConferences') ? 'ВКС' : section
                         return (
                         <button 
                             key={index} 
-                            className={s.footerSection}
+                            className={`${s.footerSection} ${isDigital ? s.footerSectionEdo : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
-                            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                                 {label}
+                                {isDigital && (
+                                    <span className={s.footerDocIcon} aria-hidden>
+                                        <Image src={docIcon} alt="doc" width={26} height={26} />
+                                    </span>
+                                )}
                                 {isPilot && <span className={s.pilotPill}>Пилот</span>}
                             </span>
                             <span className={s.footerArrow}>

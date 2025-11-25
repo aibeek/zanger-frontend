@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { Modal, Button } from '@/shared/ui-kit'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
+import docIcon from '@/app/assets/icons/document.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
 import s from './ModulesSection.module.scss'
 import { useRouter } from 'next/navigation'
@@ -33,13 +34,19 @@ export const ModulesSection = () => {
 
   const handleModuleClick = async (module: Module) => {
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
-    const isEcp = normalized.includes('ЭЦП') || normalized.includes('ЭЦҚ') || normalized.includes('ECP')
-    if (isEcp) {
+    const isEdoOrEcp =
+      normalized.includes('ЭДО') ||
+      normalized.includes('EDO') ||
+      normalized.includes('ЭЦП') ||
+      normalized.includes('ЭЦҚ') ||
+      normalized.includes('ECP')
+
+    if (isEdoOrEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
-        router.push(`/${locale}/ecp/statuses`)
+        router.push(`/ru/ecp/statuses`)
       } else {
-        router.push(`/${locale}/auth/login`)
+        router.push(`/ru/auth/login`)
       }
       return
     }
@@ -71,16 +78,29 @@ export const ModulesSection = () => {
                 <h3 className={s.moduleTitle}>{module.title}</h3>
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>
-              <div className={s.moduleIcon}>
-                <div className={s.iconCircle}>
-                  <Image
-                    src={moduleIcon}
-                    alt="Module icon"
-                    width={48}
-                    height={48}
-                  />
-                </div>
-              </div>
+              {(() => {
+                const normalized = module.title.replace(/\s+/g, '').toUpperCase()
+                const isEdo = normalized.includes('ЭДО') || normalized.includes('EDO')
+                if (isEdo) {
+                  return (
+                    <div className={s.moduleIconEdo}>
+                      <div className={s.iconCircleEdo}>
+                        <Image src={docIcon} alt="document" width={36} height={36} />
+                        <svg className={s.signatureMini} viewBox="0 0 64 24" preserveAspectRatio="none">
+                          <path d="M2 14 C 14 4, 28 4, 40 12 S 58 22, 62 10" />
+                        </svg>
+                      </div>
+                    </div>
+                  )
+                }
+                return (
+                  <div className={s.moduleIcon}>
+                    <div className={s.iconCircle}>
+                      <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
+                    </div>
+                  </div>
+                )
+              })()}
             </div>        
           ))}
         </div>
