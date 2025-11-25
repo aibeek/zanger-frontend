@@ -31,7 +31,7 @@ export const DashboardFooter = () => {
     const pathname = usePathname()
     const isKz = pathname.includes('kz')
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
-    const isVideoConferencePage = pathWithoutLang === '/dashboard/video-conference'
+    const isVideoConferencePage = pathWithoutLang.startsWith('/dashboard/video-conference')
     
     // Conditional URLs based on locale
     const policyHref = isKz ? policyKzURL : policyURL
@@ -49,6 +49,10 @@ export const DashboardFooter = () => {
         { name: 'Adilet', icon: HeaderAdilet, url: 'https://adilet.zan.kz/kaz' },
         { name: 'eNotary', icon: HeaderEnotary, url: 'https://enis.kz/?lang=kk' }
     ]
+    
+    if (isVideoConferencePage) {
+        return null
+    }
     
     return (
         <footer className={s.footer}>

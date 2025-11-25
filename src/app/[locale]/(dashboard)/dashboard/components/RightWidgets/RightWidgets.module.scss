@@ -125,9 +125,10 @@
   font-weight: 500;
 }
 .formActions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 24px;
 }
 
 .copyBtn {
@@ -382,7 +383,6 @@
   .formRowTwo { grid-template-columns: 1fr 1fr; }
   .formRowCopy { grid-template-columns: 1fr 32px; gap: 12px; }
   .copyBtn { width: 32px; height: 32px; }
-  .formActions { flex-direction: row; gap: 8px; }
   .calendarActionBtn { padding: 8px 12px; }
 }
 
@@ -396,7 +396,7 @@
 // Collapse to single column only on very narrow screens
 @media (max-width: 480px) {
   .formRowTwo { grid-template-columns: 1fr; }
-  .formActions { flex-direction: column; }
+  .formActions { grid-template-columns: 1fr; }
   .formRowCopy { grid-template-columns: 1fr 32px; }
   .copyBtn { width: 32px; height: 32px; }
 }

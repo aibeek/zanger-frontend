@@ -72,7 +72,7 @@ export default function VideoConferencePage() {
   }
 
   function handleCreateClick() {
-    scheduleConf()
+    router.push(`/${language}/dashboard/video-conference/createmeeting`)
   }
 
   useEffect(() => { loadConferences() }, [])

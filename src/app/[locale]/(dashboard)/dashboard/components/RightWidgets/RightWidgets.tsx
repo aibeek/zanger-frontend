@@ -96,6 +96,7 @@ export const RightWidgets = () => {
                 const key = 'vc_scheduled'
                 const prev = JSON.parse(localStorage.getItem(key) || '[]')
                 localStorage.setItem(key, JSON.stringify([item, ...prev]))
+                window.location.reload()
             } catch {}
         } catch {} finally { setScheduling(false) }
     }
@@ -191,7 +192,7 @@ export const RightWidgets = () => {
             </div> */}
 
             {isVCPage && (
-                <Modal isOpen={isScheduleOpen} onClose={() => setIsScheduleOpen(false)} title="Запланируйте ВКС">
+                <Modal isOpen={isScheduleOpen} onClose={() => setIsScheduleOpen(false)} title="Запланируйте ВКС" closeButton>
                     <div className={s.scheduleForm}>
                         <div className={s.formRow}>
                             <select className={s.input} value={scheduleType} onChange={e => setScheduleType(e.target.value as any)}>

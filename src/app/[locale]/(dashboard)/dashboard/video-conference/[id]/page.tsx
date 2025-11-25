@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter, usePathname, useParams } from 'next/navigation'
+import { useRouter, usePathname, useParams, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import { useTranslations } from 'next-intl'
@@ -14,6 +14,7 @@ export default function VideoConferenceLinkPage() {
   const router = useRouter()
   const pathname = usePathname()
   const params = useParams() as { id?: string }
+  const searchParams = useSearchParams()
   const languageMatch = pathname.match(/^\/(\w{2})\//)
   const language = (languageMatch?.[1] || 'ru') as string
   const t = useTranslations('footer.sections')
@@ -34,15 +35,32 @@ export default function VideoConferenceLinkPage() {
   const [canPublish, setCanPublish] = useState(false)
   const [conf, setConf] = useState<{ topic?: string; planned_time?: string; code?: string } | null>(null)
   const [addUserId, setAddUserId] = useState('')
+  const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
+  const [selectedCam, setSelectedCam] = useState('')
+  const [selectedMic, setSelectedMic] = useState('')
+  const [stream, setStream] = useState<MediaStream | null>(null)
   const [participants, setParticipants] = useState<any[]>([])
-  const personalData = useLoginStore((s) => s.personalData)
+
+  const { personalData } = useLoginStore()
 
   useEffect(() => {
     const role = Cookies.get('role')
     if (role !== 'lawyer') {
       router.replace(`/${language}/dashboard/main`)
     }
+    getDevices()
   }, [router, language])
+
+  async function getDevices() {
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices()
+      setDevices(devs)
+      const cams = devs.filter(d => d.kind === 'videoinput')
+      const mics = devs.filter(d => d.kind === 'audioinput')
+      if (cams.length > 0 && !selectedCam) setSelectedCam(cams[0].deviceId)
+      if (mics.length > 0 && !selectedMic) setSelectedMic(mics[0].deviceId)
+    } catch {}
+  }
 
   useEffect(() => {
     const uid = (personalData as any)?.id
@@ -52,9 +70,31 @@ export default function VideoConferenceLinkPage() {
   useEffect(() => {
     const cid = String(params?.id || '')
     if (cid) setConferenceId(cid)
+    
+    const t = sessionStorage.getItem('meet_topic')
+    if (t) {
+      setConf(prev => ({ ...prev, topic: t }))
+      sessionStorage.removeItem('meet_topic')
+    }
   }, [params])
 
   useEffect(() => { if (conferenceId) { loadConference(); probeMembership(); } }, [conferenceId, userId])
+
+  useEffect(() => {
+    if (conferenceId && userId && !joining && !connectedInfo) {
+      handleAutoStart()
+    }
+  }, [conferenceId, userId])
+
+  async function handleAutoStart() {
+    try {
+      // Ensure room exists
+      await httpClientWithAuth(`${BASE}/rooms`, { method: 'POST', body: JSON.stringify({ conference_id: conferenceId }) })
+      await joinRoom()
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   async function loadConference() {
     try {
@@ -122,6 +162,34 @@ export default function VideoConferenceLinkPage() {
 
       await room.connect(url, token)
 
+      const sVideo = sessionStorage.getItem('meet_video')
+      const sAudio = sessionStorage.getItem('meet_audio')
+      const sCam = sessionStorage.getItem('meet_cam')
+      const sMic = sessionStorage.getItem('meet_mic')
+
+      const autoVideo = sVideo === '1' || searchParams.get('video') === '1'
+      const autoAudio = sAudio === '1' || searchParams.get('audio') === '1'
+      const camId = sCam || searchParams.get('cam')
+      const micId = sMic || searchParams.get('mic')
+
+      // Очищаем, чтобы не влияло на будущие входы
+      sessionStorage.removeItem('meet_video')
+      sessionStorage.removeItem('meet_audio')
+      sessionStorage.removeItem('meet_cam')
+      sessionStorage.removeItem('meet_mic')
+
+      if (camId) setSelectedCam(camId)
+      if (micId) setSelectedMic(micId)
+
+      if (autoVideo) {
+        await room.localParticipant.setCameraEnabled(true, camId ? { deviceId: camId } : undefined)
+        setCameraOn(true)
+      }
+      if (autoAudio) {
+        await room.localParticipant.setMicrophoneEnabled(true, micId ? { deviceId: micId } : undefined)
+        setMicOn(true)
+      }
+
       setConnectedInfo({ room: room.name, is_member: canPublish, topic: tp, identity })
     } catch (e: any) {
       setError(e?.message || 'Ошибка подключения')
@@ -130,20 +198,34 @@ export default function VideoConferenceLinkPage() {
     }
   }
 
+  // Effect to attach local video when camera is turned on
+  useEffect(() => {
+    if (cameraOn && roomRef.current) {
+      // Small timeout to ensure video element is mounted
+      const timer = setTimeout(() => {
+        if (videoRef.current && roomRef.current) {
+          const LKC = (window as any).LivekitClient || (window as any).LiveKit
+          if (!LKC) return
+          const { Track } = LKC
+          const camPub = roomRef.current.localParticipant.getTrackPublication(Track.Source.Camera)
+          if (camPub?.videoTrack) {
+            camPub.videoTrack.attach(videoRef.current)
+          }
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [cameraOn])
+
   // отключено авто-подключение — соответствуем дизайну (кнопка «Присоединиться»/«Запустить прямой эфир»)
 
   async function toggleCamera() {
     try {
       const room = roomRef.current
       if (!room) return
-      await room.localParticipant.setCameraEnabled(!cameraOn)
-      setCameraOn(!cameraOn)
-      const LKC = (window as any).LivekitClient || (window as any).LiveKit
-      const { Track } = LKC
-      const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
-      if (camPub?.videoTrack && videoRef.current) {
-        camPub.videoTrack.attach(videoRef.current)
-      }
+      const newState = !cameraOn
+      await room.localParticipant.setCameraEnabled(newState, newState && selectedCam ? { deviceId: selectedCam } : undefined)
+      setCameraOn(newState)
     } catch {}
   }
 
@@ -151,9 +233,26 @@ export default function VideoConferenceLinkPage() {
     try {
       const room = roomRef.current
       if (!room) return
-      await room.localParticipant.setMicrophoneEnabled(!micOn)
-      setMicOn(!micOn)
+      const newState = !micOn
+      await room.localParticipant.setMicrophoneEnabled(newState, newState && selectedMic ? { deviceId: selectedMic } : undefined)
+      setMicOn(newState)
     } catch {}
+  }
+
+  async function changeMic(deviceId: string) {
+    setSelectedMic(deviceId)
+    if (micOn && roomRef.current) {
+       await roomRef.current.localParticipant.setMicrophoneEnabled(false)
+       await roomRef.current.localParticipant.setMicrophoneEnabled(true, { deviceId })
+    }
+  }
+
+  async function changeCam(deviceId: string) {
+    setSelectedCam(deviceId)
+    if (cameraOn && roomRef.current) {
+       await roomRef.current.localParticipant.setCameraEnabled(false)
+       await roomRef.current.localParticipant.setCameraEnabled(true, { deviceId })
+    }
   }
 
   function leaveRoom() {
@@ -171,66 +270,127 @@ export default function VideoConferenceLinkPage() {
   }
 
   return (
-    <div className={s.container}>
-      <div className={s.content}>
-        <div className={s.titleRow}>
-          <h2><Image src="/assets/icons/myconf.svg" alt={canPublish ? 'Создайте встречу' : 'Вход в конференцию'} width={20} height={20} />{canPublish ? 'Создайте встречу' : 'Вход в конференцию'}</h2>
+    <div className={s.meetingCard}>
+      <div className={s.header}>
+        <Image src="/assets/icons/myconf.svg" alt="" width={24} height={24} />
+        <span className={s.title}>{conf?.topic || 'Конференция'}</span>
+      </div>
+
+      <div className={s.layout}>
+        <div className={s.leftPanel}>
+          <div className={s.videoArea}>
+            {cameraOn && <video ref={videoRef} autoPlay muted playsInline className={s.video} />}
+            {!cameraOn && (
+               <div className={s.videoPlaceholder}>
+                 <Image src="/assets/icons/camera.svg" alt="" width={64} height={64} style={{ opacity: 0.2 }} />
+               </div>
+            )}
+            <div ref={remoteContainerRef} className={s.remoteGrid} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: 10 }}></div>
+          </div>
+
+          <div className={s.deviceControls}>
+             <div className={s.deviceSelect}>
+               <div className={s.selectIcon}>
+                 <Image src="/assets/icons/micro..svg" alt="" width={16} height={16} />
+               </div>
+               <div style={{ flex: 1 }}>
+                 {!micOn ? (
+                   <div className={s.placeholderText} onClick={toggleMic}>Включить микрофон</div>
+                 ) : (
+                   <select className={s.select} value={selectedMic} onChange={e => changeMic(e.target.value)}>
+                     {devices.filter(d => d.kind === 'audioinput').map(d => (
+                       <option key={d.deviceId} value={d.deviceId}>{d.label || 'Microphone'}</option>
+                     ))}
+                     {devices.filter(d => d.kind === 'audioinput').length === 0 && <option>Микрофон (Устройство)</option>}
+                   </select>
+                 )}
+               </div>
+               <div className={`${s.toggle} ${micOn ? s.toggleActive : ''}`} onClick={toggleMic}>
+                 <div className={s.toggleKnob} />
+               </div>
+             </div>
+             <div className={s.deviceSelect}>
+               <div className={s.selectIcon}>
+                 <Image src="/assets/icons/camera.svg" alt="" width={16} height={16} />
+               </div>
+               <div style={{ flex: 1 }}>
+                 {!cameraOn ? (
+                   <div className={s.placeholderText} onClick={toggleCamera}>Включить камеру</div>
+                 ) : (
+                   <select className={s.select} value={selectedCam} onChange={e => changeCam(e.target.value)}>
+                     {devices.filter(d => d.kind === 'videoinput').map(d => (
+                       <option key={d.deviceId} value={d.deviceId}>{d.label || 'Camera'}</option>
+                     ))}
+                     {devices.filter(d => d.kind === 'videoinput').length === 0 && <option>Камера (Устройство)</option>}
+                   </select>
+                 )}
+               </div>
+               <div className={`${s.toggle} ${cameraOn ? s.toggleActive : ''}`} onClick={toggleCamera}>
+                 <div className={s.toggleKnob} />
+               </div>
+             </div>
+          </div>
         </div>
 
-        <div className={s.placeholder}>
-          {connectedInfo ? (
-            <div className={s.videoContainer}>
-              <video ref={videoRef} autoPlay muted playsInline />
-              <div ref={remoteContainerRef} className={s.remoteGrid}></div>
-              <div className={s.actions}>
-                <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? 'Выключить камеру' : 'Включить камеру'}</Button>
-                <Button variant="secondary" onClick={toggleMic}>{micOn ? 'Выключить микрофон' : 'Включить микрофон'}</Button>
+        <div className={s.rightPanel}>
+          <div className={s.infoBlock}>
+            <div className={s.infoRow}>
+              <span>Код конференции:</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span className={s.codeValue}>{conf?.code ? conf.code.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : conferenceId}</span>
+                <button className={s.copyBtn} onClick={() => navigator.clipboard.writeText(conf?.code || conferenceId)}>
+                  <Image src="/assets/icons/copy.svg" alt="copy" width={16} height={16} />
+                </button>
               </div>
             </div>
-          ) : (
-            <div className={s.videoContainer}>
+            <div className={s.infoRow} style={{ justifyContent: 'center', fontSize: 12, color: '#64748b' }}>
+              или
+            </div>
+            <div className={s.infoRow}>
+              <span>Пригласить по ссылке:</span>
+              <span className={s.linkAction} onClick={() => navigator.clipboard.writeText(window.location.href)}>скопировать</span>
+            </div>
+          </div>
+
+          {canPublish && (
+            <div className={s.infoBlock} style={{ marginTop: 20 }}>
+               <input 
+                 className={s.input} 
+                 placeholder="user_id участника" 
+                 value={addUserId} 
+                 onChange={e => setAddUserId(e.target.value)} 
+               />
+               <button className={s.startBtn} onClick={async () => { 
+                    if (!addUserId) return;
+                    try { 
+                      const body = { conference_id: conferenceId, user_id: Number(addUserId) }; 
+                      await httpClientWithAuth(`${BASE}/add-member`, { method: 'POST', body: JSON.stringify(body) }); 
+                      setAddUserId('');
+                      const qs = new URLSearchParams({ conference_id: conferenceId }).toString(); 
+                      const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); 
+                      setParticipants(Array.isArray(res?.participants) ? res.participants : []); 
+                      alert('Участник добавлен');
+                    } catch (e) {
+                      console.error(e);
+                      alert('Ошибка добавления участника');
+                    } 
+                  }}>
+                 Добавить участника
+               </button>
             </div>
           )}
-        </div>
-        <div className={s.vcLayoutRow}>
-          <div></div>
-          <aside className={s.vcRight}>
-            <div className={s.vcFieldBlock}>
-              <input className={s.vcInput} placeholder="Тема конференции" defaultValue={conf?.topic || ''} />
-            </div>
-            <div className={s.vcInfo}>
-              <div className={s.vcInfoRow}>Код конференции: <b>{conferenceId}</b> <button className={s.vcCopy} onClick={() => navigator.clipboard.writeText(conferenceId)} aria-label="copy" /></div>
-              <div className={s.vcInfoRow}>или</div>
-              <div className={s.vcInfoRow}>Пригласить по ссылке: <a className={s.vcLink} onClick={() => navigator.clipboard.writeText(String(conf?.code || ''))}>скопировать</a></div>
-            </div>
-            {canPublish && (
-              <div className={s.vcInfo}>
-                <div className={s.vcInfoRow}>
-                  <input className={s.vcInput} placeholder="user_id участника" value={addUserId} onChange={e => setAddUserId(e.target.value)} />
-                </div>
-                <div className={s.vcActionsRight}>
-                  <Button variant="secondary" onClick={async () => { try { const body = { conference_id: conferenceId, user_id: Number(addUserId) }; await httpClientWithAuth(`${BASE}/add-member`, { method: 'POST', body: JSON.stringify(body) }); const qs = new URLSearchParams({ conference_id: conferenceId }).toString(); const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); setParticipants(Array.isArray(res?.participants) ? res.participants : []); } catch {} }}>Добавить участника</Button>
-                </div>
-              </div>
+
+          <div className={s.actions}>
+            {canPublish ? (
+               <button className={s.exitBtn} style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>
+                 Завершить встречу
+               </button>
+            ) : (
+               <button className={s.exitBtn} onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>
+                 Выйти
+               </button>
             )}
-            <div className={s.vcActionsRight}>
-              {canPublish ? (
-                <Button variant="primary" onClick={async () => { try { await httpClientWithAuth(`${BASE}/rooms`, { method: 'POST', body: JSON.stringify({ conference_id: conferenceId }) }); await joinRoom(); } catch (e) {} }}>Запустить прямой эфир</Button>
-              ) : (
-                <Button variant="primary" onClick={joinRoom}>Присоединиться</Button>
-              )}
-              <Button variant="secondary" onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>Выйти</Button>
-            </div>
-            {participants.length > 0 && (
-              <div className={s.participantsList}>
-                {participants.map((p: any, idx: number) => (
-                  <div key={idx} className={s.participantItem}>
-                    <span>{String(p.identity || p.name || '')}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </aside>
+          </div>
         </div>
       </div>
     </div>

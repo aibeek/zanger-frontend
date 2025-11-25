@@ -78,29 +78,11 @@ export const ModulesSection = () => {
                 <h3 className={s.moduleTitle}>{module.title}</h3>
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>
-              {(() => {
-                const normalized = module.title.replace(/\s+/g, '').toUpperCase()
-                const isEdo = normalized.includes('ЭДО') || normalized.includes('EDO')
-                if (isEdo) {
-                  return (
-                    <div className={s.moduleIconEdo}>
-                      <div className={s.iconCircleEdo}>
-                        <Image src={docIcon} alt="document" width={36} height={36} />
-                        <svg className={s.signatureMini} viewBox="0 0 64 24" preserveAspectRatio="none">
-                          <path d="M2 14 C 14 4, 28 4, 40 12 S 58 22, 62 10" />
-                        </svg>
-                      </div>
-                    </div>
-                  )
-                }
-                return (
-                  <div className={s.moduleIcon}>
-                    <div className={s.iconCircle}>
-                      <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
-                    </div>
-                  </div>
-                )
-              })()}
+              <div className={s.moduleIcon}>
+                <div className={s.iconCircle}>
+                  <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
+                </div>
+              </div>
             </div>        
           ))}
         </div>
