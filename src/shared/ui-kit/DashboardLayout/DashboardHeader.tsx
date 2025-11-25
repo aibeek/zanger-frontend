@@ -134,7 +134,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             
             <div className={s.footerSections}>
                     {sections.map((section, index) => {
-                        const isPilot = section === t('dashboard.footer.sections.digitalSignature') || section === t('dashboard.sidebar.vcMyConferences')
+                        const isPilot = section === t('dashboard.sidebar.vcMyConferences')
                         const label = section === t('dashboard.sidebar.vcMyConferences') ? 'ВКС' : section
                         return (
                         <button 
