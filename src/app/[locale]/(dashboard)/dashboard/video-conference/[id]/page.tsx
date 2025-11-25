@@ -285,7 +285,7 @@ export default function VideoConferenceLinkPage() {
                  <Image src="/assets/icons/camera.svg" alt="" width={64} height={64} style={{ opacity: 0.2 }} />
                </div>
             )}
-            <div ref={remoteContainerRef} className={s.remoteGrid} style={{ position: 'absolute', inset: 0, pointerEvents: 'none', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: 10 }}></div>
+            <div ref={remoteContainerRef} className={s.remoteGrid}></div>
           </div>
 
           <div className={s.deviceControls}>
