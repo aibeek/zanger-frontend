@@ -27,6 +27,7 @@ export default function VideoConferenceLinkPage() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const remoteContainerRef = useRef<HTMLDivElement | null>(null)
+  const audioContainerRef = useRef<HTMLDivElement | null>(null)
 
   const roomRef = useRef<any>(null)
   const BASE = 'https://api.zanger-app.kz/api/livekit'
@@ -153,7 +154,12 @@ export default function VideoConferenceLinkPage() {
         el.playsInline = true
         ;(el as any).muted = false
         ;(el as any).play?.().catch(() => {})
-        remoteContainerRef.current?.appendChild(el)
+        
+        if (track.kind === 'video') {
+          remoteContainerRef.current?.appendChild(el)
+        } else {
+          audioContainerRef.current?.appendChild(el)
+        }
       })
 
       room.on(RoomEvent.TrackUnsubscribed, track => {
@@ -182,12 +188,20 @@ export default function VideoConferenceLinkPage() {
       if (micId) setSelectedMic(micId)
 
       if (autoVideo) {
-        await room.localParticipant.setCameraEnabled(true, camId ? { deviceId: camId } : undefined)
-        setCameraOn(true)
+        try {
+          await room.localParticipant.setCameraEnabled(true, camId ? { deviceId: camId } : undefined)
+          setCameraOn(true)
+        } catch (e) {
+          console.error('Auto video failed', e)
+        }
       }
       if (autoAudio) {
-        await room.localParticipant.setMicrophoneEnabled(true, micId ? { deviceId: micId } : undefined)
-        setMicOn(true)
+        try {
+          await room.localParticipant.setMicrophoneEnabled(true, micId ? { deviceId: micId } : undefined)
+          setMicOn(true)
+        } catch (e) {
+          console.error('Auto audio failed', e)
+        }
       }
 
       setConnectedInfo({ room: room.name, is_member: canPublish, topic: tp, identity })
@@ -224,9 +238,24 @@ export default function VideoConferenceLinkPage() {
       const room = roomRef.current
       if (!room) return
       const newState = !cameraOn
-      await room.localParticipant.setCameraEnabled(newState, newState && selectedCam ? { deviceId: selectedCam } : undefined)
+      
+      if (newState) {
+        try {
+          await room.localParticipant.setCameraEnabled(true, selectedCam ? { deviceId: selectedCam } : undefined)
+        } catch (e) {
+          console.warn('Failed with specific device, trying default', e)
+          await room.localParticipant.setCameraEnabled(true)
+        }
+        // Refresh devices to get labels if this was the first permission grant
+        getDevices()
+      } else {
+        await room.localParticipant.setCameraEnabled(false)
+      }
       setCameraOn(newState)
-    } catch {}
+    } catch (e) {
+      console.error(e)
+      alert('Не удалось получить доступ к камере. Проверьте настройки браузера.')
+    }
   }
 
   async function toggleMic() {
@@ -234,9 +263,23 @@ export default function VideoConferenceLinkPage() {
       const room = roomRef.current
       if (!room) return
       const newState = !micOn
-      await room.localParticipant.setMicrophoneEnabled(newState, newState && selectedMic ? { deviceId: selectedMic } : undefined)
+      
+      if (newState) {
+        try {
+          await room.localParticipant.setMicrophoneEnabled(true, selectedMic ? { deviceId: selectedMic } : undefined)
+        } catch (e) {
+          console.warn('Failed with specific mic, trying default', e)
+          await room.localParticipant.setMicrophoneEnabled(true)
+        }
+        getDevices()
+      } else {
+        await room.localParticipant.setMicrophoneEnabled(false)
+      }
       setMicOn(newState)
-    } catch {}
+    } catch (e) {
+      console.error(e)
+      alert('Не удалось получить доступ к микрофону. Проверьте настройки браузера.')
+    }
   }
 
   async function changeMic(deviceId: string) {
@@ -267,6 +310,9 @@ export default function VideoConferenceLinkPage() {
     if (remoteContainerRef.current) {
       remoteContainerRef.current.innerHTML = ''
     }
+    if (audioContainerRef.current) {
+      audioContainerRef.current.innerHTML = ''
+    }
   }
 
   return (
@@ -286,6 +332,7 @@ export default function VideoConferenceLinkPage() {
                </div>
             )}
             <div ref={remoteContainerRef} className={s.remoteGrid}></div>
+            <div ref={audioContainerRef} style={{ display: 'none' }}></div>
           </div>
 
           <div className={s.deviceControls}>
