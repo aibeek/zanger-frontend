@@ -54,8 +54,35 @@ export async function signXmlFromBase64(xmlDataBase64: string): Promise<string> 
   } catch {
     storageType = (NCALayerClient as any).fileStorageType || 'PKCS12'
   }
-  // Метод должен присутствовать в библиотеке клиента
-  return await (client as any).createXMLSignatureFromBase64(storageType, xmlDataBase64)
+  const decodeBase64Utf8 = (b64: string) => decodeURIComponent(escape(atob(b64)))
+  const xmlString = decodeBase64Utf8(xmlDataBase64)
+  const anyClient = client as any
+  // Предпочитаем commonUtils.signXml — гарантированно возвращает строку
+  if (typeof anyClient.signXml === 'function') {
+    return await anyClient.signXml(storageType, xmlString, 'SIGNATURE', '', '')
+  }
+  // Фолбэк на basicsSign с принудительным возвратом одной подписи
+  const result = await anyClient.basicsSign(
+    (NCALayerClient as any).basicsStorageAll,
+    'xml',
+    xmlString,
+    (NCALayerClient as any).basicsXMLParams,
+    (NCALayerClient as any).basicsSignerSignAny,
+    'ru',
+    true
+  )
+  return Array.isArray(result) ? String(result[0] ?? '') : String(result)
+}
+
+export async function detectSignatureMethod(): Promise<'SIGN_XML' | 'SIGN_CMS'> {
+  try {
+    const client = await connectNca()
+    const anyClient = client as any
+    if (typeof anyClient.basicsSignXML === 'function' || typeof anyClient.signXml === 'function') {
+      return 'SIGN_XML'
+    }
+  } catch {}
+  return 'SIGN_CMS'
 }
 
 export async function isNcaLayerAvailable(): Promise<boolean> {
@@ -71,6 +98,7 @@ export const ncalayerUtils = {
   isNCALayerAvailable: isNcaLayerAvailable,
   signData: signChallengeBase64,
   signXml: signXmlFromBase64,
+  detectSignatureMethod,
 }
 
 export { NCALayerClient }

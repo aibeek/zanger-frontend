@@ -7,7 +7,7 @@ import { Button, Input, Loader } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
 import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi, signingApi } from '@/shared/api'
-import { signChallengeBase64, isNcaLayerAvailable, signXmlFromBase64 } from '@/shared/lib/ncalayer'
+import { signChallengeBase64, isNcaLayerAvailable, signXmlFromBase64, detectSignatureMethod } from '@/shared/lib/ncalayer'
 import { useLoginStore } from '@/features/auth'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
@@ -127,13 +127,14 @@ export default function EcpCreateDocumentPage() {
         signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
       })
 
-      const init = await ecpApi.signInitiate(documentId, 'SIGN_XML', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
+      const method = await detectSignatureMethod()
+      const init = await ecpApi.signInitiate(documentId, method, details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
       const { operation_id, challenge } = init
-      const xmlBase64 = await signXmlFromBase64(challenge)
+      const signature = method === 'SIGN_XML' ? await signXmlFromBase64(challenge) : await signChallengeBase64(challenge)
 
       let verifyOk = false
       try {
-        const verify = await ecpApi.signVerify(documentId, { operation_id, cms: xmlBase64, tax_id: taxId })
+        const verify = await ecpApi.signVerify(documentId, { operation_id, cms: signature, tax_id: taxId })
         verifyOk = !!verify?.valid
         if (!verifyOk) {
           toast.error(locale === 'kz' ? 'Қолтаңбаны тексеру қате' : 'Ошибка проверки подписи')

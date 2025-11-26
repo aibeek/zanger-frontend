@@ -131,7 +131,7 @@ export default function EcpStatusesPage() {
   /**
    * Подписание челленджа через NCALayer
    */
-  const signChallengeWithNCALayer = async (challenge: string): Promise<string> => {
+  const signChallengeWithNCALayer = async (challenge: string): Promise<{ signature: string; method: 'SIGN_XML' | 'SIGN_CMS' }> => {
     try {
       setVerificationStep('signing')
       // Проверяем доступность NCALayer
@@ -141,8 +141,9 @@ export default function EcpStatusesPage() {
       }
 
       // Подписываем челлендж
-      const signature = await ncalayerUtils.signXml(challenge)
-      return signature
+      const method = await ncalayerUtils.detectSignatureMethod()
+      const signature = method === 'SIGN_XML' ? await ncalayerUtils.signXml(challenge) : await ncalayerUtils.signData(challenge)
+      return { signature, method }
     } catch (error) {
       throw new Error(`Ошибка при подписании: ${error.message}`)
     }
@@ -186,7 +187,7 @@ export default function EcpStatusesPage() {
           // Верифицируем подпись с ИИН/БИН
           const verification = await signingApi.verifyWithTaxId({
             tax_id: iinbin,
-            xml: signature,
+            ...(signature.method === 'SIGN_XML' ? { xml: signature.signature } : { cms: signature.signature, challenge }),
           })
           
           if (!verification.valid) {
@@ -401,7 +402,7 @@ export default function EcpStatusesPage() {
       setVerificationStep('verifying')
       const verification = await signingApi.verifyWithTaxId({
         tax_id: activeMatch.iinbin,
-        xml: signature,
+        ...(signature.method === 'SIGN_XML' ? { xml: signature.signature } : { cms: signature.signature, challenge }),
       })
       if (!verification.valid) {
         setVerificationStep('error')
