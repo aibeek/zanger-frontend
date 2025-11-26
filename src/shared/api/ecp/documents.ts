@@ -1,5 +1,6 @@
 import { API_URL } from '../../config'
-import { httpClientWithAuth } from '../httpClient'
+import { authService } from '@/features/auth'
+import { esdcaHttp, encryptId } from '../esdcaCrypto'
 import { createQuery } from '../../lib/helpers/query'
 
 export type EsdcaDocumentCreatePayload = {
@@ -51,14 +52,15 @@ export type StorageUploadMultiResult = {
 
 export const ecpApi = {
   getDocumentTypes: (): Promise<EsdcaDocumentType[]> => {
-    return httpClientWithAuth(`${API_URL}/dictionaries/document-types`, {
+    return esdcaHttp(`${API_URL}/dictionaries/document-types`, {
       method: 'GET',
     })
   },
 
   createDocument: (payload: EsdcaDocumentCreatePayload): Promise<EsdcaCreateResponse> => {
-    return httpClientWithAuth(`${API_URL}/documents`, {
+    return esdcaHttp(`${API_URL}/documents`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
     })
   },
@@ -69,28 +71,28 @@ export const ecpApi = {
     formData.append('file_type', 'MAIN')
     formData.append('file', file)
 
-    return httpClientWithAuth(`${API_URL}/storage/upload`, {
+    return esdcaHttp(`${API_URL}/storage/upload`, {
       method: 'POST',
+      encryptBody: true,
       body: formData,
     })
   },
 
-  getDocumentDetails: (id: number): Promise<EsdcaDocumentDetails> => {
-    return httpClientWithAuth(`${API_URL}/documents/${id}`, {
-      method: 'GET',
-    })
+  getDocumentDetails: async (id: number): Promise<EsdcaDocumentDetails> => {
+    const tokened = await encryptId(id, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'GET' })
   },
 
   listDocuments: (
     params?: { status?: string; inbox?: boolean; outbox?: boolean; page?: number; limit?: number; q?: string }
   ): Promise<{ data: any[]; pagination?: any }> => {
     const query = createQuery(params || {})
-    return httpClientWithAuth(`${API_URL}/documents${query}`, {
+    return esdcaHttp(`${API_URL}/documents${query}`, {
       method: 'GET',
     })
   },
 
-  addSigners: (
+  addSigners: async (
     documentId: number,
     signers: Array<{
       counterparty_id?: number
@@ -103,20 +105,24 @@ export const ecpApi = {
       due_at?: string
     }>
   ): Promise<{ success?: boolean }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/add-signers`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/routing/add-signers`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({ signers }),
     })
   },
 
-  sendForSigning: (documentId: number): Promise<{ success?: boolean }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/send`, {
+  sendForSigning: async (documentId: number): Promise<{ success?: boolean }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/routing/send`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({}),
     })
   },
 
-  firstSign: (
+  firstSign: async (
     documentId: number,
     payload: {
       cms: string
@@ -140,93 +146,112 @@ export const ecpApi = {
       certificate?: string
     }
   ): Promise<{ success?: boolean; status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/routing/first-sign`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/routing/first-sign`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
     })
   },
 
-  signInitiate: (
+  signInitiate: async (
     documentId: number,
     method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_XML',
     options?: { counterparty_id?: number }
   ): Promise<{ operation_id: number; challenge: string }> => {
     const body: any = { method }
     if (options?.counterparty_id) body.counterparty_id = options.counterparty_id
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(body),
     })
   },
 
-  signVerify: (
+  signVerify: async (
     documentId: number,
     payload: { operation_id: number; cms: string; tax_id: string }
   ): Promise<{ valid: boolean; status: string; document_status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/verify`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign/verify`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
     })
   },
 
-  signComplete: (
+  signComplete: async (
     documentId: number,
     payload: { operation_id: number; cms: string; certificate?: string | null }
   ): Promise<{ success: boolean; status: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/complete`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign/complete`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
     })
   },
 
-  decline: (
+  decline: async (
     documentId: number,
     declined_reason: string
   ): Promise<{ success: boolean; status: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/decline`, {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/decline`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({ declined_reason }),
     })
   },
 
-  archiveDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/archive`, {
+  archiveDocument: async (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/archive`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({}),
     })
   },
 
-  removeDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/remove`, {
+  removeDocument: async (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/remove`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({}),
     })
   },
 
-  unarchiveDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}/unarchive`, {
+  unarchiveDocument: async (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/unarchive`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({}),
     })
   },
 
   trashRestore: (ids: number[]): Promise<{ success?: boolean; restored?: number; errors?: any[] }> => {
-    return httpClientWithAuth(`${API_URL}/documents/trash/restore`, {
+    return esdcaHttp(`${API_URL}/documents/trash/restore`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({ ids }),
     })
   },
 
   trashPurge: (ids: number[]): Promise<{ success?: boolean; deleted?: number; errors?: any[] }> => {
-    return httpClientWithAuth(`${API_URL}/documents/trash/purge`, {
+    return esdcaHttp(`${API_URL}/documents/trash/purge`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify({ ids }),
     })
   },
 
-  deleteDocument: (documentId: number): Promise<{ success?: boolean; status?: string }> => {
-    return httpClientWithAuth(`${API_URL}/documents/${documentId}`, {
-      method: 'DELETE',
-    })
+  deleteDocument: async (documentId: number): Promise<{ success?: boolean; status?: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'DELETE' })
   },
 }
+
+function authToken(): string { return authService.ensureToken() }

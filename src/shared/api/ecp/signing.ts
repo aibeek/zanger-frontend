@@ -1,5 +1,6 @@
 import { API_URL } from '../../config'
-import { httpClientWithAuth } from '../httpClient'
+import { esdcaHttp, encryptId } from '../esdcaCrypto'
+import { authService } from '@/features/auth'
 
 export interface VerifyWithTaxIdPayload {
   tax_id: string
@@ -17,19 +18,23 @@ export interface VerifyWithTaxIdResponse {
 
 export const signingApi = {
   verifyWithTaxId: (payload: VerifyWithTaxIdPayload) =>
-    httpClientWithAuth(`${API_URL}/signing/verify-with-tax-id`, {
+    esdcaHttp(`${API_URL}/signing/verify-with-tax-id`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
     }) as Promise<VerifyWithTaxIdResponse>,
 
   pingNcanode: () =>
-    httpClientWithAuth(`${API_URL}/signing/ncanode/ping`, {
+    esdcaHttp(`${API_URL}/signing/ncanode/ping`, {
       method: 'GET',
     }),
 
-  rollbackInitiate: (documentId: number, payload: { counterparty_id: number; operation_id?: number }) =>
-    httpClientWithAuth(`${API_URL}/documents/${documentId}/sign/rollback-init`, {
+  rollbackInitiate: async (documentId: number, payload: { counterparty_id: number; operation_id?: number }) => {
+    const tokened = await encryptId(documentId, authService.ensureToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign/rollback-init`, {
       method: 'POST',
+      encryptBody: true,
       body: JSON.stringify(payload),
-    }),
+    })
+  },
 }
