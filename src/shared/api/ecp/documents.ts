@@ -148,7 +148,7 @@ export const ecpApi = {
 
   signInitiate: (
     documentId: number,
-    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_CMS',
+    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_XML',
     options?: { counterparty_id?: number }
   ): Promise<{ operation_id: number; challenge: string }> => {
     const body: any = { method }

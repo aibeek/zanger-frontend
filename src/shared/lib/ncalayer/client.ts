@@ -13,4 +13,7 @@ export class NCALayerClient {
   async createCAdESFromBase64(storageType: string, dataBase64: string): Promise<string> {
     throw new Error('NCALayer client is unavailable')
   }
+  async createXMLSignatureFromBase64(storageType: string, xmlBase64: string): Promise<string> {
+    throw new Error('NCALayer client is unavailable')
+  }
 }

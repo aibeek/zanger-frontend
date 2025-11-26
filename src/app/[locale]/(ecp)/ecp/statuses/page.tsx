@@ -141,7 +141,7 @@ export default function EcpStatusesPage() {
       }
 
       // Подписываем челлендж
-      const signature = await ncalayerUtils.signData(challenge)
+      const signature = await ncalayerUtils.signXml(challenge)
       return signature
     } catch (error) {
       throw new Error(`Ошибка при подписании: ${error.message}`)
@@ -186,8 +186,7 @@ export default function EcpStatusesPage() {
           // Верифицируем подпись с ИИН/БИН
           const verification = await signingApi.verifyWithTaxId({
             tax_id: iinbin,
-            cms: signature,
-            challenge: challenge,
+            xml: signature,
           })
           
           if (!verification.valid) {
@@ -402,8 +401,7 @@ export default function EcpStatusesPage() {
       setVerificationStep('verifying')
       const verification = await signingApi.verifyWithTaxId({
         tax_id: activeMatch.iinbin,
-        cms: signature,
-        challenge,
+        xml: signature,
       })
       if (!verification.valid) {
         setVerificationStep('error')

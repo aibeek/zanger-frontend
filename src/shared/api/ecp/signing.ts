@@ -3,8 +3,9 @@ import { httpClientWithAuth } from '../httpClient'
 
 export interface VerifyWithTaxIdPayload {
   tax_id: string
-  cms: string
-  challenge: string
+  cms?: string
+  challenge?: string
+  xml?: string
 }
 
 export interface VerifyWithTaxIdResponse {

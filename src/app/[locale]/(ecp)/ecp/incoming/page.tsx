@@ -8,7 +8,7 @@ import { ecpApi } from '@/shared/api'
 import { API_URL } from '@/shared/config'
 import { authService } from '@/features/auth'
 import { useLoginStore } from '@/features/auth'
-import { signChallengeBase64, isNcaLayerAvailable } from '@/shared/lib/ncalayer'
+import { signChallengeBase64, isNcaLayerAvailable, signXmlFromBase64 } from '@/shared/lib/ncalayer'
 import { toast } from 'react-hot-toast'
 import { Input, Button } from '@/shared/ui-kit'
 import { ConfirmModal } from '@/shared/ui-kit'
@@ -199,8 +199,8 @@ export default function EcpIncomingPage() {
     if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
       setIsSigning(true)
-      const init = await ecpApi.signInitiate(selectedId, 'SIGN_CMS')
-      const cms = await signChallengeBase64(init.challenge)
+      const init = await ecpApi.signInitiate(selectedId, 'SIGN_XML')
+      const cms = await signXmlFromBase64(init.challenge)
       const mySigner = (details?.signers || []).find((s: any) => s?.can_sign || s?.is_me)
       const taxId = String(mySigner?.iin_bin || '').trim()
       if (!taxId) {

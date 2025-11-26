@@ -45,6 +45,19 @@ export async function signChallengeBase64(challengeBase64: string): Promise<stri
   return await client.createCAdESFromBase64(storageType, challengeBase64)
 }
 
+export async function signXmlFromBase64(xmlDataBase64: string): Promise<string> {
+  const client = await connectNca()
+  let storageType = 'PKCS12'
+  try {
+    const tokens = await client.getActiveTokens()
+    storageType = tokens?.[0] || (NCALayerClient as any).fileStorageType || 'PKCS12'
+  } catch {
+    storageType = (NCALayerClient as any).fileStorageType || 'PKCS12'
+  }
+  // Метод должен присутствовать в библиотеке клиента
+  return await (client as any).createXMLSignatureFromBase64(storageType, xmlDataBase64)
+}
+
 export async function isNcaLayerAvailable(): Promise<boolean> {
   try {
     await connectNca()
@@ -57,6 +70,7 @@ export async function isNcaLayerAvailable(): Promise<boolean> {
 export const ncalayerUtils = {
   isNCALayerAvailable: isNcaLayerAvailable,
   signData: signChallengeBase64,
+  signXml: signXmlFromBase64,
 }
 
 export { NCALayerClient }
