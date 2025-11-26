@@ -5,12 +5,40 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import s from './EcpSidebar.module.scss'
+import useSWR from 'swr'
+import { ecpApi } from '@/shared/api'
 
 export const EcpSidebar: React.FC = () => {
   const [openDocs, setOpenDocs] = useState(true)
   const router = useRouter()
   const locale = useLocale()
   const t = useTranslations('ecp.sidebar')
+  const { data: counters, mutate: mutateCounters } = useSWR('ecp-counters', async () => {
+    try {
+      const c = await ecpApi.getCounters()
+      if (c && typeof c.incoming_new === 'number') return c
+    } catch {}
+    try {
+      const [inboxRes, ownerRes]: any = await Promise.all([
+        ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100 }),
+        ecpApi.listDocuments({ inbox: false, outbox: true, status: 'WAITING_CREATOR_SIGNATURE', page: 1, limit: 100 }),
+      ])
+      const inboxItems: any[] = Array.isArray(inboxRes?.data) ? inboxRes.data : Array.isArray(inboxRes) ? inboxRes : []
+      const ownerItems: any[] = Array.isArray(ownerRes?.data) ? ownerRes.data : Array.isArray(ownerRes) ? ownerRes : []
+      const map = new Map<number, any>()
+      for (const it of [...inboxItems, ...ownerItems]) { map.set(it.id, it) }
+      const merged: any[] = Array.from(map.values())
+      const countNew = merged.reduce((acc, it) => acc + (it?.is_new ? 1 : 0), 0)
+      return { incoming_new: countNew }
+    } catch {
+      return { incoming_new: 0 }
+    }
+  }, { revalidateOnFocus: true, refreshInterval: 15000 })
+  React.useEffect(() => {
+    const handler = () => { mutateCounters() }
+    window.addEventListener('ecp:revalidate-counters', handler)
+    return () => { window.removeEventListener('ecp:revalidate-counters', handler) }
+  }, [mutateCounters])
 
   return (
     <aside className={s.aside}>
@@ -54,6 +82,9 @@ export const EcpSidebar: React.FC = () => {
               <div className={s.docItemTitle}>
                 <span>{t('incoming')}</span>
               </div>
+              {typeof counters?.incoming_new === 'number' && counters?.incoming_new > 0 ? (
+                <span className={s.counter}>{Math.min(99, counters.incoming_new)}</span>
+              ) : null}
             </div>
             <div className={s.docItem} onClick={() => router.push(`/${locale}/ecp/sent`)}>
               <div className={s.docItemTitle}>
