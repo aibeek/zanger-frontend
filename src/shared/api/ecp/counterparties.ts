@@ -1,5 +1,5 @@
 import { API_URL } from '../../config'
-import { esdcaHttp, encryptId } from '../esdcaCrypto'
+import { esdcaHttp } from '../esdcaCrypto'
 import { authService } from '@/features/auth'
 import { createQuery } from '../../lib/helpers/query'
 
@@ -30,30 +30,30 @@ export const counterpartiesApi = {
   },
 
   getByUserId: async (userId: number) => {
-    const tokened = await encryptId(userId, authService.ensureToken())
+    const tokened = String(userId)
     return esdcaHttp(`${API_URL}/counterparties/by-user/${tokened}`, { method: 'GET' })
   },
 
   getByCreatorId: async (userId: number) => {
-    const tokened = await encryptId(userId, authService.ensureToken())
+    const tokened = String(userId)
     return esdcaHttp(`${API_URL}/counterparties/by-creator/${tokened}`, { method: 'GET' })
   },
 
   getMatchesForMe: () => esdcaHttp(`${API_URL}/counterparties/matches/mine`, { method: 'GET' }),
 
   store: (payload: CounterpartyPayload) =>
-    esdcaHttp(`${API_URL}/counterparties`, { method: 'POST', encryptBody: true, body: JSON.stringify(payload) }),
+    esdcaHttp(`${API_URL}/counterparties`, { method: 'POST', encryptBody: false, body: JSON.stringify(payload) }),
 
   storeMine: (payload: CounterpartyPayload) =>
-    esdcaHttp(`${API_URL}/counterparties/mine`, { method: 'POST', encryptBody: true, body: JSON.stringify(payload) }),
+    esdcaHttp(`${API_URL}/counterparties/mine`, { method: 'POST', encryptBody: false, body: JSON.stringify(payload) }),
 
   update: async (id: number, payload: Partial<CounterpartyPayload>) => {
-    const tokened = await encryptId(id, authService.ensureToken())
-    return esdcaHttp(`${API_URL}/counterparties/${tokened}`, { method: 'PUT', encryptBody: true, body: JSON.stringify(payload) })
+    const tokened = String(id)
+    return esdcaHttp(`${API_URL}/counterparties/${tokened}`, { method: 'PUT', encryptBody: false, body: JSON.stringify(payload) })
   },
 
   destroy: async (id: number) => {
-    const tokened = await encryptId(id, authService.ensureToken())
+    const tokened = String(id)
     return esdcaHttp(`${API_URL}/counterparties/${tokened}`, { method: 'DELETE' })
   },
 }

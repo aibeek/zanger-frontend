@@ -108,13 +108,15 @@ export async function esdcaHttp<T = any>(url: string, options: RequestInit & { e
   const res = await fetch(url, {
     ...options,
     body,
+    cache: 'no-store',
+    mode: 'cors',
     headers: {
       Accept: 'application/json',
       'Accept-Language': typeof navigator !== 'undefined' ? navigator.language : 'ru',
       ...(options.headers || {}),
       Authorization: `Bearer ${token}`,
       ...(isFormData || method === 'GET' ? {} : { 'Content-Type': 'application/json' }),
-      'X-ESDCA-Encrypted': '1',
+      ...(options.encryptBody ? { 'X-ESDCA-Encrypted': '1' } : {}),
     },
   })
 

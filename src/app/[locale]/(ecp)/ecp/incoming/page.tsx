@@ -22,6 +22,9 @@ type ListItem = {
   signers_count: number
   description?: string
   created_by?: number
+  is_new?: boolean
+  can_sign?: boolean
+  is_author?: boolean
 }
 
 const ALLOWED = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE'])
@@ -54,7 +57,7 @@ export default function EcpIncomingPage() {
   const { data, error, isLoading, mutate: mutateList } = useSWR(
     ['ecp-incoming', page, limit, query, personalData?.id || null],
     ([, p, l, q, uid]) => fetchIncoming(p as number, l as number, q as string, (uid as number | null)),
-    { revalidateOnFocus: false, revalidateOnReconnect: false, refreshInterval: 0, revalidateIfStale: false }
+    { revalidateOnFocus: true, revalidateOnReconnect: true, refreshInterval: 15000, revalidateIfStale: true }
   )
   const [selectedId, setSelectedId] = React.useState<number | null>(null)
   const { data: details, mutate: mutateDetails } = useSWR(
@@ -73,6 +76,11 @@ export default function EcpIncomingPage() {
   const [pdfError, setPdfError] = React.useState<string | null>(null)
   const viewerRef = React.useRef<HTMLDivElement | null>(null)
   const { isOpen: isPreviewOpen, open: openPreview, close: closePreview } = useModal()
+  React.useEffect(() => {
+    const handler = () => { mutateList() }
+    window.addEventListener('ecp:revalidate-counters', handler)
+    return () => { window.removeEventListener('ecp:revalidate-counters', handler) }
+  }, [mutateList])
   React.useEffect(() => {
     if (!personalData) {
       getPersonalDataByToken()
@@ -120,19 +128,18 @@ export default function EcpIncomingPage() {
   const items: ListItem[] = data?.items || []
   const userId = typeof personalData?.id === 'number' ? personalData.id : null
   const filtered = React.useMemo(() => {
-    const inclForNonCreator = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'])
-    const inclForCreator = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE'])
+    const inclForNonAuthor = new Set(['ROUTED', 'PENDING_SIGNATURE', 'PARTIALLY_SIGNED', 'WAITING_CREATOR_SIGNATURE', 'SIGNED'])
     return items.filter((d: any) => {
       const status = String(d.status)
-      const creatorId = typeof d?.created_by === 'number' ? d.created_by : null
-      if (creatorId && userId && creatorId === userId) {
-        return inclForCreator.has(status)
+      const isAuthor = !!d?.is_author || (typeof d?.created_by === 'number' && userId && d.created_by === userId)
+      if (isAuthor) {
+        return (d?.can_sign === true) || (status === 'WAITING_CREATOR_SIGNATURE' || status === 'PARTIALLY_SIGNED')
       }
-      return inclForNonCreator.has(status)
+      return inclForNonAuthor.has(status)
     })
   }, [items, userId])
-  const total = filtered.length
-  const pages = Math.max(1, Math.ceil(total / ((data?.pagination?.limit as number) || limit)))
+  const total = (data?.pagination?.total as number) || filtered.length
+  const pages = Math.max(1, Math.ceil(total / (((data?.pagination?.limit as number) || limit))))
 
   const color = (s: string) => {
     if (s === 'SIGNED') return '#22c55e'
@@ -276,7 +283,21 @@ export default function EcpIncomingPage() {
             {isLoading && <div>Загрузка…</div>}
             {error && <div>Ошибка загрузки</div>}
             {filtered.map((doc) => (
-              <div key={doc.id} onClick={() => setSelectedId(doc.id)} style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}>
+              <div
+                key={doc.id}
+                onClick={async () => {
+                  try {
+                    if (doc.is_new) {
+                      await ecpApi.viewDocument(doc.id)
+                      await mutateList()
+                      window.dispatchEvent(new Event('ecp:revalidate-counters'))
+                    }
+                  } finally {
+                    setSelectedId(doc.id)
+                  }
+                }}
+                style={{ border: '1px solid #e5e7eb', borderRadius: 12, overflow: 'hidden', cursor: 'pointer' }}
+              >
                 <div style={{ background: color(doc.status), color: '#fff', padding: '4px 10px', fontWeight: 700, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span>{
                     doc.status === 'SIGNED' ? 'Подписан' :
@@ -287,6 +308,9 @@ export default function EcpIncomingPage() {
                     'Получен'
                   }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
+                    {doc.is_new ? (
+                      <span style={{ background: '#ef4444', color: '#fff', borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 800 }}>Новое</span>
+                    ) : null}
                     <button
                       onClick={(e) => { e.stopPropagation(); setConfirmArchiveId(doc.id) }}
                       title="Архивировать"

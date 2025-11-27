@@ -1,5 +1,5 @@
 import { API_URL } from '../../config'
-import { esdcaHttp, encryptId } from '../esdcaCrypto'
+import { esdcaHttp } from '../esdcaCrypto'
 import { authService } from '@/features/auth'
 
 export interface VerifyWithTaxIdPayload {
@@ -20,7 +20,7 @@ export const signingApi = {
   verifyWithTaxId: (payload: VerifyWithTaxIdPayload) =>
     esdcaHttp(`${API_URL}/signing/verify-with-tax-id`, {
       method: 'POST',
-      encryptBody: true,
+      encryptBody: false,
       body: JSON.stringify(payload),
     }) as Promise<VerifyWithTaxIdResponse>,
 
@@ -30,10 +30,10 @@ export const signingApi = {
     }),
 
   rollbackInitiate: async (documentId: number, payload: { counterparty_id: number; operation_id?: number }) => {
-    const tokened = await encryptId(documentId, authService.ensureToken())
+    const tokened = String(documentId)
     return esdcaHttp(`${API_URL}/documents/${tokened}/sign/rollback-init`, {
       method: 'POST',
-      encryptBody: true,
+      encryptBody: false,
       body: JSON.stringify(payload),
     })
   },

@@ -80,7 +80,16 @@ export const ecpApi = {
 
   getDocumentDetails: async (id: number): Promise<EsdcaDocumentDetails> => {
     const tokened = await encryptId(id, authToken())
-    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'GET' })
+    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'GET', encryptBody: true })
+  },
+
+  viewDocument: async (id: number): Promise<{ success?: boolean }> => {
+    const tokened = await encryptId(id, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/view`, {
+      method: 'POST',
+      encryptBody: true,
+      body: JSON.stringify({}),
+    })
   },
 
   listDocuments: (
@@ -89,7 +98,12 @@ export const ecpApi = {
     const query = createQuery(params || {})
     return esdcaHttp(`${API_URL}/documents${query}`, {
       method: 'GET',
+      encryptBody: true,
     })
+  },
+
+  getCounters: (): Promise<{ incoming_new: number }> => {
+    return esdcaHttp(`${API_URL}/documents/counters`, { method: 'GET', encryptBody: true })
   },
 
   addSigners: async (
@@ -250,7 +264,7 @@ export const ecpApi = {
 
   deleteDocument: async (documentId: number): Promise<{ success?: boolean; status?: string }> => {
     const tokened = await encryptId(documentId, authToken())
-    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'DELETE' })
+    return esdcaHttp(`${API_URL}/documents/${tokened}`, { method: 'DELETE', encryptBody: true })
   },
 }
 
