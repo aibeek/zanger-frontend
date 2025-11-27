@@ -3,7 +3,7 @@
 import React from 'react'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
-import { Button, Input, Loader } from '@/shared/ui-kit'
+import { Button, Input, Loader, ConfirmModal } from '@/shared/ui-kit'
 import s from './page.module.scss'
 import { toast } from 'react-hot-toast'
 import { ecpApi, EsdcaDocumentDetails, EsdcaDocumentType, counterpartiesApi, signingApi } from '@/shared/api'
@@ -29,7 +29,7 @@ export default function EcpCreateDocumentPage() {
   const [selectedDocumentTypeId, setSelectedDocumentTypeId] = React.useState<number | null>(null)
 
   // Подписанты и поиск контрагентов
-  type CounterpartyItem = { id: number; name: string; iin_bin?: string; type?: string; email?: string; phone?: string }
+  type CounterpartyItem = { id: number; name: string; iin_bin?: string; type?: string; email?: string; phone?: string; is_verified?: boolean }
   const { personalData, getPersonalDataByToken } = useLoginStore()
   const [signatories, setSignatories] = React.useState<CounterpartyItem[]>([])
   const [loadingSignatories, setLoadingSignatories] = React.useState<boolean>(false)
@@ -40,6 +40,9 @@ export default function EcpCreateDocumentPage() {
   const [loadingSearch, setLoadingSearch] = React.useState<boolean>(false)
   const [selectedCounterpartyId, setSelectedCounterpartyId] = React.useState<number | null>(null)
   const [selectedCounterparties, setSelectedCounterparties] = React.useState<CounterpartyItem[]>([])
+  const [confirmSendOpen, setConfirmSendOpen] = React.useState(false)
+  const [confirmSignOpen, setConfirmSignOpen] = React.useState(false)
+  const [confirmLoading, setConfirmLoading] = React.useState(false)
   
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -72,7 +75,7 @@ export default function EcpCreateDocumentPage() {
   }
 
   // Удалено: обработчик черновика
-  const onSendWithoutSign = async () => {
+  const proceedSendWithoutSign = async () => {
     if (!documentId) {
       toast.error(t('createFirst'))
       return
@@ -102,7 +105,7 @@ export default function EcpCreateDocumentPage() {
       toast.error(e?.message || 'Ошибка отправки')
     }
   }
-  const onSignAndSend = async () => {
+  const proceedSignAndSend = async () => {
     if (!documentId) {
       toast.error(t('createFirst'))
       return
@@ -384,15 +387,15 @@ export default function EcpCreateDocumentPage() {
           />
           {selectedCounterparties.length > 0 && (
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-              {selectedCounterparties.map((cp) => (
-                <div key={cp.id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#eef2ff', border: '1px solid #e5e7eb', borderRadius: 9999, padding: '6px 10px' }}>
-                  <span style={{ fontWeight: 600 }}>{cp.name}{cp.iin_bin ? ` · ${cp.iin_bin}` : ''}</span>
-                  <button
-                    onClick={() => setSelectedCounterparties(selectedCounterparties.filter((x) => x.id !== cp.id))}
-                    style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '4px 8px' }}
-                  >Сбросить</button>
-                </div>
-              ))}
+          {selectedCounterparties.map((cp) => (
+            <div key={cp.id} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#eef2ff', border: '1px solid #e5e7eb', borderRadius: 9999, padding: '6px 10px' }}>
+              <span style={{ fontWeight: 600 }}>{cp.name}{cp.iin_bin ? ` · ${cp.iin_bin}` : ''}{cp.is_verified === false ? ' · Не подтверждён' : ''}</span>
+              <button
+                onClick={() => setSelectedCounterparties(selectedCounterparties.filter((x) => x.id !== cp.id))}
+                style={{ background: '#e5e7eb', border: 'none', borderRadius: 8, padding: '4px 8px' }}
+              >Сбросить</button>
+            </div>
+          ))}
             </div>
           )}
           {loadingSearch ? (
@@ -422,6 +425,7 @@ export default function EcpCreateDocumentPage() {
                       <div style={{ fontSize: 12, color: '#6b7280' }}>
                         {item.iin_bin ? `ИИН/БИН: ${item.iin_bin}` : ''}
                         {item.phone ? (item.iin_bin ? ' · ' : '') + `Тел: ${item.phone}` : ''}
+                        {item.is_verified === false ? ((item.iin_bin || item.phone) ? ' · ' : '') + 'Не подтверждён' : ''}
                       </div>
                     </li>
                   ))}
@@ -432,12 +436,44 @@ export default function EcpCreateDocumentPage() {
 
           {/* Actions after creation (no draft button) */}
           <div className={s.actions}>
-            <Button variant="secondary" onClick={onSendWithoutSign}>{t('sendWithoutSign')}</Button>
-            <Button onClick={onSignAndSend}>{t('signAndSend')}</Button>
+            <Button variant="secondary" onClick={() => setConfirmSendOpen(true)}>{t('sendWithoutSign')}</Button>
+            <Button onClick={() => setConfirmSignOpen(true)}>{t('signAndSend')}</Button>
           </div>
         </>
       )}
       </div>
+
+      <ConfirmModal
+        isOpen={confirmSendOpen}
+        title={'Отправить без подписи?'}
+        message={(() => {
+          const hasUnverified = selectedCounterparties.some((c) => c.is_verified === false)
+          let msg = 'Документ будет отправлен адресатам без подписи инициатора.'
+          if (hasUnverified) msg += ' В списке есть неподтверждённые контрагенты — приглашение будет отправлено по email.'
+          return msg
+        })()}
+        confirmText={'Отправить'}
+        onClose={() => setConfirmSendOpen(false)}
+        confirmVariant={'primary'}
+        loading={confirmLoading}
+        onConfirm={async () => { try { setConfirmLoading(true); await proceedSendWithoutSign() } finally { setConfirmLoading(false); setConfirmSendOpen(false) } }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmSignOpen}
+        title={'Подписать и отправить?'}
+        message={(() => {
+          const hasUnverified = selectedCounterparties.some((c) => c.is_verified === false)
+          let msg = 'Вы отправляете документ на подписание. Инициатор подпишет документ и он будет направлен адресатам.'
+          if (hasUnverified) msg += ' В списке есть неподтверждённые контрагенты — приглашение будет отправлено по email.'
+          return msg
+        })()}
+        confirmText={'Подписать и отправить'}
+        onClose={() => setConfirmSignOpen(false)}
+        confirmVariant={'primary'}
+        loading={confirmLoading}
+        onConfirm={async () => { try { setConfirmLoading(true); await proceedSignAndSend() } finally { setConfirmLoading(false); setConfirmSignOpen(false) } }}
+      />
 
       <div className={s.card}>
         <div className={s.historyTitle}>{t('history')}</div>

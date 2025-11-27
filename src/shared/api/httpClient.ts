@@ -1,15 +1,15 @@
 import { authService } from '@/features/auth'
 
-class HttpError extends Error {
-	status: number
-	errors?: any
+export class HttpError extends Error {
+  status: number
+  errors?: any
 
-	constructor(message: string, status: number, errors?: any) {
-		super(message)
-		this.name = 'HttpError'
-		this.status = status
-		this.errors = errors
-	}
+  constructor(message: string, status: number, errors?: any) {
+    super(message)
+    this.name = 'HttpError'
+    this.status = status
+    this.errors = errors
+  }
 }
 
 const addAuthHeader = (token: string, options: RequestInit = {}) => {

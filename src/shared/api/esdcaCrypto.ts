@@ -1,4 +1,5 @@
 import { authService } from '@/features/auth'
+import { HttpError } from './httpClient'
 
 const te = new TextEncoder()
 const td = new TextDecoder()
@@ -121,8 +122,19 @@ export async function esdcaHttp<T = any>(url: string, options: RequestInit & { e
   })
 
   if (!res.ok) {
-    const txt = await res.text()
-    throw new Error(txt || `HTTP ${res.status}`)
+    let errorMessage = `HTTP ${res.status}`
+    let errorData: any = null
+    try {
+      const raw = await res.text()
+      try {
+        const parsed = JSON.parse(raw)
+        errorMessage = parsed?.message || errorMessage
+        errorData = parsed?.errors || null
+      } catch {
+        errorMessage = raw || errorMessage
+      }
+    } catch {}
+    throw new HttpError(errorMessage, res.status, errorData)
   }
 
   const ct = res.headers.get('content-type') || ''

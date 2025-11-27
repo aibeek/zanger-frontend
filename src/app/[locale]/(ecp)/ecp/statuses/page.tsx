@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Button, Input, Checkbox } from '@/shared/ui-kit'
+import { Button, Input, Checkbox, ConfirmModal } from '@/shared/ui-kit'
 import { counterpartiesApi, type CounterpartyPayload, signingApi } from '@/shared/api/ecp'
 import { useLoginStore } from '@/features/auth/login'
 import { ncalayerUtils } from '@/shared/lib/ncalayer'
@@ -49,6 +49,7 @@ export default function EcpStatusesPage() {
   // Убираем режим открытия панели для ЮЛ — форма всегда сверху
 
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set())
+  const [confirmOpen, setConfirmOpen] = React.useState(false)
 
   const typeLabels: Record<'UL' | 'IP' | 'FL', string> = {
     UL: t('typeLabels.UL'),
@@ -290,11 +291,21 @@ export default function EcpStatusesPage() {
     }
   }
 
-  const onDelete = async () => {
+  const getDeleteConfirmMessage = (): string => {
+    const count = displayed.filter((i) => selectedIds.has(i.id)).length
+    if (count <= 1) return 'Вы хотите удалить запись?'
+    return 'Вы хотите удалить выбранные записи?'
+  }
+
+  const onDelete = () => {
     if (selectedIds.size === 0) {
       toast.error(t('errors.selectAtLeastOne'))
       return
     }
+    setConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
     try {
       setLoading(true)
       await Promise.all(Array.from(selectedIds).map((id) => counterpartiesApi.destroy(id)))
@@ -305,6 +316,7 @@ export default function EcpStatusesPage() {
       toast.error(e?.message || t('errors.deleteFailed'))
     } finally {
       setLoading(false)
+      setConfirmOpen(false)
     }
   }
 
@@ -569,6 +581,17 @@ export default function EcpStatusesPage() {
           </div>
         )}
       </div>
+        <ConfirmModal
+          isOpen={confirmOpen}
+          title={'Подтверждение удаления'}
+          message={getDeleteConfirmMessage()}
+          confirmText={'Удалить'}
+          cancelText={'Отменить'}
+          onConfirm={confirmDelete}
+          onClose={() => setConfirmOpen(false)}
+          confirmVariant={'danger'}
+          loading={loading}
+        />
     </div>
   )
 }

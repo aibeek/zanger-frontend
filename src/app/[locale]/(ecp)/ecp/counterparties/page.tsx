@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { useTranslations } from 'next-intl'
-import { Button, Input, Checkbox } from '@/shared/ui-kit'
+import { Button, Input, Checkbox, ConfirmModal } from '@/shared/ui-kit'
 import { counterpartiesApi, type CounterpartyPayload } from '@/shared/api/ecp'
 import { useLoginStore } from '@/features/auth/login'
 import s from './page.module.scss'
@@ -16,6 +16,7 @@ type Counterparty = {
   iinbin: string
   email?: string
   phone?: string
+  is_verified?: boolean
 }
 
 const detectTypeCode = (name: string, iinbin: string): 'UL' | 'IP' | 'FL' => {
@@ -40,6 +41,7 @@ export default function CounterpartiesPage() {
   const [email, setEmail] = React.useState('')
   const [phone, setPhone] = React.useState('')
   const [bank, setBank] = React.useState('')
+  const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>({})
 
   const [items, setItems] = React.useState<Counterparty[]>([])
   const personalData = useLoginStore((s) => s.personalData)
@@ -47,6 +49,7 @@ export default function CounterpartiesPage() {
   const [editId, setEditId] = React.useState<number | null>(null)
 
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set())
+  const [confirmOpen, setConfirmOpen] = React.useState(false)
 
   const toggleSelect = (id: number) => {
     setSelectedIds(prev => {
@@ -72,6 +75,7 @@ export default function CounterpartiesPage() {
     setPhone('')
     setBank('')
     setEditId(null)
+    setFieldErrors({})
   }
 
   const onAddOrSave = async () => {
@@ -103,6 +107,7 @@ export default function CounterpartiesPage() {
           email: payload.email,
           phone: payload.phone,
           region: (updated as any)?.legal_address || payload.legal_address || i.region,
+          is_verified: (updated as any)?.is_verified ?? i.is_verified,
         } : i)))
         toast.success(t('messages.updated'))
       } else {
@@ -117,33 +122,59 @@ export default function CounterpartiesPage() {
           iinbin: payload.iin_bin,
           email: payload.email,
           phone: payload.phone,
+          is_verified: Boolean(createdAny?.item?.is_verified ?? createdAny?.is_verified ?? false),
         }
         setItems(prev => [createdItem, ...prev])
         toast.success(t('messages.added'))
       }
       resetForm()
     } catch (e: any) {
-      toast.error(e?.message || 'Ошибка запроса')
+      const errors: Record<string, string[]> | undefined = e?.errors
+      if (errors && typeof errors === 'object') {
+        const mapped: Record<string, string> = {}
+        if (Array.isArray(errors.name) && errors.name[0]) mapped.name = String(errors.name[0])
+        if (Array.isArray(errors.email) && errors.email[0]) mapped.email = String(errors.email[0])
+        if (Array.isArray(errors.iin_bin) && errors.iin_bin[0]) mapped.iinbin = String(errors.iin_bin[0])
+        if (Array.isArray(errors.phone) && errors.phone[0]) mapped.phone = String(errors.phone[0])
+        if (Array.isArray(errors.legal_address) && errors.legal_address[0]) mapped.legalAddress = String(errors.legal_address[0])
+        if (Array.isArray(errors.bank_details) && errors.bank_details[0]) mapped.bank = String(errors.bank_details[0])
+        setFieldErrors(mapped)
+        const firstMsg = Object.values(mapped)[0]
+        toast.error(firstMsg || e?.message || 'Ошибка запроса')
+      } else {
+        toast.error(e?.message || 'Ошибка запроса')
+      }
     } finally {
       setLoading(false)
     }
   }
 
-  const onDelete = async () => {
+  const getDeleteConfirmMessage = (): string => {
+    const count = items.filter((i) => selectedIds.has(i.id)).length
+    if (count <= 1) return 'Вы хотите удалить запись?'
+    return 'Вы хотите удалить выбранные записи?'
+  }
+
+  const onDelete = () => {
     if (selectedIds.size === 0) {
       toast.error(t('errors.selectAtLeastOne'))
       return
     }
+    setConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
     try {
       setLoading(true)
-      await Promise.all(Array.from(selectedIds).map(id => counterpartiesApi.destroy(id)))
-      setItems(prev => prev.filter(i => !selectedIds.has(i.id)))
+      await Promise.all(Array.from(selectedIds).map((id) => counterpartiesApi.destroy(id)))
+      setItems((prev) => prev.filter((i) => !selectedIds.has(i.id)))
       setSelectedIds(new Set())
       toast.success(t('messages.deleted'))
     } catch (e: any) {
       toast.error(e?.message || 'Не удалось удалить')
     } finally {
       setLoading(false)
+      setConfirmOpen(false)
     }
   }
 
@@ -184,6 +215,7 @@ export default function CounterpartiesPage() {
           iinbin: d.iin_bin || d.iin || '',
           email: d.email || '',
           phone: d.phone || '',
+          is_verified: !!d.is_verified,
         }))
         setItems(mapped)
       } catch (e: any) {
@@ -202,12 +234,30 @@ export default function CounterpartiesPage() {
         <div className={s.subtitle}>{t('addSubtitle')}</div>
 
         <div className={s.formGrid}>
-          <Input placeholder={t('fields.name')} value={name} onChange={e => setName(e.target.value)} />
-          <Input placeholder={t('fields.email')} value={email} onChange={e => setEmail(e.target.value)} />
-          <Input placeholder={t('fields.iinbin')} value={iinbin} onChange={e => setIinbin(e.target.value)} />
-          <Input placeholder={t('fields.phone')} value={phone} onChange={e => setPhone(e.target.value)} />
-          <Input placeholder={t('fields.legalAddress')} value={legalAddress} onChange={e => setLegalAddress(e.target.value)} />
-          <Input placeholder={t('fields.bankDetails')} value={bank} onChange={e => setBank(e.target.value)} />
+          <div>
+            <Input placeholder={t('fields.name')} value={name} onChange={e => setName(e.target.value)} hasError={!!fieldErrors.name} />
+            {fieldErrors.name && <div className={s.errorText}>{fieldErrors.name}</div>}
+          </div>
+          <div>
+            <Input placeholder={t('fields.email')} value={email} onChange={e => setEmail(e.target.value)} hasError={!!fieldErrors.email} />
+            {fieldErrors.email && <div className={s.errorText}>{fieldErrors.email}</div>}
+          </div>
+          <div>
+            <Input placeholder={t('fields.iinbin')} value={iinbin} onChange={e => setIinbin(e.target.value)} hasError={!!fieldErrors.iinbin} />
+            {fieldErrors.iinbin && <div className={s.errorText}>{fieldErrors.iinbin}</div>}
+          </div>
+          <div>
+            <Input placeholder={t('fields.phone')} value={phone} onChange={e => setPhone(e.target.value)} hasError={!!fieldErrors.phone} />
+            {fieldErrors.phone && <div className={s.errorText}>{fieldErrors.phone}</div>}
+          </div>
+          <div>
+            <Input placeholder={t('fields.legalAddress')} value={legalAddress} onChange={e => setLegalAddress(e.target.value)} hasError={!!fieldErrors.legalAddress} />
+            {fieldErrors.legalAddress && <div className={s.errorText}>{fieldErrors.legalAddress}</div>}
+          </div>
+          <div>
+            <Input placeholder={t('fields.bankDetails')} value={bank} onChange={e => setBank(e.target.value)} hasError={!!fieldErrors.bank} />
+            {fieldErrors.bank && <div className={s.errorText}>{fieldErrors.bank}</div>}
+          </div>
         </div>
 
         <div className={s.actions}>
@@ -237,13 +287,14 @@ export default function CounterpartiesPage() {
                 <th className={s.th}>{t('columns.region')}</th>
                 <th className={s.th}>{t('columns.iinbin')}</th>
                 <th className={s.th}>{t('columns.emailPhone')}</th>
+                <th className={s.th}>Подтвержден</th>
                 <th className={s.th}>{t('columns.phone')}</th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td className={s.td} colSpan={7}>
+                  <td className={s.td} colSpan={8}>
                     <div className={s.empty}>{t('empty')}</div>
                   </td>
                 </tr>
@@ -258,6 +309,7 @@ export default function CounterpartiesPage() {
                     <td className={s.td}>{i.region}</td>
                     <td className={s.td}>{i.iinbin}</td>
                     <td className={s.td}>{i.email}</td>
+                    <td className={s.td}>{i.is_verified ? 'Да' : 'Нет'}</td>
                     <td className={s.td}>{i.phone}</td>
                   </tr>
                 ))
@@ -266,6 +318,17 @@ export default function CounterpartiesPage() {
           </table>
         </div>
       </section>
+      <ConfirmModal
+        isOpen={confirmOpen}
+        title={'Подтверждение удаления'}
+        message={getDeleteConfirmMessage()}
+        confirmText={'Удалить'}
+        cancelText={'Отменить'}
+        onConfirm={confirmDelete}
+        onClose={() => setConfirmOpen(false)}
+        confirmVariant={'danger'}
+        loading={loading}
+      />
     </div>
   )
 }

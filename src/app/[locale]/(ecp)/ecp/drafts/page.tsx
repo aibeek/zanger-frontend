@@ -24,7 +24,7 @@ type DocItem = {
   files?: { file_name: string; file_type: string }[]
 }
 
-type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string; user_id?: number | null }
+type CounterpartyItem = { id: number; name: string; iin_bin?: string; email?: string; phone?: string; user_id?: number | null; is_verified?: boolean }
 
 const fetchDrafts = async (page: number, limit: number, q?: string) => {
   const res: any = await ecpApi.listDocuments({ status: 'DRAFT', outbox: true, inbox: false, page: 1, limit: 100, q })
@@ -54,6 +54,9 @@ export default function EcpDraftsPage() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [searchResults, setSearchResults] = React.useState<CounterpartyItem[]>([])
   const [selectedCounterpartyId, setSelectedCounterpartyId] = React.useState<number | null>(null)
+  const [confirmSendOpen, setConfirmSendOpen] = React.useState(false)
+  const [confirmSignOpen, setConfirmSignOpen] = React.useState(false)
+  const [confirmLoading, setConfirmLoading] = React.useState(false)
 
   const selectedCounterparty = React.useMemo(() => {
     if (!selectedCounterpartyId) return null
@@ -496,7 +499,7 @@ export default function EcpDraftsPage() {
                       {selectedCounterparty && (
                         <div style={{ marginTop: 8, marginBottom: 8 }}>
                           <span style={{ background: '#eef2ff', border: '1px solid #e5e7eb', borderRadius: 9999, padding: '6px 10px' }}>
-                            Выбран: {`${selectedCounterparty.name} · ${selectedCounterparty.iin_bin || ''}`}
+                            Выбран: {`${selectedCounterparty.name} · ${selectedCounterparty.iin_bin || ''}${selectedCounterparty.is_verified === false ? ' · Не подтверждён' : ''}`}
                           </span>
                           <button onClick={() => setSelectedCounterpartyId(null)} style={{ marginLeft: 8, background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: 8 }}>Сбросить</button>
                         </div>
@@ -505,14 +508,14 @@ export default function EcpDraftsPage() {
                         {searchResults.map((c) => (
                           <button key={c.id} onClick={() => setSelectedCounterpartyId(c.id)} style={{ textAlign: 'left', background: selectedCounterpartyId === c.id ? '#eff6ff' : '#fff', border: '1px solid #e5e7eb', borderRadius: 8, padding: 8 }}>
                             <div style={{ fontWeight: 600 }}>{c.name}</div>
-                            <div style={{ fontSize: 12, color: '#666' }}>{c.iin_bin}</div>
+                            <div style={{ fontSize: 12, color: '#666' }}>{c.iin_bin}{c.is_verified === false ? ' · Не подтверждён' : ''}</div>
                           </button>
                         ))}
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 10 }}>
-                      <button onClick={onSendWithoutSign} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button>
-                      <button onClick={onSignAndSend} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Подписать и отправить</button>
+                      <button onClick={() => setConfirmSendOpen(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button>
+                      <button onClick={() => setConfirmSignOpen(true)} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Подписать и отправить</button>
                       <button onClick={() => setIsEditing(false)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
                     </div>
                   </div>
@@ -583,6 +586,40 @@ export default function EcpDraftsPage() {
             setIsConfirmLoading(false)
           }
         }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmSendOpen}
+        onClose={() => setConfirmSendOpen(false)}
+        title={'Отправить без подписи?'}
+        message={(() => {
+          const cp = selectedCounterparty
+          const hasUnverified = !!cp && cp.is_verified === false
+          let msg = 'Документ будет отправлен адресатам без подписи инициатора.'
+          if (hasUnverified) msg += ' Выбранный контрагент не подтверждён — приглашение будет отправлено по email.'
+          return msg
+        })()}
+        confirmText={'Отправить'}
+        confirmVariant={'primary'}
+        loading={confirmLoading}
+        onConfirm={async () => { try { setConfirmLoading(true); await onSendWithoutSign() } finally { setConfirmLoading(false); setConfirmSendOpen(false) } }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmSignOpen}
+        onClose={() => setConfirmSignOpen(false)}
+        title={'Подписать и отправить?'}
+        message={(() => {
+          const cp = selectedCounterparty
+          const hasUnverified = !!cp && cp.is_verified === false
+          let msg = 'Вы отправляете документ на подписание. Инициатор подпишет документ и он будет направлен адресатам.'
+          if (hasUnverified) msg += ' Выбранный контрагент не подтверждён — приглашение будет отправлено по email.'
+          return msg
+        })()}
+        confirmText={'Подписать и отправить'}
+        confirmVariant={'primary'}
+        loading={confirmLoading}
+        onConfirm={async () => { try { setConfirmLoading(true); await onSignAndSend() } finally { setConfirmLoading(false); setConfirmSignOpen(false) } }}
       />
     </div>
   )
