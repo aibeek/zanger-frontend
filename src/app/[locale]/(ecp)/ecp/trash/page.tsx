@@ -337,17 +337,18 @@ export default function EcpTrashPage() {
   )
 }
 
-const eventLabel = (code: string) => {
-  if (code === 'DOCUMENT_CREATED') return 'Создан'
-  if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
-  if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен на подписание'
-  if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
-  if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
-  if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
-  if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
-  if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
-  if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
-  if (code === 'SIGN_COMPLETED') return 'Подписан'
+  const eventLabel = (code: string) => {
+    if (code === 'DOCUMENT_CREATED') return 'Создан'
+    if (code === 'DOCUMENT_UPDATED') return 'Обновлён'
+    if (code === 'DOCUMENT_SENT_FOR_SIGNATURE') return 'Отправлен на подписание'
+    if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
+    if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
+    if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+    if (code === 'COUNTERPARTY_INVITE_SENT') return 'Приглашение отправлено'
+    if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
+    if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
+    if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
+    if (code === 'SIGN_COMPLETED') return 'Подписан'
   if (code === 'SIGN_DECLINED' || code === 'DOCUMENT_DECLINED') return 'Отклонено'
   if (code === 'DOCUMENT_ARCHIVED') return 'Архивирован'
   if (code === 'DOCUMENT_RESTORED') return 'Разархивирован'

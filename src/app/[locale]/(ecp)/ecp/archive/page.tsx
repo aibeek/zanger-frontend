@@ -53,6 +53,7 @@ export default function EcpArchivePage() {
     if (code === 'DOCUMENT_ROUTED') return 'Отправлен на подписание'
     if (code === 'ROUTE_CHANGED') return 'Маршрут изменён'
     if (code === 'SIGNERS_ADDED') return 'Подписанты добавлены'
+    if (code === 'COUNTERPARTY_INVITE_SENT') return 'Приглашение отправлено'
     if (code === 'SIGN_OPERATION_CREATED') return 'Операция подписи'
     if (code === 'SIGN_VERIFY_SUCCESS') return 'Проверка подписи'
     if (code === 'SIGN_VERIFY_FAILED') return 'Ошибка проверки подписи'
