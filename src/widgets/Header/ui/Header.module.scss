@@ -282,7 +282,7 @@
 	.left {
 		display: flex;
 		align-items: center;
-		flex-shrink: 0;
+		flex: 0.8;
 		gap: 32px;
 		
 		@media (max-width: 1200px) {
@@ -312,7 +312,8 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
-		flex-shrink: 0;
+		flex: 1.2;
+		justify-content: flex-end;
 		
 		@media (max-width: 1200px) {
 			gap: 16px;
@@ -386,9 +387,6 @@
 		display: flex;
 		align-items: center;
 		gap: 10px; /* базовый зазор между пунктами меню */
-		position: absolute;
-		left: 50%;
-		transform: translateX(-50%);
 		
 		@media (max-width: 1400px) {
 			gap: 16px;

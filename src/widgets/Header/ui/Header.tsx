@@ -343,6 +343,21 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 												{t('login')}
 											</AppLink>
 
+											<AppLink
+												className={s.appLink}
+												variant={'primary'}
+												href={'/auth/register/select-role'}
+												onClick={(e) => {
+													// На мобильных показываем модалку
+													if (shouldShowMobileModal) {
+														e.preventDefault()
+														open()
+													}
+													// На десктопе ссылка работает нормально
+												}}>
+												{t('register')}
+											</AppLink>
+
 											<div className={s.liveButtonWrapper} ref={liveButtonRef}>
 												<AppLink
 													className={`${s.appLink} ${s.liveButton}`}
