@@ -1092,12 +1092,14 @@
 			},
 		"footer": {
 			"sections": {
-				"forum": "Форум",
-				"database": "База данных",
+				"applications": "Заявки",
+				"forum": "Юридический форум",
+				"database": "База знаний",
 				"seminars": "Семинары",
-                    "digitalSignature": "ЭДО",
+				"digitalSignature": "ЭДО",
 				"videoConference": "Видео-конференц связь",
-				"documentManagement": "Управление документами"
+				"documentManagement": "Управление документами",
+				"aiConsultant": "ИИ-консультант"
 			},
 			"stats": {
 				"registeredLawyers": "Зарегистрировано юристов",

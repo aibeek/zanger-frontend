@@ -15,6 +15,7 @@ import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
 import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
 import Strelka from '@/app/assets/icons/strelka.svg'
 import docIcon from '@/app/assets/icons/document.svg'
+import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -59,19 +60,24 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     }
 
     const sections = [
+        t('dashboard.footer.sections.applications'),
         t('dashboard.footer.sections.digitalSignature'),
         t('dashboard.sidebar.vcMyConferences'),
+        t('dashboard.footer.sections.aiConsultant'),
         t('dashboard.footer.sections.forum'),
-        t('dashboard.footer.sections.database'),
-        t('dashboard.footer.sections.seminars'),
-        t('dashboard.footer.sections.documentManagement')
+        t('dashboard.footer.sections.database')
     ]
 
     const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
+    const applicationsLabel = t('dashboard.footer.sections.applications')
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
             router.push(`/${language}/ecp/statuses`)
+            return
+        }
+        if (label === applicationsLabel) {
+            router.push(`/${language}/dashboard/applications`)
             return
         }
         setIsModalOpen(true)
@@ -137,11 +143,12 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                     {sections.map((section, index) => {
                         const isPilot = section === t('dashboard.sidebar.vcMyConferences')
                         const isDigital = section === digitalSignatureLabel
+                        const isApplications = section === applicationsLabel
                         const label = section === t('dashboard.sidebar.vcMyConferences') ? 'ВКС' : section
                         return (
                         <button 
                             key={index} 
-                            className={`${s.footerSection} ${isDigital || isPilot ? s.footerSectionEdo : ''}`}
+                            className={`${s.footerSection} ${isDigital || isPilot || isApplications ? s.footerSectionEdo : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
@@ -154,6 +161,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                                 {isPilot && (
                                     <span className={s.footerDocIcon} aria-hidden>
                                         <Image src="/assets/icons/vks.svg" alt="vks" width={26} height={26} />
+                                    </span>
+                                )}
+                                {isApplications && (
+                                    <span className={s.footerDocIcon} aria-hidden>
+                                        <Image src={MyApplicationsIcon} alt="applications" width={26} height={26} />
                                     </span>
                                 )}
                             </span>
