@@ -41,6 +41,16 @@ export default function VideoConferenceLinkPage() {
   const [selectedMic, setSelectedMic] = useState('')
   const [stream, setStream] = useState<MediaStream | null>(null)
   const [participants, setParticipants] = useState<any[]>([])
+  const [remoteParticipants, setRemoteParticipants] = useState<Map<string, any>>(new Map())
+  const [videoPositions, setVideoPositions] = useState<Record<string, { x: number; y: number }>>({})
+  const dragState = useRef<{ isDragging: boolean; elementId: string | null; startX: number; startY: number; initialX: number; initialY: number }>({
+    isDragging: false,
+    elementId: null,
+    startX: 0,
+    startY: 0,
+    initialX: 0,
+    initialY: 0,
+  })
 
   const { personalData } = useLoginStore()
 
@@ -129,6 +139,65 @@ export default function VideoConferenceLinkPage() {
     })
   }
 
+  function attachDragHandlers(element: HTMLDivElement, elementId: string) {
+    element.addEventListener('mousedown', (e: MouseEvent) => {
+      dragState.current.isDragging = true
+      dragState.current.elementId = elementId
+      dragState.current.startX = e.clientX
+      dragState.current.startY = e.clientY
+      dragState.current.initialX = element.offsetLeft
+      dragState.current.initialY = element.offsetTop
+      element.style.cursor = 'grabbing'
+      element.style.zIndex = '1000'
+    })
+  }
+
+  useEffect(() => {
+    if (!dragState.current.isDragging) return
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragState.current.isDragging || !dragState.current.elementId) return
+
+      const deltaX = e.clientX - dragState.current.startX
+      const deltaY = e.clientY - dragState.current.startY
+
+      const newX = dragState.current.initialX + deltaX
+      const newY = dragState.current.initialY + deltaY
+
+      const wrapper = document.getElementById(`video-${dragState.current.elementId}`)
+      if (wrapper) {
+        wrapper.style.position = 'absolute'
+        wrapper.style.left = `${newX}px`
+        wrapper.style.top = `${newY}px`
+      }
+
+      setVideoPositions(prev => ({
+        ...prev,
+        [dragState.current.elementId!]: { x: newX, y: newY }
+      }))
+    }
+
+    const handleMouseUp = () => {
+      if (dragState.current.elementId) {
+        const wrapper = document.getElementById(`video-${dragState.current.elementId}`)
+        if (wrapper) {
+          wrapper.style.cursor = 'grab'
+          wrapper.style.zIndex = 'auto'
+        }
+      }
+      dragState.current.isDragging = false
+      dragState.current.elementId = null
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [])
+
   async function joinRoom() {
     if (!conferenceId) return
     setError(null)
@@ -148,22 +217,68 @@ export default function VideoConferenceLinkPage() {
       const room = new Room()
       roomRef.current = room
 
-      room.on(RoomEvent.TrackSubscribed, (track: any) => {
+      room.on(RoomEvent.TrackSubscribed, (track: any, pub: any, participant: any) => {
         const el = track.attach()
         el.autoplay = true
         el.playsInline = true
         ;(el as any).muted = false
         ;(el as any).play?.().catch(() => {})
         
+        // Store participant reference
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          if (!updated.has(participant.identity)) {
+            updated.set(participant.identity, { participant, tracks: [] })
+          }
+          const pData = updated.get(participant.identity)!
+          pData.tracks.push({ track, el })
+          return updated
+        })
+        
         if (track.kind === 'video') {
-          remoteContainerRef.current?.appendChild(el)
+          // Add wrapper for draggable video
+          const wrapper = document.createElement('div')
+          wrapper.id = `video-${participant.identity}`
+          wrapper.style.position = 'relative'
+          wrapper.style.display = 'inline-block'
+          wrapper.style.cursor = 'grab'
+          wrapper.appendChild(el)
+          remoteContainerRef.current?.appendChild(wrapper)
+          
+          // Attach drag handlers
+          attachDragHandlers(wrapper, participant.identity)
         } else {
           audioContainerRef.current?.appendChild(el)
         }
       })
 
-      room.on(RoomEvent.TrackUnsubscribed, track => {
+      room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
         track.detach().forEach((el: any) => el.remove())
+        
+        // Clean up from state
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          for (const [identity, data] of updated.entries()) {
+            data.tracks = data.tracks.filter((t: any) => t.track !== track)
+            if (data.tracks.length === 0) {
+              updated.delete(identity)
+            }
+          }
+          return updated
+        })
+      })
+
+      room.on(RoomEvent.ParticipantConnected, (participant: any) => {
+        console.log('Participant connected:', participant.identity)
+      })
+
+      room.on(RoomEvent.ParticipantDisconnected, (p: any) => {
+        console.log('Participant disconnected:', p.identity)
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          updated.delete(p.identity)
+          return updated
+        })
       })
 
       await room.connect(url, token)
@@ -331,7 +446,7 @@ export default function VideoConferenceLinkPage() {
                  <Image src="/assets/icons/camera.svg" alt="" width={64} height={64} style={{ opacity: 0.2 }} />
                </div>
             )}
-            <div ref={remoteContainerRef} className={s.remoteGrid}></div>
+            <div ref={remoteContainerRef} className={s.remoteGrid} style={{ position: 'relative' }}></div>
             <div ref={audioContainerRef} style={{ display: 'none' }}></div>
           </div>
 
@@ -382,9 +497,9 @@ export default function VideoConferenceLinkPage() {
         <div className={s.rightPanel}>
           <div className={s.infoBlock}>
             <div className={s.infoRow}>
-              <span>Код конференции:</span>
+              <span>Идентификатор:</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className={s.codeValue}>{conf?.code ? conf.code.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : conferenceId}</span>
+                <span className={s.codeValue}>{conferenceId}</span>
                 <button className={s.copyBtn} onClick={() => navigator.clipboard.writeText(conf?.code || conferenceId)}>
                   <Image src="/assets/icons/copy.svg" alt="copy" width={16} height={16} />
                 </button>
@@ -403,7 +518,7 @@ export default function VideoConferenceLinkPage() {
             <div className={s.infoBlock} style={{ marginTop: 20 }}>
                <input 
                  className={s.input} 
-                 placeholder="user_id участника" 
+                 placeholder="Идентификатор участника" 
                  value={addUserId} 
                  onChange={e => setAddUserId(e.target.value)} 
                />
@@ -411,11 +526,11 @@ export default function VideoConferenceLinkPage() {
                     if (!addUserId) return;
                     try { 
                       const body = { conference_id: conferenceId, user_id: Number(addUserId) }; 
-                      await httpClientWithAuth(`${BASE}/add-member`, { method: 'POST', body: JSON.stringify(body) }); 
+                      await httpClientWithAuth(`${BASE}/members/add`, { method: 'POST', body: JSON.stringify(body) }); 
                       setAddUserId('');
                       const qs = new URLSearchParams({ conference_id: conferenceId }).toString(); 
-                      const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); 
-                      setParticipants(Array.isArray(res?.participants) ? res.participants : []); 
+                      // const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); 
+                      // setParticipants(Array.isArray(res?.participants) ? res.participants : []); 
                       alert('Участник добавлен');
                     } catch (e) {
                       console.error(e);

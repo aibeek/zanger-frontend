@@ -310,7 +310,7 @@ export default function VideoConferencePage() {
             <span className={s.pillText}>Создать встречу</span>
           </button>
           <div className={s.codeInput}>
-            <input type="text" placeholder="Введите код или ссылку" value={codeInput} onChange={e => handleCodeChange(e.target.value)} />
+            <input type="text" placeholder="Введите ссылку или идентификатор" value={codeInput} onChange={e => handleCodeChange(e.target.value)} />
             <button className={s.sendBtn} aria-label="Отправить" onClick={handleCodeSubmit}></button>
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function VideoConferencePage() {
               <video ref={videoRef} autoPlay muted playsInline />
               <div ref={remoteContainerRef} className={s.remoteGrid}></div>
 
-              <div className={s.status}>Комната: {connectedInfo.room} • Участник: {String(connectedInfo.is_member)} • Identity: {connectedInfo.identity} • Тема: {connectedInfo.topic}</div>
+              <div className={s.status}> Участникs: {String(connectedInfo.is_member)} • Identity: {connectedInfo.identity} • Тема: {connectedInfo.topic}</div>
               {debug && (
                 <div className={s.status}>Server: {debug.url} • Token: {debug.tokenLen} символов • Публикация: {String(debug.canPublish)}</div>
               )}

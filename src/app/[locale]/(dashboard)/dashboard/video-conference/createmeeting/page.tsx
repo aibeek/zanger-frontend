@@ -100,7 +100,7 @@ export default function CreateMeetingPage() {
       
       if (data) {
         setConferenceId(String(data.conference_id))
-        setCode(String(data.code))
+        setCode(String(data.conference_id))
         setTopic(data.topic || '')
       }
     } catch (e) {
@@ -137,7 +137,7 @@ export default function CreateMeetingPage() {
     router.push(`/${language}/dashboard/video-conference`)
   }
 
-  const displayCode = code ? (code.match(/^\d{9}$/) ? code.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : code) : '123 456 789'
+  const displayCode = code ? (code.match(/^\d{9}$/) ? code.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3') : code) : 'Загрузка...'
 
   return (
     <div className={s.container}>
@@ -214,7 +214,7 @@ export default function CreateMeetingPage() {
 
           <div className={s.infoBlock}>
             <div className={s.infoRow}>
-              <span>Код конференции:</span>
+              <span>Идентификатор:</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span className={s.codeValue}>{displayCode}</span>
                 <button className={s.copyBtn} onClick={() => navigator.clipboard.writeText(code)}>
