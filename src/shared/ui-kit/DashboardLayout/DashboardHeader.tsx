@@ -141,7 +141,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         return (
                         <button 
                             key={index} 
-                            className={`${s.footerSection} ${isDigital ? s.footerSectionEdo : ''}`}
+                            className={`${s.footerSection} ${isDigital || isPilot ? s.footerSectionEdo : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
@@ -151,7 +151,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                                         <Image src={docIcon} alt="doc" width={26} height={26} />
                                     </span>
                                 )}
-                                {isPilot && <span className={s.pilotPill}>Пилот</span>}
+                                {isPilot && (
+                                    <span className={s.footerDocIcon} aria-hidden>
+                                        <Image src="/assets/icons/vks.svg" alt="vks" width={26} height={26} />
+                                    </span>
+                                )}
                             </span>
                             <span className={s.footerArrow}>
                                 <Image 
