@@ -68,7 +68,7 @@ export default function VideoConferencePage() {
       setError('Введите код конференции или ссылку')
       return
     }
-    joinRoom()
+    router.push(`/${language}/dashboard/video-conference/${conferenceId}`)
   }
 
   function handleCreateClick() {
@@ -335,7 +335,7 @@ export default function VideoConferencePage() {
                     <td className={s.td} suppressHydrationWarning>{formatDT(it.planned_time)}</td>
                     <td className={s.td}>{it.type}</td>
                     <td className={`${s.td} ${s.rowAction}`}>
-                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; setConferenceId(cid); joinRoom(); }}>Войти</Button>
+                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; router.push(`/${language}/dashboard/video-conference/${cid}`); }}>Войти</Button>
                     </td>
                   </tr>
                 ))}
