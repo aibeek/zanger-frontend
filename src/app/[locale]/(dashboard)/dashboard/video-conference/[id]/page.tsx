@@ -140,7 +140,10 @@ export default function VideoConferenceLinkPage() {
   }
 
   function attachDragHandlers(element: HTMLDivElement, elementId: string) {
-    element.addEventListener('mousedown', (e: MouseEvent) => {
+    const onMouseDown = (e: MouseEvent) => {
+      // Only drag on left mouse button
+      if (e.button !== 0) return
+      
       dragState.current.isDragging = true
       dragState.current.elementId = elementId
       dragState.current.startX = e.clientX
@@ -148,8 +151,15 @@ export default function VideoConferenceLinkPage() {
       dragState.current.initialX = element.offsetLeft
       dragState.current.initialY = element.offsetTop
       element.style.cursor = 'grabbing'
-      element.style.zIndex = '1000'
-    })
+      element.style.userSelect = 'none'
+      
+      // Prevent text selection while dragging
+      e.preventDefault()
+    }
+    
+    element.addEventListener('mousedown', onMouseDown)
+    // Store for cleanup if needed
+    ;(element as any)._dragHandler = onMouseDown
   }
 
   useEffect(() => {
@@ -169,6 +179,9 @@ export default function VideoConferenceLinkPage() {
         wrapper.style.position = 'absolute'
         wrapper.style.left = `${newX}px`
         wrapper.style.top = `${newY}px`
+        wrapper.style.width = '280px'
+        wrapper.style.height = '157px'
+        wrapper.style.zIndex = '1001'
       }
 
       setVideoPositions(prev => ({
@@ -182,7 +195,6 @@ export default function VideoConferenceLinkPage() {
         const wrapper = document.getElementById(`video-${dragState.current.elementId}`)
         if (wrapper) {
           wrapper.style.cursor = 'grab'
-          wrapper.style.zIndex = 'auto'
         }
       }
       dragState.current.isDragging = false
@@ -240,8 +252,11 @@ export default function VideoConferenceLinkPage() {
           const wrapper = document.createElement('div')
           wrapper.id = `video-${participant.identity}`
           wrapper.style.position = 'relative'
-          wrapper.style.display = 'inline-block'
+          wrapper.style.width = '100%'
+          wrapper.style.height = '100%'
+          wrapper.style.aspectRatio = '16/9'
           wrapper.style.cursor = 'grab'
+          wrapper.style.touchAction = 'none'
           wrapper.appendChild(el)
           remoteContainerRef.current?.appendChild(wrapper)
           
@@ -282,6 +297,56 @@ export default function VideoConferenceLinkPage() {
       })
 
       await room.connect(url, token)
+
+      // Subscribe to existing participants already in the room
+      room.participants.forEach((participant: any) => {
+        console.log('Existing participant:', participant.identity)
+        participant.videoTracks.forEach((pub: any) => {
+          const track = pub.videoTrack
+          if (track) {
+            const el = track.attach()
+            el.autoplay = true
+            el.playsInline = true
+            ;(el as any).muted = false
+            ;(el as any).play?.().catch(() => {})
+
+            // Store participant reference
+            setRemoteParticipants(prev => {
+              const updated = new Map(prev)
+              if (!updated.has(participant.identity)) {
+                updated.set(participant.identity, { participant, tracks: [] })
+              }
+              const pData = updated.get(participant.identity)!
+              pData.tracks.push({ track, el })
+              return updated
+            })
+
+            // Add wrapper for draggable video
+            const wrapper = document.createElement('div')
+            wrapper.id = `video-${participant.identity}`
+            wrapper.style.position = 'relative'
+            wrapper.style.width = '100%'
+            wrapper.style.height = '100%'
+            wrapper.style.aspectRatio = '16/9'
+            wrapper.style.cursor = 'grab'
+            wrapper.style.touchAction = 'none'
+            wrapper.appendChild(el)
+            remoteContainerRef.current?.appendChild(wrapper)
+
+            // Attach drag handlers
+            attachDragHandlers(wrapper, participant.identity)
+          }
+        })
+        participant.audioTracks.forEach((pub: any) => {
+          const track = pub.audioTrack
+          if (track) {
+            const el = track.attach()
+            ;(el as any).muted = false
+            ;(el as any).play?.().catch(() => {})
+            audioContainerRef.current?.appendChild(el)
+          }
+        })
+      })
 
       const sVideo = sessionStorage.getItem('meet_video')
       const sAudio = sessionStorage.getItem('meet_audio')
@@ -446,7 +511,7 @@ export default function VideoConferenceLinkPage() {
                  <Image src="/assets/icons/camera.svg" alt="" width={64} height={64} style={{ opacity: 0.2 }} />
                </div>
             )}
-            <div ref={remoteContainerRef} className={s.remoteGrid} style={{ position: 'relative' }}></div>
+            <div ref={remoteContainerRef} className={s.remoteGrid}></div>
             <div ref={audioContainerRef} style={{ display: 'none' }}></div>
           </div>
 
