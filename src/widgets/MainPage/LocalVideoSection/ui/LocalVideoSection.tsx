@@ -63,15 +63,16 @@ export const LocalVideoSection: React.FC<LocalVideoSectionProps> = ({
     [locale]
   )
   // Ensure warning video (moshenniki.mp4) is FIRST: move to front if provided
-  const items = React.useMemo(() => {
-    const list = [...videos]
-    const idx = list.findIndex(v => v.src?.toLowerCase().includes('moshenniki.mp4'))
-    if (idx >= 0) {
-      const [warning] = list.splice(idx, 1)
-      return [warning, ...list]
-    }
-    return list
-  }, [videos])
+  // const items = React.useMemo(() => {
+  //   const list = [...videos]
+  //   const idx = list.findIndex(v => v.src?.toLowerCase().includes('moshenniki.mp4'))
+  //   if (idx >= 0) {
+  //     const [warning] = list.splice(idx, 1)
+  //     return [warning, ...list]
+  //   }
+  //   return list
+  // }, [videos])
+  const items = videos
 
   // Build a few common fallbacks for potential path/case issues
   const buildMp4Sources = React.useCallback((src: string) => {
