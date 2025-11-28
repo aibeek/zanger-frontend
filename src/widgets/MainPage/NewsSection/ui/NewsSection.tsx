@@ -40,6 +40,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'narxoz-clinic',
+			title: t('narxozClinic.title'),
+			description: t('narxozClinic.description'),
+			date: '28.11.2025',
+			image: '/assets/images/narkoz.jpeg',
+			readMore: t('readMore'),
+			fullDescription: t('narxozClinic.fullDescription'),
+			eventDay: t('narxozClinic.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'shanyraq-forum',
 			title: 'Участие в форуме "Shanyraq 2025"',
 			description: 'Команда Zanger приняла участие в ежегодном бизнес-форуме SHANYRAQ 2025',
