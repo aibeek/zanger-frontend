@@ -159,22 +159,28 @@
   flex: 1;
 }
 
+.cardHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .moduleTitle {
   font-size: 20px;
   font-weight: 700;
   color: #ffffff;
-  margin-bottom: 12px;
+  margin-bottom: 0;
   line-height: 1.3;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   
   @media (max-width: 768px) {
     font-size: 18px;
-    margin-bottom: 10px;
   }
   
   @media (max-width: 480px) {
     font-size: 16px;
-    margin-bottom: 8px;
   }
 }
 
@@ -260,4 +266,20 @@
   stroke: #22c55e;
   stroke-width: 3;
   fill: none;
+}
+
+.arrowIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  margin-left: 16px;
+  
+  img {
+    width: 16px;
+    height: 16px;
+  }
 }

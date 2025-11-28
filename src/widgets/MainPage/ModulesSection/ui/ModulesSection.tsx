@@ -1,12 +1,16 @@
 'use client'
 
 import { useTranslations, useLocale } from 'next-intl'
-import Image from 'next/image'
+import Image, { StaticImageData } from 'next/image'
 import { useState } from 'react'
 import { Modal, Button } from '@/shared/ui-kit'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
-import docIcon from '@/app/assets/icons/document.svg'
 import monitor from '@/app/assets/icons/monitor.webp'
+import myApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
+import documentIcon from '@/app/assets/icons/document.svg'
+import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
+import peopleIcon from '@/app/assets/icons/people.svg'
+import faqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 import s from './ModulesSection.module.scss'
 import { useRouter } from 'next/navigation'
 import { authService } from '@/features/auth'
@@ -32,6 +36,17 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
+  const getModuleIcon = (title: string): string | StaticImageData => {
+    const normalized = title.replace(/\s+/g, '').toUpperCase()
+    if (normalized.includes('ЗАЯВКИ') || normalized.includes('ӨТІНІМДЕР')) return myApplicationsIcon
+    if (normalized.includes('ЭДО') || normalized.includes('ЭЦҚ')) return documentIcon
+    if (normalized.includes('ВКС') || normalized.includes('БЕЙНЕ')) return '/assets/icons/vks.svg'
+    if (normalized.includes('ИИ') || normalized.includes('CONSULTANT')) return chatIcon
+    if (normalized.includes('ФОРУМ')) return peopleIcon
+    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ')) return faqIcon
+    return documentIcon
+  }
+
   const handleModuleClick = async (module: Module) => {
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
     const isEdoOrEcp =
@@ -41,15 +56,30 @@ export const ModulesSection = () => {
       normalized.includes('ЭЦҚ') ||
       normalized.includes('ECP')
 
+    const isApplications = 
+      normalized.includes('ЗАЯВКИ') ||
+      normalized.includes('ӨТІНІМДЕР')
+
     if (isEdoOrEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
-        router.push(`/ru/ecp/statuses`)
+        router.push(`/${locale}/ecp/statuses`)
       } else {
-        router.push(`/ru/auth/login`)
+        router.push(`/${locale}/auth/login`)
       }
       return
     }
+
+    if (isApplications) {
+      const res = await authService.check()
+      if (res?.isAuthenticated) {
+        router.push(`/${locale}/dashboard/applications`)
+      } else {
+        router.push(`/${locale}/auth/login`)
+      }
+      return
+    }
+
     setIsModalOpen(true)
   }
 
@@ -75,7 +105,10 @@ export const ModulesSection = () => {
               }}
             >
               <div className={s.cardContent}>
-                <h3 className={s.moduleTitle}>{module.title}</h3>
+                <div className={s.cardHeader}>
+                  <Image src={getModuleIcon(module.title)} alt={module.title} width={32} height={32} />
+                  <h3 className={s.moduleTitle}>{module.title}</h3>
+                </div>
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>
               <div className={s.moduleIcon}>
