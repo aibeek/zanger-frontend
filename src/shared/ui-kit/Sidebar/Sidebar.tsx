@@ -149,6 +149,10 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
         if (role === 'client' && item.id === 'subscription') {
             return false
         }
+        // Для юристов скрываем "Мои заявки"
+        if (role === 'lawyer' && item.id === 'applications') {
+            return false
+        }
         // Для юристов показываем все пункты
         return true
     })

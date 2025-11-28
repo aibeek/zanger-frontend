@@ -15,6 +15,10 @@ export default async function Home() {
 			<LocalVideoSection
 				videos={[
 					{
+						src: '/assets/images/narxoz.mp4',
+						description: t('captions.narxoz'),
+					},
+					{
 						src: '/assets/images/moshenniki.mp4',
 						description: t('captions.moshenniki'),
 					},
