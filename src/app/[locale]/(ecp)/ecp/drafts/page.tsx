@@ -596,7 +596,7 @@ export default function EcpDraftsPage() {
           const cp = selectedCounterparty
           const hasUnverified = !!cp && cp.is_verified === false
           let msg = 'Документ будет отправлен адресатам без подписи инициатора.'
-          if (hasUnverified) msg += ' Выбранный контрагент не подтверждён — приглашение будет отправлено по email.'
+          if (hasUnverified) msg += ' Ваш контрагент не зарегистрирован в системе. Он получит уведомление на электронную почту и сможет подписать документ после регистрации на платформе.'
           return msg
         })()}
         confirmText={'Отправить'}
@@ -613,7 +613,7 @@ export default function EcpDraftsPage() {
           const cp = selectedCounterparty
           const hasUnverified = !!cp && cp.is_verified === false
           let msg = 'Вы отправляете документ на подписание. Инициатор подпишет документ и он будет направлен адресатам.'
-          if (hasUnverified) msg += ' Выбранный контрагент не подтверждён — приглашение будет отправлено по email.'
+          if (hasUnverified) msg += ' Ваш контрагент не зарегистрирован в системе. Он получит уведомление на электронную почту и сможет подписать документ после регистрации на платформе.'
           return msg
         })()}
         confirmText={'Подписать и отправить'}

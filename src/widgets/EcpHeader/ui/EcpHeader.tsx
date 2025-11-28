@@ -9,6 +9,7 @@ import { useLoginStore } from '@/features/auth/login'
 import Image from 'next/image'
 import avatarDefault from '@/app/assets/icons/avatar-default.svg'
 import s from './EcpHeader.module.scss'
+import { ModulesBar } from '@/shared/ui-kit/ModulesBar/ModulesBar'
 
 interface EcpHeaderProps {
   title?: string
@@ -55,6 +56,7 @@ export const EcpHeader: React.FC<EcpHeaderProps> = ({ title }) => {
           </div>
         </div>
       </header>
+      <ModulesBar />
     </div>
   )
 }
