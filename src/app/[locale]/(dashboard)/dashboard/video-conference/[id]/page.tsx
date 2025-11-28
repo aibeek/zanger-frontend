@@ -29,6 +29,8 @@ export default function VideoConferenceLinkPage() {
   const remoteContainerRef = useRef<HTMLDivElement | null>(null)
   const audioContainerRef = useRef<HTMLDivElement | null>(null)
 
+  const videoAreaRef = useRef<HTMLDivElement | null>(null)
+
   const roomRef = useRef<any>(null)
   const BASE = 'https://api.zanger-app.kz/api/livekit'
   const [cameraOn, setCameraOn] = useState(false)
@@ -148,8 +150,19 @@ export default function VideoConferenceLinkPage() {
       dragState.current.elementId = elementId
       dragState.current.startX = e.clientX
       dragState.current.startY = e.clientY
-      dragState.current.initialX = element.offsetLeft
-      dragState.current.initialY = element.offsetTop
+      
+      // Get position relative to videoArea
+      const rect = element.getBoundingClientRect()
+      const videoAreaRect = videoAreaRef.current?.getBoundingClientRect()
+      
+      if (videoAreaRect) {
+        dragState.current.initialX = rect.left - videoAreaRect.left
+        dragState.current.initialY = rect.top - videoAreaRect.top
+      } else {
+        dragState.current.initialX = 0
+        dragState.current.initialY = 0
+      }
+      
       element.style.cursor = 'grabbing'
       element.style.userSelect = 'none'
       
@@ -158,7 +171,6 @@ export default function VideoConferenceLinkPage() {
     }
     
     element.addEventListener('mousedown', onMouseDown)
-    // Store for cleanup if needed
     ;(element as any)._dragHandler = onMouseDown
   }
 
@@ -171,8 +183,8 @@ export default function VideoConferenceLinkPage() {
       const deltaX = e.clientX - dragState.current.startX
       const deltaY = e.clientY - dragState.current.startY
 
-      const newX = dragState.current.initialX + deltaX
-      const newY = dragState.current.initialY + deltaY
+      const newX = Math.max(0, dragState.current.initialX + deltaX)
+      const newY = Math.max(0, dragState.current.initialY + deltaY)
 
       const wrapper = document.getElementById(`video-${dragState.current.elementId}`)
       if (wrapper) {
@@ -181,6 +193,7 @@ export default function VideoConferenceLinkPage() {
         wrapper.style.top = `${newY}px`
         wrapper.style.width = '280px'
         wrapper.style.height = '157px'
+        wrapper.style.aspectRatio = 'unset'
         wrapper.style.zIndex = '1001'
       }
 
@@ -504,7 +517,7 @@ export default function VideoConferenceLinkPage() {
 
       <div className={s.layout}>
         <div className={s.leftPanel}>
-          <div className={s.videoArea}>
+          <div className={s.videoArea} ref={videoAreaRef}>
             {cameraOn && <video ref={videoRef} autoPlay muted playsInline className={s.video} />}
             {!cameraOn && (
                <div className={s.videoPlaceholder}>

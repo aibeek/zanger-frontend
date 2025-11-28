@@ -364,6 +364,7 @@
   transform: scaleX(-1);
   top: 0;
   left: 0;
+  z-index: 1;
 }
 
 .remoteGrid {
@@ -371,20 +372,22 @@
   bottom: 12px;
   right: 12px;
   width: 360px;
-  height: auto;
+  max-height: 50%;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
   padding: 8px;
   pointer-events: none;
-  z-index: 100;
+  z-index: 10;
+  border-radius: 8px;
 }
 
 .remoteGrid > div {
   pointer-events: auto;
-  width: 100%;
   aspect-ratio: 16/9;
   position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
 }
 
 .remoteGrid video {
@@ -392,16 +395,13 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  border-radius: 8px;
-  background: #000;
-  border: 2px solid #fff;
 }
 
 .remoteGrid audio {
   display: none;
 }
 
-/* Allow dragged videos to escape grid */
+/* Allow dragged videos to escape grid and position absolutely */
 .remoteGrid > div[style*="position: absolute"] {
   position: absolute !important;
   grid-column: unset !important;
@@ -409,6 +409,9 @@
   width: 280px !important;
   height: 157px !important;
   aspect-ratio: unset !important;
+  z-index: 1001 !important;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .deviceSelect {
