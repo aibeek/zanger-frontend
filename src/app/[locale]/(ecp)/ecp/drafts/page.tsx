@@ -514,7 +514,7 @@ export default function EcpDraftsPage() {
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: 10 }}>
-                      <button onClick={() => setConfirmSendOpen(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button>
+                      {/* <button onClick={() => setConfirmSendOpen(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button> */}
                       <button onClick={() => setConfirmSignOpen(true)} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Подписать и отправить</button>
                       <button onClick={() => setIsEditing(false)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
                     </div>
@@ -588,6 +588,7 @@ export default function EcpDraftsPage() {
         }}
       />
 
+      {/*
       <ConfirmModal
         isOpen={confirmSendOpen}
         onClose={() => setConfirmSendOpen(false)}
@@ -604,6 +605,7 @@ export default function EcpDraftsPage() {
         loading={confirmLoading}
         onConfirm={async () => { try { setConfirmLoading(true); await onSendWithoutSign() } finally { setConfirmLoading(false); setConfirmSendOpen(false) } }}
       />
+      */}
 
       <ConfirmModal
         isOpen={confirmSignOpen}

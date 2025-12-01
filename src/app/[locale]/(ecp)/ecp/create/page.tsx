@@ -436,13 +436,14 @@ export default function EcpCreateDocumentPage() {
 
           {/* Actions after creation (no draft button) */}
           <div className={s.actions}>
-            <Button variant="secondary" onClick={() => setConfirmSendOpen(true)}>{t('sendWithoutSign')}</Button>
+            {/* <Button variant="secondary" onClick={() => setConfirmSendOpen(true)}>{t('sendWithoutSign')}</Button> */}
             <Button onClick={() => setConfirmSignOpen(true)}>{t('signAndSend')}</Button>
           </div>
         </>
       )}
       </div>
 
+      {/*
       <ConfirmModal
         isOpen={confirmSendOpen}
         title={'Отправить без подписи?'}
@@ -458,6 +459,7 @@ export default function EcpCreateDocumentPage() {
         loading={confirmLoading}
         onConfirm={async () => { try { setConfirmLoading(true); await proceedSendWithoutSign() } finally { setConfirmLoading(false); setConfirmSendOpen(false) } }}
       />
+      */}
 
       <ConfirmModal
         isOpen={confirmSignOpen}
