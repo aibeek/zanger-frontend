@@ -113,38 +113,38 @@ export default function EcpStatusesPage() {
     }
   }
 
-  /**
-   * Генерация челленджа для подписания
-   */
+  const xmlEscape = (s: string): string =>
+    String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;')
+
   const generateChallenge = (taxId: string, type: string): string => {
     const now = new Date().toISOString()
     const nonce = Math.random().toString(36).substring(2, 15)
-    const data = {
-      taxId,
-      type,
-      timestamp: now,
-      nonce,
-      purpose: 'COUNTERPARTY_VERIFICATION',
-    }
-    return btoa(JSON.stringify(data))
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>` +
+      `<EcpVerification>` +
+      `<TaxId>${xmlEscape(taxId)}</TaxId>` +
+      `<Type>${xmlEscape(type)}</Type>` +
+      `<Timestamp>${xmlEscape(now)}</Timestamp>` +
+      `<Nonce>${xmlEscape(nonce)}</Nonce>` +
+      `<Purpose>COUNTERPARTY_VERIFICATION</Purpose>` +
+      `</EcpVerification>`
+    const utf8 = unescape(encodeURIComponent(xml))
+    return btoa(utf8)
   }
 
-  /**
-   * Подписание челленджа через NCALayer
-   */
-  const signChallengeWithNCALayer = async (challenge: string): Promise<{ signature: string; method: 'SIGN_XML' | 'SIGN_CMS' }> => {
+  const signChallengeWithNCALayer = async (challenge: string): Promise<{ signature: string; method: 'SIGN_XML' }> => {
     try {
       setVerificationStep('signing')
-      // Проверяем доступность NCALayer
       const isAvailable = await ncalayerUtils.isNCALayerAvailable()
       if (!isAvailable) {
         throw new Error('NCALayer не доступен')
       }
-
-      // Подписываем челлендж
-      const method = await ncalayerUtils.detectSignatureMethod()
-      const signature = method === 'SIGN_XML' ? await ncalayerUtils.signXml(challenge) : await ncalayerUtils.signData(challenge)
-      return { signature, method }
+      const signature = await ncalayerUtils.signXml(challenge)
+      return { signature, method: 'SIGN_XML' }
     } catch (error) {
       throw new Error(`Ошибка при подписании: ${error.message}`)
     }
@@ -188,7 +188,7 @@ export default function EcpStatusesPage() {
           // Верифицируем подпись с ИИН/БИН
           const verification = await signingApi.verifyWithTaxId({
             tax_id: iinbin,
-            ...(signature.method === 'SIGN_XML' ? { xml: signature.signature } : { cms: signature.signature, challenge }),
+            xml: signature.signature,
           })
           
           if (!verification.valid) {
@@ -414,7 +414,7 @@ export default function EcpStatusesPage() {
       setVerificationStep('verifying')
       const verification = await signingApi.verifyWithTaxId({
         tax_id: activeMatch.iinbin,
-        ...(signature.method === 'SIGN_XML' ? { xml: signature.signature } : { cms: signature.signature, challenge }),
+        xml: signature.signature,
       })
       if (!verification.valid) {
         setVerificationStep('error')

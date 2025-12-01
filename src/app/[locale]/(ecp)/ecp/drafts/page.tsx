@@ -614,7 +614,7 @@ export default function EcpDraftsPage() {
         message={(() => {
           const cp = selectedCounterparty
           const hasUnverified = !!cp && cp.is_verified === false
-          let msg = 'Вы отправляете документ на подписание. Инициатор подпишет документ и он будет направлен адресатам.'
+          let msg = 'Подтвердите подписание и отправку документа контрагенту.'
           if (hasUnverified) msg += ' Ваш контрагент не зарегистрирован в системе. Он получит уведомление на электронную почту и сможет подписать документ после регистрации на платформе.'
           return msg
         })()}
