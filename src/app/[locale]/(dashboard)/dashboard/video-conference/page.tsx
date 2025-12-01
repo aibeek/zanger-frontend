@@ -16,7 +16,7 @@ export default function VideoConferencePage() {
   const pathname = usePathname()
   const languageMatch = pathname.match(/^\/(\w{2})\//)
   const language = (languageMatch?.[1] || 'ru') as string
-  const t = useTranslations('footer.sections')
+  const t = useTranslations()
 
   const [conferenceId, setConferenceId] = useState('')
   const [codeInput, setCodeInput] = useState('')
@@ -65,7 +65,7 @@ export default function VideoConferencePage() {
 
   function handleCodeSubmit() {
     if (!conferenceId) {
-      setError('Введите код конференции или ссылку')
+      setError(t('dashboard.videoConference.enterCodeOrLink'))
       return
     }
     router.push(`/${language}/dashboard/video-conference/${conferenceId}`)
@@ -134,7 +134,7 @@ export default function VideoConferencePage() {
 
   async function joinRoom() {
     if (!conferenceId) {
-      setError('Введите conference_id')
+      setError(t('dashboard.videoConference.enterConferenceId'))
       return
     }
 
@@ -172,7 +172,7 @@ export default function VideoConferencePage() {
       setConnectedInfo({ room: room.name, is_member: canPublish, topic: tp, identity })
 
     } catch (e: any) {
-      setError(e?.message || 'Ошибка подключения')
+      setError(e?.message || t('dashboard.videoConference.errorConnection'))
     } finally {
       setJoining(false)
     }
@@ -204,14 +204,14 @@ export default function VideoConferencePage() {
 
   async function createRoom() {
     if (!conferenceId) {
-      setError('Введите conference_id')
+      setError(t('dashboard.videoConference.enterConferenceId'))
       return
     }
     setError(null)
     try {
       const payload = {
         type: 'consultation',
-        topic: codeInput ? `Встреча: ${codeInput}` : 'Встреча',
+        topic: codeInput ? `${t('dashboard.videoConference.meeting')}: ${codeInput}` : t('dashboard.videoConference.meeting'),
         planned_time: new Date(Date.now() + 60_000).toISOString(),
         user_id: Number(userId || (personalData as any)?.id || 0),
       }
@@ -221,7 +221,7 @@ export default function VideoConferencePage() {
       })
       await loadConferences()
     } catch (e: any) {
-      setError(e?.message || 'Ошибка создания комнаты')
+      setError(e?.message || t('dashboard.videoConference.errorCreateRoom'))
     }
   }
 
@@ -230,7 +230,7 @@ export default function VideoConferencePage() {
     try {
       const payload = {
         type: 'consultation',
-        topic: codeInput ? `Встреча: ${codeInput}` : 'Встреча',
+        topic: codeInput ? `${t('dashboard.videoConference.meeting')}: ${codeInput}` : t('dashboard.videoConference.meeting'),
         planned_time: new Date(Date.now() + 60_000).toISOString(),
         user_id: Number(userId || (personalData as any)?.id || 0),
       }
@@ -242,7 +242,7 @@ export default function VideoConferencePage() {
       const cid = String(data?.conference_id || '')
       if (cid) setConferenceId(cid)
     } catch (e: any) {
-      setError(e?.message || 'Ошибка создания встречи')
+      setError(e?.message || t('dashboard.videoConference.errorCreateMeeting'))
     }
   }
 
@@ -293,24 +293,24 @@ export default function VideoConferencePage() {
     <div className={s.container}>
       <div className={s.content}>
         <div className={s.titleRow}>
-          <h2><Image src="/assets/icons/myconf.svg" alt="Мои конференции" width={20} height={20} />Мои конференции</h2>
+          <h2><Image src="/assets/icons/myconf.svg" alt={t('dashboard.videoConference.myConferences')} width={20} height={20} />{t('dashboard.videoConference.myConferences')}</h2>
 
           <div className={s.actions}>
-            {connectedInfo && <Button variant="primary" onClick={leaveRoom}>Выйти</Button>}
+            {connectedInfo && <Button variant="primary" onClick={leaveRoom}>{t('dashboard.videoConference.exit')}</Button>}
           </div>
         </div>
 
         <div className={s.actionBar}>
           <button className={`${s.pill} ${s.pillRed}`}> 
             <span className={s.pillIconLive}></span>
-            <span className={s.pillText}>Запустить эфир</span>
+            <span className={s.pillText}>{t('dashboard.videoConference.startStream')}</span>
           </button>
           <button className={`${s.pill} ${s.pillGreen}`} onClick={handleCreateClick}> 
             <span className={s.pillIconPlus}></span>
-            <span className={s.pillText}>Создать встречу</span>
+            <span className={s.pillText}>{t('dashboard.videoConference.createMeeting')}</span>
           </button>
           <div className={s.codeInput}>
-            <input type="text" placeholder="Введите ссылку или идентификатор" value={codeInput} onChange={e => handleCodeChange(e.target.value)} />
+            <input type="text" placeholder={t('dashboard.videoConference.enterLinkOrId')} value={codeInput} onChange={e => handleCodeChange(e.target.value)} />
             <button className={s.sendBtn} aria-label="Отправить" onClick={handleCodeSubmit}></button>
           </div>
         </div>
@@ -320,22 +320,22 @@ export default function VideoConferencePage() {
             <table className={s.table}>
               <thead>
                 <tr>
-                  <th className={s.th}>Тема</th>
-                  <th className={s.th}>Код</th>
-                  <th className={s.th}>Дата</th>
-                  <th className={s.th}>Тип</th>
+                  <th className={s.th}>{t('dashboard.videoConference.topic')}</th>
+                  <th className={s.th}>{t('dashboard.videoConference.code')}</th>
+                  <th className={s.th}>{t('dashboard.videoConference.date')}</th>
+                  <th className={s.th}>{t('dashboard.videoConference.type')}</th>
                   <th className={s.th}></th>
                 </tr>
               </thead>
               <tbody>
                 {plannedItems.map((it, idx) => (
                   <tr key={`t-${idx}`}>
-                    <td className={s.td}>{it.topic || 'Без темы'}</td>
+                    <td className={s.td}>{it.topic || t('dashboard.videoConference.withoutTopic')}</td>
                     <td className={s.td}>{(it as any).id || ''}</td>
                     <td className={s.td} suppressHydrationWarning>{formatDT(it.planned_time)}</td>
                     <td className={s.td}>{it.type}</td>
                     <td className={`${s.td} ${s.rowAction}`}>
-                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; router.push(`/${language}/dashboard/video-conference/${cid}`); }}>Войти</Button>
+                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; router.push(`/${language}/dashboard/video-conference/${cid}`); }}>{t('dashboard.videoConference.enter')}</Button>
                     </td>
                   </tr>
                 ))}
@@ -347,20 +347,20 @@ export default function VideoConferencePage() {
         {mounted && (plannedItems.length > 0 || plannedItems.length === 0) && (
           <div className={s.listsColumns}>
             <div className={s.listColumn}>
-              <div className={s.listTitle}>Запланированные</div>
+              <div className={s.listTitle}>{t('dashboard.videoConference.scheduled')}</div>
               <div className={s.cardsGrid}>
                 {plannedItems.length === 0 ? (
-                  <div className={s.emptyBox}>Пока нет запланированных встреч</div>
+                  <div className={s.emptyBox}>{t('dashboard.videoConference.noScheduledMeetings')}</div>
                 ) : plannedItems.map((it, idx) => (
                   <div key={`p-${idx}`} className={s.card}>
-                    <div className={s.cardHeader}>Конференция</div>
+                    <div className={s.cardHeader}>{t('dashboard.videoConference.conference')}</div>
                     <div className={s.cardBody}>
-                      <div className={s.cardTitle}>{it.topic || 'Без темы'}</div>
-                      <div className={s.cardMeta} suppressHydrationWarning>Дата: {formatDT(it.planned_time)}</div>
-                      <div className={s.cardMeta}>Тип: {it.type}</div>
+                      <div className={s.cardTitle}>{it.topic || t('dashboard.videoConference.withoutTopic')}</div>
+                      <div className={s.cardMeta} suppressHydrationWarning>{t('dashboard.videoConference.date')}: {formatDT(it.planned_time)}</div>
+                      <div className={s.cardMeta}>{t('dashboard.videoConference.type')}: {it.type}</div>
                     </div>
                     <div className={s.cardFooter}>
-                      <button className={s.watchBtn} onClick={() => window.open(String(it.code || '').replace(/`/g, '').trim(), '_blank')}>Открыть страницу</button>
+                      <button className={s.watchBtn} onClick={() => window.open(String(it.code || '').replace(/`/g, '').trim(), '_blank')}>{t('dashboard.videoConference.openPage')}</button>
                     </div>
                   </div>
                 ))}
@@ -383,19 +383,19 @@ export default function VideoConferencePage() {
                 <div className={s.status}>Server: {debug.url} • Token: {debug.tokenLen} символов • Публикация: {String(debug.canPublish)}</div>
               )}
               <div className={s.actions}>
-                <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? 'Выключить камеру' : 'Включить камеру'}</Button>
-                <Button variant="secondary" onClick={toggleMic}>{micOn ? 'Выключить микрофон' : 'Включить микрофон'}</Button>
+                <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? t('dashboard.videoConference.turnOffCamera') : t('dashboard.videoConference.turnOnCamera')}</Button>
+                <Button variant="secondary" onClick={toggleMic}>{micOn ? t('dashboard.videoConference.turnOffMic') : t('dashboard.videoConference.turnOnMic')}</Button>
               </div>
 
               {showManagePanel && (
                 <div className={s.participantsPanel}>
                   <div className={s.fieldRow}>
-                    <Button variant="secondary" onClick={loadParticipants}>Обновить участников</Button>
+                    <Button variant="secondary" onClick={loadParticipants}>{t('dashboard.videoConference.updateParticipants')}</Button>
                     <div className={s.field}>
                       <label>kick user_id</label>
                       <input type="number" value={kickUserId} onChange={e => setKickUserId(e.target.value)} />
                     </div>
-                    <Button variant="secondary" onClick={kick}>Кикнуть</Button>
+                    <Button variant="secondary" onClick={kick}>{t('dashboard.videoConference.kick')}</Button>
                   </div>
                   {participants.length > 0 && (
                     <div className={s.participantsList}>

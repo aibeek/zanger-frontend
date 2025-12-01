@@ -62,7 +62,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const sections = [
         t('dashboard.footer.sections.applications'),
         t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.sidebar.vcMyConferences'),
+        t('dashboard.footer.sections.videoConference'),
         t('dashboard.footer.sections.aiConsultant'),
         t('dashboard.footer.sections.forum'),
         t('dashboard.footer.sections.database')
@@ -70,6 +70,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
 
     const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
     const applicationsLabel = t('dashboard.footer.sections.applications')
+    const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
@@ -141,10 +142,10 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             
             <div className={s.footerSections}>
                     {sections.map((section, index) => {
-                        const isPilot = section === t('dashboard.sidebar.vcMyConferences')
+                        const isPilot = section === videoConferenceLabel
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
-                        const label = section === t('dashboard.sidebar.vcMyConferences') ? 'ВКС' : section
+                        const label = section
                         return (
                         <button 
                             key={index} 
