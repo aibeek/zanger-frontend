@@ -145,15 +145,11 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
 
     // Фильтруем пункты меню в зависимости от роли
     const defaultMenuItems = allMenuItems.filter(item => {
-        // Для клиентов скрываем подписку
-        if (role === 'client' && item.id === 'subscription') {
-            return false
+        if (role === 'client') {
+            if (item.id === 'subscription') return false
+            if (item.id === 'applications') return false
         }
-        // Для юристов скрываем "Мои заявки"
-        if (role === 'lawyer' && item.id === 'applications') {
-            return false
-        }
-        // Для юристов показываем все пункты
+        if (role === 'lawyer' && item.id === 'applications') return false
         return true
     })
 

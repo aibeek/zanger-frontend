@@ -149,34 +149,9 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 15px;
-  
-  .toolItem:last-child {
-    grid-column: 2;
-  }
-  
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr);
-    
-    .toolItem:last-child {
-      grid-column: 1 / -1;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    
-    .toolItem:last-child {
-      grid-column: 1;
-      margin: 0;
-      max-width: none;
-    }
-  }
 }
 
 .toolItem {
@@ -188,19 +163,22 @@
   color: rgba(255, 255, 255, 0.85);
   font-size: 16px;
   line-height: 1.5;
+  box-sizing: border-box;
+  flex: 1 1 calc(33.333% - 10px);
   
   &::before {
     content: '●';
     position: absolute;
     left: 15px;
     top: 15px;
-    color: rgba(37, 99, 235, 0.8);
+    color: rgba(59, 130, 246, 0.85);
     font-size: 18px;
   }
   
   @media (max-width: 768px) {
     padding: 12px 15px 12px 35px;
     font-size: 15px;
+    flex: 1 1 100%;
     
     &::before {
       left: 12px;

@@ -36,6 +36,21 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
+  const isModuleReady = (title: string): boolean => {
+    const n = title.replace(/\s+/g, '').toUpperCase()
+    return (
+      n.includes('ЗАЯВКИ') ||
+      n.includes('ӨТІНІМДЕР') ||
+      n.includes('ЭДО') ||
+      n.includes('ЭЦҚ') ||
+      n.includes('ECP') ||
+      n.includes('EDO') ||
+      n.includes('ВКС') ||
+      n.includes('БЕЙНЕ') ||
+      n.includes('VIDEO')
+    )
+  }
+
   const getModuleIcon = (title: string): string | StaticImageData => {
     const normalized = title.replace(/\s+/g, '').toUpperCase()
     if (normalized.includes('ЗАЯВКИ') || normalized.includes('ӨТІНІМДЕР')) return myApplicationsIcon
@@ -60,6 +75,12 @@ export const ModulesSection = () => {
       normalized.includes('ЗАЯВКИ') ||
       normalized.includes('ӨТІНІМДЕР')
 
+    const isVks =
+      normalized.includes('ВКС') ||
+      normalized.includes('VIDEO') ||
+      normalized.includes('БЕЙНЕ') ||
+      normalized.includes('CONFERENCE')
+
     if (isEdoOrEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
@@ -74,6 +95,16 @@ export const ModulesSection = () => {
       const res = await authService.check()
       if (res?.isAuthenticated) {
         router.push(`/${locale}/dashboard/applications`)
+      } else {
+        router.push(`/${locale}/auth/login`)
+      }
+      return
+    }
+
+    if (isVks) {
+      const res = await authService.check()
+      if (res?.isAuthenticated) {
+        router.push(`/${locale}/dashboard/video-conference`)
       } else {
         router.push(`/${locale}/auth/login`)
       }
@@ -108,6 +139,11 @@ export const ModulesSection = () => {
                 <div className={s.cardHeader}>
                   <Image src={getModuleIcon(module.title)} alt={module.title} width={32} height={32} />
                   <h3 className={s.moduleTitle}>{module.title}</h3>
+                  {isModuleReady(module.title) ? (
+                    <span className={s.readyBadge}>Готово</span>
+                  ) : (
+                    <span className={s.devBadge}>В разработке</span>
+                  )}
                 </div>
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>

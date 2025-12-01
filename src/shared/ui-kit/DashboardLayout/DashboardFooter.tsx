@@ -8,10 +8,14 @@ import Image from 'next/image'
 import {
     policyURL,
     policyKzURL,
+    policyNewRuURL,
+    policyNewKzURL,
     paymentURL,
     paymentKzURL,
     termsURL,
     termsKzURL,
+    termsNewRuURL,
+    termsNewKzURL,
     canselSubscriptionURL,
     canselSubscriptionKzURL
 } from '@/shared/lib/consts/urls'
@@ -98,6 +102,8 @@ export const DashboardFooter = () => {
             <Link href={paymentHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
             <Link href={termsHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
             <Link href={canselSubscriptionHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
+            <Link href={isKz ? policyNewKzURL : policyNewRuURL} target="_blank" className={s.footerLink}>ПОЛИТИКА В ОТНОШЕНИИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ</Link>
+            <Link href={isKz ? termsNewKzURL : termsNewRuURL} target="_blank" className={s.footerLink}>Пользовательское соглашение</Link>
         </div>
         </footer>
     )

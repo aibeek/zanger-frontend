@@ -6,5 +6,77 @@
 }
 
 .content {
-	flex: 1;
+    flex: 1;
+}
+
+.accessBanner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 1px solid #BFDBFE;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(59, 130, 246, 0.1);
+}
+
+.bannerIcon {
+    font-size: 28px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.bannerContent {
+    flex: 1;
+}
+
+.bannerTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1E40AF;
+    margin: 0 0 8px 0;
+}
+
+.bannerDescription {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #1E3A8A;
+    margin: 0 0 8px 0;
+}
+
+.bannerList {
+    margin: 0 0 16px 16px;
+    padding: 0;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.bannerActions {
+    display: flex;
+    gap: 12px;
+}
+
+.primaryBtn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.secondaryBtn {
+    background: #fff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
 }
