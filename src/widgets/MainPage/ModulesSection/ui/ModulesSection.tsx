@@ -36,6 +36,19 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
+  const isModuleReady = (title: string): boolean => {
+    const n = title.replace(/\s+/g, '').toUpperCase()
+    return (
+      n.includes('ЗАЯВКИ') ||
+      n.includes('ӨТІНІМДЕР') ||
+      n.includes('ЭДО') ||
+      n.includes('ЭЦҚ') ||
+      n.includes('ECP') ||
+      n.includes('EDO')
+      // ВКС исключено из "готов"
+    )
+  }
+
   const getModuleIcon = (title: string): string | StaticImageData => {
     const normalized = title.replace(/\s+/g, '').toUpperCase()
     if (normalized.includes('ЗАЯВКИ') || normalized.includes('ӨТІНІМДЕР')) return myApplicationsIcon
@@ -43,7 +56,7 @@ export const ModulesSection = () => {
     if (normalized.includes('ВКС') || normalized.includes('БЕЙНЕ')) return '/assets/icons/vks.svg'
     if (normalized.includes('ИИ') || normalized.includes('CONSULTANT')) return chatIcon
     if (normalized.includes('ФОРУМ')) return peopleIcon
-    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ')) return faqIcon
+    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ') || normalized.includes('КОНТРАГЕНТ')) return faqIcon
     return documentIcon
   }
 
@@ -59,6 +72,12 @@ export const ModulesSection = () => {
     const isApplications = 
       normalized.includes('ЗАЯВКИ') ||
       normalized.includes('ӨТІНІМДЕР')
+
+    const isVks =
+      normalized.includes('ВКС') ||
+      normalized.includes('VIDEO') ||
+      normalized.includes('БЕЙНЕ') ||
+      normalized.includes('CONFERENCE')
 
     if (isEdoOrEcp) {
       const res = await authService.check()
@@ -79,6 +98,8 @@ export const ModulesSection = () => {
       }
       return
     }
+
+    // ВКС: показываем модалку «в разработке», не переходим
 
     setIsModalOpen(true)
   }
@@ -108,6 +129,11 @@ export const ModulesSection = () => {
                 <div className={s.cardHeader}>
                   <Image src={getModuleIcon(module.title)} alt={module.title} width={32} height={32} />
                   <h3 className={s.moduleTitle}>{module.title}</h3>
+                  {isModuleReady(module.title) ? (
+                    <span className={s.readyBadge}>Готов</span>
+                  ) : (
+                    <span className={s.devBadge}>В разработке</span>
+                  )}
                 </div>
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>

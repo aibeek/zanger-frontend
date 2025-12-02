@@ -19,14 +19,18 @@ import whatsappBusiness from '@/app/assets/icons/whatsapp-business-white.svg'
 import s from './Footer.module.scss'
 import { Link } from '@/i18n'
 import {
-	canselSubscriptionKzURL,
-	canselSubscriptionURL,
-	policyKzURL,
-	policyURL,
-	termsKzURL,
-	termsURL,
-	paymentKzURL,
-	paymentURL
+    canselSubscriptionKzURL,
+    canselSubscriptionURL,
+    policyNewKzURL,
+    policyNewRuURL,
+    policyKzURL,
+    policyURL,
+    termsNewKzURL,
+    termsNewRuURL,
+    termsKzURL,
+    termsURL,
+    paymentKzURL,
+    paymentURL
 } from '@/shared/lib/consts/urls'
 
 interface FooterProps {
@@ -204,14 +208,28 @@ export const Footer = ({ id }: FooterProps) => {
 							className={s.infoLink}>
 							{t('payment')}
 						</Link>
-						<Link
-							target={'_blank'}
-							href={canselSubscriptionHref}
-							className={s.infoLink}>
-							{t('canselSubscription')}
-						</Link>
-					</div>
-				</div>
+                        <Link
+                            target={'_blank'}
+                            href={canselSubscriptionHref}
+                            className={s.infoLink}>
+                            {t('canselSubscription')}
+                        </Link>
+                        <Link
+                            target={'_blank'}
+                            href={isKz ? policyNewKzURL : policyNewRuURL}
+                            className={s.infoLink}
+                        >
+                            {t('personalDataPolicy')}
+                        </Link>
+                        <Link
+                            target={'_blank'}
+                            href={isKz ? termsNewKzURL : termsNewRuURL}
+                            className={s.infoLink}
+                        >
+                            {t('userAgreement')}
+                        </Link>
+                    </div>
+                </div>
 
 				{/* Contact Form Section */}
 				<div className={s.contactFormSection}>

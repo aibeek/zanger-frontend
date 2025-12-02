@@ -15,3 +15,11 @@ export const termsKzURL = `${BASE_URL}/storage/docs/lawyer-documents/Польз�
 export const canselSubscriptionKzURL = `${BASE_URL}/storage/docs/lawyer-documents/Правила_отмены_подписки_ТОО_GLT-kz.pdf`
 
 export const paymentKzURL = `${BASE_URL}/storage/docs/lawyer-documents/Правила_оплаты_Zanger-App-kz.pdf`
+
+export const policyNewRuURL = `${BASE_URL}/storage/docs/lawyer-documents/privacy_ru_2025-12-01.pdf`;
+
+export const policyNewKzURL = `${BASE_URL}/storage/docs/lawyer-documents/privacy_kz_2025-12-01.pdf`;
+
+export const termsNewRuURL = `${BASE_URL}/storage/docs/lawyer-documents/agreement_ru_2025-12-01.pdf`;
+
+export const termsNewKzURL = `${BASE_URL}/storage/docs/lawyer-documents/agreement_kz_2025-12-01.pdf`;
