@@ -310,7 +310,7 @@ export default function EcpIncomingPage() {
                   }</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     {doc.is_new ? (
-                      <span style={{ background: '#ef4444', color: '#fff', borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 800 }}>Новое</span>
+                      <span style={{ background: '#ef4444', color: '#fff', borderRadius: 9999, padding: '2px 8px', fontSize: 12, fontWeight: 800 }}>New</span>
                     ) : null}
                     <button
                       onClick={(e) => { e.stopPropagation(); setConfirmArchiveId(doc.id) }}
