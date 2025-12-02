@@ -46,19 +46,24 @@ export const ProfileDocuments = () => {
 	const searchParams = useSearchParams()
 	const tab = searchParams.get('tab')
 	const shouldOpen = useMemo(() => tab === 'documents', [tab])
-	const allowedTypes = [
-		'application/pdf', 
-		'image/jpeg', 
-		'image/png',
-		'application/msword', // .doc
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
-	]
+    const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ]
+    const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx']
 
-	const handleBeforeUpload = (file: File) => {
-		if (!allowedTypes.includes(file.type)) {
-			toast.error(t('profile.documents.unsupportedFormat'))
-			return Upload.LIST_IGNORE
-		}
+    const handleBeforeUpload = (file: File) => {
+        const name = file.name?.toLowerCase() || ''
+        const typeOk = !!file.type && allowedTypes.includes(file.type)
+        const extOk = allowedExtensions.some((ext) => name.endsWith(ext))
+
+        if (!typeOk && !extOk) {
+            toast.error(t('profile.documents.unsupportedFormat'))
+            return Upload.LIST_IGNORE
+        }
 
 		if (!selectedDocumentId) {
 			toast.error(t('profile.documents.selectDocFirst'))
