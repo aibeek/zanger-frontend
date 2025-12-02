@@ -44,10 +44,8 @@ export const ModulesSection = () => {
       n.includes('ЭДО') ||
       n.includes('ЭЦҚ') ||
       n.includes('ECP') ||
-      n.includes('EDO') ||
-      n.includes('ВКС') ||
-      n.includes('БЕЙНЕ') ||
-      n.includes('VIDEO')
+      n.includes('EDO')
+      // ВКС исключено из "готов"
     )
   }
 
@@ -58,7 +56,7 @@ export const ModulesSection = () => {
     if (normalized.includes('ВКС') || normalized.includes('БЕЙНЕ')) return '/assets/icons/vks.svg'
     if (normalized.includes('ИИ') || normalized.includes('CONSULTANT')) return chatIcon
     if (normalized.includes('ФОРУМ')) return peopleIcon
-    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ')) return faqIcon
+    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ') || normalized.includes('КОНТРАГЕНТ')) return faqIcon
     return documentIcon
   }
 
@@ -140,7 +138,7 @@ export const ModulesSection = () => {
                   <Image src={getModuleIcon(module.title)} alt={module.title} width={32} height={32} />
                   <h3 className={s.moduleTitle}>{module.title}</h3>
                   {isModuleReady(module.title) ? (
-                    <span className={s.readyBadge}>Готово</span>
+                    <span className={s.readyBadge}>Готов</span>
                   ) : (
                     <span className={s.devBadge}>В разработке</span>
                   )}
