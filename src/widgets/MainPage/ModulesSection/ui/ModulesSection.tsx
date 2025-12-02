@@ -99,15 +99,7 @@ export const ModulesSection = () => {
       return
     }
 
-    if (isVks) {
-      const res = await authService.check()
-      if (res?.isAuthenticated) {
-        router.push(`/${locale}/dashboard/video-conference`)
-      } else {
-        router.push(`/${locale}/auth/login`)
-      }
-      return
-    }
+    // ВКС: показываем модалку «в разработке», не переходим
 
     setIsModalOpen(true)
   }
