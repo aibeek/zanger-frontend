@@ -10,6 +10,7 @@ export default async function Home() {
 	return (
 		<div className={s.page}>
 				<MainSection />
+				<ModulesSection />
 			<NewsSection />
 			<DomainsSection />
 			<LocalVideoSection
@@ -44,7 +45,6 @@ export default async function Home() {
 				<AboutSection />
 				<TeamSection />
 				<DescriptionSection />
-			<ModulesSection />
 			<ResourcesSection />
 			<Footer />
 			<WhatsAppFloat />
