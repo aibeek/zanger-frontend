@@ -6,14 +6,10 @@ import { Link } from '@/i18n/navigation'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import {
-    policyURL,
-    policyKzURL,
     policyNewRuURL,
     policyNewKzURL,
     paymentURL,
     paymentKzURL,
-    termsURL,
-    termsKzURL,
     termsNewRuURL,
     termsNewKzURL,
     canselSubscriptionURL,
@@ -38,9 +34,7 @@ export const DashboardFooter = () => {
     const isVideoConferencePage = pathWithoutLang.startsWith('/dashboard/video-conference')
     
     // Conditional URLs based on locale
-    const policyHref = isKz ? policyKzURL : policyURL
     const paymentHref = isKz ? paymentKzURL : paymentURL
-    const termsHref = isKz ? termsKzURL : termsURL
     const canselSubscriptionHref = isKz ? canselSubscriptionKzURL : canselSubscriptionURL
     
     const govServices = [
@@ -98,12 +92,10 @@ export const DashboardFooter = () => {
             </div>
             
             <div className={s.footerLinks}>
-            <Link href={policyHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.privacy')}</Link>
-            <Link href={paymentHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
-            <Link href={termsHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.offer')}</Link>
-            <Link href={canselSubscriptionHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
-            <Link href={isKz ? policyNewKzURL : policyNewRuURL} target="_blank" className={s.footerLink}>ПОЛИТИКА В ОТНОШЕНИИ ОБРАБОТКИ ПЕРСОНАЛЬНЫХ ДАННЫХ</Link>
             <Link href={isKz ? termsNewKzURL : termsNewRuURL} target="_blank" className={s.footerLink}>Пользовательское соглашение</Link>
+            <Link href={isKz ? policyNewKzURL : policyNewRuURL} target="_blank" className={s.footerLink}>{t('dashboard.footer.privacy')}</Link>
+            <Link href={paymentHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.payment')}</Link>
+            <Link href={canselSubscriptionHref} target="_blank" className={s.footerLink}>{t('dashboard.footer.cancellation')}</Link>
         </div>
         </footer>
     )

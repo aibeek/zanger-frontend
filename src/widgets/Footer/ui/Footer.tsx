@@ -23,12 +23,8 @@ import {
     canselSubscriptionURL,
     policyNewKzURL,
     policyNewRuURL,
-    policyKzURL,
-    policyURL,
     termsNewKzURL,
     termsNewRuURL,
-    termsKzURL,
-    termsURL,
     paymentKzURL,
     paymentURL
 } from '@/shared/lib/consts/urls'
@@ -52,10 +48,8 @@ export const Footer = ({ id }: FooterProps) => {
 	const [messageType, setMessageType] = useState<'success' | 'error' | ''>('')
 
 	// Conditional URLs based on locale
-	const policyHref = isKz ? policyKzURL : policyURL
-	const termsHref = isKz ? termsKzURL : termsURL
-	const paymentHref = isKz ? paymentKzURL : paymentURL
-	const canselSubscriptionHref = isKz ? canselSubscriptionKzURL : canselSubscriptionURL
+    const paymentHref = isKz ? paymentKzURL : paymentURL
+    const canselSubscriptionHref = isKz ? canselSubscriptionKzURL : canselSubscriptionURL
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target
@@ -189,44 +183,32 @@ export const Footer = ({ id }: FooterProps) => {
 				{/* Information Section */}
 				<div className={s.infoSection}>
 					<h3 className={s.sectionTitle}>{t('information')}</h3>
-					<div className={s.infoLinks}>
-						<Link
-							target={'_blank'}
-							href={policyHref}
-							className={s.infoLink}>
-							{t('privacy')}
-						</Link>
-						<Link
-							target={'_blank'}
-							href={termsHref}
-							className={s.infoLink}>
-							{t('offer')}
-						</Link>
-						<Link
-							target={'_blank'}
-							href={paymentHref}
-							className={s.infoLink}>
-							{t('payment')}
-						</Link>
-                        <Link
-                            target={'_blank'}
-                            href={canselSubscriptionHref}
-                            className={s.infoLink}>
-                            {t('canselSubscription')}
-                        </Link>
-                        <Link
-                            target={'_blank'}
-                            href={isKz ? policyNewKzURL : policyNewRuURL}
-                            className={s.infoLink}
-                        >
-                            {t('personalDataPolicy')}
-                        </Link>
+                    <div className={s.infoLinks}>
                         <Link
                             target={'_blank'}
                             href={isKz ? termsNewKzURL : termsNewRuURL}
                             className={s.infoLink}
                         >
                             {t('userAgreement')}
+                        </Link>
+                        <Link
+                            target={'_blank'}
+                            href={isKz ? policyNewKzURL : policyNewRuURL}
+                            className={s.infoLink}
+                        >
+                            {t('privacy')}
+                        </Link>
+                        <Link
+                            target={'_blank'}
+                            href={paymentHref}
+                            className={s.infoLink}>
+                            {t('payment')}
+                        </Link>
+                        <Link
+                            target={'_blank'}
+                            href={canselSubscriptionHref}
+                            className={s.infoLink}>
+                            {t('canselSubscription')}
                         </Link>
                     </div>
                 </div>

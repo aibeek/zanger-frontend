@@ -587,32 +587,30 @@
 }
 
 @keyframes moveRightToLeft {
-	0% {
-		/* увеличиваем трек для 17 карточек */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 2250px));
-	}
-	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1850px));
-	}
+  0% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 2600px));
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2100px));
+  }
 }
 
 @keyframes moveRightToLeftMobile {
-	0% {
-		/* увеличиваем мобильный трек */
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2050px)));
-	}
-	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1650px));
-	}
+  0% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2350px)));
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1900px));
+  }
 }
 
 @keyframes moveRightToLeftSmall {
-	0% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 1850px)));
-	}
-	100% {
-		transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1550px));
-	}
+  0% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2150px)));
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1800px));
+  }
 }
 
 @keyframes fadeInUp {
@@ -638,7 +636,7 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 18; // keep in sync with actual number of cards
+$cards-count: 19; // keep in sync with actual number of cards
 // увеличенная продолжительность для 17 карточек
 $duration-desktop: 60s; // увеличено для лучшего расстояния
 $duration-tablet: 51s;  // увеличено для лучшего расстояния
