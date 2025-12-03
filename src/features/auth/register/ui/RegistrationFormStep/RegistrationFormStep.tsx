@@ -21,7 +21,7 @@ import './RegistrationFormStep.scss'
 import { SearchSelect } from '../SearchSelect'
 import { useEnterPhone, useRegisterFormByVariant, useLawyerTypesStore, useRegions } from '../../model'
 import { useTranslations } from 'next-intl'
-import { policyKzURL, policyURL } from '@/shared/lib/consts/urls'
+import { policyNewKzURL, policyNewRuURL } from '@/shared/lib/consts/urls'
 
 export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 	const t = useTranslations()
@@ -252,11 +252,11 @@ export const RegistrationFormStep = ({ variant }: { variant: RoleVariant }) => {
 
 				<div className={s.warning}>
 					<p>{t('auth.registration.warningText')}</p>
-					<Link
-						target={'_blank'}
-						href={pathname.includes('kz') ? policyKzURL : policyURL}>
-						{t('auth.registration.privacyPolicy')}
-					</Link>
+                    <Link
+                        target={'_blank'}
+                        href={pathname.includes('kz') ? policyNewKzURL : policyNewRuURL}>
+                        {t('auth.registration.privacyPolicy')}
+                    </Link>
 				</div>
 			</div>
 		</div>

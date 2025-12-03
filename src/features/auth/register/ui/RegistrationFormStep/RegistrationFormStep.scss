@@ -56,10 +56,15 @@
 			}
 		}
 	}
-	
+
 	.ant-select-selector {
-		background: white !important;
+		background: #ffffff !important;
 		border: 1px solid #cce5ff !important;
+		border-radius: 10px !important;
+		padding: 0 14px !important;
+		height: 40px !important;
+		display: flex !important;
+		align-items: center !important;
 		color: #1a1a1d !important;
 		
 		&:hover {
@@ -69,18 +74,33 @@
 		&:focus,
 		&.ant-select-focused {
 			border-color: #1890ff !important;
-			box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2) !important;
+			box-shadow: none !important;
 		}
+	}
+
+	/* Нормализуем высоту и внутреннюю типографику для одиночного селекта */
+	.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+		height: 40px !important;
+		padding: 0 14px !important;
+		border-radius: 10px !important;
+	}
+	.ant-select-single .ant-select-selector .ant-select-selection-item,
+	.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+		line-height: 38px !important;
+		font-size: 14px !important;
 	}
 	
 	.ant-select-selection-item {
 		color: #1a1a1d !important;
 		font-weight: 400 !important;
+		font-size: 14px !important;
+		line-height: 1.3 !important;
 	}
 	
 	.ant-select-selection-placeholder {
-		color: rgba(128, 128, 128, 0.7) !important;
+		color: rgba(156, 155, 153, 1) !important;
 		font-weight: 400 !important;
+		font-size: 14px !important;
 	}
 	
 	.ant-select-arrow {
