@@ -47,6 +47,8 @@
 		"individualClient": "Жеке тұлға",
 		"legalClient": "Заңды тұлға",
 		"dateFilter": "Күн",
+		"date": "Күні",
+		"details": "Толығырақ",
 		"selectDate": "Күнді таңдаңыз",
 		"subscribe_required": "Жазылу қажет",
 		"deadlines": {

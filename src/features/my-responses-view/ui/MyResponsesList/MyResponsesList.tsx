@@ -6,12 +6,17 @@ import toast from 'react-hot-toast'
 import { Button, DescriptionText } from '@/shared/ui-kit'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
+import { Eye, Phone } from 'lucide-react'
+import { useState } from 'react'
+import { ApplicationDetailsModal } from '@/app/[locale]/(dashboard)/dashboard/applications/components/ApplicationDetailsModal'
+
 import s from './MyResponsesList.module.scss'
 import { Status, useMyResponsesStore } from '../../model'
 
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
 	const { workOut, closeItem, workedOutIds } = useMyResponsesStore()
 	const t = useTranslations('applications')
+	const [selectedApp, setSelectedApp] = useState<any>(null)
 
 	// Функция для обработки нажатия на кнопку "Перейти в чат"
 	const handleGoToChat = (orderId: number) => {
@@ -31,82 +36,85 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 
 	return (
 		<div className={s.wrapper}>
-			<div className={s.inner}>
-				<div className={s.items}>
-					<AnimatePresence>
-						{filteredItems.map((item: any) => {
-							const currentStatusMap = statusMap[item.id]
+			<div className={s.items}>
+				<AnimatePresence>
+					{filteredItems.map((item: any) => {
+						const currentStatusMap = statusMap[item.id]
 
-							return (
-								<div key={item.id}>
-									<motion.article
-										className={s.item}
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: 10 }}
-										transition={{ duration: 0.3 }}>
-										
-										{/* Заголовок - тип услуги */}
-										<div className={s.cardHeader}>
-											<h3 className={s.title}>
-												{item.order?.tag?.name || t('service.other')}
-											</h3>
-										</div>
-										
-										{/* Описание */}
-										<div className={s.description}>
-											<DescriptionText>{item.order?.description}</DescriptionText>
-										</div>
-										
-										{/* Информация о клиенте и сроках */}
-										<div className={s.dataRow}>
-											<div className={s.infoLine}>
-												<span className={s.label}>{t('deadline')}:</span>
-												<span className={s.value}>{item.order?.deadline || 'Не указан'}</span>
+						return (
+							<div key={item.id}>
+								<motion.article
+									className={s.item}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: 10 }}
+									transition={{ duration: 0.3 }}>
+									
+									<div className={s.cardHeader}>
+										<span className={s.clientName}>{item.order?.user?.name || 'Клиент'}</span>
+										{/* <div className={s.cardStats}>
+											<div className={s.statItem}>
+												<Eye size={16} />
+												<span>{Math.floor(Math.random() * 50) + 1}</span>
 											</div>
-											<div className={s.infoLine}>
-												<span className={s.label}>{t('clientType')}:</span>
-												<span className={s.value}>
-													{item.order?.user?.type === 'legal' ? t('legalClient') : t('individualClient')}
-												</span>
+											<div className={s.statItem}>
+												<Phone size={16} />
+												<span>{Math.floor(Math.random() * 10)}</span>
 											</div>
-											<div className={s.infoLine}>
-												<span className={s.label}>{t('publishDate')}:</span>
-												<span className={s.value}>
+										</div> */}
+									</div>
+									
+									<div className={s.cardContent}>
+										<h3 className={s.title}>
+											{item.order?.tag?.name || t('service.other')}
+										</h3>
+										
+										<div className={s.cardMeta}>
+											<div className={s.metaRow}>
+												<strong>{t('region')}:</strong>
+												<span>{item.order?.region?.name || 'Не указан'}</span>
+											</div>
+											<div className={s.metaRow}>
+												<strong>{t('date')}:</strong>
+												<span>
 													<DateComponent date={item.order?.created_at} />
 												</span>
 											</div>
 										</div>
 										
-										{/* Кнопка действия */}
-										<div className={s.bottom}>
-											<Button
-												className={s.chatBtn}
-												variant="primary"
-												size="sm"
-												onClick={() => handleGoToChat(item.order?.id)}>
-												Перейти в чат
-											</Button>
-										</div>
-									</motion.article>
-								</div>
-							)
-						})}
-					</AnimatePresence>
+										<button
+											className={s.detailsBtn}
+											onClick={() => setSelectedApp(item.order)}
+										>
+											{t('details') || 'Подробнее'}
+										</button>
+									</div>
+								</motion.article>
+							</div>
+						)
+					})}
+				</AnimatePresence>
 
-					{!isReachingEnd && (
-						<div className={s.loadMoreWrapper}>
-							<Button
-								variant="primary"
-								size={'full'}
-								disabled={isLoadingMore}
-								onClick={loadMore}>
-								{isLoadingMore ? t('loading') : t('load_more')}
-							</Button>
-						</div>
-					)}
-				</div>
+				{!isReachingEnd && (
+					<div className={s.loadMoreWrapper}>
+						<Button
+							variant="primary"
+							disabled={isLoadingMore}
+							onClick={loadMore}>
+							{isLoadingMore ? 'Загрузка...' : 'Показать еще'}
+						</Button>
+					</div>
+				)}
 			</div>
+
+			{selectedApp && (
+				<ApplicationDetailsModal
+					application={selectedApp}
+					onClose={() => setSelectedApp(null)}
+					onRespond={() => {}} // В моих заявках кнопка "В мои заявки" не нужна или должна быть скрыта
+					isResponding={false}
+				/>
+			)}
 		</div>
 	)
 }

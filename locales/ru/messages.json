@@ -47,6 +47,8 @@
 		"individualClient": "Физическое лицо",
 		"legalClient": "Юридическое лицо",
 		"dateFilter": "Дата",
+		"date": "Дата",
+		"details": "Подробнее",
 		"selectDate": "Выберите дату",
 		"subscribe_required": "Требуется подписка",
 		"loading": "Загрузка...",
