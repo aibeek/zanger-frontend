@@ -5,7 +5,6 @@ import { getMessages } from 'next-intl/server'
 
 import { routing } from '@/i18n/routing'
 import { SWRConfig } from 'swr'
-import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
 export const metadata: Metadata = {
 	title: 'Zanger',
@@ -36,10 +35,9 @@ export default async function AuthLayout({
 		<NextIntlClientProvider messages={messages}>
 			<SWRConfig value={{ shouldRetryOnError: false }}>
 				<div className="auth-wrapper">
-					{/* Header удален на страницах авторизации */}
-					<section>{children}</section>
-					<PulseChatWidget />
-				</div>
+                    {/* Header удален на страницах авторизации */}
+                    <section>{children}</section>
+                </div>
 			</SWRConfig>
 		</NextIntlClientProvider>
 	)

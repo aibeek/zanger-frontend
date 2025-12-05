@@ -1,1 +1,0 @@
-export { PulseChat } from './PulseChat';

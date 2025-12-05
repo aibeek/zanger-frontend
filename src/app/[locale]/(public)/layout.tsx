@@ -7,7 +7,6 @@ import type { Metadata } from 'next'
 import { Footer } from '@/widgets/Footer'
 import { DeviceGuard } from '@/shared/lib/DeviceGuard'
 import { AppToaster } from '@/shared/ui-kit'
-// import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 
 export const metadata: Metadata = {
 	title: 'Zanger',
@@ -40,8 +39,8 @@ export default async function RootLayout({
 			<DeviceGuard>
 				<div className="lending-layout" suppressHydrationWarning>
 					{children}
-					{/* <PulseChatWidget /> */}
-				</div>
+                    
+                </div>
 			</DeviceGuard>
 		</NextIntlClientProvider>
 	)
