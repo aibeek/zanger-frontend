@@ -9,7 +9,6 @@ import { AuthGuard } from '@/shared/lib'
 import { Footer } from '@/widgets/Footer'
 import { Header } from '@/widgets/Header'
 import { AppToaster } from '@/shared/ui-kit'
-import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { SWRConfig } from 'swr'
 
 export const metadata: Metadata = {
@@ -47,9 +46,8 @@ export default async function DashboardLayout({
 							{children}
 							<AppToaster />
 						</div>
-						<Footer />
-						<PulseChatWidget />
-					</div>
+                        <Footer />
+                </div>
 				</SWRConfig>
 			</AuthGuard>
 		</NextIntlClientProvider>

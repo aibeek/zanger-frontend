@@ -7,7 +7,6 @@ import { getMessages } from 'next-intl/server'
 import { AuthGuard } from '@/shared/lib'
 import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
-import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { SWRConfig } from 'swr'
 
 export const metadata: Metadata = {
@@ -42,9 +41,8 @@ export default async function DashboardLayoutRoot({
 					<DashboardLayout language={locale}>
 						{children}
 					</DashboardLayout>
-					<AppToaster />
-					<PulseChatWidget />
-				</SWRConfig>
+                    <AppToaster />
+                </SWRConfig>
 			</AuthGuard>
 		</NextIntlClientProvider>
 	)

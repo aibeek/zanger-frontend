@@ -1,5 +1,4 @@
 import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection, ScrollTopButton, DomainsSection } from '@/widgets/MainPage'
-import { PulseChatWidget } from '@/widgets/PulseChatWidget'
 import { LocalVideoSection } from '@/widgets/MainPage/LocalVideoSection'
 import { Footer } from '@/widgets/Footer'
 import { WhatsAppFloat } from '@/widgets/WhatsAppFloat'
@@ -47,8 +46,7 @@ export default async function Home() {
 				<DescriptionSection />
 			<ResourcesSection />
 			<Footer />
-			<WhatsAppFloat />
-			<PulseChatWidget enabled={true} />
+            <WhatsAppFloat />
 	</div>
 	)
 }
