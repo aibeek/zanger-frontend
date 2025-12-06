@@ -40,6 +40,17 @@ export const NewsSection = () => {
 
 	const newsItems: NewsItem[] = [
 		{
+			id: 'prokuratura-day',
+			title: t('prokuraturaDay.title'),
+			description: t('prokuraturaDay.description'),
+			date: '06.12.2025',
+			image: '/assets/images/prokuratura.jpeg',
+			readMore: t('readMore'),
+			fullDescription: t('prokuraturaDay.fullDescription'),
+			eventDay: t('prokuraturaDay.eventDay'),
+			instagramLink: defaultInstagramLink
+		},
+		{
 			id: 'advokat-meeting',
 			title: t('advokatMeeting.title'),
 			description: t('advokatMeeting.description'),
