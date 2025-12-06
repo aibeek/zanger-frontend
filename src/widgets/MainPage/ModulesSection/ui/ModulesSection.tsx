@@ -46,7 +46,7 @@ export const ModulesSection = () => {
       n.includes('ECP') ||
       n.includes('EDO') ||
       n.includes('ИИ') ||
-      n.includes('CONSULTANT')
+      n.includes('КОНСУЛЬТАНТ')
       // ВКС исключено из "готов"
     )
   }
@@ -83,7 +83,7 @@ export const ModulesSection = () => {
 
     const isAi =
       normalized.includes('ИИ') ||
-      normalized.includes('CONSULTANT')
+      normalized.includes('КОНСУЛЬТАНТ')
 
     if (isEdoOrEcp) {
       const res = await authService.check()

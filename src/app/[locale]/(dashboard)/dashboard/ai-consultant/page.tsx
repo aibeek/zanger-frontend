@@ -31,7 +31,8 @@ export default function AiConsultantPage() {
     const [loading, setLoading] = useState(false)
     const [sending, setSending] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
-    const { isAuthenticated } = useLoginStore()
+    const { personalData } = useLoginStore()
+    const isAuthenticated = !!personalData
 
     // Guest Token Logic
     useEffect(() => {
@@ -102,19 +103,16 @@ export default function AiConsultantPage() {
         let chatId = currentChatId
 
         if (!chatId) {
-            // Create new chat first
-            const newChat = await createConversation(content)
+            const newChat = await createConversation()
             if (newChat) {
                 chatId = newChat.id
                 setCurrentChatId(chatId)
-                // Optimistically add message
                 setMessages([{ id: Date.now(), role: 'user', content, created_at: new Date().toISOString() }])
             } else {
                 setSending(false)
                 return
             }
         } else {
-            // Optimistically add message
             setMessages(prev => [...prev, { id: Date.now(), role: 'user', content, created_at: new Date().toISOString() }])
         }
 
@@ -124,17 +122,8 @@ export default function AiConsultantPage() {
                 body: JSON.stringify({ content }),
                 headers: getHeaders()
             })
-            setMessages(prev => [...prev.filter(m => m.id !== response.id), response]) // Replace optimistic if IDs collide or just append
-            
-            // Refresh list to update titles/sorting
             fetchConversations()
-            
-            // If we just created the chat, we need to fetch the assistant response which came from sendMessage endpoint
-            // Wait, my backend logic: sendMessage returns the AI message.
-            // But I also need to display the user message I sent.
-            // The backend saves the user message too.
-            // If I optimistically added the user message, I should append the AI message.
-            setMessages(prev => [...prev, response])
+            fetchMessages(chatId)
 
         } catch (error) {
             console.error('Failed to send message', error)
@@ -182,8 +171,8 @@ export default function AiConsultantPage() {
                                 <p>Задайте свой вопрос по законодательству РК</p>
                             </div>
                         ) : (
-                            messages.map((msg, idx) => (
-                                <div key={idx} className={`${s.message} ${s[msg.role]}`}>
+                            messages.map((msg) => (
+                                <div key={msg.id} className={`${s.message} ${s[msg.role]}`}>
                                     {msg.content}
                                 </div>
                             ))
