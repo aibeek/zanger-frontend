@@ -4,6 +4,9 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
+import Cookies from 'js-cookie'
+import { useLoginStore } from '@/features/auth/login'
+import { ProfileAvatar } from '@/entities/profile'
 import s from './EcpSidebar.module.scss'
 import useSWR from 'swr'
 import { ecpApi } from '@/shared/api'
@@ -13,6 +16,11 @@ export const EcpSidebar: React.FC = () => {
   const router = useRouter()
   const locale = useLocale()
   const t = useTranslations('ecp.sidebar')
+  const tCommon = useTranslations()
+  const { personalData } = useLoginStore()
+  const name = personalData?.name ?? ''
+  const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
+  const role = Cookies.get('role')
   const { data: counters, mutate: mutateCounters } = useSWR('ecp-counters', async () => {
     try {
       const c = await ecpApi.getCounters()
@@ -52,6 +60,20 @@ export const EcpSidebar: React.FC = () => {
           priority
         />
         <span className={s.brandText}>ZANGER</span>
+      </div>
+
+      <div className={s.userProfile}>
+        <div className={s.avatarWrapper}>
+          <ProfileAvatar avatarUrl={icon} />
+        </div>
+        <div className={s.userInfo}>
+          <div className={s.userName}>{name}</div>
+          <div className={s.userRole}>
+            {role === 'lawyer'
+              ? tCommon('dashboard.sidebar.lawyerRole')
+              : tCommon('dashboard.sidebar.clientRole')}
+          </div>
+        </div>
       </div>
 
       <nav className={s.nav}>
