@@ -7,7 +7,7 @@ import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { API_URL } from '@/shared/config'
 import Cookies from 'js-cookie'
 import { useLoginStore } from '@/features/auth/login'
-import { RightWidgets } from '../components/RightWidgets'
+ 
 
 interface Message {
     id: number
@@ -31,6 +31,11 @@ export default function AiConsultantPage() {
     const [loading, setLoading] = useState(false)
     const [sending, setSending] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
+    const [showArchivedModal, setShowArchivedModal] = useState(false)
+    const [showDeletedModal, setShowDeletedModal] = useState(false)
+    const [archivedConversations, setArchivedConversations] = useState<Conversation[]>([])
+    const [deletedConversations, setDeletedConversations] = useState<Conversation[]>([])
     const { personalData } = useLoginStore()
     const isAuthenticated = !!personalData
 
@@ -54,7 +59,7 @@ export default function AiConsultantPage() {
 
     const fetchConversations = async () => {
         try {
-            const data = await httpClientWithAuth<Conversation[]>(`${API_URL}/conversations`, {
+            const data = await httpClientWithAuth<Conversation[]>(`${API_URL}/conversations?status=active`, {
                 headers: getHeaders()
             })
             setConversations(data)
@@ -90,6 +95,97 @@ export default function AiConsultantPage() {
         } catch (error) {
             console.error('Failed to create conversation', error)
             return null
+        }
+    }
+
+    const fetchByStatus = async (status: 'archived' | 'deleted') => {
+        try {
+            const data = await httpClientWithAuth<Conversation[]>(`${API_URL}/conversations?status=${status}`, {
+                headers: getHeaders()
+            })
+            if (status === 'archived') setArchivedConversations(data)
+            else setDeletedConversations(data)
+        } catch (error) {
+            console.error('Failed to fetch by status', error)
+        }
+    }
+
+    const renameConversation = async (id: number) => {
+        const title = window.prompt('Новое название чата')
+        if (!title) return
+        try {
+            await httpClientWithAuth(`${API_URL}/conversations/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ title }),
+                headers: getHeaders()
+            })
+            fetchConversations()
+        } catch (error) {
+            console.error('Failed to rename conversation', error)
+        }
+    }
+
+    const shareConversation = async (id: number) => {
+        try {
+            const data = await httpClientWithAuth<{ share_token: string }>(`${API_URL}/conversations/${id}/share`, {
+                method: 'POST',
+                headers: getHeaders()
+            })
+            const url = `${API_URL}/conversations/share/${data.share_token}`
+            await navigator.clipboard.writeText(url)
+            alert('Ссылка скопирована')
+        } catch (error) {
+            console.error('Failed to share conversation', error)
+        }
+    }
+
+    const archiveConversation = async (id: number) => {
+        try {
+            await httpClientWithAuth(`${API_URL}/conversations/${id}/archive`, {
+                method: 'POST',
+                headers: getHeaders()
+            })
+            fetchConversations()
+        } catch (error) {
+            console.error('Failed to archive conversation', error)
+        }
+    }
+
+    const deleteConversation = async (id: number) => {
+        try {
+            await httpClientWithAuth(`${API_URL}/conversations/${id}`, {
+                method: 'DELETE',
+                headers: getHeaders()
+            })
+            fetchConversations()
+        } catch (error) {
+            console.error('Failed to delete conversation', error)
+        }
+    }
+
+    const unarchiveConversation = async (id: number) => {
+        try {
+            await httpClientWithAuth(`${API_URL}/conversations/${id}/unarchive`, {
+                method: 'POST',
+                headers: getHeaders()
+            })
+            fetchByStatus('archived')
+            fetchConversations()
+        } catch (error) {
+            console.error('Failed to unarchive conversation', error)
+        }
+    }
+
+    const restoreConversation = async (id: number) => {
+        try {
+            await httpClientWithAuth(`${API_URL}/conversations/${id}/restore`, {
+                method: 'POST',
+                headers: getHeaders()
+            })
+            fetchByStatus('deleted')
+            fetchConversations()
+        } catch (error) {
+            console.error('Failed to restore conversation', error)
         }
     }
 
@@ -144,6 +240,9 @@ export default function AiConsultantPage() {
         <div className={s.profileContent}>
             <div className={s.profileSettings}>
                 <div className={s.sidebar}>
+                    <div className={s.sidebarHeader}>
+                        <div>Ваши чаты</div>
+                    </div>
                     <button className={s.newChatBtn} onClick={() => {
                         setCurrentChatId(null)
                         setMessages([])
@@ -158,12 +257,29 @@ export default function AiConsultantPage() {
                                 onClick={() => fetchMessages(chat.id)}
                             >
                                 {chat.title || 'Новый чат'}
+                                <span className={s.dropdown} onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === chat.id ? null : chat.id) }}>
+                                    <button className={s.kebabBtn}>⋯</button>
+                                    {menuOpenId === chat.id && (
+                                        <div className={s.dropdownMenu}>
+                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); renameConversation(chat.id) }}>Переименовать</div>
+                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); shareConversation(chat.id) }}>Поделиться</div>
+                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); archiveConversation(chat.id) }}>Архивировать</div>
+                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); deleteConversation(chat.id) }}>Удалить</div>
+                                        </div>
+                                    )}
+                                </span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 <div className={s.chatArea}>
+                    <div className={s.chatHeader}>
+                        <div className={s.headerActions}>
+                            <button className={s.headerBtn} onClick={() => { setShowArchivedModal(true); fetchByStatus('archived') }}>Архивированные</button>
+                            <button className={s.headerBtn} onClick={() => { setShowDeletedModal(true); fetchByStatus('deleted') }}>Удаленные</button>
+                        </div>
+                    </div>
                     <div className={s.messages}>
                         {!currentChatId && messages.length === 0 ? (
                             <div className={s.emptyState}>
@@ -205,7 +321,40 @@ export default function AiConsultantPage() {
                     </div>
                 </div>
             </div>
-            <RightWidgets />
+            {showArchivedModal && (
+                <div className={s.modalOverlay} onClick={() => setShowArchivedModal(false)}>
+                    <div className={s.modal} onClick={(e) => e.stopPropagation()}>
+                        <h3>Архивированные</h3>
+                        <div className={s.historyList}>
+                            {archivedConversations.map((c) => (
+                                <div key={c.id} className={s.historyItem}>
+                                    {c.title || 'Без названия'}
+                                    <span className={s.dropdown}>
+                                        <button className={s.kebabBtn} onClick={() => unarchiveConversation(c.id)}>Разархивировать</button>
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+            {showDeletedModal && (
+                <div className={s.modalOverlay} onClick={() => setShowDeletedModal(false)}>
+                    <div className={s.modal} onClick={(e) => e.stopPropagation()}>
+                        <h3>Удаленные</h3>
+                        <div className={s.historyList}>
+                            {deletedConversations.map((c) => (
+                                <div key={c.id} className={s.historyItem}>
+                                    {c.title || 'Без названия'}
+                                    <span className={s.dropdown}>
+                                        <button className={s.kebabBtn} onClick={() => restoreConversation(c.id)}>Восстановить</button>
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
