@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 
-import { Button } from '@/shared/ui-kit'
+import { Button, Input } from '@/shared/ui-kit'
 import { createApplicationSchema, useRegionsUtils } from '@/shared/lib'
 import { SearchSelect, useRegions } from '@/features/auth'
 import { useCreateApplicationStore, useTags } from '@/features/create-application'
@@ -40,38 +40,42 @@ export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplic
 	})
 
 	// Загружаем данные заявки для редактирования
-	useEffect(() => {
-		if (applicationId && applicationId !== 0) {
-			const fetchApplication = async () => {
-				try {
-					setLoading(true)
-					const data = await clientApi.getApplication(applicationId) as Application
-					setInitialData(data)
-					
-					// Заполняем форму данными
-					reset({
-						region_id: data.region_id,
-						tag_id: data.tag_id,
-						description: data.description,
-					})
-				} catch (error) {
-					console.error('Error fetching application:', error)
-					toast.error(t('errorFetching'))
-				} finally {
-					setLoading(false)
-				}
-			}
-			fetchApplication()
-		}
-	}, [applicationId, reset, t])
+        useEffect(() => {
+            if (applicationId && applicationId !== 0) {
+                const fetchApplication = async () => {
+                    try {
+                        setLoading(true)
+                        const data = await clientApi.getApplication(applicationId) as Application
+                        setInitialData(data)
+                        
+                        // Заполняем форму данными
+                    reset({
+                        region_id: data.region_id,
+                        tag_id: data.tag_id,
+                        description: data.description,
+                        phone: data.phone ?? '',
+                        appeal_language: data.appeal_language ?? undefined,
+                    })
+                    } catch (error) {
+                        console.error('Error fetching application:', error)
+                        toast.error(t('errorFetching'))
+                    } finally {
+                        setLoading(false)
+                    }
+                }
+                fetchApplication()
+            }
+        }, [applicationId, reset, t])
 
 	const onSubmit = async (data) => {
 		try {
 			setLoading(true)
-			const modifiedData = {
-				...data,
-				tag_id: data.tag_id || null,
-			}
+            const modifiedData = {
+                ...data,
+                tag_id: data.tag_id || null,
+                phone: data.phone?.trim() || undefined,
+                appeal_language: data.appeal_language || undefined,
+            }
 
 			if (applicationId && applicationId !== 0) {
 				// Редактируем существующую заявку
@@ -143,23 +147,60 @@ export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplic
 						{errors.region_id && <p className={s.error}>{t(errors.region_id.message)}</p>}
 					</div>
 
-					<div className={`${s.description} ${s.inputBox}`}>
-						<label className={s.label}>{t('descriptionLabel')}</label>
-						<Controller
-							name="description"
-							control={control}
-							render={({ field }) => (
-								<Textarea
-									{...field}
-									value={field.value ?? ''}
-									onChange={field.onChange}
-									className={s.textarea}
-									placeholder={t('descriptionPlaceholder')}
-								/>
-							)}
-						/>
-						{errors.description && <p className={s.error}>{t(errors.description.message)}</p>}
-					</div>
+                    <div className={`${s.description} ${s.inputBox}`}>
+                        <label className={s.label}>{t('descriptionLabel')}</label>
+                        <Controller
+                            name="description"
+                            control={control}
+                            render={({ field }) => (
+                                <Textarea
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                    className={s.textarea}
+                                    placeholder={t('descriptionPlaceholder')}
+                                />
+                            )}
+                        />
+                        {errors.description && <p className={s.error}>{t(errors.description.message)}</p>}
+                    </div>
+
+                    <div className={`${s.phone} ${s.inputBox}`}>
+                        <label className={s.label}>{t('phoneLabel')}</label>
+                        <Controller
+                            name="phone"
+                            control={control}
+                            render={({ field }) => (
+                                <Input
+                                    {...field}
+                                    value={field.value ?? ''}
+                                    onChange={field.onChange}
+                                    placeholder={t('phonePlaceholder')}
+                                />
+                            )}
+                        />
+                    </div>
+
+                    <div className={`${s.language} ${s.inputBox}`}>
+                        <label className={s.label}>{t('languageLabel')}</label>
+                        <Controller
+                            name="appeal_language"
+                            control={control}
+                            render={({ field }) => (
+                                <select
+                                    className={s.select}
+                                    value={field.value ?? ''}
+                                    onChange={(e) => field.onChange(e.target.value || undefined)}
+                                >
+                                    <option value="">{t('languagePlaceholder')}</option>
+                                    <option value="kz">Қазақша</option>
+                                    <option value="ru">Русский</option>
+                                    <option value="kz_ru">Қазақша/русский</option>
+                                </select>
+                            )}
+                        />
+                        {errors.appeal_language && <p className={s.error}>{t(errors.appeal_language.message)}</p>}
+                    </div>
 
 					<Button
 						className={s.btn}

@@ -47,6 +47,8 @@
 		"individualClient": "Жеке тұлға",
 		"legalClient": "Заңды тұлға",
 		"dateFilter": "Күн",
+		"date": "Күні",
+		"details": "Толығырақ",
 		"selectDate": "Күнді таңдаңыз",
 		"subscribe_required": "Жазылу қажет",
 		"deadlines": {
@@ -654,7 +656,7 @@
 		}
 	},
 
-	"validation": {
+		"validation": {
 		"phone_too_short": "Телефон нөмірі тым қысқа",
 		"phone_too_long": "Телефон нөмірі 15 таңбадан аспауы керек",
 		"email_invalid": "Дұрыс email енгізіңіз",
@@ -670,7 +672,8 @@
 		"region_or_city_required": "Өңірді немесе қаланы көрсетіңіз",
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
-		"only_digits": "Введите только цифры",
+			"only_digits": "Введите только цифры",
+			"language_required": "Өтініш тілін көрсетіңіз",
 		"cardNumber": "Карта нөмірінің 16 санын енгізіңіз",
 		"expiry": "MM/YY форматындағы мерзімді енгізіңіз",
 		"cvv": "CVV кодын енгізіңіз",
@@ -848,12 +851,17 @@
 			"regionPlaceholder": "Елді мекенді таңдаңыз",
 			"descriptionLabel": "Сипаттама",
 			"descriptionPlaceholder": "Сипаттаманы енгізіңіз",
+			"phoneLabel": "Телефон",
+			"phonePlaceholder": "Телефон нөмірін енгізіңіз",
+			"languageLabel": "Өтініш тілі",
+			"languagePlaceholder": "Тілді таңдаңыз",
 			"submit": "Өтініш беру",
 			"update": "Өтінішті жаңарту",
 			"loading": "Жіберілуде...",
 			"success": "Өтініш жіберілді",
 			"description_required": "Өтінішті сипаттаңыз",
 			"region_or_city_required": "Өңірді немесе қаланы көрсетіңіз",
+			"language_required": "Өтініш тілін көрсетіңіз",
 			"successStore": "Өтініш сәтті құрылды",
 			"successUpdate": "Өтініш сәтті жаңартылды",
 			"errorStore": "Өтініш жасау кезінде қате пайда болды",

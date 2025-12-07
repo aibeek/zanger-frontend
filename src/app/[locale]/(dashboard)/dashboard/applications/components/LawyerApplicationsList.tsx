@@ -11,27 +11,32 @@ import { lawyerApi, sharedApi, Tag } from '@/shared/api'
 import { SearchSelect, useRegions, useLoginStore } from '@/features/auth'
 import { useRegionsUtils, truncateDescription } from '@/shared/lib'
 
+import { Eye, Phone } from 'lucide-react'
+import { ApplicationDetailsModal } from './ApplicationDetailsModal'
+
 import s from './LawyerApplicationsList.module.scss'
 
 interface LawyerApplication {
-	id: number
-	description: string
-	status: string
-	created_at: string
-	deadline: string
-	tag?: {
-		id: number
-		name: string
-	}
-	region?: {
-		id: number
-		name: string
-		path?: string
-	}
-	user?: {
-		id: number
-		name: string
-	}
+    id: number
+    description: string
+    status: string
+    created_at: string
+    deadline: string
+    phone?: string
+    appeal_language?: 'kz' | 'ru' | 'kz_ru'
+    tag?: {
+        id: number
+        name: string
+    }
+    region?: {
+        id: number
+        name: string
+        path?: string
+    }
+    user?: {
+        id: number
+        name: string
+    }
 }
 
 interface Filters {
@@ -52,18 +57,20 @@ export const LawyerApplicationsList = () => {
 	const { optionsForSelect, allOptions } = useRegionsUtils(regions, [])
 	const { personalData } = useLoginStore()
 	
-		const [applications, setApplications] = useState<LawyerApplication[]>([])
-		const [tags, setTags] = useState<Tag[]>([])  // Изменено с specializations на tags
-		const [loading, setLoading] = useState(true)
-		const [filters, setFilters] = useState<Filters>({})
-		// Параметры пагинации
-		const [page, setPage] = useState(1)
-		const perPage = 10
-		const [hasMore, setHasMore] = useState(true)
-		const [isLoadingMore, setIsLoadingMore] = useState(false)
+	const [applications, setApplications] = useState<LawyerApplication[]>([])
+	const [tags, setTags] = useState<Tag[]>([])
+	const [loading, setLoading] = useState(true)
+	const [filters, setFilters] = useState<Filters>({})
+	const [page, setPage] = useState(1)
+	const perPage = 10
+	const [hasMore, setHasMore] = useState(true)
+	const [isLoadingMore, setIsLoadingMore] = useState(false)
+	const [selectedApp, setSelectedApp] = useState<LawyerApplication | null>(null)
+	const [isResponding, setIsResponding] = useState(false)
 
 	// Проверяем наличие подписки у юриста
 	const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
+
 	
 	console.log('🔥 INITIAL STATE:', {
 		hasSubscription,
@@ -186,19 +193,22 @@ export const LawyerApplicationsList = () => {
 			toast.error(t('needSubscription') || 'Необходимо оформить подписку для отклика на заявки', {
 				duration: 4000,
 			})
-			// Перенаправляем на страницу подписки
 			router.push(`/${language}/dashboard/subscription`)
 			return
 		}
 
 		try {
+			setIsResponding(true)
 			await lawyerApi.respondToOrder(applicationId)
 			toast.success(t('responseSubmitted'))
+			setSelectedApp(null)
 			// Перезагружаем список заявок
 			fetchApplications()
 		} catch (error) {
 			console.error('Error responding to application:', error)
 			toast.error(t('responseError'))
+		} finally {
+			setIsResponding(false)
 		}
 	}
 
@@ -209,13 +219,6 @@ export const LawyerApplicationsList = () => {
 			</div>
 		)
 	}
-
-	console.log('LawyerApplicationsList render:', {
-		applicationsCount: applications.length,
-		applications: applications.slice(0, 2), // первые 2 для отладки
-		loading,
-		filters
-	})
 
 	return (
 		<div className={s.container}>
@@ -277,86 +280,80 @@ export const LawyerApplicationsList = () => {
 				</div>
 			) : (
 				<div className={s.applicationsList}>
-					{applications.map((app, index) => {
-						// Если нет подписки - обрезаем описание
-						const displayDescription = hasSubscription 
-							? app.description 
-							: truncateDescription(app.description, 2)
-						
-						return (
-							<div key={`${app.id}-${index}`} className={s.applicationCard}>
-								<div className={s.cardHeader}>
-									<h3 className={s.applicationTitle}>
-										{app.tag?.name || t('serviceType.other')}
-									</h3>
-								</div>
-								
-								<div className={s.cardContent}>
-									<div className={hasSubscription ? s.description : s.descriptionTruncated}>
-										<p>{displayDescription}</p>
-										{!hasSubscription && (
-											<div className={s.subscriptionOverlay}>
-												<p className={s.subscriptionHint}>
-													{t('subscriptionRequiredToViewFull') || 'Оформите подписку, чтобы видеть полное описание'}
-												</p>
-											</div>
-										)}
+					{applications.map((app, index) => (
+						<div key={`${app.id}-${index}`} className={s.applicationCard}>
+							<div className={s.cardHeader}>
+								<span className={s.clientName}>{app.user?.name || 'Клиент'}</span>
+								{/* <div className={s.cardStats}>
+									<div className={s.statItem}>
+										<Eye size={16} />
+										<span>{Math.floor(Math.random() * 50) + 1}</span>
 									</div>
-									
-									<div className={s.cardMeta}>
-										<div className={s.metaRow}>
-											<div className={s.metaItem}>
-												<span className={s.metaLabel}>{t('deadline')}:</span>
-												<span className={s.metaValue}>
-													{app.deadline || '3 дня'}
-												</span>
-											</div>
-											<div className={s.metaItem}>
-												<span className={s.metaLabel}>{t('clientType')}:</span>
-												<span className={s.metaValue}>
-													{app.user?.name || 'Физическое лицо'}
-												</span>
-											</div>
-										</div>
-										<div className={s.metaRow}>
-											<div className={s.metaItem}>
-												<span className={s.metaLabel}>{t('publishDate')}:</span>
-												<span className={s.metaValue}>
-													{new Date(app.created_at).toLocaleDateString('ru-RU', {
-														day: '2-digit',
-														month: '2-digit',
-														year: 'numeric'
-													})}
-												</span>
-											</div>
-										</div>
+									<div className={s.statItem}>
+										<Phone size={16} />
+										<span>{Math.floor(Math.random() * 10)}</span>
 									</div>
-								</div>
-
-								<div className={s.cardActions}>
-									<Button
-										variant="primary"
-										onClick={() => handleRespond(app.id)}
-										className={s.respondBtn}>
-										{t('respondButton')}
-									</Button>
-								</div>
+								</div> */}
 							</div>
-						)
-					})}
+							
+							<div className={s.cardContent}>
+								<h3 className={s.applicationTitle}>
+									{app.tag?.name || t('serviceType.other')}
+								</h3>
+								
+                                <div className={s.cardMeta}>
+                                    <div className={s.metaRow}>
+                                        <strong>{t('region')}:</strong>
+                                        <span>{app.region?.name || 'Не указан'}</span>
+                                    </div>
+                                    <div className={s.metaRow}>
+                                        <strong>Язык обращения:</strong>
+                                        <span>{app.appeal_language ? (app.appeal_language === 'kz' ? 'Қазақша' : app.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский') : 'Не указан'}</span>
+                                    </div>
+                                    <div className={s.metaRow}>
+                                        <strong>{t('date')}:</strong>
+                                        <span>
+                                            {new Date(app.created_at).toLocaleDateString('ru-RU', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </span>
+                                    </div>
+                                </div>
 
-								{hasMore && (
-									<div className={s.loadMoreWrap}>
-										<Button
-											variant="secondary"
-											disabled={isLoadingMore}
-											onClick={() => fetchApplications(page + 1, true)}
-										>
-											{isLoadingMore ? 'Загрузка…' : 'Показать ещё'}
-										</Button>
-									</div>
-								)}
+								<button
+									className={s.detailsBtn}
+									onClick={() => setSelectedApp(app)}
+								>
+									{t('details') || 'Подробнее'}
+								</button>
+							</div>
+						</div>
+					))}
 				</div>
+			)}
+
+			{hasMore && (
+				<div className={s.loadMoreWrap}>
+					<Button
+						variant="secondary"
+						disabled={isLoadingMore}
+						onClick={() => fetchApplications(page + 1, true)}
+					>
+						{isLoadingMore ? 'Загрузка…' : 'Показать ещё'}
+					</Button>
+				</div>
+			)}
+
+			{selectedApp && (
+				<ApplicationDetailsModal
+					application={selectedApp}
+					onClose={() => setSelectedApp(null)}
+					onRespond={handleRespond}
+					isResponding={isResponding}
+				/>
 			)}
 		</div>
 	)

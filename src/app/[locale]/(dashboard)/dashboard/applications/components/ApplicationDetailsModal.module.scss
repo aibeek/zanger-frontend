@@ -1,0 +1,130 @@
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+	padding: 20px;
+}
+
+.modal {
+	background: white;
+	border-radius: 20px;
+	padding: 32px;
+	width: 100%;
+	max-width: 600px;
+	position: relative;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	animation: slideIn 0.3s ease-out;
+}
+
+.closeBtn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	background: none;
+	border: none;
+	font-size: 28px;
+	color: #9CA3AF;
+	cursor: pointer;
+	line-height: 1;
+	padding: 5px;
+	
+	&:hover {
+		color: #4B5563;
+	}
+}
+
+.title {
+	font-size: 24px;
+	font-weight: 700;
+	color: #111827;
+	margin-bottom: 16px;
+	padding-right: 30px;
+}
+
+.description {
+	font-size: 16px;
+	line-height: 1.5;
+	color: #374151;
+	margin-bottom: 24px;
+	white-space: pre-wrap;
+}
+
+.metaInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 32px;
+}
+
+.metaRow {
+	display: flex;
+	gap: 8px;
+	font-size: 16px;
+	color: #4B5563;
+}
+
+.metaLabel {
+	font-weight: 600;
+	color: #374151;
+}
+
+.actions {
+	display: flex;
+	gap: 16px;
+	
+	@media (max-width: 640px) {
+		flex-direction: column;
+	}
+}
+
+.viewNumberBtn {
+	flex: 1;
+	background: #2563EB;
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 14px 24px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+	
+	&:hover {
+		background: #1D4ED8;
+	}
+}
+
+.respondBtn {
+	flex: 1;
+	background: white;
+	color: #111827;
+	border: 2px solid #111827;
+	border-radius: 12px;
+	padding: 14px 24px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	
+	&:hover {
+		background: #F3F4F6;
+	}
+}
+
+@keyframes slideIn {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}

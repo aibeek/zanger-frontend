@@ -276,19 +276,27 @@ export const MyApplicationsList = ({ onEdit }: MyApplicationsListProps) => {
 											</div>
 										</div>
 										
-										<div className={s.cardMeta}>
-											<div className={s.metaItem}>
-												<span className={s.metaLabel}>{t('region')}:</span>
-												<span className={s.metaValue}>
-													{app.region?.path
-														? `${app.region.name} (${app.region.path})`
-														: app.region?.name || t('notSpecified')}
-												</span>
-											</div>
-											<div className={s.metaItem}>
-												<span className={s.metaLabel}>{t('form.descriptionLabel')}:</span>
-												<p className={s.description}>{app.description}</p>
-											</div>
+                <div className={s.cardMeta}>
+                    <div className={s.metaItem}>
+                        <span className={s.metaLabel}>{t('region')}:</span>
+                        <span className={s.metaValue}>
+                            {app.region?.path
+                                ? `${app.region.name} (${app.region.path})`
+                                : app.region?.name || t('notSpecified')}
+                        </span>
+                    </div>
+                    <div className={s.metaItem}>
+                        <span className={s.metaLabel}>Язык обращения:</span>
+                        <span className={s.metaValue}>
+                            {app.appeal_language
+                                ? (app.appeal_language === 'kz' ? 'Қазақша' : app.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский')
+                                : ta('notSpecified')}
+                        </span>
+                    </div>
+                    <div className={s.metaItem}>
+                        <span className={s.metaLabel}>{t('form.descriptionLabel')}:</span>
+                        <p className={s.description}>{app.description}</p>
+                    </div>
 											<div className={s.metaItem}>
 												<span className={s.metaLabel}>{t('publishDate')}:</span>
 												<span className={s.metaValue}>
