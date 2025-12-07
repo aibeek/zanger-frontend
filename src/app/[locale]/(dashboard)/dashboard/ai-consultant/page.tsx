@@ -41,6 +41,7 @@ export default function AiConsultantPage() {
     const [renameInput, setRenameInput] = useState('')
     const { personalData } = useLoginStore()
     const isAuthenticated = !!personalData
+    const [showBanner, setShowBanner] = useState(true)
 
     // Guest Token Logic
     useEffect(() => {
@@ -261,6 +262,19 @@ export default function AiConsultantPage() {
                             <button className={s.headerBtn} onClick={() => { setShowDeletedModal(true); fetchByStatus('deleted') }}>Удаленные</button>
                         </div>
                     </div>
+                    {showBanner && (
+                        <div className={s.infoBanner}>
+                            <div className={s.bannerIcon}>ℹ️</div>
+                            <div className={s.bannerContent}>
+                                <h4 className={s.bannerTitle}>Информация</h4>
+                                <p className={s.bannerDescription}>Внимание.  При взаимодействии с данным сервисом используется система, работающая на основе искусственного интеллекта.</p>
+                                <p className={s.bannerDescription}>В соответствии с Закон Республики Казахстан «Об искусственном интеллекте» пользователю предоставляется вся необходимая информация о том, что используется ИИ.</p>
+                                <p className={s.bannerDescription}>При этом персональные данные не используются / не обрабатываются (или: используются только в объёме, заранее согласованном с пользователем, и в соответствии с законодательством о защите данных).</p>
+                                <p className={s.bannerDescription}>Если вы не даёте согласия — вы вправе отказаться от использования ИИ-функций.</p>
+                            </div>
+                            <button className={s.bannerCloseBtn} onClick={() => setShowBanner(false)} aria-label="Скрыть">Скрыть</button>
+                        </div>
+                    )}
                     <div className={s.messages} ref={messagesContainerRef}>
                         {!currentChatId && messages.length === 0 ? (
                             <div className={s.emptyState}>
