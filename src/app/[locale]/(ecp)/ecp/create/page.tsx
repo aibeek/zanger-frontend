@@ -46,6 +46,7 @@ export default function EcpCreateDocumentPage() {
   
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -177,6 +178,14 @@ export default function EcpCreateDocumentPage() {
     }
   }, [personalData, getPersonalDataByToken])
 
+  React.useEffect(() => {
+    if (file && file.size > MAX_FILE_SIZE_BYTES) {
+      toast.error('Файл превышает лимит 5 МБ')
+      setFile(null)
+      try { if (fileInputRef.current) (fileInputRef.current as any).value = '' } catch {}
+    }
+  }, [file])
+
   
 
   // Загрузка подписантов по userId
@@ -248,6 +257,10 @@ export default function EcpCreateDocumentPage() {
       toast.error(`${t('upload')}: ${t('dropText').split(',')[0]} · ${t('name')}`)
       return
     }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Файл превышает лимит 5 МБ')
+      return
+    }
 
     try {
       setIsCreating(true)
@@ -276,8 +289,21 @@ export default function EcpCreateDocumentPage() {
       const d = await ecpApi.getDocumentDetails(createRes.id)
       setDetails(d)
     } catch (e: any) {
-      const msg = e?.message || 'Ошибка'
-      toast.error(`${t('errorOccurred') || 'Ошибка'}: ${msg}`)
+      let msg = e?.message || 'Ошибка'
+      if (e?.status === 422 && e?.errors) {
+        const errs: any = e.errors
+        const fromFile = Array.isArray(errs?.file) ? errs.file[0] : null
+        const fromFilesStar = Array.isArray(errs?.['files.*']) ? errs['files.*'][0] : null
+        const firstAny = (() => {
+          try {
+            const vals = Object.values(errs)
+            const flat = ([] as any[]).concat(...vals)
+            return typeof flat[0] === 'string' ? flat[0] : null
+          } catch { return null }
+        })()
+        msg = fromFile || fromFilesStar || firstAny || msg
+      }
+      toast.error(msg)
     } finally {
       setIsCreating(false)
     }
