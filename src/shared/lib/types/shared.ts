@@ -23,16 +23,17 @@ export type Tag = {
 }
 
 export type Application = {
-	id: number
-	description: string
-	region_id: number
-	tag_id?: number
-	status: string
-	created_at: string
-	updated_at: string
-	region?: Region
-	tag?: Tag
-	responses_count?: number
+    id: number
+    description: string
+    phone?: string
+    region_id: number
+    tag_id?: number
+    status: string
+    created_at: string
+    updated_at: string
+    region?: Region
+    tag?: Tag
+    responses_count?: number
 }
 
 export type ApplicationsResponse = {

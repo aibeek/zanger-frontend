@@ -17,24 +17,25 @@ import { ApplicationDetailsModal } from './ApplicationDetailsModal'
 import s from './LawyerApplicationsList.module.scss'
 
 interface LawyerApplication {
-	id: number
-	description: string
-	status: string
-	created_at: string
-	deadline: string
-	tag?: {
-		id: number
-		name: string
-	}
-	region?: {
-		id: number
-		name: string
-		path?: string
-	}
-	user?: {
-		id: number
-		name: string
-	}
+    id: number
+    description: string
+    status: string
+    created_at: string
+    deadline: string
+    phone?: string
+    tag?: {
+        id: number
+        name: string
+    }
+    region?: {
+        id: number
+        name: string
+        path?: string
+    }
+    user?: {
+        id: number
+        name: string
+    }
 }
 
 interface Filters {

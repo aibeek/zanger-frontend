@@ -850,6 +850,8 @@
 			"regionPlaceholder": "Елді мекенді таңдаңыз",
 			"descriptionLabel": "Сипаттама",
 			"descriptionPlaceholder": "Сипаттаманы енгізіңіз",
+			"phoneLabel": "Телефон",
+			"phonePlaceholder": "Телефон нөмірін енгізіңіз",
 			"submit": "Өтініш беру",
 			"update": "Өтінішті жаңарту",
 			"loading": "Жіберілуде...",

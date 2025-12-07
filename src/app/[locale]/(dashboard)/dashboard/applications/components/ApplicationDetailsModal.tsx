@@ -34,32 +34,34 @@ export const ApplicationDetailsModal = ({
 					{application.description}
 				</div>
 				
-				<div className={s.metaInfo}>
-					<div className={s.metaRow}>
-						<span className={s.metaLabel}>{t('client')}:</span>
-						<span>{application.user?.name || 'Клиент'}</span>
-					</div>
-					<div className={s.metaRow}>
-						<span className={s.metaLabel}>{t('region')}:</span>
-						<span>{application.region?.name || 'Не указан'}</span>
-					</div>
-					<div className={s.metaRow}>
-						<span className={s.metaLabel}>{t('date')}:</span>
-						<span>
-							<DateComponent date={application.created_at} />
-						</span>
-					</div>
-				</div>
-				
-				<div className={s.actions}>
-					<button className={s.viewNumberBtn}>
-						Посмотреть номер
-					</button>
-					<button 
-						className={s.respondBtn}
-						onClick={() => onRespond(application.id)}
-						disabled={isResponding}
-					>
+                <div className={s.metaInfo}>
+                    <div className={s.metaRow}>
+                        <span className={s.metaLabel}>Клиент:</span>
+                        <span>{application.user?.name || 'Клиент'}</span>
+                    </div>
+                    <div className={s.metaRow}>
+                        <span className={s.metaLabel}>{t('region')}:</span>
+                        <span>{application.region?.name || 'Не указан'}</span>
+                    </div>
+                    <div className={s.metaRow}>
+                        <span className={s.metaLabel}>Телефон:</span>
+                        <span>{application.phone || 'Не указан'}</span>
+                    </div>
+                    <div className={s.metaRow}>
+                        <span className={s.metaLabel}>{t('date')}:</span>
+                        <span>
+                            <DateComponent date={application.created_at} />
+                        </span>
+                    </div>
+                </div>
+                
+                <div className={s.actions}>
+                    
+                    <button 
+                        className={s.respondBtn}
+                        onClick={() => onRespond(application.id)}
+                        disabled={isResponding}
+                    >
 						{isResponding ? 'Обработка...' : 'В "Мои заявки"'}
 					</button>
 				</div>

@@ -3,9 +3,10 @@ import { httpClientWithAuth } from './httpClient'
 import { createQuery } from '../lib/helpers/query'
 
 export interface CreateApplicationType {
-	description: string
-	region_id: number
-	tag_id?: number
+    description: string
+    region_id: number
+    tag_id?: number
+    phone?: string
 }
 
 export interface CancelApplicationType {
