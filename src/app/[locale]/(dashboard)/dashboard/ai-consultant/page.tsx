@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import s from './page.module.scss'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
@@ -30,12 +30,15 @@ export default function AiConsultantPage() {
     const [inputValue, setInputValue] = useState('')
     const [loading, setLoading] = useState(false)
     const [sending, setSending] = useState(false)
+    const messagesContainerRef = useRef<HTMLDivElement>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
     const [showArchivedModal, setShowArchivedModal] = useState(false)
     const [showDeletedModal, setShowDeletedModal] = useState(false)
     const [archivedConversations, setArchivedConversations] = useState<Conversation[]>([])
     const [deletedConversations, setDeletedConversations] = useState<Conversation[]>([])
+    const [confirmState, setConfirmState] = useState<{ type: 'rename' | 'archive' | 'delete' | null, id: number | null }>(() => ({ type: null, id: null }))
+    const [renameInput, setRenameInput] = useState('')
     const { personalData } = useLoginStore()
     const isAuthenticated = !!personalData
 
@@ -110,9 +113,8 @@ export default function AiConsultantPage() {
         }
     }
 
-    const renameConversation = async (id: number) => {
-        const title = window.prompt('Новое название чата')
-        if (!title) return
+    const renameConversation = async (id: number, title: string) => {
+        if (!title.trim()) return
         try {
             await httpClientWithAuth(`${API_URL}/conversations/${id}`, {
                 method: 'PUT',
@@ -233,46 +235,25 @@ export default function AiConsultantPage() {
     }, [])
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+        const onDocClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement
+            if (target.closest(`.${s.dropdown}`)) return
+            setMenuOpenId(null)
+        }
+        document.addEventListener('click', onDocClick)
+        return () => document.removeEventListener('click', onDocClick)
+    }, [])
+
+    useEffect(() => {
+        const el = messagesContainerRef.current
+        if (el) {
+            el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+        }
     }, [messages])
 
     return (
         <div className={s.profileContent}>
             <div className={s.profileSettings}>
-                <div className={s.sidebar}>
-                    <div className={s.sidebarHeader}>
-                        <div>Ваши чаты</div>
-                    </div>
-                    <button className={s.newChatBtn} onClick={() => {
-                        setCurrentChatId(null)
-                        setMessages([])
-                    }}>
-                        + Новый чат
-                    </button>
-                    <div className={s.historyList}>
-                        {conversations.map(chat => (
-                            <div 
-                                key={chat.id} 
-                                className={`${s.historyItem} ${currentChatId === chat.id ? s.active : ''}`}
-                                onClick={() => fetchMessages(chat.id)}
-                            >
-                                {chat.title || 'Новый чат'}
-                                <span className={s.dropdown} onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === chat.id ? null : chat.id) }}>
-                                    <button className={s.kebabBtn}>⋯</button>
-                                    {menuOpenId === chat.id && (
-                                        <div className={s.dropdownMenu}>
-                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); renameConversation(chat.id) }}>Переименовать</div>
-                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); shareConversation(chat.id) }}>Поделиться</div>
-                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); archiveConversation(chat.id) }}>Архивировать</div>
-                                            <div className={s.dropdownItem} onClick={() => { setMenuOpenId(null); deleteConversation(chat.id) }}>Удалить</div>
-                                        </div>
-                                    )}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
                 <div className={s.chatArea}>
                     <div className={s.chatHeader}>
                         <div className={s.headerActions}>
@@ -280,7 +261,7 @@ export default function AiConsultantPage() {
                             <button className={s.headerBtn} onClick={() => { setShowDeletedModal(true); fetchByStatus('deleted') }}>Удаленные</button>
                         </div>
                     </div>
-                    <div className={s.messages}>
+                    <div className={s.messages} ref={messagesContainerRef}>
                         {!currentChatId && messages.length === 0 ? (
                             <div className={s.emptyState}>
                                 <h3>ИИ-Консультант</h3>
@@ -289,7 +270,7 @@ export default function AiConsultantPage() {
                         ) : (
                             messages.map((msg) => (
                                 <div key={msg.id} className={`${s.message} ${s[msg.role]}`}>
-                                    {msg.content}
+                                    <MessageContent content={msg.content} />
                                 </div>
                             ))
                         )}
@@ -320,21 +301,59 @@ export default function AiConsultantPage() {
                         </button>
                     </div>
                 </div>
+
+                <div className={s.sidebar}>
+                    <div className={s.sidebarHeader}>
+                        <div>Ваши чаты</div>
+                    </div>
+                    <button className={s.newChatBtn} onClick={() => {
+                        setCurrentChatId(null)
+                        setMessages([])
+                    }}>
+                        + Новый чат
+                    </button>
+                    <div className={s.historyList}>
+                        {conversations.map(chat => (
+                            <div 
+                                key={chat.id} 
+                                className={`${s.historyItem} ${currentChatId === chat.id ? s.active : ''}`}
+                                onClick={() => fetchMessages(chat.id)}
+                            >
+                                <span className={s.historyTitle}>{chat.title || 'Новый чат'}</span>
+                                <span className={s.dropdown} onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === chat.id ? null : chat.id) }}>
+                                    <button className={s.kebabBtn}>⋯</button>
+                                    {menuOpenId === chat.id && (
+                                        <div className={s.dropdownMenu}>
+                                            <div className={s.dropdownItem} onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setConfirmState({ type: 'rename', id: chat.id }); setRenameInput(chat.title || '') }}>Переименовать</div>
+                                            <div className={s.dropdownItem} onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); shareConversation(chat.id) }}>Поделиться</div>
+                                            <div className={s.dropdownItem} onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setConfirmState({ type: 'archive', id: chat.id }) }}>Архивировать</div>
+                                            <div className={`${s.dropdownItem} ${s.dropdownItemDanger}`} onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setConfirmState({ type: 'delete', id: chat.id }) }}>Удалить</div>
+                                        </div>
+                                    )}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
             {showArchivedModal && (
                 <div className={s.modalOverlay} onClick={() => setShowArchivedModal(false)}>
                     <div className={s.modal} onClick={(e) => e.stopPropagation()}>
                         <h3>Архивированные</h3>
-                        <div className={s.historyList}>
-                            {archivedConversations.map((c) => (
-                                <div key={c.id} className={s.historyItem}>
-                                    {c.title || 'Без названия'}
-                                    <span className={s.dropdown}>
-                                        <button className={s.kebabBtn} onClick={() => unarchiveConversation(c.id)}>Разархивировать</button>
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+                        {archivedConversations.length === 0 ? (
+                            <div className={s.emptyState}>Пусто</div>
+                        ) : (
+                            <div className={s.historyList}>
+                                {archivedConversations.map((c) => (
+                                    <div key={c.id} className={s.historyItem}>
+                                        <span className={s.historyTitle}>{c.title || 'Без названия'}</span>
+                                        <span className={s.dropdown}>
+                                            <button className={s.kebabBtn} onClick={() => unarchiveConversation(c.id)}>Разархивировать</button>
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
@@ -342,19 +361,104 @@ export default function AiConsultantPage() {
                 <div className={s.modalOverlay} onClick={() => setShowDeletedModal(false)}>
                     <div className={s.modal} onClick={(e) => e.stopPropagation()}>
                         <h3>Удаленные</h3>
-                        <div className={s.historyList}>
-                            {deletedConversations.map((c) => (
-                                <div key={c.id} className={s.historyItem}>
-                                    {c.title || 'Без названия'}
-                                    <span className={s.dropdown}>
-                                        <button className={s.kebabBtn} onClick={() => restoreConversation(c.id)}>Восстановить</button>
-                                    </span>
+                        {deletedConversations.length === 0 ? (
+                            <div className={s.emptyState}>Пусто</div>
+                        ) : (
+                            <div className={s.historyList}>
+                                {deletedConversations.map((c) => (
+                                    <div key={c.id} className={s.historyItem}>
+                                        <span className={s.historyTitle}>{c.title || 'Без названия'}</span>
+                                        <span className={s.dropdown}>
+                                            <button className={s.kebabBtn} onClick={() => restoreConversation(c.id)}>Восстановить</button>
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {confirmState.type && confirmState.id && (
+                <div className={s.modalOverlay} onClick={() => setConfirmState({ type: null, id: null })}>
+                    <div className={s.modal} onClick={(e) => e.stopPropagation()}>
+                        {confirmState.type === 'rename' ? (
+                            <>
+                                <div className={s.confirmModalTitle}>Переименовать чат</div>
+                                <input value={renameInput} onChange={e => setRenameInput(e.target.value)} className={s.input} />
+                                <div className={s.confirmModalActions}>
+                                    <button className={s.confirmBtn} onClick={() => setConfirmState({ type: null, id: null })}>Отмена</button>
+                                    <button className={`${s.confirmBtn} ${s.confirmBtnPrimary}`} onClick={() => { if (confirmState.id) renameConversation(confirmState.id, renameInput); setConfirmState({ type: null, id: null }) }}>Сохранить</button>
                                 </div>
-                            ))}
-                        </div>
+                            </>
+                        ) : confirmState.type === 'archive' ? (
+                            <>
+                                <div className={s.confirmModalTitle}>Вы хотите архивировать чат?</div>
+                                <div className={s.confirmModalActions}>
+                                    <button className={s.confirmBtn} onClick={() => setConfirmState({ type: null, id: null })}>Отмена</button>
+                                    <button className={`${s.confirmBtn} ${s.confirmBtnPrimary}`} onClick={() => { if (confirmState.id) archiveConversation(confirmState.id); setConfirmState({ type: null, id: null }) }}>Архивировать</button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className={s.confirmModalTitle}>Вы хотите удалить чат?</div>
+                                <div className={s.confirmModalActions}>
+                                    <button className={s.confirmBtn} onClick={() => setConfirmState({ type: null, id: null })}>Отмена</button>
+                                    <button className={`${s.confirmBtn} ${s.confirmBtnDanger}`} onClick={() => { if (confirmState.id) deleteConversation(confirmState.id); setConfirmState({ type: null, id: null }) }}>Удалить</button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             )}
         </div>
     )
 }
+    const renderStrong = (text: string) => {
+        const parts = text.split(/\*\*(.*?)\*\*/)
+        const nodes: (string | ReactNode)[] = []
+        for (let i = 0; i < parts.length; i++) {
+            if (i % 2 === 1) nodes.push(<strong key={i}>{parts[i]}</strong>)
+            else if (parts[i]) nodes.push(parts[i])
+        }
+        return nodes
+    }
+
+    const MessageContent = ({ content }: { content: string }) => {
+        const trimmed = content.trim()
+        const lines = trimmed.split(/\n/)
+        const listItemRegex = /^\s*\d+\.\s+(.*)$/
+        let firstListIndex = -1
+        for (let i = 0; i < lines.length; i++) {
+            if (listItemRegex.test(lines[i])) { firstListIndex = i; break }
+        }
+        if (firstListIndex !== -1) {
+            const prefaceText = lines.slice(0, firstListIndex).join('\n')
+            const prefaceParagraphs = prefaceText ? prefaceText.split(/\n\n+/) : []
+            const list: string[] = []
+            for (let i = firstListIndex; i < lines.length; i++) {
+                const m = lines[i].match(listItemRegex)
+                if (m) list.push(m[1])
+            }
+            return (
+                <div className={s.messageContent}>
+                    {prefaceParagraphs.map((p, idx) => (
+                        <p key={idx}>{renderStrong(p)}</p>
+                    ))}
+                    <ol>
+                        {list.map((li, idx) => (
+                            <li key={idx}>{renderStrong(li)}</li>
+                        ))}
+                    </ol>
+                </div>
+            )
+        }
+        const paragraphs = trimmed.split(/\n\n+/)
+        return (
+            <div className={s.messageContent}>
+                {paragraphs.map((p, idx) => (
+                    <p key={idx}>{renderStrong(p)}</p>
+                ))}
+            </div>
+        )
+    }
