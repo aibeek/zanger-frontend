@@ -10,6 +10,7 @@ import monitor from '@/app/assets/icons/monitor.webp'
 import Strelka from '@/app/assets/icons/strelka.svg'
 import docIcon from '@/app/assets/icons/document.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
+import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 
 export const ModulesBar = () => {
   const t = useTranslations()
@@ -32,6 +33,7 @@ export const ModulesBar = () => {
   const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
   const applicationsLabel = t('dashboard.footer.sections.applications')
   const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
+  const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
 
   const handleSectionClick = (label: string) => {
     if (label === digitalSignatureLabel) {
@@ -40,6 +42,10 @@ export const ModulesBar = () => {
     }
     if (label === applicationsLabel) {
       router.push(`/${language}/dashboard/applications`)
+      return
+    }
+    if (label === aiConsultantLabel) {
+      router.push(`/${language}/dashboard/ai-consultant`)
       return
     }
     setIsModalOpen(true)
@@ -51,11 +57,12 @@ export const ModulesBar = () => {
         const isPilot = section === videoConferenceLabel
         const isDigital = section === digitalSignatureLabel
         const isApplications = section === applicationsLabel
+        const isAi = section === aiConsultantLabel
         const label = section
         return (
           <button
             key={index}
-            className={`${s.section} ${isDigital || isPilot || isApplications ? s.sectionEdo : ''}`}
+            className={`${s.section} ${(isDigital || isApplications || isAi) ? s.sectionEdo : ''}`}
             onClick={() => handleSectionClick(section)}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
@@ -75,6 +82,12 @@ export const ModulesBar = () => {
                   <Image src={MyApplicationsIcon} alt="applications" width={26} height={26} />
                 </span>
               )}
+              {isAi && (
+                <span className={s.docIcon} aria-hidden>
+                  <Image src={chatIcon} alt="ai" width={26} height={26} />
+                </span>
+              )}
+              {/* Пилот метка убрана для ИИ-консультанта */}
             </span>
             <span className={s.arrow}>
               <Image src={Strelka} alt="arrow" width={28} height={28} />

@@ -16,6 +16,7 @@ import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
 import Strelka from '@/app/assets/icons/strelka.svg'
 import docIcon from '@/app/assets/icons/document.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
+import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -71,6 +72,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
     const applicationsLabel = t('dashboard.footer.sections.applications')
     const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
+    const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
@@ -79,6 +81,10 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         }
         if (label === applicationsLabel) {
             router.push(`/${language}/dashboard/applications`)
+            return
+        }
+        if (label === aiConsultantLabel) {
+            router.push(`/${language}/dashboard/ai-consultant`)
             return
         }
         setIsModalOpen(true)
@@ -145,11 +151,12 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         const isPilot = section === videoConferenceLabel
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
+                        const isAi = section === aiConsultantLabel
                         const label = section
                         return (
                         <button 
                             key={index} 
-                            className={`${s.footerSection} ${isDigital || isPilot || isApplications ? s.footerSectionEdo : ''}`}
+                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
@@ -169,6 +176,12 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                                         <Image src={MyApplicationsIcon} alt="applications" width={26} height={26} />
                                     </span>
                                 )}
+                                {isAi && (
+                                    <span className={s.footerDocIcon} aria-hidden>
+                                        <Image src={chatIcon} alt="ai" width={26} height={26} />
+                                    </span>
+                                )}
+                                {/* Пилот метка убрана */}
                             </span>
                             <span className={s.footerArrow}>
                                 <Image 
