@@ -44,7 +44,9 @@ export const ModulesSection = () => {
       n.includes('ЭДО') ||
       n.includes('ЭЦҚ') ||
       n.includes('ECP') ||
-      n.includes('EDO')
+      n.includes('EDO') ||
+      n.includes('ИИ') ||
+      n.includes('КОНСУЛЬТАНТ')
       // ВКС исключено из "готов"
     )
   }
@@ -79,6 +81,10 @@ export const ModulesSection = () => {
       normalized.includes('БЕЙНЕ') ||
       normalized.includes('CONFERENCE')
 
+    const isAi =
+      normalized.includes('ИИ') ||
+      normalized.includes('КОНСУЛЬТАНТ')
+
     if (isEdoOrEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
@@ -96,6 +102,11 @@ export const ModulesSection = () => {
       } else {
         router.push(`/${locale}/auth/login`)
       }
+      return
+    }
+
+    if (isAi) {
+      router.push(`/${locale}/dashboard/ai-consultant`)
       return
     }
 
