@@ -23,6 +23,7 @@ interface LawyerApplication {
     created_at: string
     deadline: string
     phone?: string
+    appeal_language?: 'kz' | 'ru' | 'kz_ru'
     tag?: {
         id: number
         name: string
@@ -300,23 +301,27 @@ export const LawyerApplicationsList = () => {
 									{app.tag?.name || t('serviceType.other')}
 								</h3>
 								
-								<div className={s.cardMeta}>
-									<div className={s.metaRow}>
-										<strong>{t('region')}:</strong>
-										<span>{app.region?.name || 'Не указан'}</span>
-									</div>
-									<div className={s.metaRow}>
-										<strong>{t('date')}:</strong>
-										<span>
-											{new Date(app.created_at).toLocaleDateString('ru-RU', {
-												day: 'numeric',
-												month: 'long',
-												hour: '2-digit',
-												minute: '2-digit'
-											})}
-										</span>
-									</div>
-								</div>
+                                <div className={s.cardMeta}>
+                                    <div className={s.metaRow}>
+                                        <strong>{t('region')}:</strong>
+                                        <span>{app.region?.name || 'Не указан'}</span>
+                                    </div>
+                                    <div className={s.metaRow}>
+                                        <strong>Язык обращения:</strong>
+                                        <span>{app.appeal_language ? (app.appeal_language === 'kz' ? 'Қазақша' : app.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский') : 'Не указан'}</span>
+                                    </div>
+                                    <div className={s.metaRow}>
+                                        <strong>{t('date')}:</strong>
+                                        <span>
+                                            {new Date(app.created_at).toLocaleDateString('ru-RU', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </span>
+                                    </div>
+                                </div>
 
 								<button
 									className={s.detailsBtn}

@@ -116,6 +116,7 @@ export const createApplicationSchema = z.object({
         invalid_type_error: 'region_or_city_required',
     }),
     phone: z.string().min(10).max(32).optional(),
+    appeal_language: z.enum(['kz','ru','kz_ru'], { required_error: 'language_required' }),
 })
 
 export const updateProfilePasswordSchema = z

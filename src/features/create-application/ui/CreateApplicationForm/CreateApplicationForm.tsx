@@ -49,12 +49,13 @@ export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplic
                         setInitialData(data)
                         
                         // Заполняем форму данными
-                        reset({
-                            region_id: data.region_id,
-                            tag_id: data.tag_id,
-                            description: data.description,
-                            phone: data.phone ?? '',
-                        })
+                    reset({
+                        region_id: data.region_id,
+                        tag_id: data.tag_id,
+                        description: data.description,
+                        phone: data.phone ?? '',
+                        appeal_language: data.appeal_language ?? undefined,
+                    })
                     } catch (error) {
                         console.error('Error fetching application:', error)
                         toast.error(t('errorFetching'))
@@ -73,6 +74,7 @@ export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplic
                 ...data,
                 tag_id: data.tag_id || null,
                 phone: data.phone?.trim() || undefined,
+                appeal_language: data.appeal_language || undefined,
             }
 
 			if (applicationId && applicationId !== 0) {
@@ -177,6 +179,27 @@ export const CreateApplicationForm = ({ applicationId, onSuccess }: CreateApplic
                                 />
                             )}
                         />
+                    </div>
+
+                    <div className={`${s.language} ${s.inputBox}`}>
+                        <label className={s.label}>{t('languageLabel')}</label>
+                        <Controller
+                            name="appeal_language"
+                            control={control}
+                            render={({ field }) => (
+                                <select
+                                    className={s.select}
+                                    value={field.value ?? ''}
+                                    onChange={(e) => field.onChange(e.target.value || undefined)}
+                                >
+                                    <option value="">{t('languagePlaceholder')}</option>
+                                    <option value="kz">Қазақша</option>
+                                    <option value="ru">Русский</option>
+                                    <option value="kz_ru">Қазақша/русский</option>
+                                </select>
+                            )}
+                        />
+                        {errors.appeal_language && <p className={s.error}>{t(errors.appeal_language.message)}</p>}
                     </div>
 
 					<Button

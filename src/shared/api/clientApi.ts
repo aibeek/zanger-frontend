@@ -7,6 +7,7 @@ export interface CreateApplicationType {
     region_id: number
     tag_id?: number
     phone?: string
+    appeal_language?: 'kz' | 'ru' | 'kz_ru'
 }
 
 export interface CancelApplicationType {

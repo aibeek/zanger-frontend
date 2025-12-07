@@ -31,6 +31,7 @@ export type Application = {
     status: string
     created_at: string
     updated_at: string
+    appeal_language?: 'kz' | 'ru' | 'kz_ru'
     region?: Region
     tag?: Tag
     responses_count?: number

@@ -662,7 +662,7 @@
 		}
 	},
 
-	"validation": {
+        "validation": {
 		"phone_too_short": "Слишком короткий номер",
 		"phone_too_long": "Номер телефона должен быть не более 15 символов",
 		"email_invalid": "Введите корректный email",
@@ -675,7 +675,8 @@
 		"specialization_required": "Укажите свою специализацию",
 		"description_required": "Опишите заявку",
 		"description_too_short": "Описание слишком короткое",
-		"region_or_city_required": "Укажите регион или город",
+            "region_or_city_required": "Укажите регион или город",
+            "language_required": "Укажите язык обращения",
 		"phoneRequired": "Телефон нөмірі қажет",
 		"passwordRequired": "Құпия сөз қажет",
 		"only_digits": "Введите только цифры",
@@ -865,19 +866,22 @@
             "descriptionPlaceholder": "Введите описание",
             "phoneLabel": "Телефон",
             "phonePlaceholder": "Введите номер телефона",
+            "languageLabel": "Язык обращения",
+            "languagePlaceholder": "Выберите язык",
             "submit": "Подать заявку",
             "update": "Обновить заявку",
             "loading": "Отправка...",
             "success": "Заявка отправлена",
             "description_required": "Опишите заявку",
-			"region_or_city_required": "Укажите регион или город",
-			"successStore": "Заявка успешно создана",
-			"successUpdate": "Заявка успешно обновлена",
-			"errorStore": "Произошла ошибка при создании заявки",
-			"errorUpdate": "Произошла ошибка при обновлении заявки",
-			"errorFetching": "Ошибка при загрузке заявки",
-			"description_too_short": "Описание слишком короткое"
-		}
+            "region_or_city_required": "Укажите регион или город",
+            "language_required": "Укажите язык обращения",
+            "successStore": "Заявка успешно создана",
+            "successUpdate": "Заявка успешно обновлена",
+            "errorStore": "Произошла ошибка при создании заявки",
+            "errorUpdate": "Произошла ошибка при обновлении заявки",
+            "errorFetching": "Ошибка при загрузке заявки",
+            "description_too_short": "Описание слишком короткое"
+        }
 	},
 
 	"notifications": {

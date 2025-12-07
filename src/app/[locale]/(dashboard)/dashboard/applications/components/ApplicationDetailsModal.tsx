@@ -48,6 +48,10 @@ export const ApplicationDetailsModal = ({
                         <span>{application.phone || 'Не указан'}</span>
                     </div>
                     <div className={s.metaRow}>
+                        <span className={s.metaLabel}>Язык обращения:</span>
+                        <span>{application.appeal_language ? (application.appeal_language === 'kz' ? 'Қазақша' : application.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский') : 'Не указан'}</span>
+                    </div>
+                    <div className={s.metaRow}>
                         <span className={s.metaLabel}>{t('date')}:</span>
                         <span>
                             <DateComponent date={application.created_at} />
