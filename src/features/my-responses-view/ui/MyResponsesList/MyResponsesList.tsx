@@ -50,8 +50,8 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 									exit={{ opacity: 0, y: 10 }}
 									transition={{ duration: 0.3 }}>
 									
-									<div className={s.cardHeader}>
-										<span className={s.clientName}>{item.order?.user?.name || 'Клиент'}</span>
+                                    <div className={s.cardHeader}>
+                                        <span className={s.clientName}>{item.order?.user?.name || item.user?.name || 'Клиент'}</span>
 										{/* <div className={s.cardStats}>
 											<div className={s.statItem}>
 												<Eye size={16} />
@@ -82,10 +82,10 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 											</div>
 										</div>
 										
-										<button
-											className={s.detailsBtn}
-											onClick={() => setSelectedApp(item.order)}
-										>
+                                        <button
+                                            className={s.detailsBtn}
+                                            onClick={() => setSelectedApp({ ...item.order, user: item.order?.user ?? item.user })}
+                                        >
 											{t('details') || 'Подробнее'}
 										</button>
 									</div>
