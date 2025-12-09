@@ -12,6 +12,7 @@ import { SearchSelect, useRegions, useLoginStore } from '@/features/auth'
 import { useRegionsUtils, truncateDescription } from '@/shared/lib'
 
 import { Eye, Phone } from 'lucide-react'
+import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { ApplicationDetailsModal } from './ApplicationDetailsModal'
 
 import s from './LawyerApplicationsList.module.scss'
@@ -19,6 +20,7 @@ import s from './LawyerApplicationsList.module.scss'
 interface LawyerApplication {
     id: number
     description: string
+    short_description?: string
     status: string
     created_at: string
     deadline: string
@@ -296,10 +298,13 @@ export const LawyerApplicationsList = () => {
 								</div> */}
 							</div>
 							
-							<div className={s.cardContent}>
-								<h3 className={s.applicationTitle}>
-									{app.tag?.name || t('serviceType.other')}
-								</h3>
+                            <div className={s.cardContent}>
+                                <h3 className={s.applicationTitle}>
+                                    {app.tag?.name || t('serviceType.other')}
+                                </h3>
+                                {app.short_description && (
+                                    <p className={s.description}>{truncateDescription(app.short_description)}</p>
+                                )}
 								
                                 <div className={s.cardMeta}>
                                     <div className={s.metaRow}>
@@ -310,26 +315,24 @@ export const LawyerApplicationsList = () => {
                                         <strong>Язык обращения:</strong>
                                         <span>{app.appeal_language ? (app.appeal_language === 'kz' ? 'Қазақша' : app.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский') : 'Не указан'}</span>
                                     </div>
-                                    <div className={s.metaRow}>
-                                        <strong>{t('date')}:</strong>
-                                        <span>
-                                            {new Date(app.created_at).toLocaleDateString('ru-RU', {
-                                                day: 'numeric',
-                                                month: 'long',
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </span>
+                                    <div className={`${s.metaRow} ${s.metaRowAction}`}>
+                                        <div className={s.metaLeft}>
+                                            <strong>{t('date')}:</strong>
+                                            <span suppressHydrationWarning>
+                                                <DateComponent date={app.created_at} />
+                                            </span>
+                                        </div>
+                                        <button
+                                            className={s.detailsBtn}
+                                            onClick={() => setSelectedApp(app)}
+                                        >
+                                            {t('details') || 'Подробнее'}
+                                        </button>
                                     </div>
                                 </div>
 
-								<button
-									className={s.detailsBtn}
-									onClick={() => setSelectedApp(app)}
-								>
-									{t('details') || 'Подробнее'}
-								</button>
-							</div>
+                                
+                            </div>
 						</div>
 					))}
 				</div>

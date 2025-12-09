@@ -25,6 +25,7 @@ export type Tag = {
 export type Application = {
     id: number
     description: string
+    short_description?: string
     phone?: string
     region_id: number
     tag_id?: number

@@ -27,7 +27,7 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 				name,
 				buttonText: t('buttons.view'),
 				hasButton: true,
-				buttonLink: `/dashboard/responses`,
+                buttonLink: `/dashboard/applications?tab=my`,
 			}
 		}
 		case 'documents': {
@@ -56,7 +56,7 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 				name: notification.data?.response?.lawyer?.name,
 				buttonText: t('buttons.view'),
 				hasButton: true,
-				buttonLink: `/dashboard/applications`,
+                buttonLink: `/dashboard/applications?tab=new`,
 			}
 
 		case 'new_order': {
@@ -68,7 +68,7 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 				name: tagName,
 				buttonText: t('buttons.view'),
 				hasButton: true,
-				buttonLink: `/dashboard/responses`,
+                buttonLink: `/dashboard/applications?tab=my`,
 				image: docIcon,
 			}
 		}
@@ -80,7 +80,7 @@ export const mapNotification = (notification: any, t: ReturnType<any>, lang: str
 				name: `${notification.data?.user?.name} ${formatPhoneNumber(notification.data?.user?.phone)}`,
 				buttonText: t('buttons.view'),
 				hasButton: true,
-				buttonLink: `/dashboard/responses`,
+                buttonLink: `/dashboard/applications?tab=my`,
 			}
 
 		case 'order_archived':

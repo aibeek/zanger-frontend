@@ -5,11 +5,9 @@ import createNextIntlPlugin from 'next-intl/plugin'
 const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
-	transpilePackages: ['antd'],
+    transpilePackages: ['antd', 'rc-upload'],
 
-	experimental: {
-		optimizePackageImports: [],
-	},
+    experimental: {},
 
 	webpack(config, { isServer }) {
 		// фиксация moduleIds для стабильности билдов

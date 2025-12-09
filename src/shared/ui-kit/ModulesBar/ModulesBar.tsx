@@ -26,7 +26,9 @@ export const ModulesBar = () => {
     t('dashboard.footer.sections.digitalSignature'),
     t('dashboard.footer.sections.videoConference'),
     t('dashboard.footer.sections.aiConsultant'),
-    t('dashboard.footer.sections.forum'),
+    'Сообщество',
+    'CRM',
+    'Семинары',
     t('dashboard.footer.sections.database'),
   ]
 
@@ -65,7 +67,7 @@ export const ModulesBar = () => {
             className={`${s.section} ${(isDigital || isApplications || isAi) ? s.sectionEdo : ''}`}
             onClick={() => handleSectionClick(section)}
           >
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <span className={s.label}>
               {label}
               {isDigital && (
                 <span className={s.docIcon} aria-hidden>

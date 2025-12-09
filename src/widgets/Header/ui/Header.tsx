@@ -163,7 +163,7 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 				(item?.tag?.name && (typeof item.tag.name === 'string' ? item.tag.name : item.tag.name?.ru)) ||
 				item?.specialization?.name ||
 				'Заявка'
-			const description = item?.description || ''
+            const description = item?.short_description || item?.description || ''
 			const createdAt = item?.created_at || item?.createdAt || item?.created
 			const location =
 				item?.region?.name ||
