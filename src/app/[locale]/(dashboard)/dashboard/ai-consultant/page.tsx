@@ -450,38 +450,61 @@ export default function AiConsultantPage() {
     const MessageContent = ({ content }: { content: string }) => {
         const trimmed = content.trim()
         const lines = trimmed.split(/\n/)
-        const listItemRegex = /^\s*\d+\.\s+(.*)$/
-        let firstListIndex = -1
-        for (let i = 0; i < lines.length; i++) {
-            if (listItemRegex.test(lines[i])) { firstListIndex = i; break }
+        const orderedRegex = /^\s*\d+[\.)]?\s+(.*)$/
+        const unorderedRegex = /^\s*[-•]\s+(.*)$/
+
+        const nodes: ReactNode[] = []
+        let i = 0
+
+        const pushParagraph = (text: string) => {
+            if (!text) return
+            const paragraphs = text.split(/\n\n+/)
+            paragraphs.forEach((p, idx) => nodes.push(<p key={`p-${nodes.length}-${idx}`}>{renderStrong(p)}</p>))
         }
-        if (firstListIndex !== -1) {
-            const prefaceText = lines.slice(0, firstListIndex).join('\n')
-            const prefaceParagraphs = prefaceText ? prefaceText.split(/\n\n+/) : []
-            const list: string[] = []
-            for (let i = firstListIndex; i < lines.length; i++) {
-                const m = lines[i].match(listItemRegex)
-                if (m) list.push(m[1])
+
+        while (i < lines.length) {
+            // skip extra blank lines
+            if (!lines[i].trim()) { i++; continue }
+
+            // detect list block
+            const isOrdered = orderedRegex.test(lines[i])
+            const isUnordered = unorderedRegex.test(lines[i])
+
+            if (isOrdered || isUnordered) {
+                const items: string[] = []
+                const start = i
+                while (i < lines.length) {
+                    const mOrd = lines[i].match(orderedRegex)
+                    const mUnord = lines[i].match(unorderedRegex)
+                    if (mOrd && isOrdered) { items.push(mOrd[1]); i++; continue }
+                    if (mUnord && isUnordered) { items.push(mUnord[1]); i++; continue }
+                    break
+                }
+                nodes.push(
+                    (isOrdered ? (
+                        <ol key={`ol-${start}`}>
+                            {items.map((li, idx) => (<li key={idx}>{renderStrong(li)}</li>))}
+                        </ol>
+                    ) : (
+                        <ul key={`ul-${start}`}>
+                            {items.map((li, idx) => (<li key={idx}>{renderStrong(li)}</li>))}
+                        </ul>
+                    ))
+                )
+                continue
             }
-            return (
-                <div className={s.messageContent}>
-                    {prefaceParagraphs.map((p, idx) => (
-                        <p key={idx}>{renderStrong(p)}</p>
-                    ))}
-                    <ol>
-                        {list.map((li, idx) => (
-                            <li key={idx}>{renderStrong(li)}</li>
-                        ))}
-                    </ol>
-                </div>
-            )
+
+            // accumulate paragraph until a blank line or a list starts
+            const paraStart = i
+            let buf: string[] = []
+            while (i < lines.length) {
+                if (!lines[i].trim()) { i++; break }
+                if (orderedRegex.test(lines[i]) || unorderedRegex.test(lines[i])) break
+                buf.push(lines[i])
+                i++
+            }
+            pushParagraph(buf.join('\n'))
         }
-        const paragraphs = trimmed.split(/\n\n+/)
-        return (
-            <div className={s.messageContent}>
-                {paragraphs.map((p, idx) => (
-                    <p key={idx}>{renderStrong(p)}</p>
-                ))}
-            </div>
-        )
+
+        return <div className={s.messageContent}>{nodes}</div>
     }
