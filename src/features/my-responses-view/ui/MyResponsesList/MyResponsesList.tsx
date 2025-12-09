@@ -11,6 +11,7 @@ import { useState } from 'react'
 import { ApplicationDetailsModal } from '@/app/[locale]/(dashboard)/dashboard/applications/components/ApplicationDetailsModal'
 
 import s from './MyResponsesList.module.scss'
+import { truncateDescription } from '@/shared/lib'
 import { Status, useMyResponsesStore } from '../../model'
 
 export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd }) => {
@@ -36,7 +37,7 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 
 	return (
 		<div className={s.wrapper}>
-			<div className={s.items}>
+            <div className={s.items}>
 				<AnimatePresence>
 					{filteredItems.map((item: any) => {
 						const currentStatusMap = statusMap[item.id]
@@ -65,29 +66,39 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 									</div>
 									
 									<div className={s.cardContent}>
-										<h3 className={s.title}>
-											{item.order?.tag?.name || t('service.other')}
-										</h3>
-										
-										<div className={s.cardMeta}>
-											<div className={s.metaRow}>
-												<strong>{t('region')}:</strong>
-												<span>{item.order?.region?.name || 'Не указан'}</span>
-											</div>
-											<div className={s.metaRow}>
-												<strong>{t('date')}:</strong>
-												<span>
-													<DateComponent date={item.order?.created_at} />
-												</span>
-											</div>
-										</div>
-										
-                                        <button
-                                            className={s.detailsBtn}
-                                            onClick={() => setSelectedApp({ ...item.order, user: item.order?.user ?? item.user })}
-                                        >
-											{t('details') || 'Подробнее'}
-										</button>
+                                        <h3 className={s.title}>
+                                            {item.order?.tag?.name || t('service.other')}
+                                        </h3>
+                                        <div className={s.briefArea}>
+                                            {item.order?.short_description && item.order.short_description.trim().length > 0 && (
+                                                <p className={s.brief}>
+                                                    {truncateDescription(item.order.short_description)}
+                                                </p>
+                                            )}
+                                        </div>
+                                        
+                                        <div className={s.cardMeta}>
+                                            <div className={s.metaRow}>
+                                                <strong>{t('region')}:</strong>
+                                                <span>{item.order?.region?.name || 'Не указан'}</span>
+                                            </div>
+                                            <div className={`${s.metaRow} ${s.metaRowAction}`}>
+                                                <div className={s.metaLeft}>
+                                                    <strong>{t('date')}:</strong>
+                                                    <span>
+                                                        <DateComponent date={item.order?.created_at} />
+                                                    </span>
+                                                </div>
+                                                <button
+                                                    className={s.detailsBtn}
+                                                    onClick={() => setSelectedApp({ ...item.order, user: item.order?.user ?? item.user })}
+                                                >
+                                                    {t('details') || 'Подробнее'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        
 									</div>
 								</motion.article>
 							</div>
@@ -95,17 +106,18 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 					})}
 				</AnimatePresence>
 
-				{!isReachingEnd && (
-					<div className={s.loadMoreWrapper}>
-						<Button
-							variant="primary"
-							disabled={isLoadingMore}
-							onClick={loadMore}>
-							{isLoadingMore ? 'Загрузка...' : 'Показать еще'}
-						</Button>
-					</div>
-				)}
-			</div>
+            </div>
+
+            {!isReachingEnd && (
+                <div className={s.loadMoreWrapper}>
+                    <Button
+                        variant="primary"
+                        disabled={isLoadingMore}
+                        onClick={loadMore}>
+                        {isLoadingMore ? 'Загрузка...' : 'Показать еще'}
+                    </Button>
+                </div>
+            )}
 
 			{selectedApp && (
 				<ApplicationDetailsModal

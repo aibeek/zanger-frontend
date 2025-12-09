@@ -3,7 +3,7 @@
 import { Dropdown, Badge, List } from 'antd'
 import { useState } from 'react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 
 import s from './NotificationsDropdown.module.scss'
 import NotificationsIcon from '@/app/assets/icons/notification-icon.svg'
@@ -16,7 +16,8 @@ import { useLoginStore } from '@/features/auth'
 import { useNotificationsInfinite } from '../../model/useNotificationsInfinite'
 
 export const NotificationsDropdown = () => {
-	const t = useTranslations('notifications')
+    const t = useTranslations('notifications')
+    const locale = useLocale() as 'ru' | 'kk'
 	const { markAsRead } = useNotificationsStore()
 	const { personalData } = useLoginStore()
 	const { items: paginatedNotifications, isLoadingMore, setSize, isReachingEnd, mutate } = useNotificationsInfinite()
@@ -76,7 +77,7 @@ export const NotificationsDropdown = () => {
 												</AppLink>
 											</div>
 										)}
-										<p className={s.date}>{formatPublishedDate(item.created_at)}</p>
+                                        <p className={s.date}>{formatPublishedDate(item.created_at, locale)}</p>
 									</div>
 								</div>
 							</List.Item>

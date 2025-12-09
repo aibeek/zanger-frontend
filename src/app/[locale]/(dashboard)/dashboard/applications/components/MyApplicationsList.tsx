@@ -252,10 +252,13 @@ export const MyApplicationsList = ({ onEdit }: MyApplicationsListProps) => {
 							) : (
 								<>
 									<div className={s.cardHeader}>
-										<div className={s.cardTop}>
-											<h3 className={s.applicationTitle}>
-												{app.tag?.name || t('service.other')}
-											</h3>
+							<div className={s.cardTop}>
+								<h3 className={s.applicationTitle}>
+									{app.tag?.name || t('service.other')}
+								</h3>
+								{app.short_description && (
+									<p className={s.description}>{app.short_description}</p>
+								)}
 											<div className={s.topRight}>
 												{/* Счетчик откликов */}
 												{(app.responses_count || 0) > 0 && (

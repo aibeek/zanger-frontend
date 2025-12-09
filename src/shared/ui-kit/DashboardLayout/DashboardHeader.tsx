@@ -65,7 +65,9 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         t('dashboard.footer.sections.digitalSignature'),
         t('dashboard.footer.sections.videoConference'),
         t('dashboard.footer.sections.aiConsultant'),
-        t('dashboard.footer.sections.forum'),
+        'Сообщество',
+        'CRM',
+        'Семинары',
         t('dashboard.footer.sections.database')
     ]
 
@@ -159,7 +161,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                             className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                            <span className={s.footerLabel}>
                                 {label}
                                 {isDigital && (
                                     <span className={s.footerDocIcon} aria-hidden>
@@ -187,8 +189,8 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                                 <Image 
                                     src={Strelka} 
                                     alt="arrow"
-                                    width={28}
-                                    height={28}
+                                    width={24}
+                                    height={24}
                                 />
                             </span>
                         </button>
