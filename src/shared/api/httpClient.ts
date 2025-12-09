@@ -42,8 +42,8 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 	const headersOptions = addAuthHeader(token, options || {})
 
 	// Add an AbortController for a soft timeout to avoid hanging requests
-	const controller = new AbortController()
-	const timeoutMs = 15000
+    const controller = new AbortController()
+    const timeoutMs = 60000
 	const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
 	try {
@@ -91,8 +91,8 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 }
 
 export const httpClient = async <T>(url: string, options?: RequestInit): Promise<T> => {
-	const controller = new AbortController()
-	const timeoutMs = 15000
+  const controller = new AbortController()
+  const timeoutMs = 60000
 	const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
 	try {

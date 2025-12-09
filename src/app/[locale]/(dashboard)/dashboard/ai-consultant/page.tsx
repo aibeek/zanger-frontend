@@ -221,6 +221,7 @@ export default function AiConsultantPage() {
                 body: JSON.stringify({ content }),
                 headers: getHeaders()
             })
+            setMessages(prev => [...prev, response])
             fetchConversations()
             fetchMessages(chatId)
 
@@ -289,7 +290,15 @@ export default function AiConsultantPage() {
                             ))
                         )}
                         {loading && <div className={s.message + ' ' + s.system}>Загрузка истории...</div>}
-                        {sending && <div className={s.message + ' ' + s.assistant}>Печатает...</div>}
+                        {sending && (
+                            <div className={s.message + ' ' + s.assistant}>
+                                <div className={s.typingIndicator}>
+                                    <span className={s.typingDot}></span>
+                                    <span className={s.typingDot}></span>
+                                    <span className={s.typingDot}></span>
+                                </div>
+                            </div>
+                        )}
                         <div ref={messagesEndRef} />
                     </div>
 
