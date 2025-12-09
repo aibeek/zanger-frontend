@@ -495,8 +495,7 @@ export default function AiConsultantPage() {
             }
 
             // accumulate paragraph until a blank line or a list starts
-            const paraStart = i
-            let buf: string[] = []
+            const buf: string[] = []
             while (i < lines.length) {
                 if (!lines[i].trim()) { i++; break }
                 if (orderedRegex.test(lines[i]) || unorderedRegex.test(lines[i])) break
