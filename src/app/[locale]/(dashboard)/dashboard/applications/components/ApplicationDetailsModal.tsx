@@ -1,6 +1,8 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { useEffect, useState } from 'react'
+import { lawyerApi } from '@/shared/api'
 import s from './ApplicationDetailsModal.module.scss'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
@@ -12,12 +14,44 @@ interface ApplicationDetailsModalProps {
 }
 
 export const ApplicationDetailsModal = ({ 
-	application, 
-	onClose, 
-	onRespond,
-	isResponding = false 
+    application, 
+    onClose, 
+    onRespond,
+    isResponding = false 
 }: ApplicationDetailsModalProps) => {
-	const t = useTranslations('applications')
+    const t = useTranslations('applications')
+    const [detailed, setDetailed] = useState<any>(null)
+
+    useEffect(() => {
+        if (!application) return
+        const needMore = !application.phone || !application.appeal_language || !application.region
+        if (needMore && application.id) {
+            lawyerApi
+                .getDetailedOrders({ application_id: application.id })
+                .then((res: any) => {
+                    const data = (res && (res.data || res)) as any
+                    setDetailed(data)
+                })
+                .catch(() => {})
+        }
+    }, [application])
+
+    const app = detailed || application
+
+    const desc = typeof app?.description === 'string' ? app.description : ''
+    const regionMatch = desc.match(/Регион:\s*([^\n\.;]+)/i)
+    const phoneMatch = desc.match(/Телефон:\s*([+0-9\-()\s]+)/i)
+    const langMatch = desc.match(/Язык обращения:\s*([^\n\.;]+)/i)
+    const derivedRegion = app?.region?.name || (regionMatch ? regionMatch[1].trim() : null)
+    const derivedPhone = app?.phone || (phoneMatch ? phoneMatch[1].replace(/\s+/g, ' ').trim() : null)
+    const derivedLangRaw = app?.appeal_language || (langMatch ? langMatch[1].toLowerCase().trim() : null)
+    const derivedLang = derivedLangRaw
+        ? derivedLangRaw === 'kz' || derivedLangRaw.startsWith('каз')
+            ? 'Қазақша'
+            : derivedLangRaw === 'ru' || derivedLangRaw.startsWith('рус')
+                ? 'Русский'
+                : 'Қазақша/русский'
+        : null
 
 	if (!application) return null
 
@@ -26,35 +60,35 @@ export const ApplicationDetailsModal = ({
 			<div className={s.modal} onClick={e => e.stopPropagation()}>
 				<button className={s.closeBtn} onClick={onClose}>×</button>
 				
-				<h2 className={s.title}>
-					{application.tag?.name || t('serviceType.other')}
-				</h2>
+                <h2 className={s.title}>
+                    {app.tag?.name || t('serviceType.other')}
+                </h2>
 				
-				<div className={s.description}>
-					{application.description}
-				</div>
+                <div className={s.description}>
+                    {app.description}
+                </div>
 				
                 <div className={s.metaInfo}>
                     <div className={s.metaRow}>
                         <span className={s.metaLabel}>Клиент:</span>
-                        <span>{application.user?.name || 'Клиент'}</span>
+                        <span>{app.user?.name || 'Клиент'}</span>
                     </div>
                     <div className={s.metaRow}>
                         <span className={s.metaLabel}>{t('region')}:</span>
-                        <span>{application.region?.name || 'Не указан'}</span>
+                        <span>{derivedRegion || 'Не указан'}</span>
                     </div>
                     <div className={s.metaRow}>
                         <span className={s.metaLabel}>Телефон:</span>
-                        <span>{application.phone || 'Не указан'}</span>
+                        <span>{derivedPhone || 'Не указан'}</span>
                     </div>
                     <div className={s.metaRow}>
                         <span className={s.metaLabel}>Язык обращения:</span>
-                        <span>{application.appeal_language ? (application.appeal_language === 'kz' ? 'Қазақша' : application.appeal_language === 'ru' ? 'Русский' : 'Қазақша/русский') : 'Не указан'}</span>
+                        <span>{derivedLang || 'Не указан'}</span>
                     </div>
                     <div className={s.metaRow}>
                         <span className={s.metaLabel}>{t('date')}:</span>
                         <span>
-                            <DateComponent date={application.created_at} />
+                            <DateComponent date={app.created_at} />
                         </span>
                     </div>
                 </div>
@@ -63,7 +97,7 @@ export const ApplicationDetailsModal = ({
                     
                     <button 
                         className={s.respondBtn}
-                        onClick={() => onRespond(application.id)}
+                        onClick={() => onRespond(app.id)}
                         disabled={isResponding}
                     >
 						{isResponding ? 'Обработка...' : 'В "Мои заявки"'}
