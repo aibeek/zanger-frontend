@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { useRouter, usePathname, useParams, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
@@ -53,6 +53,7 @@ export default function VideoConferenceLinkPage() {
   const [activeTab, setActiveTab] = useState<'chat' | 'participants'>('chat')
   const [chatMessages, setChatMessages] = useState<Array<{ id: string; identity: string; message: string; timestamp: number }>>([])
   const [chatInput, setChatInput] = useState('')
+  const [participantPermissions, setParticipantPermissions] = useState<Record<string, { canPublishAudio: boolean; canPublishVideo: boolean }>>({})
   const dragState = useRef<{ isDragging: boolean; elementId: string | null; startX: number; startY: number; initialX: number; initialY: number }>({
     isDragging: false,
     elementId: null,
@@ -113,6 +114,14 @@ export default function VideoConferenceLinkPage() {
       chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
     }
   }, [chatMessages, activeTab])
+
+  // Check if user has permissions to use mic/camera
+  const hasDevicePermissions = useMemo(() => {
+    if (canPublish) return true
+    const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
+    const permissions = participantPermissions[identity]
+    return permissions && (permissions.canPublishAudio || permissions.canPublishVideo)
+  }, [canPublish, connectedInfo?.identity, participantPermissions, personalData])
 
   async function handleAutoStart() {
     try {
@@ -478,13 +487,13 @@ export default function VideoConferenceLinkPage() {
         }
       })
 
-      // Listen for chat messages via LiveKit data channel
+      // Listen for chat messages and permission updates via LiveKit data channel
       room.on(RoomEvent.DataReceived, (payload: Uint8Array, participant: any, kind: any, topic: string | undefined) => {
         try {
           const decoder = new TextDecoder()
           const messageText = decoder.decode(payload)
           const messageData = JSON.parse(messageText)
-          
+          console.log('messageData', messageData)
           if (messageData.type === 'chat' && messageData.message) {
             const chatMessage = {
               id: messageData.id || Date.now().toString(),
@@ -500,9 +509,38 @@ export default function VideoConferenceLinkPage() {
               }
               return prev
             })
+          } else if (messageData.type === 'permission_update') {
+            // Handle permission updates
+            const { targetIdentity, canPublishAudio, canPublishVideo } = messageData
+            console.log('Permission update received:', { targetIdentity, canPublishAudio, canPublishVideo })
+            if (targetIdentity) {
+              setParticipantPermissions(prev => {
+                const updated = {
+                  ...prev,
+                  [targetIdentity]: {
+                    canPublishAudio: canPublishAudio ?? prev[targetIdentity]?.canPublishAudio ?? false,
+                    canPublishVideo: canPublishVideo ?? prev[targetIdentity]?.canPublishVideo ?? false
+                  }
+                }
+                console.log('Updated participantPermissions:', updated)
+                return updated
+              })
+              
+              // Show notification to the target participant if they received permission
+              const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
+              console.log('currentIdentity', currentIdentity)
+              if (targetIdentity === currentIdentity) {
+                const messages = []
+                if (canPublishAudio) messages.push('Вам разрешили использовать микрофон')
+                if (canPublishVideo) messages.push('Вам разрешили использовать камеру')
+                if (messages.length > 0) {
+                  alert(messages.join('\n'))
+                }
+              }
+            }
           }
         } catch (e) {
-          console.error('Error parsing chat message:', e)
+          console.error('Error parsing message:', e)
         }
       })
 
@@ -675,6 +713,17 @@ export default function VideoConferenceLinkPage() {
     try {
       const room = roomRef.current
       if (!room) return
+      
+      // If user is not the owner, check if they have permission
+      if (!canPublish) {
+        const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
+        const permissions = participantPermissions[identity]
+        if (!permissions?.canPublishVideo && !cameraOn) {
+          alert('Владелец стрима не разрешил вам включать камеру')
+          return
+        }
+      }
+      
       const newState = !cameraOn
       
       if (newState) {
@@ -700,6 +749,17 @@ export default function VideoConferenceLinkPage() {
     try {
       const room = roomRef.current
       if (!room) return
+      
+      // If user is not the owner, check if they have permission
+      if (!canPublish) {
+        const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
+        const permissions = participantPermissions[identity]
+        if (!permissions?.canPublishAudio && !micOn) {
+          alert('Владелец стрима не разрешил вам включать микрофон')
+          return
+        }
+      }
+      
       const newState = !micOn
       
       if (newState) {
@@ -717,6 +777,85 @@ export default function VideoConferenceLinkPage() {
     } catch (e) {
       console.error(e)
       alert('Не удалось получить доступ к микрофону. Проверьте настройки браузера.')
+    }
+  }
+
+  async function updateParticipantPermission(targetIdentity: string, permissionType: 'audio' | 'video', granted: boolean) {
+    if (!roomRef.current || !canPublish) return
+    
+    try {
+      const currentPermissions = participantPermissions[targetIdentity] || { canPublishAudio: false, canPublishVideo: false }
+      const message = {
+        type: 'permission_update',
+        targetIdentity,
+        canPublishAudio: permissionType === 'audio' ? granted : currentPermissions.canPublishAudio,
+        canPublishVideo: permissionType === 'video' ? granted : currentPermissions.canPublishVideo
+      }
+      
+      console.log('Sending permission update:', message)
+      
+      // Send permission update via LiveKit data channel
+      const encoder = new TextEncoder()
+      const data = encoder.encode(JSON.stringify(message))
+      
+      await roomRef.current.localParticipant.publishData(data, {
+        reliable: true,
+        destinationIdentities: [] // Broadcast to all participants
+      })
+      
+      // Update local state immediately
+      setParticipantPermissions(prev => {
+        const updated = {
+          ...prev,
+          [targetIdentity]: {
+            canPublishAudio: message.canPublishAudio,
+            canPublishVideo: message.canPublishVideo
+          }
+        }
+        console.log('Updated local permissions:', updated)
+        return updated
+      })
+    } catch (e) {
+      console.error('Error updating participant permission:', e)
+    }
+  }
+
+  async function toggleParticipantConnection(targetIdentity: string, allow: boolean) {
+    if (!roomRef.current || !canPublish) return
+    
+    try {
+      const message = {
+        type: 'permission_update',
+        targetIdentity,
+        canPublishAudio: allow,
+        canPublishVideo: allow
+      }
+      
+      console.log('Sending connection permission update:', message)
+      
+      // Send permission update via LiveKit data channel
+      const encoder = new TextEncoder()
+      const data = encoder.encode(JSON.stringify(message))
+      
+      await roomRef.current.localParticipant.publishData(data, {
+        reliable: true,
+        destinationIdentities: [] // Broadcast to all participants
+      })
+      
+      // Update local state immediately
+      setParticipantPermissions(prev => {
+        const updated = {
+          ...prev,
+          [targetIdentity]: {
+            canPublishAudio: allow,
+            canPublishVideo: allow
+          }
+        }
+        console.log('Updated local permissions:', updated)
+        return updated
+      })
+    } catch (e) {
+      console.error('Error updating participant connection permission:', e)
     }
   }
 
@@ -834,7 +973,7 @@ export default function VideoConferenceLinkPage() {
             <div ref={audioContainerRef} style={{ display: 'none' }}></div>
           </div>
 
-          {canPublish && (
+          {hasDevicePermissions && (
             <div className={s.deviceControls}>
                <div className={s.deviceSelect}>
                  <div className={s.selectIcon}>
@@ -968,14 +1107,49 @@ export default function VideoConferenceLinkPage() {
               <div className={s.participantsContainer}>
                 <div className={s.participantItem} style={{ fontWeight: 600 }}>
                   <span>{connectedInfo?.identity || 'Вы'}</span>
-                  <span style={{ fontSize: 12, color: '#64748b' }}>Вы</span>
+                  <span style={{ fontSize: 12, color: '#64748b' }}>{canPublish ? 'Владелец стрима' : 'Вы'}</span>
                 </div>
-                {participants.map((p, idx) => (
-                  <div key={idx} className={s.participantItem}>
-                    <span>{p.name || p.identity}</span>
-                    <span style={{ fontSize: 12, color: '#64748b' }}>Участник</span>
-                  </div>
-                ))}
+                {participants.map((p, idx) => {
+                  const permissions = participantPermissions[p.identity] || { canPublishAudio: false, canPublishVideo: false }
+                  const isOwner = canPublish
+                  const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
+                  const isCurrentUser = p.identity === currentIdentity
+                  const hasConnectionPermission = permissions.canPublishAudio && permissions.canPublishVideo
+                  
+                  return (
+                    <div key={idx} className={s.participantItem} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                        <span>{p.name || p.identity}</span>
+                        <span style={{ fontSize: 12, color: '#64748b' }}>Участник</span>
+                      </div>
+                      {isOwner && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px' }}>
+                          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: 13 }}>
+                            <input
+                              type="checkbox"
+                              checked={hasConnectionPermission}
+                              onChange={(e) => toggleParticipantConnection(p.identity, e.target.checked)}
+                              style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                            />
+                            <span>Разрешить подключиться</span>
+                          </label>
+                          {hasConnectionPermission && (
+                            <span style={{ fontSize: 11, color: '#10b981', marginLeft: '4px' }}>✓</span>
+                          )}
+                        </div>
+                      )}
+                      {!isOwner && isCurrentUser && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', marginTop: '8px', fontSize: 12, color: '#64748b' }}>
+                          {hasConnectionPermission ? (
+                            <span style={{ color: '#10b981' }}>✓ Вам разрешено подключить микрофон и камеру</span>
+                          ) : (
+                            <span>✗ Подключение микрофона и камеры не разрешено</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
                 {participants.length === 0 && (
                   <div style={{ padding: 20, textAlign: 'center', color: '#64748b', fontSize: 14 }}>
                     Нет других участников
