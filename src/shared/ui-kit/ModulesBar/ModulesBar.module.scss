@@ -1,18 +1,15 @@
 .sections {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 8px;
   margin: 12px 0 0 0;
-  padding: 0 20px;
 }
 
 .section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex: 1 1 12%;
-  min-width: 140px;
+  width: 100%;
   padding: 8px 10px;
   background: linear-gradient(135deg, #274b9f 0%, #16366f 100%);
   color: #fff;
@@ -81,6 +78,19 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.labelSmall {
+  font-size: 0.8rem;
+}
+
+.labelWrap {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .pilotBadge {

@@ -9,14 +9,19 @@ import Image from 'next/image'
 import Cookies from 'js-cookie'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import monitor from '@/app/assets/icons/monitor.webp'
 import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
 import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
-import Strelka from '@/app/assets/icons/strelka.svg'
 import docIcon from '@/app/assets/icons/document.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
+import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
+import communityIcon from '@/app/assets/icons/people.svg'
+import crmIcon from '@/app/assets/icons/phone.svg'
+import seminarIcon from '@/app/assets/icons/document.svg'
+import verifyIcon from '@/app/assets/icons/sheet-alert.svg'
+import { Search } from 'lucide-react'
 
 interface DashboardHeaderProps {
     language: string
@@ -63,8 +68,8 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const sections = [
         t('dashboard.footer.sections.applications'),
         t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.footer.sections.videoConference'),
         t('dashboard.footer.sections.aiConsultant'),
+        t('dashboard.footer.sections.videoConference'),
         'Сообщество',
         'CRM',
         'Семинары',
@@ -75,6 +80,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const applicationsLabel = t('dashboard.footer.sections.applications')
     const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
     const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
+    const databaseLabel = t('dashboard.footer.sections.database')
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
@@ -97,7 +103,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
 
     const roleCode = (personalData as any)?.role_id?.code
     const roleName = roleCode === 'lawyer' ? 'Юрист' : roleCode === 'client' ? 'Клиент' : ''
-    const avatarUrl = personalData?.icon || DefaultAvatar
+    const [avatarSrc, setAvatarSrc] = useState<any>(DefaultAvatar)
+
+    useEffect(() => {
+        setAvatarSrc((personalData?.icon as any) || DefaultAvatar)
+    }, [personalData])
 
     return (
         <div className={s.headerWrapper} suppressHydrationWarning>
@@ -127,7 +137,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 <div className={s.headerRight}>
                     {isVideoConferencePage && (
                         <div className={s.profileCard} onClick={() => router.push(`/${language}/dashboard/profile`)}>
-                            <Image src={avatarUrl} alt="avatar" width={40} height={40} className={s.profilePic} />
+                            <Image src={avatarSrc} alt="avatar" width={40} height={40} className={s.profilePic} onError={() => setAvatarSrc(DefaultAvatar)} />
                             <div className={s.profileInfo}>
                                 <div className={s.profileName}>{personalData?.name}</div>
                                 <div className={s.profileRole}>{roleName}</div>
@@ -154,7 +164,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
                         const isAi = section === aiConsultantLabel
-                        const label = section
+                        const isDatabase = section === databaseLabel
+                        const isCommunity = section === 'Сообщество'
+                        const isCRM = section === 'CRM'
+                        const isSeminars = section === 'Семинары'
+                        const label = section === databaseLabel ? 'Проверка КГ' : section
                         return (
                         <button 
                             key={index} 
@@ -162,7 +176,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                             onClick={() => handleSectionClick(section)}
                         >
                             <span className={s.footerLabel}>
-                                {label}
                                 {isDigital && (
                                     <span className={s.footerDocIcon} aria-hidden>
                                         <Image src={docIcon} alt="doc" width={26} height={26} />
@@ -183,15 +196,22 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                                         <Image src={chatIcon} alt="ai" width={26} height={26} />
                                     </span>
                                 )}
+                                {(isCommunity || isCRM || isSeminars || isDatabase) && (
+                                    <span className={s.footerDocIcon} aria-hidden>
+                                        {isDatabase ? (
+                                            <Search size={24} color="#fff" />
+                                        ) : (
+                                            <Image src={
+                                                isCommunity ? communityIcon :
+                                                isCRM ? crmIcon :
+                                                isSeminars ? seminarIcon :
+                                                moduleIcon
+                                            } alt="icon" width={26} height={26} />
+                                        )}
+                                    </span>
+                                )}
+                                {label}
                                 {/* Пилот метка убрана */}
-                            </span>
-                            <span className={s.footerArrow}>
-                                <Image 
-                                    src={Strelka} 
-                                    alt="arrow"
-                                    width={24}
-                                    height={24}
-                                />
                             </span>
                         </button>
                     )})}

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useLoginStore } from '@/features/auth/login'
+import { EcpSidebar } from '@/shared/ui-kit/EcpSidebar'
 import { Sidebar } from '@/shared/ui-kit/Sidebar'
+import { usePathname } from 'next/navigation'
 import { DashboardHeader } from './DashboardHeader'
 import { DashboardFooter } from './DashboardFooter'
 import s from './DashboardLayout.module.scss'
@@ -15,6 +17,7 @@ interface DashboardLayoutProps {
 export const DashboardLayout = ({ children, language }: DashboardLayoutProps) => {
     const { personalData, getPersonalDataByToken, loading } = useLoginStore()
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+    const pathname = usePathname()
 
     useEffect(() => {
         getPersonalDataByToken()
@@ -57,7 +60,11 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
 
             {/* Sidebar */}
             <div className={`${s.sidebarContainer} ${isMobileSidebarOpen ? s.mobileOpen : ''}`}>
-                <Sidebar language={language} onMobileClose={closeMobileSidebar} />
+                {pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp') ? (
+                    <EcpSidebar />
+                ) : (
+                    <Sidebar language={language} onMobileClose={closeMobileSidebar} />
+                )}
             </div>
 
             <main className={s.mainContent}>
