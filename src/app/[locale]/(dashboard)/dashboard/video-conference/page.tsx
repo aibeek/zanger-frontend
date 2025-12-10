@@ -31,9 +31,14 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'https://api.zanger-app.kz/api/livekit'
+  const BASE = 'http://localhost:8080/java-api/'
   const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
   const [mounted, setMounted] = useState(false)
+  const [page, setPage] = useState(0)
+  const [size, setSize] = useState(10)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const [loading, setLoading] = useState(false)
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [debug, setDebug] = useState<{ url?: string; tokenLen?: number; canPublish?: boolean } | null>(null)
@@ -75,14 +80,48 @@ export default function VideoConferencePage() {
     router.push(`/${language}/dashboard/video-conference/createmeeting`)
   }
 
-  useEffect(() => { loadConferences() }, [])
+  useEffect(() => { loadConferences() }, [page, size])
 
-  async function loadConferences() {
+  useEffect(() => {
+    const handler = () => {
+      // Reset to first page and reload when a new conference is scheduled
+      setPage(0)
+      // Load with page 0 explicitly
+      loadConferences(0, size)
+    }
+    window.addEventListener('vc-conference-scheduled', handler)
+    return () => window.removeEventListener('vc-conference-scheduled', handler)
+  }, [size])
+
+  async function loadConferences(pageToLoad?: number, sizeToLoad?: number) {
+    const currentPage = pageToLoad !== undefined ? pageToLoad : page
+    const currentSize = sizeToLoad !== undefined ? sizeToLoad : size
+    setLoading(true)
     try {
-      const res = await httpClientWithAuth<any>(`${BASE}/conferences`, { method: 'GET' })
-      const items = Array.isArray(res?.items) ? res.items : []
-      setScheduledList(items.map((i: any) => ({ id: String(i.id), code: String(i.code), topic: i.topic || '', type: String(i.type || ''), planned_time: String(i.planned_time) })))
-    } catch {}
+      const queryParams = new URLSearchParams({
+        page: String(currentPage),
+        size: String(currentSize),
+      }).toString()
+      const res = await httpClientWithAuth<any>(`${BASE}video-conferences?${queryParams}`, { method: 'GET' })
+      const items = Array.isArray(res?.content) ? res.content : []
+      const mappedItems = items.map((i: any) => {
+        const plannedTime = i.plannedTime || i.planned_time || ''
+        return {
+          id: String(i.id), 
+          code: String(i.code || ''), 
+          topic: i.topic || '', 
+          type: String(i.type || ''), 
+          planned_time: String(plannedTime)
+        }
+      })
+      setScheduledList(mappedItems)
+      setTotalPages(res?.totalPages || 0)
+      setTotalElements(res?.totalElements || 0)
+    } catch (e) {
+      console.error('Failed to load conferences:', e)
+    } finally {
+      setLoading(false)
+    }
   }
 
   function formatDT(s: string) {
@@ -95,15 +134,26 @@ export default function VideoConferencePage() {
 
   
 
-  const plannedItems = scheduledList.filter(i => {
+  // Show all conferences from the API, sorted by planned_time (newest first)
+  const plannedItems = scheduledList
+    .filter(i => i.planned_time) // Only filter out items without dates
+    .sort((a, b) => {
+      const timeA = new Date(a.planned_time).getTime()
+      const timeB = new Date(b.planned_time).getTime()
+      // Sort descending (newest first)
+      return timeB - timeA
+    })
+
+  // Separate future and past conferences for display purposes
+  const futureItems = plannedItems.filter(i => {
     const t = new Date(i.planned_time).getTime()
     return !isNaN(t) && t >= Date.now()
-  }).sort((a,b) => new Date(a.planned_time).getTime() - new Date(b.planned_time).getTime())
+  })
 
-  const archivedItems = scheduledList.filter(i => {
+  const archivedItems = plannedItems.filter(i => {
     const t = new Date(i.planned_time).getTime()
     return !isNaN(t) && t < Date.now()
-  }).sort((a,b) => new Date(b.planned_time).getTime() - new Date(a.planned_time).getTime())
+  })
 
   function joinScheduled(it: any) {
     const cid = String((it as any).id || it.conference_id || '')
@@ -132,6 +182,51 @@ export default function VideoConferencePage() {
   }
 
 
+  async function startStream() {
+    setError(null)
+    setJoining(true)
+
+    try {
+      // Call stream/start endpoint - no body needed, only Authorization header
+      const streamData = await httpClientWithAuth<any>(`${BASE}stream/start`, {
+        method: 'POST',
+      })
+
+      // Response contains: liveKitToken (or token), conferenceId, identity, code
+      const token = streamData.liveKitToken || streamData.token || streamData.livekitToken
+      const newConferenceId = streamData.conferenceId || streamData.id
+      const identity = streamData.identity
+      const code = streamData.code
+
+      if (!token) {
+        throw new Error('Token not found in stream/start response')
+      }
+
+      if (!newConferenceId) {
+        throw new Error('Conference ID not found in stream/start response')
+      }
+
+      // Store token and stream info in sessionStorage for the conference page
+      sessionStorage.setItem('meet_token', token)
+      sessionStorage.setItem('meet_stream_started', 'true')
+      sessionStorage.setItem('meet_can_publish', 'true')
+      if (identity) {
+        sessionStorage.setItem('meet_identity', identity)
+      }
+
+      // Navigate to the conference page
+      router.push(`/${language}/dashboard/video-conference/${newConferenceId}`)
+
+      // Reload conferences list to show the new stream
+      await loadConferences(0, size)
+
+    } catch (e: any) {
+      console.error('Error starting stream:', e)
+      setError(e?.message || 'Failed to start stream')
+      setJoining(false)
+    }
+  }
+
   async function joinRoom() {
     if (!conferenceId) {
       setError(t('dashboard.videoConference.enterConferenceId'))
@@ -142,7 +237,7 @@ export default function VideoConferencePage() {
     setJoining(true)
 
     try {
-      const data = await httpClientWithAuth<any>(`${BASE}/join`, {
+      const data = await httpClientWithAuth<any>(`${BASE}join`, {
         method: 'POST',
         body: JSON.stringify({ conference_id: conferenceId, user_id: Number(userId || (personalData as any)?.id || 0) }),
       })
@@ -182,15 +277,31 @@ export default function VideoConferencePage() {
     try {
       const room = roomRef.current
       if (!room) return
-      await room.localParticipant.setCameraEnabled(!cameraOn)
-      setCameraOn(!cameraOn)
-      const LKC = (window as any).LivekitClient || (window as any).LiveKit
-      const { Track } = LKC
-      const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
-      if (camPub?.videoTrack && videoRef.current) {
-        camPub.videoTrack.attach(videoRef.current)
+      const newState = !cameraOn
+      await room.localParticipant.setCameraEnabled(newState)
+      setCameraOn(newState)
+      
+      // Attach video track to video element when camera is enabled
+      if (newState) {
+        const LKC = (window as any).LivekitClient || (window as any).LiveKit
+        if (!LKC) return
+        const { Track } = LKC
+        // Small delay to ensure track is ready
+        setTimeout(() => {
+          const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
+          if (camPub?.videoTrack && videoRef.current) {
+            camPub.videoTrack.attach(videoRef.current)
+          }
+        }, 100)
+      } else {
+        // Clear video when camera is disabled
+        if (videoRef.current) {
+          videoRef.current.srcObject = null
+        }
       }
-    } catch {}
+    } catch (e) {
+      console.error('Error toggling camera:', e)
+    }
   }
 
   async function toggleMic() {
@@ -219,7 +330,7 @@ export default function VideoConferencePage() {
         method: 'POST',
         body: JSON.stringify(payload),
       })
-      await loadConferences()
+      await loadConferences(page, size)
     } catch (e: any) {
       setError(e?.message || t('dashboard.videoConference.errorCreateRoom'))
     }
@@ -238,7 +349,7 @@ export default function VideoConferencePage() {
         method: 'POST',
         body: JSON.stringify(payload),
       })
-      await loadConferences()
+      await loadConferences(page, size)
       const cid = String(data?.conference_id || '')
       if (cid) setConferenceId(cid)
     } catch (e: any) {
@@ -288,6 +399,24 @@ export default function VideoConferencePage() {
     ;(window as any).lkLeave = leaveRoom
   }, [])
 
+  // Effect to attach local video when camera is turned on
+  useEffect(() => {
+    if (cameraOn && roomRef.current && videoRef.current) {
+      const timer = setTimeout(() => {
+        if (videoRef.current && roomRef.current) {
+          const LKC = (window as any).LivekitClient || (window as any).LiveKit
+          if (!LKC) return
+          const { Track } = LKC
+          const camPub = roomRef.current.localParticipant.getTrackPublication(Track.Source.Camera)
+          if (camPub?.videoTrack) {
+            camPub.videoTrack.attach(videoRef.current)
+          }
+        }
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [cameraOn])
+
 
   return (
     <div className={s.container}>
@@ -301,7 +430,7 @@ export default function VideoConferencePage() {
         </div>
 
         <div className={s.actionBar}>
-          <button className={`${s.pill} ${s.pillRed}`}> 
+          <button className={`${s.pill} ${s.pillRed}`} onClick={startStream} > 
             <span className={s.pillIconLive}></span>
             <span className={s.pillText}>{t('dashboard.videoConference.startStream')}</span>
           </button>
@@ -315,43 +444,14 @@ export default function VideoConferencePage() {
           </div>
         </div>
 
-        {mounted && plannedItems.length > 0 && (
-          <div className={s.tableWrap}>
-            <table className={s.table}>
-              <thead>
-                <tr>
-                  <th className={s.th}>{t('dashboard.videoConference.topic')}</th>
-                  <th className={s.th}>{t('dashboard.videoConference.code')}</th>
-                  <th className={s.th}>{t('dashboard.videoConference.date')}</th>
-                  <th className={s.th}>{t('dashboard.videoConference.type')}</th>
-                  <th className={s.th}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {plannedItems.map((it, idx) => (
-                  <tr key={`t-${idx}`}>
-                    <td className={s.td}>{it.topic || t('dashboard.videoConference.withoutTopic')}</td>
-                    <td className={s.td}>{(it as any).id || ''}</td>
-                    <td className={s.td} suppressHydrationWarning>{formatDT(it.planned_time)}</td>
-                    <td className={s.td}>{it.type}</td>
-                    <td className={`${s.td} ${s.rowAction}`}>
-                      <Button variant="primary" className={s.smallBtn} onClick={() => { const cid = String((it as any).id || ''); if (!cid) return; router.push(`/${language}/dashboard/video-conference/${cid}`); }}>{t('dashboard.videoConference.enter')}</Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {mounted && (plannedItems.length > 0 || plannedItems.length === 0) && (
+        {mounted && (
           <div className={s.listsColumns}>
             <div className={s.listColumn}>
               <div className={s.listTitle}>{t('dashboard.videoConference.scheduled')}</div>
               <div className={s.cardsGrid}>
-                {plannedItems.length === 0 ? (
+                {scheduledList.length === 0 ? (
                   <div className={s.emptyBox}>{t('dashboard.videoConference.noScheduledMeetings')}</div>
-                ) : plannedItems.map((it, idx) => (
+                ) : scheduledList.map((it, idx) => (
                   <div key={`p-${idx}`} className={s.card}>
                     <div className={s.cardHeader}>{t('dashboard.videoConference.conference')}</div>
                     <div className={s.cardBody}>
@@ -365,52 +465,36 @@ export default function VideoConferencePage() {
                   </div>
                 ))}
               </div>
+              {totalPages > 1 && (
+                <div className={s.pagination}>
+                  <div className={s.paginationInfo}>
+                    Стр. {page + 1} из {totalPages} · Всего: {totalElements}
+                  </div>
+                  <div className={s.paginationControls}>
+                    <button 
+                      onClick={() => setPage(p => Math.max(0, p - 1))} 
+                      disabled={page === 0 || loading}
+                      className={s.paginationBtn}
+                    >
+                      Назад
+                    </button>
+                    <button 
+                      onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} 
+                      disabled={page >= totalPages - 1 || loading}
+                      className={s.paginationBtn}
+                    >
+                      Вперёд
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Архив записей временно скрыт */}
           </div>
         )}
 
-
-        <div className={s.placeholder}>
-          {connectedInfo && (
-            <div className={s.videoContainer}>
-              <video ref={videoRef} autoPlay muted playsInline />
-              <div ref={remoteContainerRef} className={s.remoteGrid}></div>
-
-              <div className={s.status}> Участникs: {String(connectedInfo.is_member)} • Identity: {connectedInfo.identity} • Тема: {connectedInfo.topic}</div>
-              {debug && (
-                <div className={s.status}>Server: {debug.url} • Token: {debug.tokenLen} символов • Публикация: {String(debug.canPublish)}</div>
-              )}
-              <div className={s.actions}>
-                <Button variant="secondary" onClick={toggleCamera}>{cameraOn ? t('dashboard.videoConference.turnOffCamera') : t('dashboard.videoConference.turnOnCamera')}</Button>
-                <Button variant="secondary" onClick={toggleMic}>{micOn ? t('dashboard.videoConference.turnOffMic') : t('dashboard.videoConference.turnOnMic')}</Button>
-              </div>
-
-              {showManagePanel && (
-                <div className={s.participantsPanel}>
-                  <div className={s.fieldRow}>
-                    <Button variant="secondary" onClick={loadParticipants}>{t('dashboard.videoConference.updateParticipants')}</Button>
-                    <div className={s.field}>
-                      <label>kick user_id</label>
-                      <input type="number" value={kickUserId} onChange={e => setKickUserId(e.target.value)} />
-                    </div>
-                    <Button variant="secondary" onClick={kick}>{t('dashboard.videoConference.kick')}</Button>
-                  </div>
-                  {participants.length > 0 && (
-                    <div className={s.participantsList}>
-                      {participants.map((p: any, idx: number) => (
-                        <div key={idx} className={s.participantItem}>
-                          <span>{String(p.identity || p.name || p.user_id || '')}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        
       </div>
 
       <div className={s.rightWidgets}>

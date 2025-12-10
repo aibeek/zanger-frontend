@@ -164,15 +164,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
                         const isAi = section === aiConsultantLabel
-                        const isDatabase = section === databaseLabel
-                        const isCommunity = section === 'Сообщество'
-                        const isCRM = section === 'CRM'
-                        const isSeminars = section === 'Семинары'
-                        const label = section === databaseLabel ? 'Проверка КГ' : section
+                        const label = section
                         return (
                         <button 
                             key={index} 
-                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''}`}
+                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''} ${isLongText ? s.longText : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
                             <span className={s.footerLabel}>
