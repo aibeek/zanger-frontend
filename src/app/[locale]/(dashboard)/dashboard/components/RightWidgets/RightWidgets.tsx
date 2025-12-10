@@ -96,7 +96,16 @@ export const RightWidgets = () => {
                 const key = 'vc_scheduled'
                 const prev = JSON.parse(localStorage.getItem(key) || '[]')
                 localStorage.setItem(key, JSON.stringify([item, ...prev]))
-                window.location.reload()
+                // Dispatch event to reload conferences list
+                window.dispatchEvent(new CustomEvent('vc-conference-scheduled'))
+                // Close the modal and reset form
+                setIsScheduleOpen(false)
+                setTopic('')
+                setPlannedDate('')
+                setPlannedTime('')
+                setScheduledCode('')
+                setScheduledLink('')
+                setScheduledData(null)
             } catch {}
         } catch {} finally { setScheduling(false) }
     }
@@ -208,20 +217,8 @@ export const RightWidgets = () => {
                             <input type="date" className={s.input} placeholder="Дата" value={plannedDate} onChange={e => setPlannedDate(e.target.value)} />
                             <input type="time" className={s.input} placeholder="Время" value={plannedTime} onChange={e => setPlannedTime(e.target.value)} />
                         </div>
-                        <div className={s.formRowLabel}>Код конференции:</div>
-                        <div className={s.formRowCopy}>
-                            <input className={s.input} readOnly value={displayCode} />
-                            <button className={s.copyBtn} onClick={() => onCopy(scheduledCode)} aria-label="Копировать" disabled={!scheduledCode}>
-                                <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                            </button>
-                        </div>
-                    <div className={s.formRowLabel}>Ссылка:</div>
-                    <div className={s.formRowCopy}>
-                        <input className={s.input} readOnly value={scheduledLink} />
-                        <button className={s.copyBtn} onClick={() => onCopy(scheduledLink)} aria-label="Копировать" disabled={!scheduledLink}>
-                            <Image src="/assets/icons/copy.svg" alt="copy" width={20} height={20} className={s.copyIcon} />
-                        </button>
-                    </div>
+                        
+                    
                     
                         <div className={s.formActions}>
                             <Button variant="secondary" onClick={() => setIsScheduleOpen(false)}>Отменить</Button>
