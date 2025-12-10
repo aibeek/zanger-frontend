@@ -164,7 +164,12 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
                         const isAi = section === aiConsultantLabel
+                        const isDatabase = section === databaseLabel
+                        const isCommunity = section === 'Сообщество'
+                        const isCRM = section === 'CRM'
+                        const isSeminars = section === 'Семинары'
                         const label = section
+                        const isLongText = typeof label === 'string' && label.length > 12
                         return (
                         <button 
                             key={index} 
