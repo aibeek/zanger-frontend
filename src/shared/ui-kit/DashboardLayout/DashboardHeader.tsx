@@ -75,6 +75,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const applicationsLabel = t('dashboard.footer.sections.applications')
     const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
     const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
+    const databaseLabel = t('dashboard.footer.sections.database')
 
     const handleSectionClick = (label: string) => {
         if (label === digitalSignatureLabel) {
@@ -154,11 +155,12 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         const isDigital = section === digitalSignatureLabel
                         const isApplications = section === applicationsLabel
                         const isAi = section === aiConsultantLabel
+                        const isLongText = section === aiConsultantLabel || section === databaseLabel
                         const label = section
                         return (
                         <button 
                             key={index} 
-                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''}`}
+                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''} ${isLongText ? s.longText : ''}`}
                             onClick={() => handleSectionClick(section)}
                         >
                             <span className={s.footerLabel}>

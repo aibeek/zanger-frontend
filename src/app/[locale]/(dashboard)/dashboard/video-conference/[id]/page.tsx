@@ -28,14 +28,19 @@ export default function VideoConferenceLinkPage() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const remoteContainerRef = useRef<HTMLDivElement | null>(null)
   const audioContainerRef = useRef<HTMLDivElement | null>(null)
+  const chatMessagesRef = useRef<HTMLDivElement | null>(null)
 
   const videoAreaRef = useRef<HTMLDivElement | null>(null)
 
   const roomRef = useRef<any>(null)
+  const livekitUrlRef = useRef<string>('wss://video.zanger-app.kz')
+  const livekitTokenRef = useRef<string>('')
   const BASE = 'https://api.zanger-app.kz/api/livekit'
+  const BASE_API = 'http://localhost:8080/java-api/video-conferences'
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
+  const [isStream, setIsStream] = useState(false)
   const [conf, setConf] = useState<{ topic?: string; planned_time?: string; code?: string } | null>(null)
   const [addUserId, setAddUserId] = useState('')
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
@@ -45,6 +50,9 @@ export default function VideoConferenceLinkPage() {
   const [participants, setParticipants] = useState<any[]>([])
   const [remoteParticipants, setRemoteParticipants] = useState<Map<string, any>>(new Map())
   const [videoPositions, setVideoPositions] = useState<Record<string, { x: number; y: number }>>({})
+  const [activeTab, setActiveTab] = useState<'chat' | 'participants'>('chat')
+  const [chatMessages, setChatMessages] = useState<Array<{ id: string; identity: string; message: string; timestamp: number }>>([])
+  const [chatInput, setChatInput] = useState('')
   const dragState = useRef<{ isDragging: boolean; elementId: string | null; startX: number; startY: number; initialX: number; initialY: number }>({
     isDragging: false,
     elementId: null,
@@ -99,6 +107,13 @@ export default function VideoConferenceLinkPage() {
     }
   }, [conferenceId, userId])
 
+  // Auto-scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    if (chatMessagesRef.current && activeTab === 'chat') {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight
+    }
+  }, [chatMessages, activeTab])
+
   async function handleAutoStart() {
     try {
       // Ensure room exists
@@ -121,12 +136,45 @@ export default function VideoConferenceLinkPage() {
   async function probeMembership() {
     if (!conferenceId || !userId) return
     try {
-      const data = await httpClientWithAuth<any>(`${BASE}/join`, {
+      const data = await httpClientWithAuth<any>(`${BASE_API}/join`, {
         method: 'POST',
-        body: JSON.stringify({ conference_id: conferenceId, user_id: Number(userId) }),
+        body: JSON.stringify({ conferenceId: conferenceId, userId: Number(userId) }),
       })
       setCanPublish(Boolean(data?.canPublish))
     } catch {}
+  }
+
+  function loadParticipantsFromRoom(room: any) {
+    if (!room) return
+    
+    try {
+      console.log('Room:', room)
+      const local = room.localParticipant
+      const others = Array.from(room.remoteParticipants.values())
+      
+      // Only show remote participants (exclude local participant)
+      const remoteParticipants: Array<{ identity: string; name: string }> = []
+      
+      // Add remote participants only (excluding local)
+      others.forEach((p: any) => {
+        // Double-check: exclude local participant if it somehow appears in remoteParticipants
+        if (local && p.identity === local.identity) {
+          return
+        }
+        remoteParticipants.push({
+          identity: p.identity,
+          name: p.name || p.identity
+        })
+      })
+      
+      console.log('Remote participants from room:', remoteParticipants.length, remoteParticipants.map(p => ({ identity: p.identity, name: p.name })))
+      console.log('Local participant:', local ? { identity: local.identity, name: local.name } : 'none')
+      setParticipants(remoteParticipants)
+      return remoteParticipants
+    } catch (e) {
+      console.warn('Failed to load participants from room:', e)
+      return []
+    }
   }
 
   async function ensureLiveKit() {
@@ -228,11 +276,50 @@ export default function VideoConferenceLinkPage() {
     setError(null)
     setJoining(true)
     try {
-      const data = await httpClientWithAuth<any>(`${BASE}/join`, {
-        method: 'POST',
-        body: JSON.stringify({ conference_id: conferenceId, user_id: Number(userId || (personalData as any)?.id || 0) }),
-      })
-      const { token, url, canPublish: canPub, identity, topic: tp } = data
+      // Check if this is a stream started via stream/start
+      const streamToken = sessionStorage.getItem('meet_token')
+      const isStreamStarted = sessionStorage.getItem('meet_stream_started') === 'true'
+      const streamCanPublish = sessionStorage.getItem('meet_can_publish') === 'true'
+      
+      let token: string
+      let url: string
+      let identity: string
+      let canPub: boolean
+
+      if (isStreamStarted && streamToken) {
+        // Use stream token and set stream mode
+        token = streamToken
+        url = 'wss://video.zanger-app.kz'
+        identity = sessionStorage.getItem('meet_identity') || String((personalData as any)?.id || '')
+        canPub = streamCanPublish
+        setIsStream(true)
+        
+        // Clear sessionStorage after use
+        sessionStorage.removeItem('meet_token')
+        sessionStorage.removeItem('meet_stream_started')
+        sessionStorage.removeItem('meet_can_publish')
+        sessionStorage.removeItem('meet_identity')
+      } else {
+        // Normal join flow
+        const data = await httpClientWithAuth<any>(`${BASE_API}/join`, {
+          method: 'POST',
+          body: JSON.stringify({ conferenceId: conferenceId, userId: Number(userId || (personalData as any)?.id || 0) }),
+        })
+        token = data.token
+        // Use LiveKit URL - use from API response if available, otherwise use default
+        url = data.url || 'wss://video.zanger-app.kz'
+        identity = data.identity
+        canPub = Boolean(data.canPublish)
+        setIsStream(false)
+      }
+      
+      // Ensure we always use the correct LiveKit URL
+      url = url || 'wss://video.zanger-app.kz'
+      
+      // Store URL and token in refs for use in event handlers
+      livekitUrlRef.current = url
+      livekitTokenRef.current = token
+      
       setCanPublish(Boolean(canPub))
 
       await ensureLiveKit()
@@ -261,43 +348,105 @@ export default function VideoConferenceLinkPage() {
         })
         
         if (track.kind === 'video') {
-          // Add wrapper for draggable video
-          const wrapper = document.createElement('div')
-          wrapper.id = `video-${participant.identity}`
-          wrapper.style.position = 'relative'
-          wrapper.style.width = '100%'
-          wrapper.style.height = '100%'
-          wrapper.style.aspectRatio = '16/9'
-          wrapper.style.cursor = 'grab'
-          wrapper.style.touchAction = 'none'
-          wrapper.appendChild(el)
-          remoteContainerRef.current?.appendChild(wrapper)
-          
-          // Attach drag handlers
-          attachDragHandlers(wrapper, participant.identity)
+          if (!canPublish) {
+            // If user cannot publish, fill the main video area with remote video
+            if (videoAreaRef.current) {
+              // Remove placeholder if exists
+              const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+              if (placeholder) placeholder.remove()
+              
+              // Hide local video if exists
+              if (videoRef.current) {
+                videoRef.current.style.display = 'none'
+              }
+              
+              // Clear existing remote videos
+              if (remoteContainerRef.current) {
+                remoteContainerRef.current.innerHTML = ''
+              }
+              
+              // Fill main video area with remote video
+              el.style.width = '100%'
+              el.style.height = '100%'
+              el.style.objectFit = 'cover'
+              el.style.position = 'absolute'
+              el.style.top = '0'
+              el.style.left = '0'
+              el.style.zIndex = '1'
+              el.setAttribute('data-participant', participant.identity)
+              
+              videoAreaRef.current.appendChild(el)
+            }
+          } else {
+            // If user can publish, add to remote grid with drag functionality
+            const wrapper = document.createElement('div')
+            wrapper.id = `video-${participant.identity}`
+            wrapper.style.position = 'relative'
+            wrapper.style.width = '100%'
+            wrapper.style.height = '100%'
+            wrapper.style.aspectRatio = '16/9'
+            wrapper.style.cursor = 'grab'
+            wrapper.style.touchAction = 'none'
+            wrapper.appendChild(el)
+            remoteContainerRef.current?.appendChild(wrapper)
+            
+            // Attach drag handlers
+            attachDragHandlers(wrapper, participant.identity)
+          }
         } else {
           audioContainerRef.current?.appendChild(el)
         }
       })
 
       room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
-        track.detach().forEach((el: any) => el.remove())
-        
-        // Clean up from state
+        // Find which participant this track belongs to
+        let participantIdentity: string | null = null
         setRemoteParticipants(prev => {
           const updated = new Map(prev)
           for (const [identity, data] of updated.entries()) {
-            data.tracks = data.tracks.filter((t: any) => t.track !== track)
-            if (data.tracks.length === 0) {
-              updated.delete(identity)
+            const trackIndex = data.tracks.findIndex((t: any) => t.track === track)
+            if (trackIndex !== -1) {
+              participantIdentity = identity
+              data.tracks = data.tracks.filter((t: any) => t.track !== track)
+              if (data.tracks.length === 0) {
+                updated.delete(identity)
+              }
             }
           }
           return updated
+        })
+        
+        // Detach and remove video elements
+        track.detach().forEach((el: any) => {
+          // If user cannot publish and video is in main area, clean it up
+          if (!canPublish && videoAreaRef.current && participantIdentity) {
+            const videoElement = videoAreaRef.current.querySelector(`video[data-participant="${participantIdentity}"]`)
+            if (videoElement === el) {
+              el.remove()
+              // If no more remote videos, show placeholder or local video
+              const remainingVideos = videoAreaRef.current.querySelectorAll('video[data-participant]')
+              if (remainingVideos.length === 0) {
+                if (videoRef.current) {
+                  videoRef.current.style.display = 'block'
+                }
+              }
+              return
+            }
+          }
+          el.remove()
         })
       })
 
       room.on(RoomEvent.ParticipantConnected, (participant: any) => {
         console.log('Participant connected:', participant.identity)
+        // Skip local participant - only track remote participants
+        if (participant.identity === room.localParticipant?.identity) {
+          return
+        }
+        // Reload participants from room to get accurate list
+        if (roomRef.current) {
+          setTimeout(() => loadParticipantsFromRoom(roomRef.current), 500)
+        }
       })
 
       room.on(RoomEvent.ParticipantDisconnected, (p: any) => {
@@ -307,13 +456,72 @@ export default function VideoConferenceLinkPage() {
           updated.delete(p.identity)
           return updated
         })
+        // Remove from participants list
+        setParticipants(prev => prev.filter(part => part.identity !== p.identity))
+        
+        // Reload participants from room
+        if (roomRef.current) {
+          setTimeout(() => loadParticipantsFromRoom(roomRef.current), 500)
+        }
+        
+        // If user cannot publish, clean up video from main area
+        if (!canPublish && videoAreaRef.current) {
+          const videoElement = videoAreaRef.current.querySelector(`video[data-participant="${p.identity}"]`)
+          if (videoElement) {
+            videoElement.remove()
+          }
+          // If no more remote videos, show placeholder
+          const remainingVideos = videoAreaRef.current.querySelectorAll('video')
+          if (remainingVideos.length === 0 && videoRef.current) {
+            videoRef.current.style.display = 'block'
+          }
+        }
+      })
+
+      // Listen for chat messages via LiveKit data channel
+      room.on(RoomEvent.DataReceived, (payload: Uint8Array, participant: any, kind: any, topic: string | undefined) => {
+        try {
+          const decoder = new TextDecoder()
+          const messageText = decoder.decode(payload)
+          const messageData = JSON.parse(messageText)
+          
+          if (messageData.type === 'chat' && messageData.message) {
+            const chatMessage = {
+              id: messageData.id || Date.now().toString(),
+              identity: participant?.identity || messageData.identity || 'Unknown',
+              message: messageData.message,
+              timestamp: messageData.timestamp || Date.now()
+            }
+            setChatMessages(prev => {
+              // Avoid duplicates
+              const exists = prev.find(m => m.id === chatMessage.id)
+              if (!exists) {
+                return [...prev, chatMessage]
+              }
+              return prev
+            })
+          }
+        } catch (e) {
+          console.error('Error parsing chat message:', e)
+        }
       })
 
       await room.connect(url, token)
 
+      const topic = conf?.topic || ''
+
+      // Load participants from room immediately after connection
+      loadParticipantsFromRoom(room)
+      
+      // Also update after a short delay to catch any late-loading participants
+      setTimeout(() => {
+        loadParticipantsFromRoom(room)
+      }, 1000)
+
       // Subscribe to existing participants already in the room
       room.participants.forEach((participant: any) => {
         console.log('Existing participant:', participant.identity)
+        
         participant.videoTracks.forEach((pub: any) => {
           const track = pub.videoTrack
           if (track) {
@@ -334,20 +542,51 @@ export default function VideoConferenceLinkPage() {
               return updated
             })
 
-            // Add wrapper for draggable video
-            const wrapper = document.createElement('div')
-            wrapper.id = `video-${participant.identity}`
-            wrapper.style.position = 'relative'
-            wrapper.style.width = '100%'
-            wrapper.style.height = '100%'
-            wrapper.style.aspectRatio = '16/9'
-            wrapper.style.cursor = 'grab'
-            wrapper.style.touchAction = 'none'
-            wrapper.appendChild(el)
-            remoteContainerRef.current?.appendChild(wrapper)
+            if (!canPublish) {
+              // If user cannot publish, fill the main video area with remote video
+              if (videoAreaRef.current) {
+                // Remove placeholder if exists
+                const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+                if (placeholder) placeholder.remove()
+                
+                // Hide local video if exists
+                if (videoRef.current) {
+                  videoRef.current.style.display = 'none'
+                }
+                
+                // Clear existing remote videos
+                if (remoteContainerRef.current) {
+                  remoteContainerRef.current.innerHTML = ''
+                }
+                
+                // Fill main video area with remote video
+                el.style.width = '100%'
+                el.style.height = '100%'
+                el.style.objectFit = 'cover'
+                el.style.position = 'absolute'
+                el.style.top = '0'
+                el.style.left = '0'
+                el.style.zIndex = '1'
+                el.setAttribute('data-participant', participant.identity)
+                
+                videoAreaRef.current.appendChild(el)
+              }
+            } else {
+              // If user can publish, add to remote grid with drag functionality
+              const wrapper = document.createElement('div')
+              wrapper.id = `video-${participant.identity}`
+              wrapper.style.position = 'relative'
+              wrapper.style.width = '100%'
+              wrapper.style.height = '100%'
+              wrapper.style.aspectRatio = '16/9'
+              wrapper.style.cursor = 'grab'
+              wrapper.style.touchAction = 'none'
+              wrapper.appendChild(el)
+              remoteContainerRef.current?.appendChild(wrapper)
 
-            // Attach drag handlers
-            attachDragHandlers(wrapper, participant.identity)
+              // Attach drag handlers
+              attachDragHandlers(wrapper, participant.identity)
+            }
           }
         })
         participant.audioTracks.forEach((pub: any) => {
@@ -360,6 +599,12 @@ export default function VideoConferenceLinkPage() {
           }
         })
       })
+      
+      // Reload participants from room after processing all existing participants
+      // This ensures we have the complete list
+      setTimeout(() => {
+        loadParticipantsFromRoom(room)
+      }, 1000)
 
       const sVideo = sessionStorage.getItem('meet_video')
       const sAudio = sessionStorage.getItem('meet_audio')
@@ -397,7 +642,7 @@ export default function VideoConferenceLinkPage() {
         }
       }
 
-      setConnectedInfo({ room: room.name, is_member: canPublish, topic: tp, identity })
+      setConnectedInfo({ room: room.name, is_member: canPublish, topic: topic, identity })
     } catch (e: any) {
       setError(e?.message || 'Ошибка подключения')
     } finally {
@@ -508,11 +753,72 @@ export default function VideoConferenceLinkPage() {
     }
   }
 
+  async function sendChatMessage() {
+    if (!chatInput.trim() || !roomRef.current) return
+    
+    const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
+    const messageText = chatInput.trim()
+    
+    const message = {
+      type: 'chat',
+      id: Date.now().toString(),
+      identity,
+      message: messageText,
+      timestamp: Date.now()
+    }
+    
+    try {
+      // Send message via LiveKit data channel
+      const encoder = new TextEncoder()
+      const data = encoder.encode(JSON.stringify(message))
+      
+      await roomRef.current.localParticipant.publishData(data, {
+        reliable: true,
+        destinationIdentities: [] // Empty array means broadcast to all participants
+      })
+      
+      // Add message to local state immediately for better UX
+      setChatMessages(prev => [...prev, {
+        id: message.id,
+        identity,
+        message: messageText,
+        timestamp: message.timestamp
+      }])
+      setChatInput('')
+    } catch (e) {
+      console.error('Error sending message:', e)
+      // Still add to local state even if send fails
+      setChatMessages(prev => [...prev, {
+        id: message.id,
+        identity,
+        message: messageText,
+        timestamp: message.timestamp
+      }])
+      setChatInput('')
+    }
+  }
+
   return (
     <div className={s.meetingCard}>
       <div className={s.header}>
         <Image src="/assets/icons/myconf.svg" alt="" width={24} height={24} />
         <span className={s.title}>{conf?.topic || 'Конференция'}</span>
+      </div>
+
+      <div className={s.infoBlock} style={{ marginBottom: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 8 }}>
+        <div className={s.infoRow} style={{ marginBottom: 8 }}>
+          <span style={{ fontSize: 13, color: '#64748b' }}>Идентификатор:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className={s.codeValue} style={{ fontSize: 14 }}>{conferenceId}</span>
+            <button className={s.copyBtn} onClick={() => navigator.clipboard.writeText(conf?.code || conferenceId)}>
+              <Image src="/assets/icons/copy.svg" alt="copy" width={16} height={16} />
+            </button>
+          </div>
+        </div>
+        <div className={s.infoRow} style={{ fontSize: 12, color: '#64748b', justifyContent: 'flex-start', gap: 8 }}>
+          <span>Пригласить по ссылке:</span>
+          <span className={s.linkAction} onClick={() => navigator.clipboard.writeText(window.location.href)}>скопировать</span>
+        </div>
       </div>
 
       <div className={s.layout}>
@@ -528,100 +834,163 @@ export default function VideoConferenceLinkPage() {
             <div ref={audioContainerRef} style={{ display: 'none' }}></div>
           </div>
 
-          <div className={s.deviceControls}>
-             <div className={s.deviceSelect}>
-               <div className={s.selectIcon}>
-                 <Image src="/assets/icons/micro..svg" alt="" width={16} height={16} />
+          {canPublish && (
+            <div className={s.deviceControls}>
+               <div className={s.deviceSelect}>
+                 <div className={s.selectIcon}>
+                   <Image src="/assets/icons/micro..svg" alt="" width={16} height={16} />
+                 </div>
+                 <div style={{ flex: 1 }}>
+                   {!micOn ? (
+                     <div className={s.placeholderText} onClick={toggleMic}>Включить микрофон</div>
+                   ) : (
+                     <select className={s.select} value={selectedMic} onChange={e => changeMic(e.target.value)}>
+                       {devices.filter(d => d.kind === 'audioinput').map(d => (
+                         <option key={d.deviceId} value={d.deviceId}>{d.label || 'Microphone'}</option>
+                       ))}
+                       {devices.filter(d => d.kind === 'audioinput').length === 0 && <option>Микрофон (Устройство)</option>}
+                     </select>
+                   )}
+                 </div>
+                 <div className={`${s.toggle} ${micOn ? s.toggleActive : ''}`} onClick={toggleMic}>
+                   <div className={s.toggleKnob} />
+                 </div>
                </div>
-               <div style={{ flex: 1 }}>
-                 {!micOn ? (
-                   <div className={s.placeholderText} onClick={toggleMic}>Включить микрофон</div>
-                 ) : (
-                   <select className={s.select} value={selectedMic} onChange={e => changeMic(e.target.value)}>
-                     {devices.filter(d => d.kind === 'audioinput').map(d => (
-                       <option key={d.deviceId} value={d.deviceId}>{d.label || 'Microphone'}</option>
-                     ))}
-                     {devices.filter(d => d.kind === 'audioinput').length === 0 && <option>Микрофон (Устройство)</option>}
-                   </select>
-                 )}
+               <div className={s.deviceSelect}>
+                 <div className={s.selectIcon}>
+                   <Image src="/assets/icons/camera.svg" alt="" width={16} height={16} />
+                 </div>
+                 <div style={{ flex: 1 }}>
+                   {!cameraOn ? (
+                     <div className={s.placeholderText} onClick={toggleCamera}>Включить камеру</div>
+                   ) : (
+                     <select className={s.select} value={selectedCam} onChange={e => changeCam(e.target.value)}>
+                       {devices.filter(d => d.kind === 'videoinput').map(d => (
+                         <option key={d.deviceId} value={d.deviceId}>{d.label || 'Camera'}</option>
+                       ))}
+                       {devices.filter(d => d.kind === 'videoinput').length === 0 && <option>Камера (Устройство)</option>}
+                     </select>
+                   )}
+                 </div>
+                 <div className={`${s.toggle} ${cameraOn ? s.toggleActive : ''}`} onClick={toggleCamera}>
+                   <div className={s.toggleKnob} />
+                 </div>
                </div>
-               <div className={`${s.toggle} ${micOn ? s.toggleActive : ''}`} onClick={toggleMic}>
-                 <div className={s.toggleKnob} />
-               </div>
-             </div>
-             <div className={s.deviceSelect}>
-               <div className={s.selectIcon}>
-                 <Image src="/assets/icons/camera.svg" alt="" width={16} height={16} />
-               </div>
-               <div style={{ flex: 1 }}>
-                 {!cameraOn ? (
-                   <div className={s.placeholderText} onClick={toggleCamera}>Включить камеру</div>
-                 ) : (
-                   <select className={s.select} value={selectedCam} onChange={e => changeCam(e.target.value)}>
-                     {devices.filter(d => d.kind === 'videoinput').map(d => (
-                       <option key={d.deviceId} value={d.deviceId}>{d.label || 'Camera'}</option>
-                     ))}
-                     {devices.filter(d => d.kind === 'videoinput').length === 0 && <option>Камера (Устройство)</option>}
-                   </select>
-                 )}
-               </div>
-               <div className={`${s.toggle} ${cameraOn ? s.toggleActive : ''}`} onClick={toggleCamera}>
-                 <div className={s.toggleKnob} />
-               </div>
-             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         <div className={s.rightPanel}>
-          <div className={s.infoBlock}>
-            <div className={s.infoRow}>
-              <span>Идентификатор:</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className={s.codeValue}>{conferenceId}</span>
-                <button className={s.copyBtn} onClick={() => navigator.clipboard.writeText(conf?.code || conferenceId)}>
-                  <Image src="/assets/icons/copy.svg" alt="copy" width={16} height={16} />
-                </button>
+          <div className={s.tabsContainer}>
+            <div className={s.tabs}>
+              <button 
+                className={`${s.tab} ${activeTab === 'chat' ? s.tabActive : ''}`}
+                onClick={() => setActiveTab('chat')}
+              >
+                Чат
+              </button>
+              <button 
+                className={`${s.tab} ${activeTab === 'participants' ? s.tabActive : ''}`}
+                onClick={() => setActiveTab('participants')}
+              >
+                Участники ({participants.length + 1})
+              </button>
+            </div>
+
+            {activeTab === 'chat' && (
+              <div className={s.chatContainer}>
+                <div className={s.chatMessages} ref={chatMessagesRef}>
+                  {chatMessages.length === 0 ? (
+                    <div style={{ padding: 20, textAlign: 'center', color: '#64748b', fontSize: 14 }}>
+                      Нет сообщений
+                    </div>
+                  ) : (
+                    chatMessages.map((msg) => {
+                      const isOwnMessage = msg.identity === (connectedInfo?.identity || String((personalData as any)?.id || ''))
+                      return (
+                        <div 
+                          key={msg.id} 
+                          className={`${s.chatMessage} ${isOwnMessage ? s.chatMessageOwn : s.chatMessageOther}`}
+                          style={{
+                            alignSelf: isOwnMessage ? 'flex-end' : 'flex-start',
+                            maxWidth: '80%',
+                            marginBottom: '8px'
+                          }}
+                        >
+                          <div className={s.chatMessageHeader}>
+                            <span className={s.chatMessageAuthor}>
+                              {isOwnMessage ? 'Вы' : msg.identity}
+                            </span>
+                            <span className={s.chatMessageTime}>
+                              {new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <div 
+                            className={s.chatMessageText}
+                            style={{
+                              backgroundColor: isOwnMessage ? '#3b82f6' : '#f1f5f9',
+                              color: isOwnMessage ? '#ffffff' : '#1e293b',
+                              padding: '8px 12px',
+                              borderRadius: '12px',
+                              wordWrap: 'break-word'
+                            }}
+                          >
+                            {msg.message}
+                          </div>
+                        </div>
+                      )
+                    })
+                  )}
+                </div>
+                <div className={s.chatInputContainer}>
+                  <input
+                    className={s.chatInput}
+                    placeholder="Введите сообщение..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        sendChatMessage()
+                      }
+                    }}
+                  />
+                  <button className={s.chatSendBtn} onClick={sendChatMessage}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className={s.infoRow} style={{ justifyContent: 'center', fontSize: 12, color: '#64748b' }}>
-              или
-            </div>
-            <div className={s.infoRow}>
-              <span>Пригласить по ссылке:</span>
-              <span className={s.linkAction} onClick={() => navigator.clipboard.writeText(window.location.href)}>скопировать</span>
-            </div>
+            )}
+
+            {activeTab === 'participants' && (
+              <div className={s.participantsContainer}>
+                <div className={s.participantItem} style={{ fontWeight: 600 }}>
+                  <span>{connectedInfo?.identity || 'Вы'}</span>
+                  <span style={{ fontSize: 12, color: '#64748b' }}>Вы</span>
+                </div>
+                {participants.map((p, idx) => (
+                  <div key={idx} className={s.participantItem}>
+                    <span>{p.name || p.identity}</span>
+                    <span style={{ fontSize: 12, color: '#64748b' }}>Участник</span>
+                  </div>
+                ))}
+                {participants.length === 0 && (
+                  <div style={{ padding: 20, textAlign: 'center', color: '#64748b', fontSize: 14 }}>
+                    Нет других участников
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {canPublish && (
-            <div className={s.infoBlock} style={{ marginTop: 20 }}>
-               <input 
-                 className={s.input} 
-                 placeholder="Идентификатор участника" 
-                 value={addUserId} 
-                 onChange={e => setAddUserId(e.target.value)} 
-               />
-               <button className={s.startBtn} onClick={async () => { 
-                    if (!addUserId) return;
-                    try { 
-                      const body = { conference_id: conferenceId, user_id: Number(addUserId) }; 
-                      await httpClientWithAuth(`${BASE}/members/add`, { method: 'POST', body: JSON.stringify(body) }); 
-                      setAddUserId('');
-                      const qs = new URLSearchParams({ conference_id: conferenceId }).toString(); 
-                      // const res = await httpClientWithAuth<any>(`${BASE}/participants?${qs}`, { method: 'GET' }); 
-                      // setParticipants(Array.isArray(res?.participants) ? res.participants : []); 
-                      alert('Участник добавлен');
-                    } catch (e) {
-                      console.error(e);
-                      alert('Ошибка добавления участника');
-                    } 
-                  }}>
-                 Добавить участника
-               </button>
-            </div>
-          )}
-
           <div className={s.actions}>
-            {canPublish ? (
+            {isStream ? (
+               <button className={s.exitBtn} style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>
+                 Завершить стрим
+               </button>
+            ) : canPublish ? (
                <button className={s.exitBtn} style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={() => { try { roomRef.current?.disconnect(); } catch {}; router.push(`/${language}/dashboard/video-conference`) }}>
                  Завершить встречу
                </button>

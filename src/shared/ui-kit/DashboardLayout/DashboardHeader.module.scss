@@ -99,8 +99,19 @@
   background: #0b1f34;
 }
 
+.longText {
+  font-size: 0.7rem !important;
+  padding: 8px 4px;
+  
+  .footerLabel {
+    white-space: normal;
+    line-height: 1.1;
+    text-align: left;
+  }
+}
+
 .footerLabel {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
