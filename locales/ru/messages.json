@@ -1152,7 +1152,7 @@
 			"sections": {
 				"applications": "Заявки",
 				"forum": "Юридический форум",
-                "database": "Проверка контрагента",
+                "database": "Проверка КГ",
 				"seminars": "Семинары",
 				"digitalSignature": "ЭДО",
 				"videoConference": "ВКС",

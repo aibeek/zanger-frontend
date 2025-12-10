@@ -68,6 +68,11 @@
 	gap: 8px;
 	font-size: 16px;
 	color: #4B5563;
+
+    & > span > div {
+        color: #374151 !important;
+        margin-bottom: 0 !important;
+    }
 }
 
 .metaLabel {

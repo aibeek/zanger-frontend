@@ -3,11 +3,15 @@
 import { useEffect, useState } from 'react'
 import { useLoginStore } from '@/features/auth/login'
 import { EcpSidebar } from '@/shared/ui-kit/EcpSidebar'
+import { ApplicationsSidebar } from '@/shared/ui-kit/ApplicationsSidebar'
 import { Sidebar } from '@/shared/ui-kit/Sidebar'
 import { usePathname } from 'next/navigation'
 import { DashboardHeader } from './DashboardHeader'
 import { DashboardFooter } from './DashboardFooter'
+import { EcpHeader } from '@/widgets/EcpHeader'
+import { useTranslations } from 'next-intl'
 import s from './DashboardLayout.module.scss'
+import ApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 
 interface DashboardLayoutProps {
     children: React.ReactNode
@@ -18,6 +22,7 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
     const { personalData, getPersonalDataByToken, loading } = useLoginStore()
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
     const pathname = usePathname()
+    const t = useTranslations()
 
     useEffect(() => {
         getPersonalDataByToken()
@@ -34,6 +39,9 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
     if (loading || !personalData) {
         return <div className={s.loader}>Загрузка...</div>
     }
+
+    const isApplicationsPage = pathname.replace(/^\/[a-z]{2}/, '').startsWith('/dashboard/applications')
+    const isEcpPage = pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp')
 
     return (
         <div className={s.layout}>
@@ -62,17 +70,30 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
             <div className={`${s.sidebarContainer} ${isMobileSidebarOpen ? s.mobileOpen : ''}`}>
                 {pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp') ? (
                     <EcpSidebar />
+                ) : isApplicationsPage ? (
+                    <ApplicationsSidebar />
                 ) : (
                     <Sidebar language={language} onMobileClose={closeMobileSidebar} />
                 )}
             </div>
 
             <main className={s.mainContent}>
-                <DashboardHeader language={language} />
+                {isApplicationsPage ? (
+                    <EcpHeader 
+                        title={t('dashboard.footer.sections.applications')} 
+                        icon={ApplicationsIcon}
+                    />
+                ) : isEcpPage ? (
+                    <EcpHeader />
+                ) : (
+                    <DashboardHeader language={language} />
+                )}
+                
                 <div className={s.contentArea}>
                     {children}
                 </div>
-                <DashboardFooter />
+                
+                {!isApplicationsPage && !isEcpPage && <DashboardFooter />}
             </main>
         </div>
     )

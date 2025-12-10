@@ -5,8 +5,9 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { AuthGuard } from '@/shared/lib'
-import { EcpLayout } from '@/shared/ui-kit/EcpLayout'
+import { DashboardLayout } from '@/shared/ui-kit/DashboardLayout'
 import { AppToaster } from '@/shared/ui-kit'
+import { SWRConfig } from 'swr'
 
 export const metadata: Metadata = {
   title: 'Zanger — ЭЦП',
@@ -35,10 +36,12 @@ export default async function EcpLayoutRoot({
   return (
     <NextIntlClientProvider messages={messages}>
       <AuthGuard>
-        <EcpLayout>
-          {children}
-        </EcpLayout>
-        <AppToaster />
+        <SWRConfig value={{ shouldRetryOnError: false }}>
+            <DashboardLayout language={locale}>
+                {children}
+            </DashboardLayout>
+            <AppToaster />
+        </SWRConfig>
       </AuthGuard>
     </NextIntlClientProvider>
   )
