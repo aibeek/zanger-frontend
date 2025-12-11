@@ -22,7 +22,7 @@ export default function VideoConferenceLinkPage() {
   const [conferenceId, setConferenceId] = useState('')
   const [userId, setUserId] = useState('')
   const [joining, setJoining] = useState(false)
-  const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string }>(null)
+  const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string; name?: string }>(null)
   const [error, setError] = useState<string | null>(null)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -369,9 +369,9 @@ export default function VideoConferenceLinkPage() {
           if (!canPublish) {
             // If user cannot publish, fill the main video area with remote video
             if (videoAreaRef.current) {
-              // Remove placeholder if exists
-              const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-              if (placeholder) placeholder.remove()
+              // // Remove placeholder if exists
+              // const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+              // if (placeholder) placeholder.remove()
               
               // Hide local video if exists
               if (videoRef.current) {
@@ -396,20 +396,34 @@ export default function VideoConferenceLinkPage() {
               videoAreaRef.current.appendChild(el)
             }
           } else {
-            // If user can publish, add to remote grid with drag functionality
-            const wrapper = document.createElement('div')
-            wrapper.id = `video-${participant.identity}`
-            wrapper.style.position = 'relative'
-            wrapper.style.width = '100%'
-            wrapper.style.height = '100%'
-            wrapper.style.aspectRatio = '16/9'
-            wrapper.style.cursor = 'grab'
-            wrapper.style.touchAction = 'none'
-            wrapper.appendChild(el)
-            remoteContainerRef.current?.appendChild(wrapper)
-            
-            // Attach drag handlers
-            attachDragHandlers(wrapper, participant.identity)
+            // If user can publish, ALWAYS add to remote grid (right bottom)
+            if (remoteContainerRef.current) {
+              // Make sure we don't add to main area
+              const existingInMainArea = videoAreaRef.current?.querySelector(`video[data-participant="${participant.identity}"]`)
+              if (existingInMainArea) {
+                existingInMainArea.remove()
+              }
+              
+              const wrapper = document.createElement('div')
+              wrapper.id = `video-${participant.identity}`
+              wrapper.style.position = 'relative'
+              wrapper.style.width = '100%'
+              wrapper.style.height = '100%'
+              wrapper.style.aspectRatio = '16/9'
+              wrapper.style.cursor = 'grab'
+              wrapper.style.touchAction = 'none'
+              
+              el.style.width = '100%'
+              el.style.height = '100%'
+              el.style.objectFit = 'cover'
+              el.setAttribute('data-participant', participant.identity)
+              
+              wrapper.appendChild(el)
+              remoteContainerRef.current.appendChild(wrapper)
+              
+              // Attach drag handlers
+              attachDragHandlers(wrapper, participant.identity)
+            }
           }
         } else {
           audioContainerRef.current?.appendChild(el)
@@ -480,17 +494,19 @@ export default function VideoConferenceLinkPage() {
           setTimeout(() => loadParticipantsFromRoom(roomRef.current), 500)
         }
         
-        // If user cannot publish, clean up video from main area
+        // Clean up video elements safely
         if (!canPublish && videoAreaRef.current) {
           const videoElement = videoAreaRef.current.querySelector(`video[data-participant="${p.identity}"]`)
-          if (videoElement) {
-            videoElement.remove()
-          }
+          videoElement?.remove()
           // If no more remote videos, show placeholder
-          const remainingVideos = videoAreaRef.current.querySelectorAll('video')
+          const remainingVideos = videoAreaRef.current.querySelectorAll('video[data-participant]')
           if (remainingVideos.length === 0 && videoRef.current) {
             videoRef.current.style.display = 'block'
           }
+        } else {
+          // If user can publish, remove wrapper from remote grid
+          const wrapper = document.getElementById(`video-${p.identity}`)
+          wrapper?.remove()
         }
       })
 
@@ -598,19 +614,21 @@ export default function VideoConferenceLinkPage() {
               return updated
             })
 
+            // ALWAYS add remote videos to remoteContainerRef when user can publish
+            // Only fill main area when user cannot publish
             if (!canPublish) {
               // If user cannot publish, fill the main video area with remote video
               if (videoAreaRef.current) {
-                // Remove placeholder if exists
-                const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                if (placeholder) placeholder.remove()
+                // // Remove placeholder if exists
+                // const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+                // if (placeholder) placeholder.remove()
                 
                 // Hide local video if exists
                 if (videoRef.current) {
                   videoRef.current.style.display = 'none'
                 }
                 
-                // Clear existing remote videos
+                // Clear existing remote videos from grid
                 if (remoteContainerRef.current) {
                   remoteContainerRef.current.innerHTML = ''
                 }
@@ -628,20 +646,34 @@ export default function VideoConferenceLinkPage() {
                 videoAreaRef.current.appendChild(el)
               }
             } else {
-              // If user can publish, add to remote grid with drag functionality
-              const wrapper = document.createElement('div')
-              wrapper.id = `video-${participant.identity}`
-              wrapper.style.position = 'relative'
-              wrapper.style.width = '100%'
-              wrapper.style.height = '100%'
-              wrapper.style.aspectRatio = '16/9'
-              wrapper.style.cursor = 'grab'
-              wrapper.style.touchAction = 'none'
-              wrapper.appendChild(el)
-              remoteContainerRef.current?.appendChild(wrapper)
+              // If user can publish, ALWAYS add to remote grid (right bottom)
+              if (remoteContainerRef.current) {
+                // Make sure we don't add to main area
+                const existingInMainArea = videoAreaRef.current?.querySelector(`video[data-participant="${participant.identity}"]`)
+                if (existingInMainArea) {
+                  existingInMainArea.remove()
+                }
+                
+                const wrapper = document.createElement('div')
+                wrapper.id = `video-${participant.identity}`
+                wrapper.style.position = 'relative'
+                wrapper.style.width = '100%'
+                wrapper.style.height = '100%'
+                wrapper.style.aspectRatio = '16/9'
+                wrapper.style.cursor = 'grab'
+                wrapper.style.touchAction = 'none'
+                
+                el.style.width = '100%'
+                el.style.height = '100%'
+                el.style.objectFit = 'cover'
+                el.setAttribute('data-participant', participant.identity)
+                
+                wrapper.appendChild(el)
+                remoteContainerRef.current.appendChild(wrapper)
 
-              // Attach drag handlers
-              attachDragHandlers(wrapper, participant.identity)
+                // Attach drag handlers
+                attachDragHandlers(wrapper, participant.identity)
+              }
             }
           }
         })
@@ -791,33 +823,51 @@ export default function VideoConferenceLinkPage() {
         })
         
         if (track.kind === 'video') {
+          // ALWAYS add remote videos to remoteContainerRef when user can publish
+          // Only fill main area when user cannot publish
           if (!canPub) {
+            // If user cannot publish, fill the main video area with remote video
             if (videoAreaRef.current) {
-              const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-              if (placeholder) placeholder.remove()
+              // const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+              // if (placeholder) placeholder.remove()
               
               if (videoRef.current) {
                 videoRef.current.style.display = 'none'
               }
               
+              // Clear existing remote videos from grid
               if (remoteContainerRef.current) {
                 remoteContainerRef.current.innerHTML = ''
               }
               
+              // Fill main video area with remote video
               el.style.width = '100%'
               el.style.height = '100%'
               el.style.objectFit = 'cover'
+              el.style.position = 'absolute'
+              el.style.top = '0'
+              el.style.left = '0'
+              el.style.zIndex = '1'
               el.setAttribute('data-participant', participant.identity)
               videoAreaRef.current.appendChild(el)
             }
           } else {
+            // If user can publish, ALWAYS add to remote grid (right bottom)
             if (remoteContainerRef.current) {
+              // Make sure we don't add to main area
+              const existingInMainArea = videoAreaRef.current?.querySelector(`video[data-participant="${participant.identity}"]`)
+              if (existingInMainArea) {
+                existingInMainArea.remove()
+              }
+              
               const wrapper = document.createElement('div')
               wrapper.id = `video-${participant.identity}`
               wrapper.style.position = 'relative'
               wrapper.style.width = '100%'
               wrapper.style.height = '100%'
-              wrapper.style.cursor = 'move'
+              wrapper.style.aspectRatio = '16/9'
+              wrapper.style.cursor = 'grab'
+              wrapper.style.touchAction = 'none'
               
               el.style.width = '100%'
               el.style.height = '100%'
@@ -835,37 +885,48 @@ export default function VideoConferenceLinkPage() {
       })
       
       room.on(RoomEvent.TrackUnsubscribed, (track: any, pub: any, participant: any) => {
-        let participantIdentity = participant.identity
+        // Detach track elements safely
+        const elements = track.detach()
+        if (elements && Array.isArray(elements)) {
+          elements.forEach((el: any) => {
+            // Safe remove - works even if element is already detached or moved
+      console.log("IAM HERE 2")
+
+            el?.remove()
+          })
+        }
+        
+        // Clean up state map
         setRemoteParticipants(prev => {
           const updated = new Map(prev)
-          for (const [identity, data] of updated.entries()) {
-            const trackIndex = data.tracks.findIndex((t: any) => t.track === track)
-            if (trackIndex !== -1) {
-              participantIdentity = identity
-              data.tracks = data.tracks.filter((t: any) => t.track !== track)
-              if (data.tracks.length === 0) {
-                updated.delete(identity)
-              }
+          const data = updated.get(participant.identity)
+          if (data) {
+            data.tracks = data.tracks.filter((t: any) => t.track !== track)
+            if (data.tracks.length === 0) {
+              updated.delete(participant.identity)
             }
           }
           return updated
         })
         
+        // Clean up video elements safely
         if (track.kind === 'video') {
           if (!canPub) {
-            const videoElement = videoAreaRef.current?.querySelector(`video[data-participant="${participantIdentity}"]`)
-            if (videoElement) {
-              videoElement.remove()
+            const videoElement = videoAreaRef.current?.querySelector(`video[data-participant="${participant.identity}"]`)
+      console.log("IAM HERE 3")
+
+            videoElement?.remove()
+            const remainingVideos = videoAreaRef.current?.querySelectorAll('video[data-participant]')
+            if (remainingVideos && remainingVideos.length === 0 && videoRef.current) {
+              videoRef.current.style.display = 'block'
             }
           } else {
-            const wrapper = document.getElementById(`video-${participantIdentity}`)
-            if (wrapper) {
-              wrapper.remove()
-            }
+            const wrapper = document.getElementById(`video-${participant.identity}`)
+      console.log("IAM HERE 4")
+
+            wrapper?.remove()
           }
         }
-        
-        track.detach()
       })
       
       room.on(RoomEvent.ParticipantConnected, (participant: any) => {
@@ -887,16 +948,18 @@ export default function VideoConferenceLinkPage() {
           loadParticipantsFromRoom(roomRef.current)
         }
         
+        // Clean up video elements safely
         if (!canPub) {
           const videoElement = videoAreaRef.current?.querySelector(`video[data-participant="${p.identity}"]`)
-          if (videoElement) {
-            videoElement.remove()
+          console.log("IAM HERE 5")
+          videoElement?.remove()
+          const remainingVideos = videoAreaRef.current?.querySelectorAll('video[data-participant]')
+          if (remainingVideos && remainingVideos.length === 0 && videoRef.current) {
+            videoRef.current.style.display = 'block'
           }
         } else {
           const wrapper = document.getElementById(`video-${p.identity}`)
-          if (wrapper) {
-            wrapper.remove()
-          }
+          wrapper?.remove()
         }
       })
       
@@ -996,8 +1059,8 @@ export default function VideoConferenceLinkPage() {
             if (track.kind === 'video') {
               if (!canPub) {
                 if (videoAreaRef.current) {
-                  const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                  if (placeholder) placeholder.remove()
+                  // const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+                  // if (placeholder) placeholder.remove()
                   
                   if (videoRef.current) {
                     videoRef.current.style.display = 'none'
@@ -1097,7 +1160,6 @@ export default function VideoConferenceLinkPage() {
           return
         }
       }
-      
       const newState = !cameraOn
       
       if (newState) {
@@ -1112,6 +1174,7 @@ export default function VideoConferenceLinkPage() {
       } else {
         await room.localParticipant.setCameraEnabled(false)
       }
+
       setCameraOn(newState)
     } catch (e) {
       console.error(e)
@@ -1168,13 +1231,23 @@ export default function VideoConferenceLinkPage() {
       
       
       // Send permission update via LiveKit data channel
+      // Check if room is connected before sending data
+      if (!roomRef.current || roomRef.current.state !== 'connected') {
+        console.warn('Cannot send data, room not ready')
+        return
+      }
+      
       const encoder = new TextEncoder()
       const data = encoder.encode(JSON.stringify(message))
       
-      await roomRef.current.localParticipant.publishData(data, {
-        reliable: true,
-        destinationIdentities: [] // Broadcast to all participants
-      })
+      try {
+        await roomRef.current.localParticipant.publishData(data, {
+          reliable: true,
+          destinationIdentities: [] // Broadcast to all participants
+        })
+      } catch (e) {
+        console.warn('Failed to publish data:', e)
+      }
       
       // Update local state immediately
       setParticipantPermissions(prev => {
@@ -1233,13 +1306,23 @@ export default function VideoConferenceLinkPage() {
       
       
       // Send permission update via LiveKit data channel
+      // Check if room is connected before sending data
+      if (!roomRef.current || roomRef.current.state !== 'connected') {
+        console.warn('Cannot send data, room not ready')
+        return
+      }
+      
       const encoder = new TextEncoder()
       const data = encoder.encode(JSON.stringify(message))
       
-      await roomRef.current.localParticipant.publishData(data, {
-        reliable: true,
-        destinationIdentities: [] // Broadcast to all participants
-      })
+      try {
+        await roomRef.current.localParticipant.publishData(data, {
+          reliable: true,
+          destinationIdentities: [] // Broadcast to all participants
+        })
+      } catch (e) {
+        console.warn('Failed to publish data:', e)
+      }
       
       // Update local state immediately
       setParticipantPermissions(prev => {
@@ -1294,6 +1377,12 @@ export default function VideoConferenceLinkPage() {
   async function sendChatMessage() {
     if (!chatInput.trim() || !roomRef.current) return
     
+    // Check if room is connected before sending data
+    if (roomRef.current.state !== 'connected') {
+      console.warn('Cannot send message, room not ready')
+      return
+    }
+    
     const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
     const messageText = chatInput.trim()
     
@@ -1303,6 +1392,12 @@ export default function VideoConferenceLinkPage() {
       identity,
       message: messageText,
       timestamp: Date.now()
+    }
+    
+    // Check if room is connected before sending data
+    if (roomRef.current.state !== 'connected') {
+      console.warn('Cannot send message, room not ready')
+      return
     }
     
     try {
