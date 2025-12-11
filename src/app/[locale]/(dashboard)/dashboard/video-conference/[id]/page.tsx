@@ -37,10 +37,12 @@ export default function VideoConferenceLinkPage() {
   const livekitTokenRef = useRef<string>('')
   const BASE = 'https://api.zanger-app.kz/api/livekit'
   const BASE_API = 'http://localhost:8080/java-api/video-conferences'
+  const MEMBERS_API = 'http://localhost:8080/java-api/conference-members'
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
   const [isStream, setIsStream] = useState(false)
+  const [creatorUserId, setCreatorUserId] = useState<number | null>(null)
   const [conf, setConf] = useState<{ topic?: string; planned_time?: string; code?: string } | null>(null)
   const [addUserId, setAddUserId] = useState('')
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
@@ -115,6 +117,12 @@ export default function VideoConferenceLinkPage() {
     }
   }, [chatMessages, activeTab])
 
+  // Check if current user is the stream owner
+  const isStreamOwner = useMemo(() => {
+    const currentUserId = Number(userId || (personalData as any)?.id || 0)
+    return creatorUserId !== null && creatorUserId === currentUserId
+  }, [creatorUserId, userId, personalData])
+
   // Check if user has permissions to use mic/camera
   const hasDevicePermissions = useMemo(() => {
     if (canPublish) return true
@@ -157,7 +165,6 @@ export default function VideoConferenceLinkPage() {
     if (!room) return
     
     try {
-      console.log('Room:', room)
       const local = room.localParticipant
       const others = Array.from(room.remoteParticipants.values())
       
@@ -176,8 +183,6 @@ export default function VideoConferenceLinkPage() {
         })
       })
       
-      console.log('Remote participants from room:', remoteParticipants.length, remoteParticipants.map(p => ({ identity: p.identity, name: p.name })))
-      console.log('Local participant:', local ? { identity: local.identity, name: local.name } : 'none')
       setParticipants(remoteParticipants)
       return remoteParticipants
     } catch (e) {
@@ -320,6 +325,10 @@ export default function VideoConferenceLinkPage() {
         identity = data.identity
         canPub = Boolean(data.canPublish)
         setIsStream(false)
+        // Store creatorUserId if available
+        if (data.creatorUserId !== undefined) {
+          setCreatorUserId(data.creatorUserId)
+        }
       }
       
       // Ensure we always use the correct LiveKit URL
@@ -447,7 +456,6 @@ export default function VideoConferenceLinkPage() {
       })
 
       room.on(RoomEvent.ParticipantConnected, (participant: any) => {
-        console.log('Participant connected:', participant.identity)
         // Skip local participant - only track remote participants
         if (participant.identity === room.localParticipant?.identity) {
           return
@@ -459,7 +467,6 @@ export default function VideoConferenceLinkPage() {
       })
 
       room.on(RoomEvent.ParticipantDisconnected, (p: any) => {
-        console.log('Participant disconnected:', p.identity)
         setRemoteParticipants(prev => {
           const updated = new Map(prev)
           updated.delete(p.identity)
@@ -493,7 +500,6 @@ export default function VideoConferenceLinkPage() {
           const decoder = new TextDecoder()
           const messageText = decoder.decode(payload)
           const messageData = JSON.parse(messageText)
-          console.log('messageData', messageData)
           if (messageData.type === 'chat' && messageData.message) {
             const chatMessage = {
               id: messageData.id || Date.now().toString(),
@@ -512,8 +518,16 @@ export default function VideoConferenceLinkPage() {
           } else if (messageData.type === 'permission_update') {
             // Handle permission updates
             const { targetIdentity, canPublishAudio, canPublishVideo } = messageData
-            console.log('Permission update received:', { targetIdentity, canPublishAudio, canPublishVideo })
             if (targetIdentity) {
+              const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
+              const isCurrentUser = targetIdentity === currentIdentity
+              
+              // Check previous permissions before updating
+              const previousPermissions = participantPermissions[targetIdentity]
+              const justGotFullPermission = isCurrentUser && 
+                canPublishAudio && canPublishVideo && 
+                (!previousPermissions?.canPublishAudio || !previousPermissions?.canPublishVideo)
+              
               setParticipantPermissions(prev => {
                 const updated = {
                   ...prev,
@@ -522,19 +536,21 @@ export default function VideoConferenceLinkPage() {
                     canPublishVideo: canPublishVideo ?? prev[targetIdentity]?.canPublishVideo ?? false
                   }
                 }
-                console.log('Updated participantPermissions:', updated)
                 return updated
               })
               
               // Show notification to the target participant if they received permission
-              const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
-              console.log('currentIdentity', currentIdentity)
-              if (targetIdentity === currentIdentity) {
+              if (isCurrentUser) {
                 const messages = []
                 if (canPublishAudio) messages.push('Вам разрешили использовать микрофон')
                 if (canPublishVideo) messages.push('Вам разрешили использовать камеру')
                 if (messages.length > 0) {
                   alert(messages.join('\n'))
+                }
+                
+                // If user just got full connection permission, regenerate token and reconnect
+                if (justGotFullPermission) {
+                  reconnectWithNewToken()
                 }
               }
             }
@@ -558,7 +574,6 @@ export default function VideoConferenceLinkPage() {
 
       // Subscribe to existing participants already in the room
       room.participants.forEach((participant: any) => {
-        console.log('Existing participant:', participant.identity)
         
         participant.videoTracks.forEach((pub: any) => {
           const track = pub.videoTrack
@@ -688,6 +703,350 @@ export default function VideoConferenceLinkPage() {
     }
   }
 
+  async function reconnectWithNewToken() {
+    if (!conferenceId || !roomRef.current) return
+    
+    try {
+      
+      // Disconnect from current room
+      const currentRoom = roomRef.current
+      if (currentRoom) {
+        await currentRoom.disconnect()
+        roomRef.current = null
+      }
+      
+      // Clear remote participants and tracks
+      setRemoteParticipants(new Map())
+      setParticipants([])
+      if (remoteContainerRef.current) {
+        remoteContainerRef.current.innerHTML = ''
+      }
+      if (videoAreaRef.current) {
+        videoAreaRef.current.innerHTML = ''
+      }
+      if (audioContainerRef.current) {
+        audioContainerRef.current.innerHTML = ''
+      }
+      
+      // Reset connection state
+      setConnectedInfo(null)
+      setCameraOn(false)
+      setMicOn(false)
+      
+      // Regenerate token by calling join API again
+      const data = await httpClientWithAuth<any>(`${BASE_API}/join`, {
+        method: 'POST',
+        body: JSON.stringify({ 
+          conferenceId: conferenceId, 
+          userId: Number(userId || (personalData as any)?.id || 0) 
+        }),
+      })
+      
+      const newToken = data.token
+      const url = data.url || 'wss://video.zanger-app.kz'
+      const identity = data.identity
+      const canPub = Boolean(data.canPublish)
+      // Store creatorUserId if available
+      if (data.creatorUserId !== undefined) {
+        setCreatorUserId(data.creatorUserId)
+      }
+      
+      // Store new token and URL
+      livekitTokenRef.current = newToken
+      livekitUrlRef.current = url
+      setCanPublish(canPub)
+      
+      // Reconnect to room with new token
+      await ensureLiveKit()
+      const LKC = (window as any).LivekitClient || (window as any).LiveKit
+      const { Room, RoomEvent, Track } = LKC
+      
+      const room = new Room()
+      roomRef.current = room
+      
+      // Reattach all event handlers (same as in joinRoom)
+      room.on(RoomEvent.TrackSubscribed, (track: any, pub: any, participant: any) => {
+        const el = track.attach()
+        el.autoplay = true
+        el.playsInline = true
+        ;(el as any).muted = false
+        ;(el as any).play?.().catch(() => {})
+        
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          if (!updated.has(participant.identity)) {
+            updated.set(participant.identity, { participant, tracks: [] })
+          }
+          const pData = updated.get(participant.identity)!
+          pData.tracks.push({ track, el })
+          return updated
+        })
+        
+        if (track.kind === 'video') {
+          if (!canPub) {
+            if (videoAreaRef.current) {
+              const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+              if (placeholder) placeholder.remove()
+              
+              if (videoRef.current) {
+                videoRef.current.style.display = 'none'
+              }
+              
+              if (remoteContainerRef.current) {
+                remoteContainerRef.current.innerHTML = ''
+              }
+              
+              el.style.width = '100%'
+              el.style.height = '100%'
+              el.style.objectFit = 'cover'
+              el.setAttribute('data-participant', participant.identity)
+              videoAreaRef.current.appendChild(el)
+            }
+          } else {
+            if (remoteContainerRef.current) {
+              const wrapper = document.createElement('div')
+              wrapper.id = `video-${participant.identity}`
+              wrapper.style.position = 'relative'
+              wrapper.style.width = '100%'
+              wrapper.style.height = '100%'
+              wrapper.style.cursor = 'move'
+              
+              el.style.width = '100%'
+              el.style.height = '100%'
+              el.style.objectFit = 'cover'
+              el.setAttribute('data-participant', participant.identity)
+              
+              wrapper.appendChild(el)
+              remoteContainerRef.current.appendChild(wrapper)
+              attachDragHandlers(wrapper, participant.identity)
+            }
+          }
+        } else {
+          audioContainerRef.current?.appendChild(el)
+        }
+      })
+      
+      room.on(RoomEvent.TrackUnsubscribed, (track: any, pub: any, participant: any) => {
+        let participantIdentity = participant.identity
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          for (const [identity, data] of updated.entries()) {
+            const trackIndex = data.tracks.findIndex((t: any) => t.track === track)
+            if (trackIndex !== -1) {
+              participantIdentity = identity
+              data.tracks = data.tracks.filter((t: any) => t.track !== track)
+              if (data.tracks.length === 0) {
+                updated.delete(identity)
+              }
+            }
+          }
+          return updated
+        })
+        
+        if (track.kind === 'video') {
+          if (!canPub) {
+            const videoElement = videoAreaRef.current?.querySelector(`video[data-participant="${participantIdentity}"]`)
+            if (videoElement) {
+              videoElement.remove()
+            }
+          } else {
+            const wrapper = document.getElementById(`video-${participantIdentity}`)
+            if (wrapper) {
+              wrapper.remove()
+            }
+          }
+        }
+        
+        track.detach()
+      })
+      
+      room.on(RoomEvent.ParticipantConnected, (participant: any) => {
+        if (participant.identity === room.localParticipant?.identity) {
+          return
+        }
+        loadParticipantsFromRoom(room)
+      })
+      
+      room.on(RoomEvent.ParticipantDisconnected, (p: any) => {
+        setRemoteParticipants(prev => {
+          const updated = new Map(prev)
+          updated.delete(p.identity)
+          return updated
+        })
+        setParticipants(prev => prev.filter(part => part.identity !== p.identity))
+        
+        if (roomRef.current) {
+          loadParticipantsFromRoom(roomRef.current)
+        }
+        
+        if (!canPub) {
+          const videoElement = videoAreaRef.current?.querySelector(`video[data-participant="${p.identity}"]`)
+          if (videoElement) {
+            videoElement.remove()
+          }
+        } else {
+          const wrapper = document.getElementById(`video-${p.identity}`)
+          if (wrapper) {
+            wrapper.remove()
+          }
+        }
+      })
+      
+      room.on(RoomEvent.DataReceived, (payload: Uint8Array, participant: any, kind: any, topic: string | undefined) => {
+        try {
+          const decoder = new TextDecoder()
+          const messageText = decoder.decode(payload)
+          const messageData = JSON.parse(messageText)
+          if (messageData.type === 'chat' && messageData.message) {
+            const chatMessage = {
+              id: messageData.id || Date.now().toString(),
+              identity: participant?.identity || messageData.identity || 'Unknown',
+              message: messageData.message,
+              timestamp: messageData.timestamp || Date.now()
+            }
+            setChatMessages(prev => {
+              const exists = prev.find(m => m.id === chatMessage.id)
+              if (!exists) {
+                return [...prev, chatMessage]
+              }
+              return prev
+            })
+          } else if (messageData.type === 'permission_update') {
+            const { targetIdentity, canPublishAudio, canPublishVideo } = messageData
+            if (targetIdentity) {
+              const currentIdentity = identity || String((personalData as any)?.id || '')
+              const isCurrentUser = targetIdentity === currentIdentity
+              
+              const previousPermissions = participantPermissions[targetIdentity]
+              const justGotFullPermission = isCurrentUser && 
+                canPublishAudio && canPublishVideo && 
+                (!previousPermissions?.canPublishAudio || !previousPermissions?.canPublishVideo)
+              
+              setParticipantPermissions(prev => {
+                const updated = {
+                  ...prev,
+                  [targetIdentity]: {
+                    canPublishAudio: canPublishAudio ?? prev[targetIdentity]?.canPublishAudio ?? false,
+                    canPublishVideo: canPublishVideo ?? prev[targetIdentity]?.canPublishVideo ?? false
+                  }
+                }
+                return updated
+              })
+              
+              if (isCurrentUser) {
+                const messages = []
+                if (canPublishAudio) messages.push('Вам разрешили использовать микрофон')
+                if (canPublishVideo) messages.push('Вам разрешили использовать камеру')
+                if (messages.length > 0) {
+                  alert(messages.join('\n'))
+                }
+                
+                if (justGotFullPermission) {
+                  reconnectWithNewToken()
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing message:', e)
+        }
+      })
+      
+      await room.connect(url, newToken)
+      
+      const topic = conf?.topic || ''
+      loadParticipantsFromRoom(room)
+      
+      setTimeout(() => {
+        loadParticipantsFromRoom(room)
+      }, 1000)
+      
+      room.participants.forEach((participant: any) => {
+        
+        participant.videoTracks.forEach((pub: any) => {
+          const track = pub.videoTrack
+          if (track) {
+            const el = track.attach()
+            el.autoplay = true
+            el.playsInline = true
+            ;(el as any).muted = false
+            ;(el as any).play?.().catch(() => {})
+            
+            setRemoteParticipants(prev => {
+              const updated = new Map(prev)
+              if (!updated.has(participant.identity)) {
+                updated.set(participant.identity, { participant, tracks: [] })
+              }
+              const pData = updated.get(participant.identity)!
+              pData.tracks.push({ track, el })
+              return updated
+            })
+            
+            if (track.kind === 'video') {
+              if (!canPub) {
+                if (videoAreaRef.current) {
+                  const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+                  if (placeholder) placeholder.remove()
+                  
+                  if (videoRef.current) {
+                    videoRef.current.style.display = 'none'
+                  }
+                  
+                  if (remoteContainerRef.current) {
+                    remoteContainerRef.current.innerHTML = ''
+                  }
+                  
+                  el.style.width = '100%'
+                  el.style.height = '100%'
+                  el.style.objectFit = 'cover'
+                  el.setAttribute('data-participant', participant.identity)
+                  videoAreaRef.current.appendChild(el)
+                }
+              } else {
+                if (remoteContainerRef.current) {
+                  const wrapper = document.createElement('div')
+                  wrapper.id = `video-${participant.identity}`
+                  wrapper.style.position = 'relative'
+                  wrapper.style.width = '100%'
+                  wrapper.style.height = '100%'
+                  wrapper.style.cursor = 'move'
+                  
+                  el.style.width = '100%'
+                  el.style.height = '100%'
+                  el.style.objectFit = 'cover'
+                  el.setAttribute('data-participant', participant.identity)
+                  
+                  wrapper.appendChild(el)
+                  remoteContainerRef.current.appendChild(wrapper)
+                  attachDragHandlers(wrapper, participant.identity)
+                }
+              }
+            } else {
+              audioContainerRef.current?.appendChild(el)
+            }
+          }
+        })
+        
+        participant.audioTracks.forEach((pub: any) => {
+          const track = pub.audioTrack
+          if (track) {
+            const el = track.attach()
+            el.autoplay = true
+            ;(el as any).muted = false
+            ;(el as any).play?.().catch(() => {})
+            audioContainerRef.current?.appendChild(el)
+          }
+        })
+      })
+      
+      setConnectedInfo({ room: room.name, is_member: canPub, topic: topic, identity })
+    } catch (e: any) {
+      console.error('Error reconnecting with new token:', e)
+      setError(e?.message || 'Ошибка переподключения')
+      alert('Ошибка при переподключении. Пожалуйста, обновите страницу.')
+    }
+  }
+
   // Effect to attach local video when camera is turned on
   useEffect(() => {
     if (cameraOn && roomRef.current) {
@@ -781,7 +1140,7 @@ export default function VideoConferenceLinkPage() {
   }
 
   async function updateParticipantPermission(targetIdentity: string, permissionType: 'audio' | 'video', granted: boolean) {
-    if (!roomRef.current || !canPublish) return
+    if (!roomRef.current || !isStreamOwner) return
     
     try {
       const currentPermissions = participantPermissions[targetIdentity] || { canPublishAudio: false, canPublishVideo: false }
@@ -792,7 +1151,6 @@ export default function VideoConferenceLinkPage() {
         canPublishVideo: permissionType === 'video' ? granted : currentPermissions.canPublishVideo
       }
       
-      console.log('Sending permission update:', message)
       
       // Send permission update via LiveKit data channel
       const encoder = new TextEncoder()
@@ -812,7 +1170,6 @@ export default function VideoConferenceLinkPage() {
             canPublishVideo: message.canPublishVideo
           }
         }
-        console.log('Updated local permissions:', updated)
         return updated
       })
     } catch (e) {
@@ -821,9 +1178,37 @@ export default function VideoConferenceLinkPage() {
   }
 
   async function toggleParticipantConnection(targetIdentity: string, allow: boolean) {
-    if (!roomRef.current || !canPublish) return
+    if (!roomRef.current || !isStreamOwner || !conferenceId) return
     
     try {
+      // Parse userId from identity (identity is typically the userId as string)
+      const targetUserId = Number(targetIdentity)
+      if (isNaN(targetUserId)) {
+        console.error('Invalid userId from identity:', targetIdentity)
+        return
+      }
+
+      // Add or remove member via API
+      if (allow) {
+        // Add member
+        await httpClientWithAuth(`${MEMBERS_API}/add`, {
+          method: 'POST',
+          body: JSON.stringify({
+            conferenceId: conferenceId,
+            userId: targetUserId
+          })
+        })
+      } else {
+        // Remove member
+        await httpClientWithAuth(`${MEMBERS_API}/remove`, {
+          method: 'DELETE',
+          body: JSON.stringify({
+            conferenceId: conferenceId,
+            userId: targetUserId
+          })
+        })
+      }
+
       const message = {
         type: 'permission_update',
         targetIdentity,
@@ -831,7 +1216,6 @@ export default function VideoConferenceLinkPage() {
         canPublishVideo: allow
       }
       
-      console.log('Sending connection permission update:', message)
       
       // Send permission update via LiveKit data channel
       const encoder = new TextEncoder()
@@ -851,11 +1235,11 @@ export default function VideoConferenceLinkPage() {
             canPublishVideo: allow
           }
         }
-        console.log('Updated local permissions:', updated)
         return updated
       })
     } catch (e) {
       console.error('Error updating participant connection permission:', e)
+      alert('Ошибка при обновлении разрешений участника')
     }
   }
 
@@ -1107,11 +1491,10 @@ export default function VideoConferenceLinkPage() {
               <div className={s.participantsContainer}>
                 <div className={s.participantItem} style={{ fontWeight: 600 }}>
                   <span>{connectedInfo?.identity || 'Вы'}</span>
-                  <span style={{ fontSize: 12, color: '#64748b' }}>{canPublish ? 'Владелец стрима' : 'Вы'}</span>
+                  <span style={{ fontSize: 12, color: '#64748b' }}>{isStreamOwner ? 'Владелец стрима' : 'Вы'}</span>
                 </div>
                 {participants.map((p, idx) => {
                   const permissions = participantPermissions[p.identity] || { canPublishAudio: false, canPublishVideo: false }
-                  const isOwner = canPublish
                   const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
                   const isCurrentUser = p.identity === currentIdentity
                   const hasConnectionPermission = permissions.canPublishAudio && permissions.canPublishVideo
@@ -1122,7 +1505,7 @@ export default function VideoConferenceLinkPage() {
                         <span>{p.name || p.identity}</span>
                         <span style={{ fontSize: 12, color: '#64748b' }}>Участник</span>
                       </div>
-                      {isOwner && (
+                      {isStreamOwner && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px' }}>
                           <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: 13 }}>
                             <input
@@ -1138,7 +1521,7 @@ export default function VideoConferenceLinkPage() {
                           )}
                         </div>
                       )}
-                      {!isOwner && isCurrentUser && (
+                      {!isStreamOwner && isCurrentUser && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '100%', marginTop: '8px', fontSize: 12, color: '#64748b' }}>
                           {hasConnectionPermission ? (
                             <span style={{ color: '#10b981' }}>✓ Вам разрешено подключить микрофон и камеру</span>
