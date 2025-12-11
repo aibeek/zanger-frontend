@@ -31,7 +31,7 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'http://localhost:8080/java-api/'
+  const BASE = 'http://10.202.100.68:8080/java-api/'
   const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
   const [mounted, setMounted] = useState(false)
   const [page, setPage] = useState(0)

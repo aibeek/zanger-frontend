@@ -36,8 +36,8 @@ export default function VideoConferenceLinkPage() {
   const livekitUrlRef = useRef<string>('wss://video.zanger-app.kz')
   const livekitTokenRef = useRef<string>('')
   const BASE = 'https://api.zanger-app.kz/api/livekit'
-  const BASE_API = 'http://localhost:8080/java-api/video-conferences'
-  const MEMBERS_API = 'http://localhost:8080/java-api/conference-members'
+  const BASE_API = 'http://10.202.100.68:8080/java-api/video-conferences'
+  const MEMBERS_API = 'http://10.202.100.68:8080/java-api/conference-members'
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
@@ -573,9 +573,12 @@ export default function VideoConferenceLinkPage() {
       }, 1000)
 
       // Subscribe to existing participants already in the room
-      room.participants.forEach((participant: any) => {
-        
-        participant.videoTracks.forEach((pub: any) => {
+      if (room.participants && typeof room.participants.forEach === 'function') {
+        room.participants.forEach((participant: any) => {
+          if (!participant) return
+          
+          if (participant.videoTracks && typeof participant.videoTracks.forEach === 'function') {
+            participant.videoTracks.forEach((pub: any) => {
           const track = pub.videoTrack
           if (track) {
             const el = track.attach()
@@ -642,16 +645,21 @@ export default function VideoConferenceLinkPage() {
             }
           }
         })
-        participant.audioTracks.forEach((pub: any) => {
-          const track = pub.audioTrack
-          if (track) {
-            const el = track.attach()
-            ;(el as any).muted = false
-            ;(el as any).play?.().catch(() => {})
-            audioContainerRef.current?.appendChild(el)
+          }
+          
+          if (participant.audioTracks && typeof participant.audioTracks.forEach === 'function') {
+            participant.audioTracks.forEach((pub: any) => {
+              const track = pub.audioTrack
+              if (track) {
+                const el = track.attach()
+                ;(el as any).muted = false
+                ;(el as any).play?.().catch(() => {})
+                audioContainerRef.current?.appendChild(el)
+              }
+            })
           }
         })
-      })
+      }
       
       // Reload participants from room after processing all existing participants
       // This ensures we have the complete list
@@ -961,9 +969,12 @@ export default function VideoConferenceLinkPage() {
         loadParticipantsFromRoom(room)
       }, 1000)
       
-      room.participants.forEach((participant: any) => {
-        
-        participant.videoTracks.forEach((pub: any) => {
+      if (room.participants && typeof room.participants.forEach === 'function') {
+        room.participants.forEach((participant: any) => {
+          if (!participant) return
+          
+          if (participant.videoTracks && typeof participant.videoTracks.forEach === 'function') {
+            participant.videoTracks.forEach((pub: any) => {
           const track = pub.videoTrack
           if (track) {
             const el = track.attach()
@@ -1026,18 +1037,22 @@ export default function VideoConferenceLinkPage() {
             }
           }
         })
-        
-        participant.audioTracks.forEach((pub: any) => {
-          const track = pub.audioTrack
-          if (track) {
-            const el = track.attach()
-            el.autoplay = true
-            ;(el as any).muted = false
-            ;(el as any).play?.().catch(() => {})
-            audioContainerRef.current?.appendChild(el)
+          }
+          
+          if (participant.audioTracks && typeof participant.audioTracks.forEach === 'function') {
+            participant.audioTracks.forEach((pub: any) => {
+              const track = pub.audioTrack
+              if (track) {
+                const el = track.attach()
+                el.autoplay = true
+                ;(el as any).muted = false
+                ;(el as any).play?.().catch(() => {})
+                audioContainerRef.current?.appendChild(el)
+              }
+            })
           }
         })
-      })
+      }
       
       setConnectedInfo({ room: room.name, is_member: canPub, topic: topic, identity })
     } catch (e: any) {
