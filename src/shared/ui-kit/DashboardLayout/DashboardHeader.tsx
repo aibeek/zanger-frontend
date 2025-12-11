@@ -16,6 +16,11 @@ import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
 import docIcon from '@/app/assets/icons/document.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
+import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
+import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
+import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
+import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
+import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import communityIcon from '@/app/assets/icons/people.svg'
 import crmIcon from '@/app/assets/icons/phone.svg'
@@ -63,6 +68,20 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
         
         return pathToTitleMap[pathWithoutLang] || 'dashboard.sidebar.main'
+    }
+
+    // Функция для определения иконки на основе текущего пути
+    const getPageIcon = () => {
+        const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+        
+        if (pathWithoutLang.startsWith('/dashboard/profile')) return ProfileIcon
+        if (pathWithoutLang.startsWith('/dashboard/applications')) return MyApplicationsIcon
+        if (pathWithoutLang.startsWith('/dashboard/subscription')) return SubscriptionIcon
+        if (pathWithoutLang.startsWith('/dashboard/faq')) return FaqIcon
+        if (pathWithoutLang.startsWith('/dashboard/support')) return SupportIcon
+        if (pathWithoutLang.startsWith('/dashboard/video-conference')) return '/assets/icons/vks.svg'
+        
+        return MainIcon
     }
 
     const sections = [
@@ -123,10 +142,9 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         />
                     ) : (
                         <Image 
-                            src={HeaderAvatar} 
-                            alt="Profile Icon"
+                            src={getPageIcon()} 
+                            alt="Page Icon"
                             className={s.profileIcon}
-                            onClick={() => router.push(`/${language}/dashboard/profile`)}
                             width={35}
                             height={35}
                         />
