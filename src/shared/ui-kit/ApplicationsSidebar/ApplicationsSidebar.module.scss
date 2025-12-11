@@ -1,24 +1,58 @@
 .aside {
   width: 260px;
   height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 1000;
   overflow-y: auto;
   background: linear-gradient(180deg, #0b1728 0%, #121e31 100%);
   color: #fff;
   display: flex;
   flex-direction: column;
   padding: 24px 0 16px; /* верхний отступ как на макете */
+
+  @media (min-width: 769px) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+  }
+
+  @media (max-width: 768px) {
+    position: relative;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   padding: 0 20px; /* отступ слева для бренда */
   margin-bottom: 24px; /* отступ после бренда перед списками */
+}
+
+.logoContent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobileCloseBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 28px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s ease;
+  
+  &:hover {
+      color: white;
+  }
+  
+  @media (max-width: 768px) {
+      display: block;
+  }
 }
 
 .brandIcon {
@@ -90,6 +124,13 @@
   border-radius: 12px;
   color: #cbd5e1;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+
+  span {
+    font-size: 15px;
+    font-weight: 700;
+  }
 }
 
 .item:hover, .itemActive {

@@ -2,31 +2,21 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
-import { ProfileAvatar } from '@/entities/profile'
 import { NotificationsDropdown } from '@/entities/notifications'
-import { LangSwitcher, Button, Modal } from '@/shared/ui-kit'
+import { LangSwitcher } from '@/shared/ui-kit'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
-import monitor from '@/app/assets/icons/monitor.webp'
-import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
+import { ModulesBar } from '@/shared/ui-kit/ModulesBar/ModulesBar'
 import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
-import docIcon from '@/app/assets/icons/document.svg'
-import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
-import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
 import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
 import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
-import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
-import communityIcon from '@/app/assets/icons/people.svg'
-import crmIcon from '@/app/assets/icons/phone.svg'
-import seminarIcon from '@/app/assets/icons/document.svg'
-import verifyIcon from '@/app/assets/icons/sheet-alert.svg'
-import { Search } from 'lucide-react'
+import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -39,7 +29,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const { personalData } = useLoginStore()
     const pathname = usePathname()
     const icon = personalData?.icon ?? ''
-    const [isModalOpen, setIsModalOpen] = useState(false)
     
     // Получаем роль пользователя из cookies
     const userRole = Cookies.get('role')
@@ -82,39 +71,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         if (pathWithoutLang.startsWith('/dashboard/video-conference')) return '/assets/icons/vks.svg'
         
         return MainIcon
-    }
-
-    const sections = [
-        t('dashboard.footer.sections.applications'),
-        t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.footer.sections.aiConsultant'),
-        t('dashboard.footer.sections.videoConference'),
-        'Сообщество',
-        'CRM',
-        'Семинары',
-        t('dashboard.footer.sections.database')
-    ]
-
-    const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
-    const applicationsLabel = t('dashboard.footer.sections.applications')
-    const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
-    const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
-    const databaseLabel = t('dashboard.footer.sections.database')
-
-    const handleSectionClick = (label: string) => {
-        if (label === digitalSignatureLabel) {
-            router.push(`/${language}/ecp/statuses`)
-            return
-        }
-        if (label === applicationsLabel) {
-            router.push(`/${language}/dashboard/applications`)
-            return
-        }
-        if (label === aiConsultantLabel) {
-            router.push(`/${language}/dashboard/ai-consultant`)
-            return
-        }
-        setIsModalOpen(true)
     }
 
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
@@ -176,91 +132,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
             </header>
             
-            <div className={s.footerSections}>
-                    {sections.map((section, index) => {
-                        const isPilot = section === videoConferenceLabel
-                        const isDigital = section === digitalSignatureLabel
-                        const isApplications = section === applicationsLabel
-                        const isAi = section === aiConsultantLabel
-                        const isDatabase = section === databaseLabel
-                        const isCommunity = section === 'Сообщество'
-                        const isCRM = section === 'CRM'
-                        const isSeminars = section === 'Семинары'
-                        const label = section
-                        const isLongText = typeof label === 'string' && label.length > 12
-                        return (
-                        <button 
-                            key={index} 
-                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''} ${isLongText ? s.longText : ''}`}
-                            onClick={() => handleSectionClick(section)}
-                        >
-                            <span className={s.footerLabel}>
-                                {isDigital && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={docIcon} alt="doc" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isPilot && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src="/assets/icons/vks.svg" alt="vks" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isApplications && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={MyApplicationsIcon} alt="applications" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isAi && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={chatIcon} alt="ai" width={26} height={26} />
-                                    </span>
-                                )}
-                                {(isCommunity || isCRM || isSeminars || isDatabase) && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        {isDatabase ? (
-                                            <Search size={24} color="#fff" />
-                                        ) : (
-                                            <Image src={
-                                                isCommunity ? communityIcon :
-                                                isCRM ? crmIcon :
-                                                isSeminars ? seminarIcon :
-                                                moduleIcon
-                                            } alt="icon" width={26} height={26} />
-                                        )}
-                                    </span>
-                                )}
-                                {label}
-                                {/* Пилот метка убрана */}
-                            </span>
-                        </button>
-                    )})}
-            </div>
-            
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title=""
-            >
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                    <Image
-                        src={monitor}
-                        alt="В разработке"
-                        width={200}
-                        height={150}
-                        style={{ margin: '0 auto 20px' }}
-                    />
-                    <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>
-                        Модули в разработке
-                    </h3>
-                    <Button 
-                        variant="primary" 
-                        onClick={() => setIsModalOpen(false)}
-                        style={{ minWidth: '150px' }}
-                    >
-                        Понятно
-                    </Button>
-                </div>
-            </Modal>
+            <ModulesBar />
         </div>
     )
 }

@@ -71,7 +71,7 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
                 {pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp') ? (
                     <EcpSidebar />
                 ) : isApplicationsPage ? (
-                    <ApplicationsSidebar />
+                    <ApplicationsSidebar onMobileClose={closeMobileSidebar} />
                 ) : (
                     <Sidebar language={language} onMobileClose={closeMobileSidebar} />
                 )}

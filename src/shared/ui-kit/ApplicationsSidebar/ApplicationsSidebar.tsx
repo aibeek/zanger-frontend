@@ -16,7 +16,11 @@ import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
 import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 
-export const ApplicationsSidebar: React.FC = () => {
+interface ApplicationsSidebarProps {
+  onMobileClose?: () => void
+}
+
+export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobileClose }) => {
   const router = useRouter()
   const locale = useLocale()
   const pathname = usePathname()
@@ -62,15 +66,20 @@ export const ApplicationsSidebar: React.FC = () => {
   return (
     <aside className={s.aside}>
       <div className={s.logo}>
-        <Image
-          src="/logo.svg"
-          alt="ZANGER"
-          width={40}
-          height={48}
-          className={s.brandIcon}
-          priority
-        />
-        <span className={s.brandText}>ZANGER</span>
+        <div className={s.logoContent}>
+          <Image
+            src="/logo.svg"
+            alt="ZANGER"
+            width={40}
+            height={48}
+            className={s.brandIcon}
+            priority
+          />
+          <span className={s.brandText}>ZANGER</span>
+        </div>
+        <button className={s.mobileCloseBtn} onClick={onMobileClose}>
+            &times;
+        </button>
       </div>
 
       <div className={s.userProfile}>

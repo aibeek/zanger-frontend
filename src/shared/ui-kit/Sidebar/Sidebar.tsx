@@ -215,7 +215,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                             aria-disabled={item.disabled ? true : undefined}
                             title={item.disabled ? 'В разработке' : undefined}
                         >
-                            <Image src={item.icon} alt={item.title} className={s.navIcon} width={20} height={20} />
+                            <Image src={item.icon} alt={item.title} className={s.navIcon} width={18} height={18} />
                             <span className={s.navText}>{item.title}</span>
                         </Link>
                     )
@@ -234,11 +234,11 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             ) : (
                 <div className={s.sidebarFooter}>
                     <Link href={`/${language}/dashboard/faq`} className={s.navItem}>
-                        <Image src={FaqIcon} alt={t('dashboard.sidebar.faq')} className={s.navIcon} width={20} height={20} />
+                        <Image src={FaqIcon} alt={t('dashboard.sidebar.faq')} className={s.navIcon} width={18} height={18} />
                         <span className={s.navText}>{t('dashboard.sidebar.faq')}</span>
                     </Link>
                     <Link href={`/${language}/dashboard/video-conference?view=settings`} className={`${s.navItem} ${s.navItemDisabled}`} aria-disabled>
-                        <Image src={'/assets/icons/settings.svg'} alt={t('dashboard.sidebar.vcSettings')} className={s.navIcon} width={20} height={20} />
+                        <Image src={'/assets/icons/settings.svg'} alt={t('dashboard.sidebar.vcSettings')} className={s.navIcon} width={18} height={18} />
                         <span className={s.navText}>{t('dashboard.sidebar.vcSettings')}</span>
                     </Link>
                     <div className={s.copyright}>
