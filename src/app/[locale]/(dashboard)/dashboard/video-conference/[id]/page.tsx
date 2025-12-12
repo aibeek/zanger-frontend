@@ -36,8 +36,8 @@ export default function VideoConferenceLinkPage() {
   const livekitUrlRef = useRef<string>('wss://video.zanger-app.kz')
   const livekitTokenRef = useRef<string>('')
   const BASE = 'https://api.zanger-app.kz/api/livekit'
-  const BASE_API = 'http://10.202.100.68:8080/java-api/video-conferences'
-  const MEMBERS_API = 'http://10.202.100.68:8080/java-api/conference-members'
+  const BASE_API = 'https://video.zanger-app.kz/api/java-api/video-conferences'
+  const MEMBERS_API = 'https://video.zanger-app.kz/api/java-api/conference-members'
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
@@ -592,18 +592,41 @@ export default function VideoConferenceLinkPage() {
             // Handle permission updates
             const { targetIdentity, canPublishAudio, canPublishVideo } = messageData
             if (targetIdentity) {
-              const currentIdentity = connectedInfo?.identity || String((personalData as any)?.id || '')
-              const isCurrentUser = targetIdentity === currentIdentity
+              const currentIdentity = String(connectedInfo?.identity || (personalData as any)?.id || '')
+              const targetIdentityStr = String(targetIdentity)
+              const isCurrentUser = targetIdentityStr === currentIdentity
               
-              // Check previous permissions before updating
-              const previousPermissions = participantPermissions[targetIdentity]
+              console.log('[permission_update] Received update:', {
+                targetIdentity: targetIdentityStr,
+                currentIdentity,
+                isCurrentUser,
+                canPublishAudio,
+                canPublishVideo
+              })
+              
+              // Check previous permissions before updating (read from state, not from parameter)
+              const previousPermissions = participantPermissions[targetIdentityStr]
+              
+              // Check if permissions were granted (both true now, weren't both true before)
               const justGotFullPermission = isCurrentUser && 
                 canPublishAudio && canPublishVideo && 
                 (!previousPermissions?.canPublishAudio || !previousPermissions?.canPublishVideo)
               
+              // Check if permissions were revoked
+              // Simplified: if both are false and user is the target, it's a revocation
+              // We handle it regardless of previous state to ensure devices are disabled
               const permissionsRevoked = isCurrentUser && 
-                (!canPublishAudio && !canPublishVideo) && 
-                (previousPermissions?.canPublishAudio || previousPermissions?.canPublishVideo)
+                !canPublishAudio && 
+                !canPublishVideo
+              
+              console.log('[permission_update] Permission check:', {
+                previousPermissions,
+                canPublish,
+                permissionsRevoked,
+                justGotFullPermission,
+                currentPermissions: { canPublishAudio, canPublishVideo },
+                isCurrentUser
+              })
               
               setParticipantPermissions(prev => {
                 const updated = {
@@ -1117,24 +1140,47 @@ export default function VideoConferenceLinkPage() {
           } else if (messageData.type === 'permission_update') {
             const { targetIdentity, canPublishAudio, canPublishVideo } = messageData
             if (targetIdentity) {
-              const currentIdentity = identity || String((personalData as any)?.id || '')
-              const isCurrentUser = targetIdentity === currentIdentity
+              const currentIdentity = String(identity || (personalData as any)?.id || '')
+              const targetIdentityStr = String(targetIdentity)
+              const isCurrentUser = targetIdentityStr === currentIdentity
               
-              const previousPermissions = participantPermissions[targetIdentity]
+              console.log('[permission_update reconnect] Received update:', {
+                targetIdentity: targetIdentityStr,
+                currentIdentity,
+                isCurrentUser,
+                canPublishAudio,
+                canPublishVideo
+              })
+              
+              const previousPermissions = participantPermissions[targetIdentityStr]
+              
+              // Check if permissions were granted (both true now, weren't both true before)
               const justGotFullPermission = isCurrentUser && 
                 canPublishAudio && canPublishVideo && 
                 (!previousPermissions?.canPublishAudio || !previousPermissions?.canPublishVideo)
               
+              // Check if permissions were revoked
+              // Simplified: if both are false and user is the target, it's a revocation
+              // We handle it regardless of previous state to ensure devices are disabled
               const permissionsRevoked = isCurrentUser && 
-                (!canPublishAudio && !canPublishVideo) && 
-                (previousPermissions?.canPublishAudio || previousPermissions?.canPublishVideo)
+                !canPublishAudio && 
+                !canPublishVideo
+              
+              console.log('[permission_update reconnect] Permission check:', {
+                previousPermissions,
+                canPub,
+                permissionsRevoked,
+                justGotFullPermission,
+                currentPermissions: { canPublishAudio, canPublishVideo },
+                isCurrentUser
+              })
               
               setParticipantPermissions(prev => {
                 const updated = {
                   ...prev,
-                  [targetIdentity]: {
-                    canPublishAudio: canPublishAudio ?? prev[targetIdentity]?.canPublishAudio ?? false,
-                    canPublishVideo: canPublishVideo ?? prev[targetIdentity]?.canPublishVideo ?? false
+                  [targetIdentityStr]: {
+                    canPublishAudio: canPublishAudio ?? prev[targetIdentityStr]?.canPublishAudio ?? false,
+                    canPublishVideo: canPublishVideo ?? prev[targetIdentityStr]?.canPublishVideo ?? false
                   }
                 }
                 return updated
@@ -1715,13 +1761,15 @@ export default function VideoConferenceLinkPage() {
       
       const message = {
         type: 'permission_update',
-        targetIdentity,
+        targetIdentity: String(targetIdentity), // Ensure it's a string for comparison
         canPublishAudio: allow,
         canPublishVideo: allow,
         notification: allow 
           ? 'Вам разрешили подключить микрофон и камеру'
           : 'Вам отозвали разрешение на использование камеры и микрофона'
       }
+      
+      console.log('[toggleParticipantConnection] Sending permission update:', message)
       
       // Send permission update via LiveKit data channel
       // Check if room is connected before sending data
@@ -1738,6 +1786,7 @@ export default function VideoConferenceLinkPage() {
           reliable: true,
           destinationIdentities: [] // Broadcast to all participants
         })
+        console.log('[toggleParticipantConnection] Permission update sent successfully')
       } catch (e) {
         console.warn('Failed to publish data:', e)
       }
