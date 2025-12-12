@@ -425,12 +425,39 @@ export default function AiConsultantPage() {
         </div>
     )
 }
+    const linkify = (text: string) => {
+        const nodes: ReactNode[] = []
+        const regex = /(https?:\/\/[^\s<]+|www\.[^\s<]+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g
+        let lastIndex = 0
+        let match: RegExpExecArray | null
+        while ((match = regex.exec(text)) !== null) {
+            const start = match.index
+            const raw = match[0]
+            if (start > lastIndex) nodes.push(text.slice(lastIndex, start))
+            let href = raw
+            let display = raw
+            let trailing = ''
+            while (/[.,!?);:\]]$/.test(href)) {
+                trailing = href.slice(-1) + trailing
+                href = href.slice(0, -1)
+                display = href
+            }
+            if (/^www\./i.test(href)) href = `http://${href}`
+            if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(href)) href = `mailto:${href}`
+            nodes.push(<a key={`a-${start}`} href={href} target="_blank" rel="noopener noreferrer">{display}</a>)
+            if (trailing) nodes.push(trailing)
+            lastIndex = start + raw.length
+        }
+        if (lastIndex < text.length) nodes.push(text.slice(lastIndex))
+        return nodes
+    }
+
     const renderStrong = (text: string) => {
         const parts = text.split(/\*\*(.*?)\*\*/)
-        const nodes: (string | ReactNode)[] = []
+        const nodes: ReactNode[] = []
         for (let i = 0; i < parts.length; i++) {
-            if (i % 2 === 1) nodes.push(<strong key={i}>{parts[i]}</strong>)
-            else if (parts[i]) nodes.push(parts[i])
+            if (i % 2 === 1) nodes.push(<strong key={`b-${i}`}>{linkify(parts[i])}</strong>)
+            else if (parts[i]) nodes.push(...linkify(parts[i]))
         }
         return nodes
     }
