@@ -13,9 +13,10 @@ import { ModulesBar } from '@/shared/ui-kit/ModulesBar/ModulesBar'
 
 interface EcpHeaderProps {
   title?: string
+  icon?: any
 }
 
-export const EcpHeader: React.FC<EcpHeaderProps> = ({ title }) => {
+export const EcpHeader: React.FC<EcpHeaderProps> = ({ title, icon: iconProp }) => {
   const t = useTranslations()
   const { personalData } = useLoginStore()
 
@@ -31,7 +32,7 @@ export const EcpHeader: React.FC<EcpHeaderProps> = ({ title }) => {
       <header className={s.header}>
         <div className={s.left}>
           <div className={s.key}>
-            <Image src="/assets/ecp/header/key.svg" alt="key" width={20} height={20} />
+            <Image src={iconProp || "/assets/ecp/header/key.svg"} alt="icon" width={20} height={20} />
           </div>
           <h1 className={s.title}>{headerTitle}</h1>
         </div>

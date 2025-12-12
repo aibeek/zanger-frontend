@@ -1,10 +1,11 @@
 // Sidebar
 .sidebar {
     width: 260px;
-    background: rgba(8, 23, 41, 1);
+    background: linear-gradient(180deg, #0b1728 0%, #121e31 100%);
     display: flex;
     flex-direction: column;
     height: 100vh;
+    padding: 24px 0 16px;
     
     @media (min-width: 769px) {
         position: fixed;
@@ -20,12 +21,12 @@
 }
 
 .sidebarHeader {
-    padding: 40px 20px;
+    padding: 0 20px;
     border-bottom: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
 }
 
 .logo {
@@ -56,19 +57,19 @@
 }
 
 .logoIcon {
-    width: 48px !important;
+    width: 40px !important;
     height: 48px !important;
 }
 
 .logoText {
-    font-weight: 700;
-    font-size: 36px;
-    font-family: 'Roboto', sans-serif;
-    letter-spacing: 0.5px;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 }
 
 .userProfile {
-    padding: 24px 20px;
+    padding: 16px 20px;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -109,31 +110,39 @@
 
 .navigation {
     flex: 1;
-    padding: 32px 16px 20px;
+    padding: 0 20px;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .navItem {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 12px 12px;
     text-decoration: none;
-    color: white;
+    color: #cbd5e1;
     font-size: 14px;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: all 0.2s ease;
-    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
 }
 
 .navItemActive {
-    background-color: #243B64;
-    color: white;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
 
     &:hover {
-        background-color: #243B64;
-        color: white;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
     }
 }
 
@@ -201,7 +210,7 @@
 
 .copyright {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.4);
     text-align: center;
     line-height: 1.4;
 }

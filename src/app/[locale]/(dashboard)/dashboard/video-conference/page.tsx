@@ -31,7 +31,7 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'http://localhost:8080/java-api/'
+  const BASE = 'http://10.202.100.68:8080/java-api/'
   const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
   const [mounted, setMounted] = useState(false)
   const [page, setPage] = useState(0)
@@ -283,15 +283,15 @@ export default function VideoConferencePage() {
       
       // Attach video track to video element when camera is enabled
       if (newState) {
-        const LKC = (window as any).LivekitClient || (window as any).LiveKit
+      const LKC = (window as any).LivekitClient || (window as any).LiveKit
         if (!LKC) return
-        const { Track } = LKC
+      const { Track } = LKC
         // Small delay to ensure track is ready
         setTimeout(() => {
-          const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
-          if (camPub?.videoTrack && videoRef.current) {
-            camPub.videoTrack.attach(videoRef.current)
-          }
+      const camPub = room.localParticipant.getTrackPublication(Track.Source.Camera)
+      if (camPub?.videoTrack && videoRef.current) {
+        camPub.videoTrack.attach(videoRef.current)
+      }
         }, 100)
       } else {
         // Clear video when camera is disabled
@@ -494,7 +494,7 @@ export default function VideoConferencePage() {
           </div>
         )}
 
-        
+
       </div>
 
       <div className={s.rightWidgets}>

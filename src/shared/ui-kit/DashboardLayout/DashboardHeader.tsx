@@ -2,21 +2,21 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
-import { ProfileAvatar } from '@/entities/profile'
 import { NotificationsDropdown } from '@/entities/notifications'
-import { LangSwitcher, Button, Modal } from '@/shared/ui-kit'
+import { LangSwitcher } from '@/shared/ui-kit'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import s from './DashboardHeader.module.scss'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
-import monitor from '@/app/assets/icons/monitor.webp'
-import HeaderAvatar from '@/app/assets/icons/header-resourses/header-avatar.svg'
+import { useState, useEffect } from 'react'
+import { ModulesBar } from '@/shared/ui-kit/ModulesBar/ModulesBar'
 import DefaultAvatar from '@/app/assets/icons/avatar-default.svg'
-import Strelka from '@/app/assets/icons/strelka.svg'
-import docIcon from '@/app/assets/icons/document.svg'
+import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
+import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
+import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
+import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
+import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
-import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -29,7 +29,6 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
     const { personalData } = useLoginStore()
     const pathname = usePathname()
     const icon = personalData?.icon ?? ''
-    const [isModalOpen, setIsModalOpen] = useState(false)
     
     // Получаем роль пользователя из cookies
     const userRole = Cookies.get('role')
@@ -60,37 +59,18 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         return pathToTitleMap[pathWithoutLang] || 'dashboard.sidebar.main'
     }
 
-    const sections = [
-        t('dashboard.footer.sections.applications'),
-        t('dashboard.footer.sections.digitalSignature'),
-        t('dashboard.footer.sections.videoConference'),
-        t('dashboard.footer.sections.aiConsultant'),
-        'Сообщество',
-        'CRM',
-        'Семинары',
-        t('dashboard.footer.sections.database')
-    ]
-
-    const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
-    const applicationsLabel = t('dashboard.footer.sections.applications')
-    const videoConferenceLabel = t('dashboard.footer.sections.videoConference')
-    const aiConsultantLabel = t('dashboard.footer.sections.aiConsultant')
-    const databaseLabel = t('dashboard.footer.sections.database')
-
-    const handleSectionClick = (label: string) => {
-        if (label === digitalSignatureLabel) {
-            router.push(`/${language}/ecp/statuses`)
-            return
-        }
-        if (label === applicationsLabel) {
-            router.push(`/${language}/dashboard/applications`)
-            return
-        }
-        if (label === aiConsultantLabel) {
-            router.push(`/${language}/dashboard/ai-consultant`)
-            return
-        }
-        setIsModalOpen(true)
+    // Функция для определения иконки на основе текущего пути
+    const getPageIcon = () => {
+        const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+        
+        if (pathWithoutLang.startsWith('/dashboard/profile')) return ProfileIcon
+        if (pathWithoutLang.startsWith('/dashboard/applications')) return MyApplicationsIcon
+        if (pathWithoutLang.startsWith('/dashboard/subscription')) return SubscriptionIcon
+        if (pathWithoutLang.startsWith('/dashboard/faq')) return FaqIcon
+        if (pathWithoutLang.startsWith('/dashboard/support')) return SupportIcon
+        if (pathWithoutLang.startsWith('/dashboard/video-conference')) return '/assets/icons/vks.svg'
+        
+        return MainIcon
     }
 
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
@@ -98,7 +78,11 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
 
     const roleCode = (personalData as any)?.role_id?.code
     const roleName = roleCode === 'lawyer' ? 'Юрист' : roleCode === 'client' ? 'Клиент' : ''
-    const avatarUrl = personalData?.icon || DefaultAvatar
+    const [avatarSrc, setAvatarSrc] = useState<any>(DefaultAvatar)
+
+    useEffect(() => {
+        setAvatarSrc((personalData?.icon as any) || DefaultAvatar)
+    }, [personalData])
 
     return (
         <div className={s.headerWrapper} suppressHydrationWarning>
@@ -114,10 +98,9 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                         />
                     ) : (
                         <Image 
-                            src={HeaderAvatar} 
-                            alt="Profile Icon"
+                            src={getPageIcon()} 
+                            alt="Page Icon"
                             className={s.profileIcon}
-                            onClick={() => router.push(`/${language}/dashboard/profile`)}
                             width={35}
                             height={35}
                         />
@@ -128,7 +111,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 <div className={s.headerRight}>
                     {isVideoConferencePage && (
                         <div className={s.profileCard} onClick={() => router.push(`/${language}/dashboard/profile`)}>
-                            <Image src={avatarUrl} alt="avatar" width={40} height={40} className={s.profilePic} />
+                            <Image src={avatarSrc} alt="avatar" width={40} height={40} className={s.profilePic} onError={() => setAvatarSrc(DefaultAvatar)} />
                             <div className={s.profileInfo}>
                                 <div className={s.profileName}>{personalData?.name}</div>
                                 <div className={s.profileRole}>{roleName}</div>
@@ -149,81 +132,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                 </div>
             </header>
             
-            <div className={s.footerSections}>
-                    {sections.map((section, index) => {
-                        const isPilot = section === videoConferenceLabel
-                        const isDigital = section === digitalSignatureLabel
-                        const isApplications = section === applicationsLabel
-                        const isAi = section === aiConsultantLabel
-                        const isLongText = section === aiConsultantLabel || section === databaseLabel
-                        const label = section
-                        return (
-                        <button 
-                            key={index} 
-                            className={`${s.footerSection} ${(isDigital || isApplications || isAi) ? s.footerSectionEdo : ''} ${isLongText ? s.longText : ''}`}
-                            onClick={() => handleSectionClick(section)}
-                        >
-                            <span className={s.footerLabel}>
-                                {label}
-                                {isDigital && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={docIcon} alt="doc" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isPilot && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src="/assets/icons/vks.svg" alt="vks" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isApplications && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={MyApplicationsIcon} alt="applications" width={26} height={26} />
-                                    </span>
-                                )}
-                                {isAi && (
-                                    <span className={s.footerDocIcon} aria-hidden>
-                                        <Image src={chatIcon} alt="ai" width={26} height={26} />
-                                    </span>
-                                )}
-                                {/* Пилот метка убрана */}
-                            </span>
-                            <span className={s.footerArrow}>
-                                <Image 
-                                    src={Strelka} 
-                                    alt="arrow"
-                                    width={24}
-                                    height={24}
-                                />
-                            </span>
-                        </button>
-                    )})}
-            </div>
-            
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                title=""
-            >
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                    <Image
-                        src={monitor}
-                        alt="В разработке"
-                        width={200}
-                        height={150}
-                        style={{ margin: '0 auto 20px' }}
-                    />
-                    <h3 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '20px' }}>
-                        Модули в разработке
-                    </h3>
-                    <Button 
-                        variant="primary" 
-                        onClick={() => setIsModalOpen(false)}
-                        style={{ minWidth: '150px' }}
-                    >
-                        Понятно
-                    </Button>
-                </div>
-            </Modal>
+            <ModulesBar />
         </div>
     )
 }
