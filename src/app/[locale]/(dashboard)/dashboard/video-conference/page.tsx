@@ -31,7 +31,7 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'https://video.zanger-app.kz/api/java-api/'
+  const BASE = 'https://video.zanger-app.kz/vidapi/java-api/'
   const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
   const [mounted, setMounted] = useState(false)
   const [page, setPage] = useState(0)
