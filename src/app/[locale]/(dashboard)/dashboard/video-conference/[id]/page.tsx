@@ -1405,11 +1405,37 @@ export default function VideoConferenceLinkPage() {
           }
           const totalActiveVideos = activeRemoteVideosCount + (cameraOn ? 1 : 0)
           
-          // Get or create local video wrapper in grid
-          let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+          // Get existing local video wrapper in grid
+          let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement | null
           
-          if (!existingLocalInGrid && totalActiveVideos > 1) {
-            // Create wrapper for local video
+          // ✅ If camera is OFF — remove local tile ALWAYS (even if remote videos exist)
+          if (!cameraOn) {
+            if (existingLocalInGrid) {
+              existingLocalInGrid.remove()
+            }
+            
+            // Optional: keep the video element in main area but hidden (so attach is stable)
+            if (videoRef.current && videoAreaRef.current && videoRef.current.parentNode !== videoAreaRef.current) {
+              videoRef.current.remove()
+              videoRef.current.style.position = 'absolute'
+              videoRef.current.style.width = '100%'
+              videoRef.current.style.height = '100%'
+              videoRef.current.style.objectFit = 'cover'
+              videoRef.current.style.top = '0'
+              videoRef.current.style.left = '0'
+              videoRef.current.style.zIndex = '1'
+              videoRef.current.style.transform = 'scaleX(-1)'
+              videoAreaRef.current.appendChild(videoRef.current)
+            }
+            if (videoRef.current) {
+              videoRef.current.style.display = 'none'
+            }
+            
+            return // Exit early when camera is off
+          }
+          
+          // ✅ Camera is ON — create local tile ONLY when there is at least 1 remote video
+          if (!existingLocalInGrid && activeRemoteVideosCount > 0 && remoteContainerRef.current) {
             existingLocalInGrid = document.createElement('div')
             existingLocalInGrid.id = 'video-local'
             existingLocalInGrid.style.position = 'relative'
@@ -1426,9 +1452,7 @@ export default function VideoConferenceLinkPage() {
             remoteContainerRef.current.appendChild(existingLocalInGrid)
             attachDragHandlers(existingLocalInGrid as HTMLDivElement, 'local')
           }
-          console.log('totalActiveVideos', totalActiveVideos)
-          console.log('existingLocalInGrid', existingLocalInGrid)
-          console.log('videoRef.current', videoRef.current)
+          
           // Handle camera on/off state
           // IMPORTANT: Only handle local video element (videoRef.current), not remote videos
           if (cameraOn && videoRef.current) {
@@ -1476,26 +1500,6 @@ export default function VideoConferenceLinkPage() {
                 videoRef.current.style.display = 'block'
                 existingLocalInGrid.appendChild(videoRef.current)
                 }
-              }
-            }
-          } else {
-            // Camera is OFF
-            // Remove video from both places (only if it's the local video)
-            if (videoRef.current && !videoRef.current.hasAttribute('data-participant')) {
-            const existingVideo = existingLocalInGrid.querySelector('video')
-            if (existingVideo && existingVideo === videoRef.current) {
-              existingVideo.remove()
-            }
-            
-            if (videoRef.current.parentNode === videoAreaRef.current) {
-              videoRef.current.remove()
-              }
-            }
-            
-            // No remote videos, remove wrapper entirely
-            if (activeRemoteVideosCount === 0) {
-              if (existingLocalInGrid && existingLocalInGrid.parentNode) {
-                existingLocalInGrid.remove()
               }
             }
           }
