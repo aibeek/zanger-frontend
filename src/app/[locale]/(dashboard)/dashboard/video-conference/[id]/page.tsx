@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { Button } from '@/shared/ui-kit'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { useLoginStore } from '@/features/auth/login'
+import { VIDEO_API_BASE_URL } from '@/shared/config'
 import s from '../page.module.scss'
 
 export default function VideoConferenceLinkPage() {
@@ -22,7 +23,7 @@ export default function VideoConferenceLinkPage() {
   const [conferenceId, setConferenceId] = useState('')
   const [userId, setUserId] = useState('')
   const [joining, setJoining] = useState(false)
-  const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string; name?: string }>(null)
+  const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string; name?: string, userName?: string }>(null)
   const [error, setError] = useState<string | null>(null)
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -36,8 +37,8 @@ export default function VideoConferenceLinkPage() {
   const livekitUrlRef = useRef<string>('wss://video.zanger-app.kz')
   const livekitTokenRef = useRef<string>('')
   const BASE = 'https://api.zanger-app.kz/api/livekit'
-  const BASE_API = 'https://video.zanger-app.kz/vidapi/java-api/video-conferences'
-  const MEMBERS_API = 'https://video.zanger-app.kz/vidapi/java-api/conference-members'
+  const BASE_API = `${VIDEO_API_BASE_URL}/java-api/video-conferences`
+  const MEMBERS_API = `${VIDEO_API_BASE_URL}/java-api/conference-members`
   const [cameraOn, setCameraOn] = useState(false)
   const [micOn, setMicOn] = useState(false)
   const [canPublish, setCanPublish] = useState(false)
@@ -53,7 +54,7 @@ export default function VideoConferenceLinkPage() {
   const [remoteParticipants, setRemoteParticipants] = useState<Map<string, any>>(new Map())
   const [videoPositions, setVideoPositions] = useState<Record<string, { x: number; y: number }>>({})
   const [activeTab, setActiveTab] = useState<'chat' | 'participants'>('chat')
-  const [chatMessages, setChatMessages] = useState<Array<{ id: string; identity: string; message: string; timestamp: number }>>([])
+  const [chatMessages, setChatMessages] = useState<Array<{ id: string; identity: string; message: string; timestamp: number; msgName?: string }>>([])
   const [chatInput, setChatInput] = useState('')
   const [participantPermissions, setParticipantPermissions] = useState<Record<string, { canPublishAudio: boolean; canPublishVideo: boolean }>>({})
   const dragState = useRef<{ isDragging: boolean; elementId: string | null; startX: number; startY: number; initialX: number; initialY: number }>({
@@ -453,7 +454,6 @@ export default function VideoConferenceLinkPage() {
                 if (videoAreaRef.current) {
                   // Remove placeholder if exists
                   const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                  if (placeholder) placeholder.remove()
                   
                   // Clear grid
                   if (remoteContainerRef.current) {
@@ -484,7 +484,6 @@ export default function VideoConferenceLinkPage() {
             if (videoAreaRef.current) {
               // Remove placeholder if exists
               const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-              if (placeholder) placeholder.remove()
               
               // Make sure remote videos are not in grid
               const existingInGrid = remoteContainerRef.current?.querySelector(`#video-${participant.identity}`)
@@ -649,11 +648,13 @@ export default function VideoConferenceLinkPage() {
           const messageText = decoder.decode(payload)
           const messageData = JSON.parse(messageText)
           if (messageData.type === 'chat' && messageData.message) {
+            console.log('messageData', messageData)
             const chatMessage = {
               id: messageData.id || Date.now().toString(),
               identity: participant?.identity || messageData.identity || 'Unknown',
               message: messageData.message,
-              timestamp: messageData.timestamp || Date.now()
+              timestamp: messageData.timestamp || Date.now(),
+              msgName: participant?.name || messageData.name || participant?.identity || messageData.identity || 'Unknown'
             }
             setChatMessages(prev => {
               // Avoid duplicates
@@ -809,7 +810,6 @@ export default function VideoConferenceLinkPage() {
               if (videoAreaRef.current) {
                 // Remove placeholder if exists
                 const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                if (placeholder) placeholder.remove()
                 
                 // Make sure remote videos are not in grid
                 const existingInGrid = remoteContainerRef.current?.querySelector(`#video-${participant.identity}`)
@@ -913,7 +913,8 @@ export default function VideoConferenceLinkPage() {
         }
       }
 
-      setConnectedInfo({ room: room.name, is_member: canPublish, topic: topic, identity })
+      const localParticipantName = room.localParticipant?.name || undefined
+      setConnectedInfo({ room: room.name, is_member: canPublish, topic: topic, identity, userName: localParticipantName })
       
       // If user can publish, ensure local video wrapper exists in grid (with placeholder if camera is off)
       if (canPublish && remoteContainerRef.current) {
@@ -1065,8 +1066,6 @@ export default function VideoConferenceLinkPage() {
             // If user can publish, remote videos fill the main video area
             if (videoAreaRef.current) {
               // Remove placeholder if exists
-              const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-              if (placeholder) placeholder.remove()
               
               // Make sure remote videos are not in grid
               const existingInGrid = remoteContainerRef.current?.querySelector(`#video-${participant.identity}`)
@@ -1203,7 +1202,8 @@ export default function VideoConferenceLinkPage() {
               id: messageData.id || Date.now().toString(),
               identity: participant?.identity || messageData.identity || 'Unknown',
               message: messageData.message,
-              timestamp: messageData.timestamp || Date.now()
+              timestamp: messageData.timestamp || Date.now(),
+              msgName: participant?.name || messageData.name || participant?.identity || messageData.identity || 'Unknown'
             }
             setChatMessages(prev => {
               const exists = prev.find(m => m.id === chatMessage.id)
@@ -1349,9 +1349,6 @@ export default function VideoConferenceLinkPage() {
                 // If user can publish, remote videos fill the main video area
                 if (videoAreaRef.current) {
                   // Remove placeholder if exists
-                  const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                  if (placeholder) placeholder.remove()
-                  
                   // Make sure remote videos are not in grid
                   const existingInGrid = remoteContainerRef.current?.querySelector(`#video-${participant.identity}`)
                   if (existingInGrid) {
@@ -1416,7 +1413,8 @@ export default function VideoConferenceLinkPage() {
         })
       }
       
-      setConnectedInfo({ room: room.name, is_member: canPub, topic: topic, identity })
+      const localParticipantName = room.localParticipant?.name || undefined
+      setConnectedInfo({ room: room.name, is_member: canPub, topic: topic, identity, userName: localParticipantName })
       
       // If user can publish, ensure local video wrapper exists in grid (with placeholder if camera is off)
       if (canPub && remoteContainerRef.current) {
@@ -1484,163 +1482,33 @@ export default function VideoConferenceLinkPage() {
 
   // Effect to attach local video when camera is turned on and manage placeholder
   useEffect(() => {
-    if (roomRef.current) {
+    if (roomRef.current && videoRef.current) {
       // Small timeout to ensure video element is mounted
       const timer = setTimeout(() => {
-        if (videoRef.current && roomRef.current) {
-          const LKC = (window as any).LivekitClient || (window as any).LiveKit
-          if (!LKC) return
-          const { Track } = LKC
-          const camPub = roomRef.current.localParticipant.getTrackPublication(Track.Source.Camera)
-          if (camPub?.videoTrack) {
-            camPub.videoTrack.attach(videoRef.current)
-            
-            // When user can publish, check if local video should be in main area or grid
-            if (canPublish && videoAreaRef.current) {
-              // Count active remote videos
-              const remoteVideos = videoAreaRef.current.querySelectorAll('video[data-participant]')
-              const totalActiveVideos = remoteVideos.length + (cameraOn ? 1 : 0)
-              
-              // If only local video is active, show it in main area
-              if (totalActiveVideos === 1 && cameraOn && videoRef.current) {
-                // Remove from grid if it's there
-                const localWrapper = remoteContainerRef.current?.querySelector('#video-local')
-                if (localWrapper && localWrapper.contains(videoRef.current)) {
-                  videoRef.current.remove()
-                  localWrapper.remove()
-                }
-                
-                // Ensure video is in main area
-                if (videoRef.current.parentNode !== videoAreaRef.current) {
-                  // Remove placeholder if exists
-                  const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
-                  if (placeholder) placeholder.remove()
-                  
-                  // Update video styles for main area
-                  videoRef.current.style.position = 'absolute'
-                  videoRef.current.style.width = '100%'
-                  videoRef.current.style.height = '100%'
-                  videoRef.current.style.objectFit = 'cover'
-                  videoRef.current.style.top = '0'
-                  videoRef.current.style.left = '0'
-                  videoRef.current.style.zIndex = '1'
-                  videoRef.current.style.transform = 'scaleX(-1)'
-                  videoRef.current.style.display = 'block'
-                  
-                  videoAreaRef.current.appendChild(videoRef.current)
-                }
-              } else if (remoteContainerRef.current) {
-                // Multiple videos or remote videos exist - put local video in grid
-                // Check if local video wrapper is already in grid
-                let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
-                
-                if (!existingLocalInGrid) {
-                  // Create wrapper for local video
-                  existingLocalInGrid = document.createElement('div')
-                  existingLocalInGrid.id = 'video-local'
-                  existingLocalInGrid.style.position = 'relative'
-                  existingLocalInGrid.style.width = '100%'
-                  existingLocalInGrid.style.height = '100%'
-                  existingLocalInGrid.style.aspectRatio = '16/9'
-                  existingLocalInGrid.style.cursor = 'grab'
-                  existingLocalInGrid.style.touchAction = 'none'
-                  existingLocalInGrid.style.zIndex = '100' // Higher z-index to be on top
-                  existingLocalInGrid.style.borderRadius = '6px'
-                  existingLocalInGrid.style.overflow = 'hidden'
-                  existingLocalInGrid.style.background = '#f1f5f9'
-                  
-                  remoteContainerRef.current.appendChild(existingLocalInGrid)
-                  
-                  // Attach drag handlers
-                  attachDragHandlers(existingLocalInGrid as HTMLDivElement, 'local')
-                }
-                
-                // Update wrapper content based on camera state
-                if (cameraOn && videoRef.current) {
-                  // Remove placeholder if exists
-                  const placeholder = existingLocalInGrid.querySelector('.local-video-placeholder')
-                  if (placeholder) placeholder.remove()
-                  
-                  // Remove from main area if it's there
-                  if (videoRef.current.parentNode === videoAreaRef.current) {
-                    videoRef.current.remove()
-                  }
-                  
-                  // Add video to wrapper if not already there
-                  if (videoRef.current.parentNode !== existingLocalInGrid) {
-                    // Update video styles for grid
-                    videoRef.current.style.position = 'relative'
-                    videoRef.current.style.width = '100%'
-                    videoRef.current.style.height = '100%'
-                    videoRef.current.style.objectFit = 'cover'
-                    videoRef.current.style.top = '0'
-                    videoRef.current.style.left = '0'
-                    videoRef.current.style.zIndex = '1'
-                    videoRef.current.style.transform = 'scaleX(-1)'
-                    videoRef.current.style.display = 'block'
-                    
-                    existingLocalInGrid.appendChild(videoRef.current)
-                  }
-                } else {
-                  // Camera is off - show placeholder
-                  const existingPlaceholder = existingLocalInGrid.querySelector('.local-video-placeholder')
-                  if (!existingPlaceholder) {
-                    // Remove video if exists
-                    const existingVideo = existingLocalInGrid.querySelector('video')
-                    if (existingVideo) existingVideo.remove()
-                    
-                    // Create placeholder
-                    const placeholder = document.createElement('div')
-                    placeholder.className = 'local-video-placeholder'
-                    placeholder.style.display = 'flex'
-                    placeholder.style.flexDirection = 'column'
-                    placeholder.style.alignItems = 'center'
-                    placeholder.style.justifyContent = 'center'
-                    placeholder.style.width = '100%'
-                    placeholder.style.height = '100%'
-                    placeholder.style.color = '#94a3b8'
-                    
-                    const icon = document.createElement('img')
-                    icon.src = '/assets/icons/camera.svg'
-                    icon.style.width = '48px'
-                    icon.style.height = '48px'
-                    icon.style.opacity = '0.3'
-                    
-                    placeholder.appendChild(icon)
-                    existingLocalInGrid.appendChild(placeholder)
-                  }
-                }
-              }
-            } else if (!canPublish && videoAreaRef.current && videoRef.current) {
-              // When user cannot publish, keep local video in main area (but it will be hidden when remote video appears)
-              const existingLocalInGrid = remoteContainerRef.current?.querySelector('#video-local')
-              if (existingLocalInGrid) {
-                const wrapper = existingLocalInGrid
-                const video = wrapper.querySelector('video')
-                if (video && video === videoRef.current) {
-                  wrapper.remove()
-                  // Restore video styles for main area
-                  videoRef.current.style.position = 'absolute'
-                  videoRef.current.style.width = '100%'
-                  videoRef.current.style.height = '100%'
-                  videoRef.current.style.objectFit = 'cover'
-                  videoRef.current.style.top = '0'
-                  videoRef.current.style.left = '0'
-                  videoRef.current.style.zIndex = '1'
-                  videoRef.current.style.transform = 'scaleX(-1)'
-                  videoAreaRef.current.appendChild(videoRef.current)
-                }
-              }
-            }
-          }
+        if (!videoRef.current || !roomRef.current) return
+        
+        const LKC = (window as any).LivekitClient || (window as any).LiveKit
+        if (!LKC) return
+        
+        const { Track } = LKC
+        const camPub = roomRef.current.localParticipant.getTrackPublication(Track.Source.Camera)
+        
+        // Attach video track if camera is on and track is available
+        if (cameraOn && camPub?.videoTrack) {
+          camPub.videoTrack.attach(videoRef.current)
         }
         
-        // Also handle when camera is off but canPublish is true - show placeholder in grid
-        if (!cameraOn && canPublish && remoteContainerRef.current) {
+        // When user can publish, manage video placement and placeholder
+        if (canPublish && videoAreaRef.current && remoteContainerRef.current) {
+          // Count active remote videos
+          const remoteVideos = videoAreaRef.current.querySelectorAll('video[data-participant]')
+          const totalActiveVideos = remoteVideos.length + (cameraOn ? 1 : 0)
+          
+          // Get or create local video wrapper in grid
           let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
           
           if (!existingLocalInGrid) {
-            // Create wrapper for local video placeholder
+            // Create wrapper for local video
             existingLocalInGrid = document.createElement('div')
             existingLocalInGrid.id = 'video-local'
             existingLocalInGrid.style.position = 'relative'
@@ -1649,43 +1517,137 @@ export default function VideoConferenceLinkPage() {
             existingLocalInGrid.style.aspectRatio = '16/9'
             existingLocalInGrid.style.cursor = 'grab'
             existingLocalInGrid.style.touchAction = 'none'
-            existingLocalInGrid.style.zIndex = '100' // Higher z-index to be on top
+            existingLocalInGrid.style.zIndex = '100'
             existingLocalInGrid.style.borderRadius = '6px'
             existingLocalInGrid.style.overflow = 'hidden'
             existingLocalInGrid.style.background = '#f1f5f9'
             
             remoteContainerRef.current.appendChild(existingLocalInGrid)
-            
-            // Attach drag handlers
             attachDragHandlers(existingLocalInGrid as HTMLDivElement, 'local')
           }
           
-          // Show placeholder
-          const existingPlaceholder = existingLocalInGrid.querySelector('.local-video-placeholder')
-          if (!existingPlaceholder) {
-            // Remove video if exists
+          // Handle camera on/off state
+          if (cameraOn && videoRef.current) {
+            // Camera is ON - remove placeholder, show video
+            const existingPlaceholder = existingLocalInGrid.querySelector('.local-video-placeholder')
+            if (existingPlaceholder) {
+              existingPlaceholder.remove()
+            }
+            
+            // If only local video is active, show it in main area
+            if (totalActiveVideos === 1) {
+              // Remove wrapper from grid entirely when only one video
+              if (existingLocalInGrid && existingLocalInGrid.parentNode) {
+                if (videoRef.current.parentNode === existingLocalInGrid) {
+                  videoRef.current.remove()
+                }
+                existingLocalInGrid.remove()
+              }
+              
+              // Move to main area
+              if (videoRef.current.parentNode !== videoAreaRef.current) {
+                videoRef.current.style.position = 'absolute'
+                videoRef.current.style.width = '100%'
+                videoRef.current.style.height = '100%'
+                videoRef.current.style.objectFit = 'cover'
+                videoRef.current.style.top = '0'
+                videoRef.current.style.left = '0'
+                videoRef.current.style.zIndex = '1'
+                videoRef.current.style.transform = 'scaleX(-1)'
+                videoRef.current.style.display = 'block'
+                videoAreaRef.current.appendChild(videoRef.current)
+              }
+            } else {
+              // Multiple videos - put local video in grid
+              if (videoRef.current.parentNode === videoAreaRef.current) {
+                videoRef.current.remove()
+              }
+              
+              if (videoRef.current.parentNode !== existingLocalInGrid) {
+                videoRef.current.style.position = 'relative'
+                videoRef.current.style.width = '100%'
+                videoRef.current.style.height = '100%'
+                videoRef.current.style.objectFit = 'cover'
+                videoRef.current.style.top = '0'
+                videoRef.current.style.left = '0'
+                videoRef.current.style.zIndex = '1'
+                videoRef.current.style.transform = 'scaleX(-1)'
+                videoRef.current.style.display = 'block'
+                existingLocalInGrid.appendChild(videoRef.current)
+              }
+            }
+          } else {
+            // Camera is OFF
+            // Remove video from both places
             const existingVideo = existingLocalInGrid.querySelector('video')
-            if (existingVideo) existingVideo.remove()
+            if (existingVideo && existingVideo === videoRef.current) {
+              existingVideo.remove()
+            }
             
-            // Create placeholder
-            const placeholder = document.createElement('div')
-            placeholder.className = 'local-video-placeholder'
-            placeholder.style.display = 'flex'
-            placeholder.style.flexDirection = 'column'
-            placeholder.style.alignItems = 'center'
-            placeholder.style.justifyContent = 'center'
-            placeholder.style.width = '100%'
-            placeholder.style.height = '100%'
-            placeholder.style.color = '#94a3b8'
+            if (videoRef.current.parentNode === videoAreaRef.current) {
+              videoRef.current.remove()
+            }
             
-            const icon = document.createElement('img')
-            icon.src = '/assets/icons/camera.svg'
-            icon.style.width = '48px'
-            icon.style.height = '48px'
-            icon.style.opacity = '0.3'
-            
-            placeholder.appendChild(icon)
-            existingLocalInGrid.appendChild(placeholder)
+            // Only show placeholder if there are 2+ active videos (i.e., remote videos exist)
+            if (remoteVideos.length >= 1) {
+              // There are remote videos, so show placeholder in grid
+              const existingPlaceholder = existingLocalInGrid.querySelector('.local-video-placeholder')
+              if (!existingPlaceholder) {
+                // Create placeholder
+                const placeholder = document.createElement('div')
+                placeholder.className = 'local-video-placeholder'
+                placeholder.style.display = 'flex'
+                placeholder.style.flexDirection = 'column'
+                placeholder.style.alignItems = 'center'
+                placeholder.style.justifyContent = 'center'
+                placeholder.style.width = '100%'
+                placeholder.style.height = '100%'
+                placeholder.style.color = '#94a3b8'
+                
+                const icon = document.createElement('img')
+                icon.src = '/assets/icons/camera.svg'
+                icon.style.width = '48px'
+                icon.style.height = '48px'
+                icon.style.opacity = '0.3'
+                
+                placeholder.appendChild(icon)
+                existingLocalInGrid.appendChild(placeholder)
+              }
+            } else {
+              // No remote videos, remove wrapper entirely
+              if (existingLocalInGrid && existingLocalInGrid.parentNode) {
+                existingLocalInGrid.remove()
+              }
+            }
+          }
+        } else if (!canPublish && videoAreaRef.current && videoRef.current) {
+          // When user cannot publish, keep local video in main area
+          const existingLocalInGrid = remoteContainerRef.current?.querySelector('#video-local')
+          if (existingLocalInGrid) {
+            const video = existingLocalInGrid.querySelector('video')
+            if (video && video === videoRef.current) {
+              video.remove()
+            }
+            existingLocalInGrid.remove()
+          }
+          
+          // Attach track if camera is on
+          if (cameraOn && camPub?.videoTrack) {
+            camPub.videoTrack.attach(videoRef.current)
+          }
+          
+          // Ensure video is in main area
+          if (videoRef.current.parentNode !== videoAreaRef.current) {
+            videoRef.current.style.position = 'absolute'
+            videoRef.current.style.width = '100%'
+            videoRef.current.style.height = '100%'
+            videoRef.current.style.objectFit = 'cover'
+            videoRef.current.style.top = '0'
+            videoRef.current.style.left = '0'
+            videoRef.current.style.zIndex = '1'
+            videoRef.current.style.transform = 'scaleX(-1)'
+            videoRef.current.style.display = cameraOn ? 'block' : 'none'
+            videoAreaRef.current.appendChild(videoRef.current)
           }
         }
       }, 100)
@@ -1949,16 +1911,18 @@ export default function VideoConferenceLinkPage() {
     }
     
     const identity = connectedInfo?.identity || String((personalData as any)?.id || '')
+    const userName = roomRef.current?.localParticipant?.name || connectedInfo?.userName || (personalData as any)?.name || identity
     const messageText = chatInput.trim()
     
     const message = {
       type: 'chat',
       id: Date.now().toString(),
       identity,
+      name: userName,
       message: messageText,
       timestamp: Date.now()
     }
-    
+    console.log('message', message)
     // Check if room is connected before sending data
     if (roomRef.current.state !== 'connected') {
       console.warn('Cannot send message, room not ready')
@@ -1980,7 +1944,8 @@ export default function VideoConferenceLinkPage() {
         id: message.id,
         identity,
         message: messageText,
-        timestamp: message.timestamp
+        timestamp: message.timestamp,
+        msgName: userName
       }])
       setChatInput('')
     } catch (e) {
@@ -1990,7 +1955,8 @@ export default function VideoConferenceLinkPage() {
         id: message.id,
         identity,
         message: messageText,
-        timestamp: message.timestamp
+        timestamp: message.timestamp,
+        msgName: userName
       }])
       setChatInput('')
     }
@@ -2124,7 +2090,7 @@ export default function VideoConferenceLinkPage() {
                         >
                           <div className={s.chatMessageHeader}>
                             <span className={s.chatMessageAuthor}>
-                              {isOwnMessage ? 'Вы' : msg.identity}
+                              {isOwnMessage ? 'Вы' : (msg.msgName || msg.identity)}
                             </span>
                             <span className={s.chatMessageTime}>
                               {new Date(msg.timestamp).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
