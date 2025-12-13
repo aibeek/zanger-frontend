@@ -56,6 +56,10 @@ export const ModulesBar = () => {
       router.push(`/${language}/dashboard/ai-consultant`)
       return
     }
+    if (label === videoConferenceLabel) {
+      router.push(`/${language}/dashboard/video-conference`)
+      return
+    }
     setIsModalOpen(true)
   }
 
@@ -74,7 +78,7 @@ export const ModulesBar = () => {
         return (
           <button
             key={index}
-            className={`${s.section} ${(isDigital || isApplications || isAi) ? s.sectionEdo : ''}`}
+            className={`${s.section} ${(isDigital || isApplications || isAi || isPilot) ? s.sectionEdo : ''}`}
             onClick={() => handleSectionClick(section)}
           >
             <span className={s.label}>

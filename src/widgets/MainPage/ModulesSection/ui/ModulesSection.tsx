@@ -46,8 +46,11 @@ export const ModulesSection = () => {
       n.includes('ECP') ||
       n.includes('EDO') ||
       n.includes('ИИ') ||
-      n.includes('КОНСУЛЬТАНТ')
-      // ВКС исключено из "готов"
+      n.includes('КОНСУЛЬТАНТ') ||
+      n.includes('ВКС') ||
+      n.includes('БЕЙНЕ') ||
+      n.includes('CONFERENCE') ||
+      n.includes('VIDEO')
     )
   }
 
@@ -110,7 +113,10 @@ export const ModulesSection = () => {
       return
     }
 
-    // ВКС: показываем модалку «в разработке», не переходим
+    if (isVks) {
+      router.push(`/${locale}/dashboard/video-conference`)
+      return
+    }
 
     setIsModalOpen(true)
   }
@@ -149,7 +155,7 @@ export const ModulesSection = () => {
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>
               <div className={s.moduleIcon}>
-                <div className={s.iconCircle}>
+                <div className={(() => { const n = module.title.replace(/\s+/g, '').toUpperCase(); const isV = n.includes('ВКС') || n.includes('БЕЙНЕ') || n.includes('CONFERENCE') || n.includes('VIDEO'); return isV ? s.iconCircleEdo : s.iconCircle })()}>
                   <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
                 </div>
               </div>
