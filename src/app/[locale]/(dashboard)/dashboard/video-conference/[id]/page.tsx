@@ -288,31 +288,41 @@ export default function VideoConferenceLinkPage() {
     
     const videoCount = remoteVideosContainerRef.current.children.length
     
-    // Update grid layout based on number of videos
+    // Update grid layout based on number of videos - arrange vertically (in columns)
     if (videoCount === 0) {
       remoteVideosContainerRef.current.style.display = 'none'
     } else {
       remoteVideosContainerRef.current.style.display = 'grid'
       
+      // For vertical layout (columns), prioritize more rows, fewer columns
       if (videoCount === 1) {
         remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
         remoteVideosContainerRef.current.style.gridTemplateRows = '1fr'
       } else if (videoCount === 2) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(2, 1fr)'
-        remoteVideosContainerRef.current.style.gridTemplateRows = '1fr'
-      } else if (videoCount <= 4) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(2, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
         remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 3) {
+        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
+      } else if (videoCount === 4) {
+        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(4, 1fr)'
       } else if (videoCount <= 6) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+        // 5-6 videos: 2 columns, 3 rows (vertical stacking)
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(2, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
       } else if (videoCount <= 9) {
+        // 7-9 videos: 3 columns, 3 rows
         remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
         remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
+      } else if (videoCount <= 12) {
+        // 10-12 videos: 3 columns, 4 rows
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(4, 1fr)'
       } else {
-        // For more than 9 videos, use auto-fit
+        // For more than 12 videos, use auto-fit with vertical priority
         remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(auto-fit, minmax(150px, 1fr))'
+        remoteVideosContainerRef.current.style.gridAutoRows = '1fr'
       }
     }
   }
@@ -476,17 +486,30 @@ export default function VideoConferenceLinkPage() {
             updatedRemoteParticipants.set(participant.identity, { participant, tracks: [] })
           }
           const pData = updatedRemoteParticipants.get(participant.identity)!
-          pData.tracks.push({ track, el })
+          // Store track, element, and publication for status checking
+          pData.tracks.push({ track, el, pub })
           return updatedRemoteParticipants
         })
         
         if (track.kind === 'video') {
-          // Count active video tracks
+          // Count active video tracks - check if publication is subscribed and not muted
           const countActiveRemoteVideos = () => {
             let count = 0
             updatedRemoteParticipants.forEach((pData) => {
-              const hasVideo = pData.tracks.some((t: any) => t.track.kind === 'video')
-              if (hasVideo) count++
+              // Check if participant has an active video track
+              const hasActiveVideo = pData.tracks.some((t: any) => {
+                if (t.track && t.track.kind === 'video') {
+                  // Check publication status if available
+                  if (t.pub) {
+                    // Track is active if publication is subscribed and not muted
+                    return t.pub.isSubscribed && !t.pub.isMuted
+                  }
+                  // Fallback: if no publication, assume track is active (it was just subscribed)
+                  return true
+                }
+                return false
+              })
+              if (hasActiveVideo) count++
             })
             return count
           }
@@ -502,7 +525,6 @@ export default function VideoConferenceLinkPage() {
             if (remoteVideosContainerRef.current) {
               // Remove existing video for this participant if it exists
               const existingWrapper = remoteVideosContainerRef.current.querySelector(`#remote-video-${participant.identity}`)
-              console.log('existingWrapper', existingWrapper)
               if (existingWrapper) {
                 existingWrapper.remove()
               }
@@ -524,63 +546,77 @@ export default function VideoConferenceLinkPage() {
               updateRemoteVideosGrid()
               
               // After adding remote video, check if local video should move to bottom right
-              // Count current remote videos (including the one we just added)
-              const currentRemoteVideos = remoteVideosContainerRef.current.querySelectorAll('[data-participant]')
+              // Count current remote videos by checking DOM (most accurate)
+              let activeRemoteVideosCount = 0
+              if (remoteVideosContainerRef.current) {
+                remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+                  const videoElement = wrapper.querySelector('video')
+                  if (videoElement) {
+                    activeRemoteVideosCount++
+                  }
+                })
+              }
               const hasLocalVideo = cameraOn && videoRef.current
               
               // If there are remote videos and local video is on, ensure local is in bottom right
-              if (currentRemoteVideos.length > 0 && hasLocalVideo && videoRef.current && remoteContainerRef.current) {
-                // Get or create local video wrapper in bottom right grid
-                let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+              // IMPORTANT: Only handle local video element (videoRef.current), not remote videos
+              if (activeRemoteVideosCount > 0 && hasLocalVideo && videoRef.current && remoteContainerRef.current) {
+                // Verify this is actually the local video element (should not have data-participant attribute)
+                const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
                 
-                if (!localWrapper) {
-                  localWrapper = document.createElement('div')
-                  localWrapper.id = 'video-local'
-                  localWrapper.style.position = 'relative'
-                  localWrapper.style.width = '100%'
-                  localWrapper.style.height = '100%'
-                  localWrapper.style.aspectRatio = '16/9'
-                  localWrapper.style.cursor = 'grab'
-                  localWrapper.style.touchAction = 'none'
-                  localWrapper.style.zIndex = '100' // Higher z-index to be on top
-                  localWrapper.style.borderRadius = '6px'
-                  localWrapper.style.overflow = 'hidden'
-                  localWrapper.style.background = '#f1f5f9'
+                if (isLocalVideo) {
+                  // Get or create local video wrapper in bottom right grid
+                  let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
                   
-                  remoteContainerRef.current.appendChild(localWrapper)
-                  attachDragHandlers(localWrapper as HTMLDivElement, 'local')
-                }
-                
-                // Only move if local video is currently in main area
-                if (videoRef.current.parentNode === videoAreaRef.current) {
-                  // Remove video from main area
-                  videoRef.current.remove()
+                  if (!localWrapper) {
+                    localWrapper = document.createElement('div')
+                    localWrapper.id = 'video-local'
+                    localWrapper.style.position = 'relative'
+                    localWrapper.style.width = '100%'
+                    localWrapper.style.height = '100%'
+                    localWrapper.style.aspectRatio = '16/9'
+                    localWrapper.style.cursor = 'grab'
+                    localWrapper.style.touchAction = 'none'
+                    localWrapper.style.zIndex = '100' // Higher z-index to be on top
+                    localWrapper.style.borderRadius = '6px'
+                    localWrapper.style.overflow = 'hidden'
+                    localWrapper.style.background = '#f1f5f9'
+                    
+                    remoteContainerRef.current.appendChild(localWrapper)
+                    attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+                  }
                   
-                  // Update video styles for grid
-                  videoRef.current.style.position = 'relative'
-                  videoRef.current.style.width = '100%'
-                  videoRef.current.style.height = '100%'
-                  videoRef.current.style.objectFit = 'cover'
-                  videoRef.current.style.top = '0'
-                  videoRef.current.style.left = '0'
-                  videoRef.current.style.zIndex = '1'
-                  videoRef.current.style.transform = 'scaleX(-1)'
-                  videoRef.current.style.display = 'block'
-                  
-                  localWrapper.appendChild(videoRef.current)
-                } else if (videoRef.current.parentNode !== localWrapper) {
-                  // Video is somewhere else, move it to wrapper
-                  videoRef.current.remove()
-                  videoRef.current.style.position = 'relative'
-                  videoRef.current.style.width = '100%'
-                  videoRef.current.style.height = '100%'
-                  videoRef.current.style.objectFit = 'cover'
-                  videoRef.current.style.top = '0'
-                  videoRef.current.style.left = '0'
-                  videoRef.current.style.zIndex = '1'
-                  videoRef.current.style.transform = 'scaleX(-1)'
-                  videoRef.current.style.display = 'block'
-                  localWrapper.appendChild(videoRef.current)
+                  // Only move if local video is currently in main area
+                  if (videoRef.current.parentNode === videoAreaRef.current) {
+                    // Remove video from main area
+                    videoRef.current.remove()
+                    
+                    // Update video styles for grid
+                    videoRef.current.style.position = 'relative'
+                    videoRef.current.style.width = '100%'
+                    videoRef.current.style.height = '100%'
+                    videoRef.current.style.objectFit = 'cover'
+                    videoRef.current.style.top = '0'
+                    videoRef.current.style.left = '0'
+                    videoRef.current.style.zIndex = '1'
+                    videoRef.current.style.transform = 'scaleX(-1)'
+                    videoRef.current.style.display = 'block'
+                    
+                    localWrapper.appendChild(videoRef.current)
+                  } else if (videoRef.current.parentNode !== localWrapper) {
+                    // Video is somewhere else, move it to wrapper
+                    videoRef.current.remove()
+                    videoRef.current.style.position = 'relative'
+                    videoRef.current.style.width = '100%'
+                    videoRef.current.style.height = '100%'
+                    videoRef.current.style.objectFit = 'cover'
+                    videoRef.current.style.top = '0'
+                    videoRef.current.style.left = '0'
+                    videoRef.current.style.zIndex = '1'
+                    videoRef.current.style.transform = 'scaleX(-1)'
+                    videoRef.current.style.display = 'block'
+                    localWrapper.appendChild(videoRef.current)
+                  }
                 }
               }
             }
@@ -623,19 +659,20 @@ export default function VideoConferenceLinkPage() {
       room.on(RoomEvent.TrackUnsubscribed, (track: any) => {
         // Find which participant this track belongs to
         let participantIdentity: string | null = null
+        let updatedParticipants: Map<string, any> = new Map()
         setRemoteParticipants(prev => {
-          const updated = new Map(prev)
-          for (const [identity, data] of updated.entries()) {
+          updatedParticipants = new Map(prev)
+          for (const [identity, data] of updatedParticipants.entries()) {
             const trackIndex = data.tracks.findIndex((t: any) => t.track === track)
             if (trackIndex !== -1) {
               participantIdentity = identity
             data.tracks = data.tracks.filter((t: any) => t.track !== track)
             if (data.tracks.length === 0) {
-              updated.delete(identity)
+              updatedParticipants.delete(identity)
               }
             }
           }
-          return updated
+          return updatedParticipants
         })
         
         // Detach and remove video elements
@@ -649,30 +686,41 @@ export default function VideoConferenceLinkPage() {
               
               // Recalculate video layout after removal
               if (canPublish) {
-                // Count remaining remote videos
-                const remainingRemoteVideos = remoteVideosContainerRef.current.querySelectorAll('[data-participant]')
+                // Count remaining remote videos by checking DOM (most accurate)
+                let activeRemoteVideosCount = 0
+                if (remoteVideosContainerRef.current) {
+                  remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+                    const videoElement = wrapper.querySelector('video')
+                    if (videoElement) {
+                      activeRemoteVideosCount++
+                    }
+                  })
+                }
                 const hasLocalVideo = cameraOn
-                const totalActiveVideos = remainingRemoteVideos.length + (hasLocalVideo ? 1 : 0)
+                const totalActiveVideos = activeRemoteVideosCount + (hasLocalVideo ? 1 : 0)
                 
                 // If only local video remains, move it to main area
-                console.log('totalActiveVideos', totalActiveVideos)
-                console.log('hasLocalVideo', hasLocalVideo)
-                console.log('videoRef.current', videoRef.current)
+                // IMPORTANT: Only handle local video element (videoRef.current), not remote videos
                 if (totalActiveVideos === 1 && hasLocalVideo && videoRef.current) {
-                  const localWrapper = remoteContainerRef.current?.querySelector('#video-local')
-                  if (localWrapper && localWrapper.contains(videoRef.current)) {
-                    // Move local video from grid to main area
-                    videoRef.current.remove()
-                    videoRef.current.style.position = 'absolute'
-                    videoRef.current.style.width = '100%'
-                    videoRef.current.style.height = '100%'
-                    videoRef.current.style.objectFit = 'cover'
-                    videoRef.current.style.top = '0'
-                    videoRef.current.style.left = '0'
-                    videoRef.current.style.zIndex = '1'
-                    videoRef.current.style.transform = 'scaleX(-1)'
-                    videoAreaRef.current.appendChild(videoRef.current)
-                    localWrapper.remove()
+                  // Verify this is actually the local video element (should not have data-participant attribute)
+                  const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
+                  
+                  if (isLocalVideo) {
+                    const localWrapper = remoteContainerRef.current?.querySelector('#video-local')
+                    if (localWrapper && localWrapper.contains(videoRef.current)) {
+                      // Move local video from grid to main area
+                      videoRef.current.remove()
+                      videoRef.current.style.position = 'absolute'
+                      videoRef.current.style.width = '100%'
+                      videoRef.current.style.height = '100%'
+                      videoRef.current.style.objectFit = 'cover'
+                      videoRef.current.style.top = '0'
+                      videoRef.current.style.left = '0'
+                      videoRef.current.style.zIndex = '1'
+                      videoRef.current.style.transform = 'scaleX(-1)'
+                      videoAreaRef.current.appendChild(videoRef.current)
+                      localWrapper.remove()
+                    }
                   }
                 }
               }
@@ -862,7 +910,8 @@ export default function VideoConferenceLinkPage() {
                 updated.set(participant.identity, { participant, tracks: [] })
               }
               const pData = updated.get(participant.identity)!
-              pData.tracks.push({ track, el })
+              // Store track, element, and publication for status checking
+              pData.tracks.push({ track, el, pub })
               return updated
             })
 
@@ -894,62 +943,77 @@ export default function VideoConferenceLinkPage() {
                 updateRemoteVideosGrid()
                 
                 // After adding remote video, check if local video should move to bottom right
-                const currentRemoteVideos = remoteVideosContainerRef.current.querySelectorAll('[data-participant]')
+                // Count current remote videos by checking DOM (most accurate)
+                let activeRemoteVideosCount = 0
+                if (remoteVideosContainerRef.current) {
+                  remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+                    const videoElement = wrapper.querySelector('video')
+                    if (videoElement) {
+                      activeRemoteVideosCount++
+                    }
+                  })
+                }
                 const hasLocalVideo = cameraOn && videoRef.current
                 
                 // If there are remote videos and local video is on, ensure local is in bottom right
-                if (currentRemoteVideos.length > 0 && hasLocalVideo && videoRef.current && remoteContainerRef.current) {
-                  // Get or create local video wrapper in bottom right grid
-                  let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+                // IMPORTANT: Only handle local video element (videoRef.current), not remote videos
+                if (activeRemoteVideosCount > 0 && hasLocalVideo && videoRef.current && remoteContainerRef.current) {
+                  // Verify this is actually the local video element (should not have data-participant attribute)
+                  const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
                   
-                  if (!localWrapper) {
-                    localWrapper = document.createElement('div')
-                    localWrapper.id = 'video-local'
-                    localWrapper.style.position = 'relative'
-                    localWrapper.style.width = '100%'
-                    localWrapper.style.height = '100%'
-                    localWrapper.style.aspectRatio = '16/9'
-                    localWrapper.style.cursor = 'grab'
-                    localWrapper.style.touchAction = 'none'
-                    localWrapper.style.zIndex = '100' // Higher z-index to be on top
-                    localWrapper.style.borderRadius = '6px'
-                    localWrapper.style.overflow = 'hidden'
-                    localWrapper.style.background = '#f1f5f9'
+                  if (isLocalVideo) {
+                    // Get or create local video wrapper in bottom right grid
+                    let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
                     
-                    remoteContainerRef.current.appendChild(localWrapper)
-                    attachDragHandlers(localWrapper as HTMLDivElement, 'local')
-                  }
-                  
-                  // Only move if local video is currently in main area
-                  if (videoRef.current.parentNode === videoAreaRef.current) {
-                    // Remove video from main area
-                    videoRef.current.remove()
+                    if (!localWrapper) {
+                      localWrapper = document.createElement('div')
+                      localWrapper.id = 'video-local'
+                      localWrapper.style.position = 'relative'
+                      localWrapper.style.width = '100%'
+                      localWrapper.style.height = '100%'
+                      localWrapper.style.aspectRatio = '16/9'
+                      localWrapper.style.cursor = 'grab'
+                      localWrapper.style.touchAction = 'none'
+                      localWrapper.style.zIndex = '100' // Higher z-index to be on top
+                      localWrapper.style.borderRadius = '6px'
+                      localWrapper.style.overflow = 'hidden'
+                      localWrapper.style.background = '#f1f5f9'
+                      
+                      remoteContainerRef.current.appendChild(localWrapper)
+                      attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+                    }
                     
-                    // Update video styles for grid
-                    videoRef.current.style.position = 'relative'
-                    videoRef.current.style.width = '100%'
-                    videoRef.current.style.height = '100%'
-                    videoRef.current.style.objectFit = 'cover'
-                    videoRef.current.style.top = '0'
-                    videoRef.current.style.left = '0'
-                    videoRef.current.style.zIndex = '1'
-                    videoRef.current.style.transform = 'scaleX(-1)'
-                    videoRef.current.style.display = 'block'
-                    
-                    localWrapper.appendChild(videoRef.current)
-                  } else if (videoRef.current.parentNode !== localWrapper) {
-                    // Video is somewhere else, move it to wrapper
-                    videoRef.current.remove()
-                    videoRef.current.style.position = 'relative'
-                    videoRef.current.style.width = '100%'
-                    videoRef.current.style.height = '100%'
-                    videoRef.current.style.objectFit = 'cover'
-                    videoRef.current.style.top = '0'
-                    videoRef.current.style.left = '0'
-                    videoRef.current.style.zIndex = '1'
-                    videoRef.current.style.transform = 'scaleX(-1)'
-                    videoRef.current.style.display = 'block'
-                    localWrapper.appendChild(videoRef.current)
+                    // Only move if local video is currently in main area
+                    if (videoRef.current.parentNode === videoAreaRef.current) {
+                      // Remove video from main area
+                      videoRef.current.remove()
+                      
+                      // Update video styles for grid
+                      videoRef.current.style.position = 'relative'
+                      videoRef.current.style.width = '100%'
+                      videoRef.current.style.height = '100%'
+                      videoRef.current.style.objectFit = 'cover'
+                      videoRef.current.style.top = '0'
+                      videoRef.current.style.left = '0'
+                      videoRef.current.style.zIndex = '1'
+                      videoRef.current.style.transform = 'scaleX(-1)'
+                      videoRef.current.style.display = 'block'
+                      
+                      localWrapper.appendChild(videoRef.current)
+                    } else if (videoRef.current.parentNode !== localWrapper) {
+                      // Video is somewhere else, move it to wrapper
+                      videoRef.current.remove()
+                      videoRef.current.style.position = 'relative'
+                      videoRef.current.style.width = '100%'
+                      videoRef.current.style.height = '100%'
+                      videoRef.current.style.objectFit = 'cover'
+                      videoRef.current.style.top = '0'
+                      videoRef.current.style.left = '0'
+                      videoRef.current.style.zIndex = '1'
+                      videoRef.current.style.transform = 'scaleX(-1)'
+                      videoRef.current.style.display = 'block'
+                      localWrapper.appendChild(videoRef.current)
+                    }
                   }
                 }
               }
@@ -1624,7 +1688,6 @@ export default function VideoConferenceLinkPage() {
   // Effect to attach local video when camera is turned on
   useEffect(() => {
     if (roomRef.current && videoRef.current) {
-      // Small timeout to ensure video element is mounted
       const timer = setTimeout(() => {
         if (!videoRef.current || !roomRef.current) return
         
@@ -1662,17 +1725,25 @@ export default function VideoConferenceLinkPage() {
         
         // When user can publish, manage video placement
         if (canPublish && videoAreaRef.current && remoteContainerRef.current && remoteVideosContainerRef.current) {
-          // Count active remote videos
-          const remoteVideos = remoteVideosContainerRef.current.querySelectorAll('[data-participant]')
-          const totalActiveVideos = remoteVideos.length + (cameraOn ? 1 : 0)
-          console.log('totalActiveVideos', totalActiveVideos)
-          console.log('cameraOn', cameraOn)
-          console.log('remoteVideos', remoteVideos)
+          // Count active remote videos by checking if video elements exist in DOM
+          // This is more accurate than checking tracks, since tracks might exist but be disabled
+          // We only add video elements to DOM when tracks are actually subscribed and active
+          let activeRemoteVideosCount = 0
+          if (remoteVideosContainerRef.current) {
+            remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+              const videoElement = wrapper.querySelector('video')
+              // If video element exists in DOM, the video is active
+              if (videoElement) {
+                activeRemoteVideosCount++
+              }
+            })
+          }
+          const totalActiveVideos = activeRemoteVideosCount + (cameraOn ? 1 : 0)
           
           // Get or create local video wrapper in grid
           let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
           
-          if (!existingLocalInGrid) {
+          if (!existingLocalInGrid && totalActiveVideos > 1) {
             // Create wrapper for local video
             existingLocalInGrid = document.createElement('div')
             existingLocalInGrid.id = 'video-local'
@@ -1690,65 +1761,74 @@ export default function VideoConferenceLinkPage() {
             remoteContainerRef.current.appendChild(existingLocalInGrid)
             attachDragHandlers(existingLocalInGrid as HTMLDivElement, 'local')
           }
-          
+          console.log('totalActiveVideos', totalActiveVideos)
+          console.log('existingLocalInGrid', existingLocalInGrid)
+          console.log('videoRef.current', videoRef.current)
           // Handle camera on/off state
+          // IMPORTANT: Only handle local video element (videoRef.current), not remote videos
           if (cameraOn && videoRef.current) {
-            // If only local video is active, show it in main area
-            if (totalActiveVideos === 1) {
-              // Remove wrapper from grid entirely when only one video
-              if (existingLocalInGrid && existingLocalInGrid.parentNode) {
-                if (videoRef.current.parentNode === existingLocalInGrid) {
+            // Verify this is actually the local video element (should not have data-participant attribute)
+            const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
+            if (isLocalVideo) {
+              // If only local video is active, show it in main area
+              if (totalActiveVideos === 1) {
+                // Remove wrapper from grid entirely when only one video
+                if (existingLocalInGrid && existingLocalInGrid.parentNode) {
+                  if (videoRef.current.parentNode === existingLocalInGrid) {
+                    videoRef.current.remove()
+                  }
+                  existingLocalInGrid.remove()
+                }
+                
+                // Move to main area
+                if (videoRef.current.parentNode !== videoAreaRef.current) {
+                  videoRef.current.style.position = 'absolute'
+                  videoRef.current.style.width = '100%'
+                  videoRef.current.style.height = '100%'
+                  videoRef.current.style.objectFit = 'cover'
+                  videoRef.current.style.top = '0'
+                  videoRef.current.style.left = '0'
+                  videoRef.current.style.zIndex = '1'
+                  videoRef.current.style.transform = 'scaleX(-1)'
+                  videoRef.current.style.display = 'block'
+                  videoAreaRef.current.appendChild(videoRef.current)
+                }
+              } else {
+                // Multiple videos - put local video in grid
+                if (videoRef.current.parentNode === videoAreaRef.current) {
                   videoRef.current.remove()
                 }
-                existingLocalInGrid.remove()
-              }
-              
-              // Move to main area
-              if (videoRef.current.parentNode !== videoAreaRef.current) {
-                videoRef.current.style.position = 'absolute'
-                videoRef.current.style.width = '100%'
-                videoRef.current.style.height = '100%'
-                videoRef.current.style.objectFit = 'cover'
-                videoRef.current.style.top = '0'
-                videoRef.current.style.left = '0'
-                videoRef.current.style.zIndex = '1'
-                videoRef.current.style.transform = 'scaleX(-1)'
-                videoRef.current.style.display = 'block'
-                videoAreaRef.current.appendChild(videoRef.current)
-              }
-            } else {
-              // Multiple videos - put local video in grid
-              if (videoRef.current.parentNode === videoAreaRef.current) {
-                videoRef.current.remove()
-              }
-              
-              if (videoRef.current.parentNode !== existingLocalInGrid) {
-                videoRef.current.style.position = 'relative'
-                videoRef.current.style.width = '100%'
-                videoRef.current.style.height = '100%'
-                videoRef.current.style.objectFit = 'cover'
-                videoRef.current.style.top = '0'
-                videoRef.current.style.left = '0'
-                videoRef.current.style.zIndex = '1'
-                videoRef.current.style.transform = 'scaleX(-1)'
-                videoRef.current.style.display = 'block'
-                existingLocalInGrid.appendChild(videoRef.current)
+                
+                if (videoRef.current.parentNode !== existingLocalInGrid) {
+                  videoRef.current.style.position = 'relative'
+                  videoRef.current.style.width = '100%'
+                  videoRef.current.style.height = '100%'
+                  videoRef.current.style.objectFit = 'cover'
+                  videoRef.current.style.top = '0'
+                  videoRef.current.style.left = '0'
+                  videoRef.current.style.zIndex = '1'
+                  videoRef.current.style.transform = 'scaleX(-1)'
+                  videoRef.current.style.display = 'block'
+                  existingLocalInGrid.appendChild(videoRef.current)
+                }
               }
             }
           } else {
             // Camera is OFF
-            // Remove video from both places
-            const existingVideo = existingLocalInGrid.querySelector('video')
-            if (existingVideo && existingVideo === videoRef.current) {
-              existingVideo.remove()
-            }
-            
-            if (videoRef.current.parentNode === videoAreaRef.current) {
-              videoRef.current.remove()
+            // Remove video from both places (only if it's the local video)
+            if (videoRef.current && !videoRef.current.hasAttribute('data-participant')) {
+              const existingVideo = existingLocalInGrid.querySelector('video')
+              if (existingVideo && existingVideo === videoRef.current) {
+                existingVideo.remove()
+              }
+              
+              if (videoRef.current.parentNode === videoAreaRef.current) {
+                videoRef.current.remove()
+              }
             }
             
             // No remote videos, remove wrapper entirely
-            if (remoteVideos.length === 0) {
+            if (activeRemoteVideosCount === 0) {
               if (existingLocalInGrid && existingLocalInGrid.parentNode) {
                 existingLocalInGrid.remove()
               }
@@ -1797,7 +1877,7 @@ export default function VideoConferenceLinkPage() {
       }, 100)
       return () => clearTimeout(timer)
     }
-  }, [cameraOn, canPublish])
+  }, [cameraOn, canPublish, remoteParticipants])
 
   // отключено авто-подключение — соответствуем дизайну (кнопка «Присоединиться»/«Запустить прямой эфир»)
 
@@ -1820,11 +1900,26 @@ export default function VideoConferenceLinkPage() {
       if (!videoRef.current || !document.body.contains(videoRef.current)) {
         // Video element not in DOM, wait for it to be created
         if (videoAreaRef.current) {
-          // Check if we need to recreate the element
-          const existingVideo = videoAreaRef.current.querySelector('video')
+          // Find the local video element (should not have data-participant attribute)
+          // Query all videos and find the one without data-participant (local video)
+          const allVideos = videoAreaRef.current.querySelectorAll('video')
+          let existingVideo: HTMLVideoElement | null = null
+          
+          for (const video of Array.from(allVideos)) {
+            // Local video should not have data-participant attribute
+            if (!video.hasAttribute('data-participant')) {
+              existingVideo = video as HTMLVideoElement
+              break
+            }
+          }
+          
           if (existingVideo) {
-            // Use existing video element
-            videoRef.current = existingVideo as HTMLVideoElement
+            // Use existing local video element
+            // IMPORTANT: Ensure it doesn't have data-participant (should never have it)
+            if (existingVideo.hasAttribute('data-participant')) {
+              existingVideo.removeAttribute('data-participant')
+            }
+            videoRef.current = existingVideo
           } else {
             // Create new video element
             const newVideo = document.createElement('video')
@@ -1833,8 +1928,15 @@ export default function VideoConferenceLinkPage() {
             newVideo.playsInline = true
             newVideo.className = s.video
             newVideo.style.display = 'none'
+            // IMPORTANT: Do NOT set data-participant on local video
             videoAreaRef.current.appendChild(newVideo)
             videoRef.current = newVideo
+          }
+          
+          // Final safeguard: Ensure videoRef.current never has data-participant
+          if (videoRef.current && videoRef.current.hasAttribute('data-participant')) {
+            console.warn('Local video element had data-participant attribute, removing it')
+            videoRef.current.removeAttribute('data-participant')
           }
         } else {
           console.error('videoAreaRef not available')

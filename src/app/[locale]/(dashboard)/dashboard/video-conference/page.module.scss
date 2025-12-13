@@ -387,6 +387,7 @@
   padding: 4px;
   z-index: 1;
   pointer-events: none;
+  grid-auto-flow: column; // Fill columns first (vertically), then wrap to next column
   // Grid layout is dynamically updated via JavaScript based on number of videos
 }
 
