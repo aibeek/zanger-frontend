@@ -491,8 +491,8 @@ export default function AiConsultantPage() {
     }
 
     const MessageContent = ({ content }: { content: string }) => {
-        const trimmed = content.trim()
-        const lines = trimmed.split(/\n/).filter(l => !/^\s*-{3,}\s*$/.test(l))
+        const trimmed = content.trim().replace(/\r/g, '')
+        const lines = trimmed.split(/\n/)
         const orderedRegex = /^\s*\d+[\.)]?\s+(.*)$/
         const unorderedRegex = /^\s*[-•]\s+(.*)$/
 
@@ -508,6 +508,13 @@ export default function AiConsultantPage() {
         while (i < lines.length) {
             // skip extra blank lines
             if (!lines[i].trim()) { i++; continue }
+
+            // horizontal rule
+            if (/^\s*-{3,}\s*$/.test(lines[i])) {
+                nodes.push(<hr key={`hr-${i}`} className={s.hr} />)
+                i++
+                continue
+            }
 
             // detect list block
             const isOrdered = orderedRegex.test(lines[i])
