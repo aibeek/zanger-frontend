@@ -9,6 +9,7 @@ import { Button } from '@/shared/ui-kit'
 import { RightWidgets } from '../components/RightWidgets'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { useLoginStore } from '@/features/auth/login'
+import { VIDEO_API_BASE_URL } from '@/shared/config'
 import s from './page.module.scss'
 
 export default function VideoConferencePage() {
@@ -31,7 +32,7 @@ export default function VideoConferencePage() {
   const roomRef = useRef<any>(null)
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
-  const BASE = 'https://video.zanger-app.kz/vidapi/java-api/'
+  const BASE = `${VIDEO_API_BASE_URL}/java-api/`
   const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
   const [mounted, setMounted] = useState(false)
   const [page, setPage] = useState(0)
