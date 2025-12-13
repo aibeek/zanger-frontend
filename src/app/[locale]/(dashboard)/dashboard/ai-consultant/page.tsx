@@ -425,40 +425,67 @@ export default function AiConsultantPage() {
         </div>
     )
 }
-    const linkify = (text: string) => {
-        const nodes: ReactNode[] = []
-        const regex = /(https?:\/\/[^\s<]+|www\.[^\s<]+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g
-        let lastIndex = 0
-        let match: RegExpExecArray | null
-        while ((match = regex.exec(text)) !== null) {
-            const start = match.index
-            const raw = match[0]
-            if (start > lastIndex) nodes.push(text.slice(lastIndex, start))
-            let href = raw
-            let display = raw
-            let trailing = ''
-            while (/[.,!?);:\]]$/.test(href)) {
-                trailing = href.slice(-1) + trailing
-                href = href.slice(0, -1)
-                display = href
-            }
-            if (/^www\./i.test(href)) href = `http://${href}`
-            if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(href)) href = `mailto:${href}`
-            nodes.push(<a key={`a-${start}`} href={href} target="_blank" rel="noopener noreferrer">{display}</a>)
-            if (trailing) nodes.push(trailing)
-            lastIndex = start + raw.length
-        }
-        if (lastIndex < text.length) nodes.push(text.slice(lastIndex))
-        return nodes
+    const SITE_NAME_MAP: Record<string, string> = {
+        'adilet.zan.kz': 'Adilet',
+        'online.zakon.kz': 'Zakon.kz',
+        'gov.kz': 'GOV.KZ',
+        'zan.gov.kz': 'Zan.gov.kz'
     }
 
     const renderStrong = (text: string) => {
         const parts = text.split(/\*\*(.*?)\*\*/)
-        const nodes: ReactNode[] = []
+        const nodes: (string | ReactNode)[] = []
         for (let i = 0; i < parts.length; i++) {
-            if (i % 2 === 1) nodes.push(<strong key={`b-${i}`}>{linkify(parts[i])}</strong>)
-            else if (parts[i]) nodes.push(...linkify(parts[i]))
+            if (i % 2 === 1) nodes.push(<strong key={`str-${i}`}>{parts[i]}</strong>)
+            else if (parts[i]) nodes.push(parts[i])
         }
+        return nodes
+    }
+
+    const renderInline = (text: string) => {
+        const nodes: (string | ReactNode)[] = []
+        const mdLinkRe = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g
+        let lastIndex = 0
+
+        for (const match of text.matchAll(mdLinkRe)) {
+            const full = match[0]
+            const label = match[1]
+            const url = match[2]
+            const start = match.index ?? 0
+            if (start > lastIndex) {
+                const before = text.slice(lastIndex, start)
+                nodes.push(...renderStrong(before))
+            }
+            nodes.push(
+                <a key={`lnk-${start}`} href={url} target="_blank" rel="noopener noreferrer">
+                    <strong>{label}</strong>
+                </a>
+            )
+            lastIndex = start + full.length
+        }
+
+        const tail = text.slice(lastIndex)
+        const urlRe = /(https?:\/\/[^\s]+)/g
+        let offset = 0
+        for (const m of tail.matchAll(urlRe)) {
+            const st = m.index ?? 0
+            const url = m[1]
+            if (st > offset) {
+                const before = tail.slice(offset, st)
+                nodes.push(...renderStrong(before))
+            }
+            let hostName = url
+            try { hostName = new URL(url).hostname } catch {}
+            const siteName = SITE_NAME_MAP[hostName] || hostName.replace(/^www\./, '').split('.')[0].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+            nodes.push(
+                <a key={`url-${lastIndex + st}`} href={url} target="_blank" rel="noopener noreferrer">
+                    <strong>{siteName}</strong>
+                </a>
+            )
+            offset = st + m[0].length
+        }
+        const rest = tail.slice(offset)
+        if (rest) nodes.push(...renderStrong(rest))
         return nodes
     }
 
@@ -474,7 +501,7 @@ export default function AiConsultantPage() {
         const pushParagraph = (text: string) => {
             if (!text) return
             const paragraphs = text.split(/\n\n+/)
-            paragraphs.forEach((p, idx) => nodes.push(<p key={`p-${nodes.length}-${idx}`}>{renderStrong(p)}</p>))
+            paragraphs.forEach((p, idx) => nodes.push(<p key={`p-${nodes.length}-${idx}`}>{renderInline(p)}</p>))
         }
 
         while (i < lines.length) {
@@ -498,11 +525,11 @@ export default function AiConsultantPage() {
                 nodes.push(
                     (isOrdered ? (
                         <ol key={`ol-${start}`}>
-                            {items.map((li, idx) => (<li key={idx}>{renderStrong(li)}</li>))}
+                            {items.map((li, idx) => (<li key={idx}>{renderInline(li)}</li>))}
                         </ol>
                     ) : (
                         <ul key={`ul-${start}`}>
-                            {items.map((li, idx) => (<li key={idx}>{renderStrong(li)}</li>))}
+                            {items.map((li, idx) => (<li key={idx}>{renderInline(li)}</li>))}
                         </ul>
                     ))
                 )

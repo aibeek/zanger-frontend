@@ -1,7 +1,7 @@
 .profileContent {
     display: flex;
     gap: 32px;
-    height: calc(100vh - 140px); /* Adjust based on header/footer */
+    height: calc(100vh - 220px);
     padding-bottom: 20px;
 }
 
@@ -165,6 +165,7 @@
 .messageContent li { margin: 6px 0; }
 .messageContent strong { font-weight: 600; }
 .messageContent { font-size: 14px; line-height: 1.6; }
+.messageContent a { color: #1E40AF; text-decoration: underline; }
 
 .modalOverlay {
     position: fixed;
