@@ -456,9 +456,10 @@ export default function AiConsultantPage() {
                 const before = text.slice(lastIndex, start)
                 nodes.push(...renderStrong(before))
             }
+            const cleanLabel = label.replace(/^\s*\*\*/, '').replace(/\*\*\s*$/, '')
             nodes.push(
                 <a key={`lnk-${start}`} href={url} target="_blank" rel="noopener noreferrer">
-                    <strong>{label}</strong>
+                    <strong>{cleanLabel}</strong>
                 </a>
             )
             lastIndex = start + full.length
