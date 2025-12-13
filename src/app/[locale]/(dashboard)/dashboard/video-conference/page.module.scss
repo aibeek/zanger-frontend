@@ -376,6 +376,37 @@
   z-index: 1;
 }
 
+.remoteVideosGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 4px;
+  z-index: 1;
+  pointer-events: none;
+  // Grid layout is dynamically updated via JavaScript based on number of videos
+}
+
+.remoteVideosGrid > div {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+  pointer-events: auto;
+}
+
+.remoteVideosGrid video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .remoteGrid {
   position: absolute;
   bottom: 12px;
@@ -386,7 +417,7 @@
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   padding: 8px;
   pointer-events: none;
-  z-index: 10;
+  z-index: 100;
   border-radius: 8px;
 }
 
