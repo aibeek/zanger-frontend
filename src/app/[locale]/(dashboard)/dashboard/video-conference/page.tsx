@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import { useTranslations } from 'next-intl'
@@ -15,6 +15,7 @@ import s from './page.module.scss'
 export default function VideoConferencePage() {
   const router = useRouter()
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const languageMatch = pathname.match(/^\/(\w{2})\//)
   const language = (languageMatch?.[1] || 'ru') as string
   const t = useTranslations()
@@ -53,6 +54,27 @@ export default function VideoConferencePage() {
       router.replace(`/${language}/dashboard/main`)
     }
   }, [router, language])
+
+  // Redirect to conference page if conference ID is provided in URL params or pathname
+  useEffect(() => {
+    const conferenceIdParam = searchParams.get('id') || searchParams.get('conferenceId')
+    
+    // Also check if pathname contains a UUID pattern (conference ID)
+    // Pattern: UUID format (e.g., f91657ed-6b8e-4122-9550-87080059b09b)
+    const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
+    const pathnameMatch = pathname.match(uuidPattern)
+    const conferenceIdFromPath = pathnameMatch ? pathnameMatch[0] : null
+    
+    const conferenceId = conferenceIdParam || conferenceIdFromPath
+    
+    if (conferenceId) {
+      // Ensure we redirect to the correct path with video-conference prefix
+      const targetPath = `/${language}/dashboard/video-conference/${conferenceId}`
+      if (pathname !== targetPath) {
+        router.replace(targetPath)
+      }
+    }
+  }, [searchParams, pathname, router, language])
 
   const isLawyer = Boolean((personalData as any)?.role_id?.code === 'lawyer')
 
@@ -461,7 +483,10 @@ export default function VideoConferencePage() {
                       <div className={s.cardMeta}>{t('dashboard.videoConference.type')}: {it.type}</div>
                     </div>
                     <div className={s.cardFooter}>
-                      <button className={s.watchBtn} onClick={() => window.open(String(it.code || '').replace(/`/g, '').trim(), '_blank')}>{t('dashboard.videoConference.openPage')}</button>
+                      <button className={s.watchBtn} onClick={() => {
+                        const conferenceUrl = `/${language}/dashboard/video-conference/${it.id}`
+                        window.open(conferenceUrl, '_blank')
+                      }}>{t('dashboard.videoConference.openPage')}</button>
                     </div>
                   </div>
                 ))}
