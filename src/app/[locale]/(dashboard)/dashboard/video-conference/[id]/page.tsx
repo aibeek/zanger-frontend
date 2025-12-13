@@ -234,6 +234,9 @@ export default function VideoConferenceLinkPage() {
       // Only show remote participants (exclude local participant)
       const remoteParticipants: Array<{ identity: string; name: string }> = []
       
+      // Update permissions based on remote participants
+      const newPermissions: Record<string, { canPublishAudio: boolean; canPublishVideo: boolean }> = {}
+      
       // Add remote participants only (excluding local)
       others.forEach((p: any) => {
         // Double-check: exclude local participant if it somehow appears in remoteParticipants
@@ -244,8 +247,24 @@ export default function VideoConferenceLinkPage() {
           identity: p.identity,
           name: p.name || p.identity
         })
+        
+        // Get permissions from remote participant
+        const canPublish = p.permissions?.canPublish ?? false
+        newPermissions[p.identity] = {
+          canPublishAudio: canPublish,
+          canPublishVideo: canPublish
+        }
       })
       
+      // Update permissions state
+      setParticipantPermissions(prev => {
+        return {
+          ...prev,
+          ...newPermissions
+        }
+      })
+      
+      console.log('remoteParticipants', others)
       setParticipants(remoteParticipants)
       return remoteParticipants
     } catch (e) {
@@ -501,6 +520,52 @@ export default function VideoConferenceLinkPage() {
               el.style.zIndex = '1'
               el.setAttribute('data-participant', participant.identity)
               videoAreaRef.current.appendChild(el)
+              
+              // If local video is in main area, move it to grid (when there are multiple videos)
+              if (totalActiveVideos > 1 && cameraOn && videoRef.current && videoRef.current.parentNode === videoAreaRef.current && remoteContainerRef.current) {
+                // Get or create local video wrapper in grid
+                let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+                
+                if (!localWrapper) {
+                  localWrapper = document.createElement('div')
+                  localWrapper.id = 'video-local'
+                  localWrapper.style.position = 'relative'
+                  localWrapper.style.width = '100%'
+                  localWrapper.style.height = '100%'
+                  localWrapper.style.aspectRatio = '16/9'
+                  localWrapper.style.cursor = 'grab'
+                  localWrapper.style.touchAction = 'none'
+                  localWrapper.style.zIndex = '100' // Higher z-index to be on top
+                  localWrapper.style.borderRadius = '6px'
+                  localWrapper.style.overflow = 'hidden'
+                  localWrapper.style.background = '#f1f5f9'
+                  
+                  remoteContainerRef.current.appendChild(localWrapper)
+                  attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+                }
+                
+                // Remove video from main area
+                videoRef.current.remove()
+                
+                // Update video styles for grid
+                videoRef.current.style.position = 'relative'
+                videoRef.current.style.width = '100%'
+                videoRef.current.style.height = '100%'
+                videoRef.current.style.objectFit = 'cover'
+                videoRef.current.style.top = '0'
+                videoRef.current.style.left = '0'
+                videoRef.current.style.zIndex = '1'
+                videoRef.current.style.transform = 'scaleX(-1)'
+                videoRef.current.style.display = 'block'
+                
+                // Remove placeholder if exists
+                const existingPlaceholder = localWrapper.querySelector('.local-video-placeholder')
+                if (existingPlaceholder) {
+                  existingPlaceholder.remove()
+                }
+                
+                localWrapper.appendChild(videoRef.current)
+              }
             }
           } else {
             // If user cannot publish, also fill main area with remote video
@@ -719,8 +784,7 @@ export default function VideoConferenceLinkPage() {
               if (isCurrentUser) {
                 if (permissionsRevoked) {
                   // Permissions were revoked
-                  alert('Вам отозвали разрешение на использование камеры и микрофона')
-                  
+
                   // Disable camera and microphone if they are on
                   if (roomRef.current) {
                     try {
@@ -739,8 +803,15 @@ export default function VideoConferenceLinkPage() {
                   
                   // Regenerate token and reconnect (new token will have canPublish=false)
                   reconnectWithNewToken()
+
+                  alert('Вам отозвали разрешение на использование камеры и микрофона')
+                  
                 } else {
                   // Permissions were granted
+                  // If user just got full connection permission, regenerate token and reconnect
+                  if (justGotFullPermission) {
+                    reconnectWithNewToken()
+                  }
                   const messages = []
                   if (canPublishAudio && !previousPermissions?.canPublishAudio) {
                     messages.push('Вам разрешили использовать микрофон')
@@ -752,10 +823,7 @@ export default function VideoConferenceLinkPage() {
                     alert(messages.join('\n'))
                   }
                   
-                  // If user just got full connection permission, regenerate token and reconnect
-                  if (justGotFullPermission) {
-                    reconnectWithNewToken()
-                  }
+                  
                 }
               }
             }
@@ -827,6 +895,55 @@ export default function VideoConferenceLinkPage() {
                 el.style.zIndex = '1'
                 el.setAttribute('data-participant', participant.identity)
                 videoAreaRef.current.appendChild(el)
+                
+                // After adding remote video, check if local video should be moved to grid
+                // Count remote videos in main area
+                const remoteVideosInMain = videoAreaRef.current.querySelectorAll('video[data-participant]')
+                const hasLocalVideo = cameraOn && videoRef.current
+                if (remoteVideosInMain.length > 0 && hasLocalVideo && videoRef.current && videoRef.current.parentNode === videoAreaRef.current && remoteContainerRef.current) {
+                  // Get or create local video wrapper in grid
+                  let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+                  
+                  if (!localWrapper) {
+                    localWrapper = document.createElement('div')
+                    localWrapper.id = 'video-local'
+                    localWrapper.style.position = 'relative'
+                    localWrapper.style.width = '100%'
+                    localWrapper.style.height = '100%'
+                    localWrapper.style.aspectRatio = '16/9'
+                    localWrapper.style.cursor = 'grab'
+                    localWrapper.style.touchAction = 'none'
+                    localWrapper.style.zIndex = '100' // Higher z-index to be on top
+                    localWrapper.style.borderRadius = '6px'
+                    localWrapper.style.overflow = 'hidden'
+                    localWrapper.style.background = '#f1f5f9'
+                    
+                    remoteContainerRef.current.appendChild(localWrapper)
+                    attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+                  }
+                  
+                  // Remove video from main area
+                  videoRef.current.remove()
+                  
+                  // Update video styles for grid
+                  videoRef.current.style.position = 'relative'
+                  videoRef.current.style.width = '100%'
+                  videoRef.current.style.height = '100%'
+                  videoRef.current.style.objectFit = 'cover'
+                  videoRef.current.style.top = '0'
+                  videoRef.current.style.left = '0'
+                  videoRef.current.style.zIndex = '1'
+                  videoRef.current.style.transform = 'scaleX(-1)'
+                  videoRef.current.style.display = 'block'
+                  
+                  // Remove placeholder if exists
+                  const existingPlaceholder = localWrapper.querySelector('.local-video-placeholder')
+                  if (existingPlaceholder) {
+                    existingPlaceholder.remove()
+                  }
+                  
+                  localWrapper.appendChild(videoRef.current)
+                }
               }
             } else {
               // If user cannot publish, also fill main area with remote video
@@ -998,11 +1115,38 @@ export default function VideoConferenceLinkPage() {
       if (remoteContainerRef.current) {
         remoteContainerRef.current.innerHTML = ''
       }
+      
+      // Clear videoAreaRef but preserve the video element
       if (videoAreaRef.current) {
-        videoAreaRef.current.innerHTML = ''
+        // Remove all remote video elements (marked with data-participant) but keep local video
+        const remoteVideos = videoAreaRef.current.querySelectorAll('video[data-participant]')
+        remoteVideos.forEach((video) => video.remove())
+        
+        // Remove placeholder if exists
+        const placeholder = videoAreaRef.current.querySelector(`.${s.videoPlaceholder}`)
+        if (placeholder) placeholder.remove()
+        
+        // Ensure local video element is in DOM (React should handle this, but double-check)
+        const videoElement = videoRef.current
+        if (videoElement && !videoAreaRef.current.contains(videoElement)) {
+          videoElement.style.display = 'none'
+          videoAreaRef.current.appendChild(videoElement)
+        }
       }
+      
       if (audioContainerRef.current) {
         audioContainerRef.current.innerHTML = ''
+      }
+      
+      // Reset video ref if element was lost
+      if (videoRef.current && !document.body.contains(videoRef.current)) {
+        // Element was removed, React will recreate it on next render
+        // But we need to ensure it exists - wait for next render cycle
+        setTimeout(() => {
+          if (!videoRef.current && videoAreaRef.current) {
+            // React should recreate it, but if not, we'll handle in useEffect
+          }
+        }, 0)
       }
       
       // Reset connection state
@@ -1365,6 +1509,55 @@ export default function VideoConferenceLinkPage() {
                   el.style.zIndex = '1'
                   el.setAttribute('data-participant', participant.identity)
                   videoAreaRef.current.appendChild(el)
+                  
+                  // After adding remote video, check if local video should be moved to grid
+                  // Count remote videos in main area
+                  const remoteVideosInMain = videoAreaRef.current.querySelectorAll('video[data-participant]')
+                  const hasLocalVideo = cameraOn && videoRef.current
+                  if (remoteVideosInMain.length > 0 && hasLocalVideo && videoRef.current && videoRef.current.parentNode === videoAreaRef.current && remoteContainerRef.current) {
+                    // Get or create local video wrapper in grid
+                    let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+                    
+                    if (!localWrapper) {
+                      localWrapper = document.createElement('div')
+                      localWrapper.id = 'video-local'
+                      localWrapper.style.position = 'relative'
+                      localWrapper.style.width = '100%'
+                      localWrapper.style.height = '100%'
+                      localWrapper.style.aspectRatio = '16/9'
+                      localWrapper.style.cursor = 'grab'
+                      localWrapper.style.touchAction = 'none'
+                      localWrapper.style.zIndex = '100' // Higher z-index to be on top
+                      localWrapper.style.borderRadius = '6px'
+                      localWrapper.style.overflow = 'hidden'
+                      localWrapper.style.background = '#f1f5f9'
+                      
+                      remoteContainerRef.current.appendChild(localWrapper)
+                      attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+                    }
+                    
+                    // Remove video from main area
+                    videoRef.current.remove()
+                    
+                    // Update video styles for grid
+                    videoRef.current.style.position = 'relative'
+                    videoRef.current.style.width = '100%'
+                    videoRef.current.style.height = '100%'
+                    videoRef.current.style.objectFit = 'cover'
+                    videoRef.current.style.top = '0'
+                    videoRef.current.style.left = '0'
+                    videoRef.current.style.zIndex = '1'
+                    videoRef.current.style.transform = 'scaleX(-1)'
+                    videoRef.current.style.display = 'block'
+                    
+                    // Remove placeholder if exists
+                    const existingPlaceholder = localWrapper.querySelector('.local-video-placeholder')
+                    if (existingPlaceholder) {
+                      existingPlaceholder.remove()
+                    }
+                    
+                    localWrapper.appendChild(videoRef.current)
+                  }
                 }
               } else {
                 // If user cannot publish, also fill main area with remote video
@@ -1487,6 +1680,12 @@ export default function VideoConferenceLinkPage() {
       const timer = setTimeout(() => {
         if (!videoRef.current || !roomRef.current) return
         
+        // Check if video element is still in DOM
+        if (!document.body.contains(videoRef.current)) {
+          console.warn('Video element not in DOM, skipping attach')
+          return
+        }
+        
         const LKC = (window as any).LivekitClient || (window as any).LiveKit
         if (!LKC) return
         
@@ -1494,8 +1693,23 @@ export default function VideoConferenceLinkPage() {
         const camPub = roomRef.current.localParticipant.getTrackPublication(Track.Source.Camera)
         
         // Attach video track if camera is on and track is available
-        if (cameraOn && camPub?.videoTrack) {
-          camPub.videoTrack.attach(videoRef.current)
+        // Only attach if element is in DOM and not already attached
+        if (cameraOn && camPub?.videoTrack && videoRef.current) {
+          try {
+            // Detach any existing track first to avoid conflicts
+            const existingTrack = camPub.videoTrack
+            if (existingTrack) {
+              existingTrack.detach()
+            }
+            // Small delay to ensure detach is complete
+            setTimeout(() => {
+              if (videoRef.current && document.body.contains(videoRef.current) && camPub?.videoTrack) {
+                camPub.videoTrack.attach(videoRef.current)
+              }
+            }, 50)
+          } catch (e) {
+            console.error('Error attaching video track:', e)
+          }
         }
         
         // When user can publish, manage video placement and placeholder
@@ -1632,12 +1846,22 @@ export default function VideoConferenceLinkPage() {
           }
           
           // Attach track if camera is on
-          if (cameraOn && camPub?.videoTrack) {
-            camPub.videoTrack.attach(videoRef.current)
+          if (cameraOn && camPub?.videoTrack && videoRef.current && document.body.contains(videoRef.current)) {
+            try {
+              // Detach any existing track first
+              camPub.videoTrack.detach()
+              setTimeout(() => {
+                if (videoRef.current && document.body.contains(videoRef.current) && camPub?.videoTrack) {
+                  camPub.videoTrack.attach(videoRef.current)
+                }
+              }, 50)
+            } catch (e) {
+              console.error('Error attaching video track:', e)
+            }
           }
           
           // Ensure video is in main area
-          if (videoRef.current.parentNode !== videoAreaRef.current) {
+          if (videoRef.current && videoRef.current.parentNode !== videoAreaRef.current) {
             videoRef.current.style.position = 'absolute'
             videoRef.current.style.width = '100%'
             videoRef.current.style.height = '100%'
@@ -1671,14 +1895,48 @@ export default function VideoConferenceLinkPage() {
           return
         }
       }
+      
+      // Ensure video element exists in DOM before enabling camera
+      if (!videoRef.current || !document.body.contains(videoRef.current)) {
+        // Video element not in DOM, wait for it to be created
+        if (videoAreaRef.current) {
+          // Check if we need to recreate the element
+          const existingVideo = videoAreaRef.current.querySelector('video')
+          if (existingVideo) {
+            // Use existing video element
+            videoRef.current = existingVideo as HTMLVideoElement
+          } else {
+            // Create new video element
+            const newVideo = document.createElement('video')
+            newVideo.autoplay = true
+            newVideo.muted = true
+            newVideo.playsInline = true
+            newVideo.className = s.video
+            newVideo.style.display = 'none'
+            videoAreaRef.current.appendChild(newVideo)
+            videoRef.current = newVideo
+          }
+        } else {
+          console.error('videoAreaRef not available')
+          return
+        }
+      }
+      
       const newState = !cameraOn
       
       if (newState) {
         try {
+          // Ensure video element is in DOM before attaching
+          if (!videoRef.current || !document.body.contains(videoRef.current)) {
+            console.error('Video element not in DOM, cannot enable camera')
+            return
+          }
           await room.localParticipant.setCameraEnabled(true, selectedCam ? { deviceId: selectedCam } : undefined)
         } catch (e) {
           console.warn('Failed with specific device, trying default', e)
-          await room.localParticipant.setCameraEnabled(true)
+          if (videoRef.current && document.body.contains(videoRef.current)) {
+            await room.localParticipant.setCameraEnabled(true)
+          }
         }
         // Refresh devices to get labels if this was the first permission grant
         getDevices()
