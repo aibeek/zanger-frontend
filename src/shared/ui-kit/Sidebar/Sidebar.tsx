@@ -177,7 +177,6 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     </button>
                 )}
             </div>
-            {!inVideoContext && (
             <div className={s.userProfile}>
                     <div className={s.avatarWrapper}>
                         <ProfileAvatar avatarUrl={icon} />
@@ -191,7 +190,6 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                         </div>
                     </div>
             </div>
-            )}
 
 
             <nav className={s.navigation}>

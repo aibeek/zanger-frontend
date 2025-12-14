@@ -155,7 +155,7 @@ export const ModulesSection = () => {
                 <p className={s.moduleDescription}>{module.description}</p>
               </div>
               <div className={s.moduleIcon}>
-                <div className={(() => { const n = module.title.replace(/\s+/g, '').toUpperCase(); const isV = n.includes('ВКС') || n.includes('БЕЙНЕ') || n.includes('CONFERENCE') || n.includes('VIDEO'); return isV ? s.iconCircleEdo : s.iconCircle })()}>
+                <div className={s.iconCircle}>
                   <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
                 </div>
               </div>

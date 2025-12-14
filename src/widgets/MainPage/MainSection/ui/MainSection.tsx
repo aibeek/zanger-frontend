@@ -10,7 +10,7 @@ import s from './MainSection.module.scss'
 import Iphones from '@/app/assets/images/iphones.webp'
 import GooglePlay from '@/app/assets/icons/googleplay.webp'
 import AppleStore from '@/app/assets/icons/appstore.webp'
-import HubsLogo from '../../../../../public/assets/images/hubs.png'
+import HubsLogo from '../../../../../public/assets/images/hubs.svg'
 
 
 export const MainSection = () => {
