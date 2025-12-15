@@ -41,7 +41,8 @@
 // Content Area
 .contentArea {
     flex: 1;
-    padding: 32px;
+    padding: 10px;
+    border-radius: 10px;
     
     @media (max-width: 768px) {
         padding: 80px 16px 16px 16px; // Добавляем отступ сверху для кнопки-гамбургера

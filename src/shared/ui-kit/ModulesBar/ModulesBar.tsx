@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import Image from 'next/image'
+import Cookies from 'js-cookie'
 import { Button, Modal } from '@/shared/ui-kit'
 import s from './ModulesBar.module.scss'
 import monitor from '@/app/assets/icons/monitor.webp'
@@ -26,7 +27,10 @@ export const ModulesBar = () => {
   const languageMatch = pathname.match(/^\/([a-z]{2})/)
   const language = languageMatch ? languageMatch[1] : 'ru'
 
-  const sections = [
+  const userRole = Cookies.get('role')
+  const isClient = userRole === 'client'
+
+  const allSections = [
     t('dashboard.footer.sections.applications'),
     t('dashboard.footer.sections.digitalSignature'),
     t('dashboard.footer.sections.aiConsultant'),
@@ -36,6 +40,15 @@ export const ModulesBar = () => {
     'Семинары',
     t('dashboard.footer.sections.database'),
   ]
+
+  const sections = isClient 
+    ? [
+        t('dashboard.footer.sections.applications'),
+        t('dashboard.footer.sections.digitalSignature'),
+        // t('dashboard.footer.sections.aiConsultant'),
+        t('dashboard.footer.sections.videoConference'),
+      ]
+    : allSections
 
   const digitalSignatureLabel = t('dashboard.footer.sections.digitalSignature')
   const applicationsLabel = t('dashboard.footer.sections.applications')
