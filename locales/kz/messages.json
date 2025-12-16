@@ -1020,7 +1020,10 @@
 		"errorCreateMeeting": "Кездесу құру қатесі",
 		"enterConferenceId": "conference_id енгізіңіз",
 		"enterCodeOrLink": "Конференция кодын немесе сілтемесін енгізіңіз",
-		"withoutTopic": "Тақырыпсыз"
+		"withoutTopic": "Тақырыпсыз",
+		"delete": "Жою",
+		"confirmDelete": "Конференцияны жойғыңыз келетініне сенімдісіз бе?",
+		"errorDelete": "Конференцияны жою кезінде қате пайда болды"
 	},
     "home": {
       "title": "Dashboard негізгі беті",
