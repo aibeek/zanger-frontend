@@ -1034,7 +1034,10 @@
 			"errorCreateMeeting": "Ошибка создания встречи",
 			"enterConferenceId": "Введите conference_id",
 			"enterCodeOrLink": "Введите код конференции или ссылку",
-			"withoutTopic": "Без темы"
+			"withoutTopic": "Без темы",
+			"delete": "Удалить",
+			"confirmDelete": "Вы уверены, что хотите удалить конференцию?",
+			"errorDelete": "Ошибка при удалении конференции"
 		},
 				"calendar": {
 			"mon": "Пн",

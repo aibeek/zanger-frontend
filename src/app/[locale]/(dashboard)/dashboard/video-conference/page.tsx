@@ -34,7 +34,7 @@ export default function VideoConferencePage() {
   const [participants, setParticipants] = useState<any[]>([])
   const [kickUserId, setKickUserId] = useState('')
   const BASE = `${VIDEO_API_BASE_URL}/java-api/`
-  const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string }>>([])
+  const [scheduledList, setScheduledList] = useState<Array<{ id: string; code: string; topic: string; type: string; planned_time: string; createdBy?: number | null }>>([])
   const [mounted, setMounted] = useState(false)
   const [page, setPage] = useState(0)
   const [size, setSize] = useState(10)
@@ -134,7 +134,8 @@ export default function VideoConferencePage() {
           code: String(i.code || ''), 
           topic: i.topic || '', 
           type: String(i.type || ''), 
-          planned_time: String(plannedTime)
+          planned_time: String(plannedTime),
+          createdBy: i.createdBy != null ? Number(i.createdBy) : null
         }
       })
       setScheduledList(mappedItems)
@@ -144,6 +145,31 @@ export default function VideoConferencePage() {
       console.error('Failed to load conferences:', e)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function deleteConference(id: string) {
+    if (!id) return
+    if (!confirm(t('dashboard.videoConference.confirmDelete'))) return
+    
+    const conferenceId = String(id)
+    
+    try {
+      await httpClientWithAuth(`${BASE}video-conferences/${conferenceId}`, {
+        method: 'DELETE',
+      })
+      // Remove from array immediately to update UI
+      setScheduledList(prev => {
+        const newList = prev.filter(item => String(item.id) !== conferenceId)
+        return newList
+      })
+      // Update total elements count
+      setTotalElements(prev => Math.max(0, prev - 1))
+    } catch (e: any) {
+      console.error('Failed to delete conference:', e)
+      setError(e?.message || t('dashboard.videoConference.errorDelete'))
+      // Reload list on error to ensure consistency
+      await loadConferences(page, size)
     }
   }
 
@@ -474,8 +500,8 @@ export default function VideoConferencePage() {
               <div className={s.cardsGrid}>
                 {scheduledList.length === 0 ? (
                   <div className={s.emptyBox}>{t('dashboard.videoConference.noScheduledMeetings')}</div>
-                ) : scheduledList.map((it, idx) => (
-                  <div key={`p-${idx}`} className={s.card}>
+                ) : scheduledList.map((it) => (
+                  <div key={it.id} className={s.card}>
                     <div className={s.cardHeader}>{t('dashboard.videoConference.conference')}</div>
                     <div className={s.cardBody}>
                       <div className={s.cardTitle}>{it.topic || t('dashboard.videoConference.withoutTopic')}</div>
@@ -487,6 +513,13 @@ export default function VideoConferencePage() {
                         const conferenceUrl = `/${language}/dashboard/video-conference/${it.id}`
                         window.open(conferenceUrl, '_blank')
                       }}>{t('dashboard.videoConference.openPage')}</button>
+                      {(() => {
+                        const currentUserId = Number((personalData as any)?.id || userId || 0)
+                        const creatorId = it.createdBy != null ? Number(it.createdBy) : null
+                        return creatorId !== null && currentUserId === creatorId && currentUserId > 0 ? (
+                          <button className={s.deleteBtn} onClick={() => deleteConference(it.id)}>{t('dashboard.videoConference.delete')}</button>
+                        ) : null
+                      })()}
                     </div>
                   </div>
                 ))}

@@ -58,6 +58,13 @@ export default function VideoConferenceLinkPage() {
   const [chatMessages, setChatMessages] = useState<Array<{ id: string; identity: string; message: string; timestamp: number; msgName?: string }>>([])
   const [chatInput, setChatInput] = useState('')
   const [participantPermissions, setParticipantPermissions] = useState<Record<string, { canPublishAudio: boolean; canPublishVideo: boolean }>>({})
+  const [cameraRequestNotification, setCameraRequestNotification] = useState<{ show: boolean; from?: string; fromIdentity?: string; requestId?: string }>({ show: false })
+  
+  // Debug: Log when notification state changes
+  useEffect(() => {
+    console.log('Camera request notification state changed:', cameraRequestNotification)
+  }, [cameraRequestNotification])
+  
   const dragState = useRef<{ isDragging: boolean; elementId: string | null; startX: number; startY: number; initialX: number; initialY: number }>({
     isDragging: false,
     elementId: null,
@@ -453,41 +460,67 @@ export default function VideoConferenceLinkPage() {
     
     const videoCount = remoteVideosContainerRef.current.children.length
     
-    // Update grid layout based on number of videos - arrange vertically (in columns)
+    // Update grid layout based on number of videos - maintain rectangle (16:9) aspect ratio
     if (videoCount === 0) {
       remoteVideosContainerRef.current.style.display = 'none'
     } else {
       remoteVideosContainerRef.current.style.display = 'grid'
+      remoteVideosContainerRef.current.style.gridAutoFlow = 'row' // Fill rows first (horizontally)
       
-      // For vertical layout (columns), prioritize more rows, fewer columns
+      // Calculate optimal grid layout based on video count
+      // Aim for a layout that maintains 16:9 aspect ratio for each video
       if (videoCount === 1) {
+        // Single video: full width, maintain aspect ratio
         remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
         remoteVideosContainerRef.current.style.gridTemplateRows = '1fr'
       } else if (videoCount === 2) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
-      } else if (videoCount === 3) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
-      } else if (videoCount === 4) {
-        remoteVideosContainerRef.current.style.gridTemplateColumns = '1fr'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(4, 1fr)'
-      } else if (videoCount <= 6) {
-        // 5-6 videos: 2 columns, 3 rows (vertical stacking)
+        // 2 videos: side by side
         remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(2, 1fr)'
-        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
-      } else if (videoCount <= 9) {
-        // 7-9 videos: 3 columns, 3 rows
+        remoteVideosContainerRef.current.style.gridTemplateRows = '1fr'
+      } else if (videoCount === 3) {
+        // 3 videos: 3 columns, 1 row
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = '1fr'
+      } else if (videoCount === 4) {
+        // 4 videos: 2x2 grid
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(2, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 5) {
+        // 5 videos: 3 columns, 2 rows (3 on top, 2 on bottom)
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 6) {
+        // 6 videos: 3x2 grid
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 7) {
+        // 7 videos: 4 columns, 2 rows (4 on top, 3 on bottom)
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(4, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 8) {
+        // 8 videos: 4x2 grid
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(4, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(2, 1fr)'
+      } else if (videoCount === 9) {
+        // 9 videos: 3x3 grid
         remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
         remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
       } else if (videoCount <= 12) {
-        // 10-12 videos: 3 columns, 4 rows
-        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(3, 1fr)'
+        // 10-12 videos: 4 columns, 3 rows
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(4, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(3, 1fr)'
+      } else if (videoCount <= 16) {
+        // 13-16 videos: 4x4 grid
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(4, 1fr)'
+        remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(4, 1fr)'
+      } else if (videoCount <= 20) {
+        // 17-20 videos: 5 columns, 4 rows
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(5, 1fr)'
         remoteVideosContainerRef.current.style.gridTemplateRows = 'repeat(4, 1fr)'
       } else {
-        // For more than 12 videos, use auto-fit with vertical priority
-        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))'
-        remoteVideosContainerRef.current.style.gridAutoRows = '1fr'
+        // For more than 20 videos, use auto-fit with minimum width
+        remoteVideosContainerRef.current.style.gridTemplateColumns = 'repeat(auto-fit, minmax(240px, 1fr))'
+        remoteVideosContainerRef.current.style.gridAutoRows = 'minmax(135px, 1fr)' // Maintain 16:9 aspect ratio (240/1.777 = 135)
       }
     }
   }
@@ -615,9 +648,7 @@ export default function VideoConferenceLinkPage() {
         canPub = Boolean(data.canPublish)
         setIsStream(false)
         // Store creatorUserId if available
-        if (data.creatorUserId !== undefined) {
-          setCreatorUserId(data.creatorUserId)
-        }
+        setCreatorUserId(data.creatorUserId)
       }
       
       // Ensure we always use the correct LiveKit URL
@@ -867,6 +898,77 @@ export default function VideoConferenceLinkPage() {
                   
                 }
               }
+            } 
+          } else if (messageData.type === 'camera_request') {
+            // Handle camera request - show notification to stream owner
+            const currentIdentity = String(connectedInfo?.identity || (personalData as any)?.id || '')
+            const targetIdentity = String(messageData.targetIdentity || '')
+            const fromIdentity = String(messageData.fromIdentity || '')
+            
+            // Show notification to stream owner if they are the target
+            // Check if current user is stream owner by comparing with creatorUserId
+            const currentUserId = Number(userId || (personalData as any)?.id || 0)
+            const isCurrentUserStreamOwner = creatorUserId !== null && creatorUserId === currentUserId
+
+            
+            // Check if targetIdentity matches currentIdentity (exact match)
+            // OR if targetIdentity matches creatorUserId (as string)
+            const targetMatchesCurrent = targetIdentity === currentIdentity
+            const targetMatchesCreatorId = creatorUserId !== null && targetIdentity === String(creatorUserId)
+            
+            console.log('Camera request received:', {
+              targetIdentity,
+              currentIdentity,
+              creatorUserId,
+              currentUserId,
+              isCurrentUserStreamOwner,
+              targetMatchesCurrent,
+              targetMatchesCreatorId,
+              messageData,
+              connectedInfo
+            })
+            
+            // Show notification to stream owner if targetIdentity matches their identity
+            // Check multiple ways to match:
+            // 1. Exact match with currentIdentity
+            // 2. Match with creatorUserId (as string)
+            // 3. Match with creatorUserId (as number comparison)
+            const targetMatchesCreatorIdAsString = creatorUserId !== null && targetIdentity === String(creatorUserId)
+            const targetMatchesCreatorIdAsNumber = creatorUserId !== null && Number(targetIdentity) === creatorUserId
+
+            console.log('targetMatchesCreatorIdAsString', targetMatchesCreatorIdAsString)
+            console.log('targetMatchesCreatorIdAsNumber', targetMatchesCreatorIdAsNumber)
+            console.log('targetMatchesCurrent', targetMatchesCurrent)
+            console.log('isCurrentUserStreamOwner', isCurrentUserStreamOwner)
+            
+            const shouldShow = currentIdentity == targetIdentity;
+            
+            console.log('Should show notification:', {
+              shouldShow,
+              isCurrentUserStreamOwner,
+              targetMatchesCurrent,
+              targetMatchesCreatorIdAsString,
+              targetMatchesCreatorIdAsNumber,
+              targetIdentity,
+              currentIdentity,
+              creatorUserId,
+              'targetIdentity type': typeof targetIdentity,
+              'currentIdentity type': typeof currentIdentity,
+              'creatorUserId type': typeof creatorUserId
+            })
+            
+            if (shouldShow) {
+              console.log('✅ Setting camera request notification to show')
+              const notificationData = {
+                show: true,
+                from: messageData.fromName || messageData.fromIdentity || 'Участник',
+                fromIdentity: fromIdentity,
+                requestId: messageData.requestId
+              }
+              console.log('Notification data:', notificationData)
+              setCameraRequestNotification(notificationData)
+            } else {
+              console.log('❌ NOT showing notification - conditions not met')
             }
           }
         } catch (e) {
@@ -1050,10 +1152,8 @@ export default function VideoConferenceLinkPage() {
       const identity = data.identity
       const canPub = Boolean(data.canPublish)
       // Store creatorUserId if available
-      if (data.creatorUserId !== undefined) {
-        setCreatorUserId(data.creatorUserId)
-      }
-      
+      setCreatorUserId(data.creatorUserId)
+
       // Store new token and URL
       livekitTokenRef.current = newToken
       livekitUrlRef.current = url
@@ -1725,6 +1825,41 @@ export default function VideoConferenceLinkPage() {
     }
   }
 
+  async function requestCameraFromParticipant(targetIdentity: string) {
+    if (!roomRef.current) return
+    
+    try {
+      const message = {
+        type: 'camera_request',
+        targetIdentity: targetIdentity,
+        fromIdentity: connectedInfo?.identity || String((personalData as any)?.id || ''),
+        fromName: connectedInfo?.name || connectedInfo?.userName || 'Участник',
+        timestamp: Date.now(),
+        requestId: `camera_req_${Date.now()}_${targetIdentity}`
+      }
+      
+      // Check if room is connected before sending data
+      if (roomRef.current.state !== 'connected') {
+        console.warn('Cannot send camera request, room not ready')
+        return
+      }
+      
+      const encoder = new TextEncoder()
+      const data = encoder.encode(JSON.stringify(message))
+      
+      try {
+        await roomRef.current.localParticipant.publishData(data, {
+          reliable: true,
+          destinationIdentities: [targetIdentity] // Send only to target participant
+        })
+      } catch (e) {
+        console.warn('Failed to send camera request:', e)
+      }
+    } catch (e) {
+      console.error('Error sending camera request:', e)
+    }
+  }
+
   async function toggleParticipantConnection(targetIdentity: string, allow: boolean) {
     if (!roomRef.current || !isStreamOwner || !conferenceId) return
     
@@ -1908,8 +2043,70 @@ export default function VideoConferenceLinkPage() {
     }
   }
 
+  async function handleCameraRequestResponse(accept: boolean) {
+    if (accept && cameraRequestNotification.fromIdentity && conferenceId) {
+      // Grant permissions to the requester
+      await toggleParticipantConnection(cameraRequestNotification.fromIdentity, true)
+    }
+    setCameraRequestNotification({ show: false })
+  }
+
   return (
     <div className={s.meetingCard}>
+      {cameraRequestNotification.show && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: '#fff',
+          border: '2px solid #3b82f6',
+          borderRadius: '12px',
+          padding: '16px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 10000,
+          minWidth: '300px',
+          maxWidth: '400px'
+        }}>
+          <div style={{ marginBottom: '12px', fontWeight: 600, fontSize: 14, color: '#1e293b' }}>
+            Запрос на разрешение камеры и микрофона
+          </div>
+          <div style={{ marginBottom: '16px', fontSize: 13, color: '#64748b' }}>
+            {cameraRequestNotification.from} просит разрешение на использование камеры и микрофона
+          </div>
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+            <button
+              onClick={() => handleCameraRequestResponse(false)}
+              style={{
+                padding: '8px 16px',
+                fontSize: 13,
+                backgroundColor: '#f1f5f9',
+                color: '#64748b',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 500
+              }}
+            >
+              Отклонить
+            </button>
+            <button
+              onClick={() => handleCameraRequestResponse(true)}
+              style={{
+                padding: '8px 16px',
+                fontSize: 13,
+                backgroundColor: '#3b82f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 500
+              }}
+            >
+              Разрешить
+            </button>
+          </div>
+        </div>
+      )}
       <div className={s.header}>
         <Image src="/assets/icons/myconf.svg" alt="" width={24} height={24} />
         <span className={s.title}>{conf?.topic || 'Конференция'}</span>
@@ -1925,10 +2122,42 @@ export default function VideoConferenceLinkPage() {
             </button>
           </div>
         </div>
-        <div className={s.infoRow} style={{ fontSize: 12, color: '#64748b', justifyContent: 'flex-start', gap: 8 }}>
+        <div className={s.infoRow} style={{ fontSize: 12, color: '#64748b', justifyContent: 'flex-start', gap: 8, marginBottom: 12 }}>
           <span>Пригласить по ссылке:</span>
           <span className={s.linkAction} onClick={() => navigator.clipboard.writeText(window.location.href)}>скопировать</span>
         </div>
+        {!isStreamOwner && creatorUserId !== null && !hasDevicePermissions && (() => {
+          // Stream owner's identity should be the creatorUserId as string
+          // The stream owner might be in participants list or might be the local participant
+          // Try to find in participants first, otherwise use creatorUserId directly
+          const streamOwnerParticipant = participants.find(p => Number(p.identity) === creatorUserId)
+          const streamOwnerIdentity = streamOwnerParticipant?.identity || String(creatorUserId)
+          
+          console.log('Camera request button - creatorUserId:', creatorUserId, 'streamOwnerIdentity:', streamOwnerIdentity, 'connectedInfo.identity:', connectedInfo?.identity, 'participants:', participants.map(p => ({ identity: p.identity, name: p.name })))
+          
+          return (
+            <button
+              onClick={() => {
+                console.log('Sending camera request to:', streamOwnerIdentity, 'from:', connectedInfo?.identity || (personalData as any)?.id)
+                requestCameraFromParticipant(streamOwnerIdentity)
+              }}
+              style={{
+                padding: '8px 12px',
+                fontSize: 13,
+                backgroundColor: '#3b82f6',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 500,
+                width: '100%',
+                marginTop: '8px'
+              }}
+            >
+              Запросить камеру у владельца
+            </button>
+          )
+        })()}
       </div>
 
       <div className={s.layout}>
@@ -2093,22 +2322,26 @@ export default function VideoConferenceLinkPage() {
                     <div key={idx} className={s.participantItem} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '12px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                         <span>{p.name || p.identity}</span>
-                        <span style={{ fontSize: 12, color: '#64748b' }}>Участник</span>
+                        <span style={{ fontSize: 12, color: '#64748b' }}>
+                          {creatorUserId !== null && Number(p.identity) === creatorUserId ? 'Владелец стрима' : 'Участник'}
+                        </span>
                       </div>
                       {isStreamOwner && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%', marginTop: '8px' }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: 13 }}>
-                            <input
-                              type="checkbox"
-                              checked={hasConnectionPermission}
-                              onChange={(e) => toggleParticipantConnection(p.identity, e.target.checked)}
-                              style={{ cursor: 'pointer', width: '16px', height: '16px' }}
-                            />
-                            <span>Разрешить подключиться</span>
-                          </label>
-                          {hasConnectionPermission && (
-                            <span style={{ fontSize: 11, color: '#10b981', marginLeft: '4px' }}>✓</span>
-                          )}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%', marginTop: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', width: '100%' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: 13 }}>
+                              <input
+                                type="checkbox"
+                                checked={hasConnectionPermission}
+                                onChange={(e) => toggleParticipantConnection(p.identity, e.target.checked)}
+                                style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                              />
+                              <span>Разрешить подключиться</span>
+                            </label>
+                            {hasConnectionPermission && (
+                              <span style={{ fontSize: 11, color: '#10b981', marginLeft: '4px' }}>✓</span>
+                            )}
+                          </div>
                         </div>
                       )}
                       {!isStreamOwner && isCurrentUser && (
