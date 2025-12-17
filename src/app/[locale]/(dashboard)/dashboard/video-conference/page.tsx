@@ -29,7 +29,7 @@ export default function VideoConferencePage() {
   const [streamTopic, setStreamTopic] = useState('')
   const [streamDescription, setStreamDescription] = useState('')
   const [showStreamModal, setShowStreamModal] = useState(false)
-  const [activeStreams, setActiveStreams] = useState<Array<{ id: string; code: string; topic: string; type: string; createdAt: string; plannedTime?: string; views?: number; previewUrl?: string }>>([])
+  const [activeStreams, setActiveStreams] = useState<Array<{ id: string; code: string; topic: string; description?: string; type: string; createdAt: string; plannedTime?: string; views?: number; previewUrl?: string }>>([])
   const [loadingActiveStreams, setLoadingActiveStreams] = useState(false)
   const view = searchParams.get('view') || 'my'
 
@@ -133,6 +133,7 @@ export default function VideoConferencePage() {
         id: String(item.id || ''),
         code: String(item.code || ''),
         topic: item.topic || '',
+        description: item.description || undefined,
         type: String(item.type || ''),
         createdAt: item.createdAt || item.created_at || '',
         plannedTime: item.plannedTime || item.planned_time || '',
@@ -641,6 +642,11 @@ export default function VideoConferencePage() {
                             className={s.streamCard}
                             onClick={() => handleStreamClick(stream.id)}
                           >
+                            {stream.description && stream.description.trim() && (
+                              <div className={s.streamDescriptionTooltip}>
+                                <div className={s.streamDescriptionText}>{stream.description}</div>
+                              </div>
+                            )}
                             <div className={s.streamThumbnail}>
                               {stream.previewUrl ? (
                                 <img 

@@ -45,7 +45,7 @@ export default function VideoConferenceLinkPage() {
   const [canPublish, setCanPublish] = useState(false)
   const [isStream, setIsStream] = useState(false)
   const [creatorUserId, setCreatorUserId] = useState<number | null>(null)
-  const [conf, setConf] = useState<{ topic?: string; planned_time?: string; code?: string } | null>(null)
+  const [conf, setConf] = useState<{ topic?: string; description?: string; planned_time?: string; code?: string } | null>(null)
   const [addUserId, setAddUserId] = useState('')
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
   const [selectedCam, setSelectedCam] = useState('')
@@ -212,10 +212,34 @@ export default function VideoConferenceLinkPage() {
 
   async function loadConference() {
     try {
+      // Try to get conference details from video-conferences API first
+      try {
+        const confRes = await httpClientWithAuth<any>(`${BASE_API}/${conferenceId}`, { method: 'GET' })
+        if (confRes) {
+          setConf({ 
+            topic: confRes.topic, 
+            description: confRes.description,
+            planned_time: confRes.planned_time ? String(confRes.planned_time) : undefined, 
+            code: confRes.code ? String(confRes.code) : undefined 
+          })
+          return
+        }
+      } catch (e) {
+        // Fallback to old endpoint if new one fails
+      }
+      
+      // Fallback to old endpoint
       const res = await httpClientWithAuth<any>(`${BASE}/conferences`, { method: 'GET' })
       const items = Array.isArray(res?.items) ? res.items : []
       const found = items.find((i: any) => String(i.id) === conferenceId)
-      if (found) setConf({ topic: found.topic, planned_time: String(found.planned_time), code: String(found.code || '') })
+      if (found) {
+        setConf({ 
+          topic: found.topic, 
+          description: found.description,
+          planned_time: String(found.planned_time), 
+          code: String(found.code || '') 
+        })
+      }
     } catch {}
   }
 
@@ -649,6 +673,14 @@ export default function VideoConferenceLinkPage() {
         setIsStream(false)
         // Store creatorUserId if available
         setCreatorUserId(data.creatorUserId)
+        // Update conference info with description if available from join response
+        if (data.description || data.topic) {
+          setConf(prev => ({
+            ...prev,
+            topic: data.topic || prev?.topic,
+            description: data.description || prev?.description
+          }))
+        }
       }
       
       // Ensure we always use the correct LiveKit URL
@@ -1153,6 +1185,14 @@ export default function VideoConferenceLinkPage() {
       const canPub = Boolean(data.canPublish)
       // Store creatorUserId if available
       setCreatorUserId(data.creatorUserId)
+      // Update conference info with description if available
+      if (data.description || data.topic) {
+        setConf(prev => ({
+          ...prev,
+          topic: data.topic || prev?.topic,
+          description: data.description || prev?.description
+        }))
+      }
 
       // Store new token and URL
       livekitTokenRef.current = newToken
@@ -2109,7 +2149,14 @@ export default function VideoConferenceLinkPage() {
       )}
       <div className={s.header}>
         <Image src="/assets/icons/myconf.svg" alt="" width={24} height={24} />
-        <span className={s.title}>{conf?.topic || 'Конференция'}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span className={s.title}>{conf?.topic || 'Конференция'}</span>
+          {conf?.description && conf.description.trim() && (
+            <span style={{ fontSize: 13, color: '#64748b', fontWeight: 400, lineHeight: 1.4 }}>
+              {conf.description}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className={s.infoBlock} style={{ marginBottom: 16, padding: '12px 16px', background: '#f8fafc', borderRadius: 8 }}>
