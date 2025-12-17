@@ -324,10 +324,10 @@ export default function VideoConferenceLinkPage() {
         
         // Recalculate video layout after removal
         if (canPublish) {
-          // Count remaining remote videos by checking DOM
+          // Count remaining remote videos by checking DOM (exclude local video)
           let activeRemoteVideosCount = 0
           if (remoteVideosContainerRef.current) {
-            remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+            remoteVideosContainerRef.current.querySelectorAll('[data-participant]:not([data-participant="local"])').forEach((wrapper) => {
               const videoElement = wrapper.querySelector('video')
               if (videoElement) {
                 activeRemoteVideosCount++
@@ -341,7 +341,7 @@ export default function VideoConferenceLinkPage() {
           if (totalActiveVideos === 1 && hasLocalVideo && videoRef.current) {
             const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
             if (isLocalVideo) {
-              const localWrapper = remoteContainerRef.current?.querySelector('#video-local')
+              const localWrapper = remoteVideosContainerRef.current?.querySelector('#video-local')
               if (localWrapper && localWrapper.contains(videoRef.current)) {
                 videoRef.current.remove()
                 videoRef.current.style.position = 'absolute'
@@ -402,12 +402,12 @@ export default function VideoConferenceLinkPage() {
     remoteVideosContainerRef.current.appendChild(wrapper)
     updateRemoteVideosGrid()
 
-    // After adding remote video, check if local video should move to bottom right
+    // After adding remote video, check if local video should move to grid
     if (canPublish) {
-      // Count current remote videos by checking DOM
+      // Count current remote videos by checking DOM (exclude local video)
       let activeRemoteVideosCount = 0
       if (remoteVideosContainerRef.current) {
-        remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+        remoteVideosContainerRef.current.querySelectorAll('[data-participant]:not([data-participant="local"])').forEach((wrapper) => {
           const videoElement = wrapper.querySelector('video')
           if (videoElement) {
             activeRemoteVideosCount++
@@ -416,31 +416,32 @@ export default function VideoConferenceLinkPage() {
       }
       const hasLocalVideo = cameraOn && videoRef.current
       
-      // If there are remote videos and local video is on, ensure local is in bottom right
-      if (activeRemoteVideosCount > 0 && hasLocalVideo && videoRef.current && remoteContainerRef.current) {
+      // If there are remote videos and local video is on, ensure local is in the same grid
+      if (activeRemoteVideosCount > 0 && hasLocalVideo && videoRef.current && remoteVideosContainerRef.current) {
         // Verify this is actually the local video element (should not have data-participant attribute)
         const isLocalVideo = !videoRef.current.hasAttribute('data-participant')
         
         if (isLocalVideo) {
-          // Get or create local video wrapper in bottom right grid
-          let localWrapper = remoteContainerRef.current.querySelector('#video-local') as HTMLElement
+          // Get or create local video wrapper in the same grid as remote videos
+          let localWrapper = remoteVideosContainerRef.current.querySelector('#video-local') as HTMLElement
           
           if (!localWrapper) {
             localWrapper = document.createElement('div')
             localWrapper.id = 'video-local'
+            localWrapper.setAttribute('data-participant', 'local') // Mark as local for grid counting
             localWrapper.style.position = 'relative'
             localWrapper.style.width = '100%'
             localWrapper.style.height = '100%'
             localWrapper.style.aspectRatio = '16/9'
             localWrapper.style.cursor = 'grab'
             localWrapper.style.touchAction = 'none'
-            localWrapper.style.zIndex = '100' // Higher z-index to be on top
             localWrapper.style.borderRadius = '6px'
             localWrapper.style.overflow = 'hidden'
-            localWrapper.style.background = '#f1f5f9'
+            localWrapper.style.background = '#000'
             
-            remoteContainerRef.current.appendChild(localWrapper)
+            remoteVideosContainerRef.current.appendChild(localWrapper)
             attachDragHandlers(localWrapper as HTMLDivElement, 'local')
+            updateRemoteVideosGrid() // Update grid layout to include local video
           }
           
           // Only move if local video is currently in main area
@@ -1529,13 +1530,13 @@ export default function VideoConferenceLinkPage() {
         }
         
         // When user can publish, manage video placement
-        if (canPublish && videoAreaRef.current && remoteContainerRef.current && remoteVideosContainerRef.current) {
+        if (canPublish && videoAreaRef.current && remoteVideosContainerRef.current) {
           // Count active remote videos by checking if video elements exist in DOM
           // This is more accurate than checking tracks, since tracks might exist but be disabled
           // We only add video elements to DOM when tracks are actually subscribed and active
           let activeRemoteVideosCount = 0
           if (remoteVideosContainerRef.current) {
-            remoteVideosContainerRef.current.querySelectorAll('[data-participant]').forEach((wrapper) => {
+            remoteVideosContainerRef.current.querySelectorAll('[data-participant]:not([data-participant="local"])').forEach((wrapper) => {
               const videoElement = wrapper.querySelector('video')
               // If video element exists in DOM, the video is active
               if (videoElement) {
@@ -1546,12 +1547,13 @@ export default function VideoConferenceLinkPage() {
           const totalActiveVideos = activeRemoteVideosCount + (cameraOn ? 1 : 0)
           
           // Get existing local video wrapper in grid
-          let existingLocalInGrid = remoteContainerRef.current.querySelector('#video-local') as HTMLElement | null
+          let existingLocalInGrid = remoteVideosContainerRef.current.querySelector('#video-local') as HTMLElement | null
           
           // ✅ If camera is OFF — remove local tile ALWAYS (even if remote videos exist)
           if (!cameraOn) {
             if (existingLocalInGrid) {
               existingLocalInGrid.remove()
+              updateRemoteVideosGrid() // Update grid layout after removing local video
             }
             
             // Optional: keep the video element in main area but hidden (so attach is stable)
@@ -1575,22 +1577,23 @@ export default function VideoConferenceLinkPage() {
           }
           
           // ✅ Camera is ON — create local tile ONLY when there is at least 1 remote video
-          if (!existingLocalInGrid && activeRemoteVideosCount > 0 && remoteContainerRef.current) {
+          if (!existingLocalInGrid && activeRemoteVideosCount > 0 && remoteVideosContainerRef.current) {
             existingLocalInGrid = document.createElement('div')
             existingLocalInGrid.id = 'video-local'
+            existingLocalInGrid.setAttribute('data-participant', 'local') // Mark as local for grid counting
             existingLocalInGrid.style.position = 'relative'
             existingLocalInGrid.style.width = '100%'
             existingLocalInGrid.style.height = '100%'
             existingLocalInGrid.style.aspectRatio = '16/9'
             existingLocalInGrid.style.cursor = 'grab'
             existingLocalInGrid.style.touchAction = 'none'
-            existingLocalInGrid.style.zIndex = '100'
             existingLocalInGrid.style.borderRadius = '6px'
             existingLocalInGrid.style.overflow = 'hidden'
-            existingLocalInGrid.style.background = '#f1f5f9'
+            existingLocalInGrid.style.background = '#000'
             
-            remoteContainerRef.current.appendChild(existingLocalInGrid)
+            remoteVideosContainerRef.current.appendChild(existingLocalInGrid)
             attachDragHandlers(existingLocalInGrid as HTMLDivElement, 'local')
+            updateRemoteVideosGrid() // Update grid layout to include local video
           }
           
           // Handle camera on/off state
@@ -1607,6 +1610,7 @@ export default function VideoConferenceLinkPage() {
                   videoRef.current.remove()
                 }
                 existingLocalInGrid.remove()
+                updateRemoteVideosGrid() // Update grid layout
               }
               
               // Move to main area
@@ -1645,13 +1649,16 @@ export default function VideoConferenceLinkPage() {
           }
         } else if (!canPublish && videoAreaRef.current && videoRef.current) {
           // When user cannot publish, keep local video in main area
-          const existingLocalInGrid = remoteContainerRef.current?.querySelector('#video-local')
+          const existingLocalInGrid = remoteVideosContainerRef.current?.querySelector('#video-local')
           if (existingLocalInGrid) {
             const video = existingLocalInGrid.querySelector('video')
             if (video && video === videoRef.current) {
               video.remove()
             }
             existingLocalInGrid.remove()
+            if (remoteVideosContainerRef.current) {
+              updateRemoteVideosGrid() // Update grid layout
+            }
           }
           
           // Attach track if camera is on
