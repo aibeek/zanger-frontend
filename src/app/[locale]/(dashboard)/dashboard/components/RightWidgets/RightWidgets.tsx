@@ -22,7 +22,11 @@ interface ActiveStream {
     previewUrl?: string
 }
 
-export const RightWidgets = () => {
+interface RightWidgetsProps {
+    hideActiveStreams?: boolean
+}
+
+export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) => {
     const t = useTranslations()
     const locale = useLocale()
     const pathname = usePathname()
@@ -249,7 +253,7 @@ export const RightWidgets = () => {
             )}
 
             {/* Active Streams Widget */}
-            {isVCPage && (
+            {isVCPage && !hideActiveStreams && (
                 <div className={s.widget}>
                     <div className={s.widgetHeader}>
                         <h3 className={s.widgetTitle}>Сейчас в эфире</h3>

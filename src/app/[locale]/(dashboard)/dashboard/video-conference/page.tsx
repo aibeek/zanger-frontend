@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Cookies from 'js-cookie'
 import { useTranslations } from 'next-intl'
-import { Button } from '@/shared/ui-kit'
+import { Button, Modal } from '@/shared/ui-kit'
 import { RightWidgets } from '../components/RightWidgets'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { useLoginStore } from '@/features/auth/login'
@@ -26,6 +26,12 @@ export default function VideoConferencePage() {
   const [joining, setJoining] = useState(false)
   const [connectedInfo, setConnectedInfo] = useState<null | { room: string; is_member: boolean; topic?: string; identity?: string }>(null)
   const [error, setError] = useState<string | null>(null)
+  const [streamTopic, setStreamTopic] = useState('')
+  const [streamDescription, setStreamDescription] = useState('')
+  const [showStreamModal, setShowStreamModal] = useState(false)
+  const [activeStreams, setActiveStreams] = useState<Array<{ id: string; code: string; topic: string; type: string; createdAt: string; plannedTime?: string; views?: number; previewUrl?: string }>>([])
+  const [loadingActiveStreams, setLoadingActiveStreams] = useState(false)
+  const view = searchParams.get('view') || 'my'
 
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const remoteContainerRef = useRef<HTMLDivElement | null>(null)
@@ -103,7 +109,80 @@ export default function VideoConferencePage() {
     router.push(`/${language}/dashboard/video-conference/createmeeting`)
   }
 
-  useEffect(() => { loadConferences() }, [page, size])
+  useEffect(() => { 
+    // Reset to first page when view changes
+    setPage(0)
+  }, [view])
+
+  useEffect(() => { 
+    if (view === 'my') {
+      loadConferences() 
+    } else if (view === 'feed') {
+      loadActiveStreams()
+    }
+  }, [page, size, view])
+
+  async function loadActiveStreams() {
+    setLoadingActiveStreams(true)
+    try {
+      const res = await httpClientWithAuth<any>(`${BASE}stream/active?page=${page}&size=${size}`, {
+        method: 'GET',
+      })
+      const items = Array.isArray(res?.content) ? res.content : []
+      const mappedStreams = items.map((item: any) => ({
+        id: String(item.id || ''),
+        code: String(item.code || ''),
+        topic: item.topic || '',
+        type: String(item.type || ''),
+        createdAt: item.createdAt || item.created_at || '',
+        plannedTime: item.plannedTime || item.planned_time || '',
+        views: item.participantCount || 0,
+        previewUrl: item.previewUrl || item.preview_url || item.frameUrl || item.frame_url || undefined,
+      }))
+      setActiveStreams(mappedStreams)
+      setTotalPages(res?.totalPages || 0)
+      setTotalElements(res?.totalElements || 0)
+    } catch (e) {
+      console.error('Failed to load active streams:', e)
+      setActiveStreams([])
+    } finally {
+      setLoadingActiveStreams(false)
+    }
+  }
+
+  function formatDuration(createdAt: string): string {
+    if (!createdAt) return '0 мин'
+    try {
+      const startTime = new Date(createdAt).getTime()
+      const now = Date.now()
+      const diffMs = now - startTime
+      const diffMinutes = Math.floor(diffMs / 60000)
+      
+      if (diffMinutes < 1) return t('dashboard.videoConference.justNow') || 'только что'
+      if (diffMinutes < 60) return `${diffMinutes} ${t('dashboard.videoConference.min') || 'мин'}`
+      
+      const hours = Math.floor(diffMinutes / 60)
+      if (hours === 1) return `1 ${t('dashboard.videoConference.hour') || 'час'}`
+      return `${hours} ${t('dashboard.videoConference.hours') || 'ч'}`
+    } catch {
+      return '0 мин'
+    }
+  }
+
+  function formatViewCount(count?: number): string {
+    if (count && count > 0) {
+      if (count >= 1000) {
+        const thousands = Math.floor(count / 1000)
+        return `${thousands} ${t('dashboard.videoConference.thousand') || 'тыс.'}`
+      }
+      return String(count)
+    }
+    return '—'
+  }
+
+  function handleStreamClick(streamId: string) {
+    router.push(`/${language}/dashboard/video-conference/${streamId}`)
+  }
 
   useEffect(() => {
     const handler = () => {
@@ -233,12 +312,28 @@ export default function VideoConferencePage() {
 
   async function startStream() {
     setError(null)
+    
+    // Validate topic is provided
+    if (!streamTopic.trim()) {
+      setError(t('dashboard.videoConference.topicRequired') || 'Topic is required')
+      return
+    }
+    
     setJoining(true)
 
     try {
-      // Call stream/start endpoint - no body needed, only Authorization header
+      // Call stream/start endpoint with topic and description
+      const requestBody: { topic: string; description?: string } = {
+        topic: streamTopic.trim(),
+      }
+      
+      if (streamDescription.trim()) {
+        requestBody.description = streamDescription.trim()
+      }
+      
       const streamData = await httpClientWithAuth<any>(`${BASE}stream/start`, {
         method: 'POST',
+        body: JSON.stringify(requestBody),
       })
 
       // Response contains: liveKitToken (or token), conferenceId, identity, code
@@ -263,6 +358,12 @@ export default function VideoConferencePage() {
         sessionStorage.setItem('meet_identity', identity)
       }
 
+      // Close modal and clear form
+      setShowStreamModal(false)
+      setStreamTopic('')
+      setStreamDescription('')
+      setError(null)
+
       // Navigate to the conference page
       router.push(`/${language}/dashboard/video-conference/${newConferenceId}`)
 
@@ -273,6 +374,22 @@ export default function VideoConferencePage() {
       console.error('Error starting stream:', e)
       setError(e?.message || 'Failed to start stream')
       setJoining(false)
+    }
+  }
+
+  function handleStartStreamClick() {
+    setError(null)
+    setStreamTopic('')
+    setStreamDescription('')
+    setShowStreamModal(true)
+  }
+
+  function handleCloseStreamModal() {
+    if (!joining) {
+      setShowStreamModal(false)
+      setError(null)
+      setStreamTopic('')
+      setStreamDescription('')
     }
   }
 
@@ -471,7 +588,15 @@ export default function VideoConferencePage() {
     <div className={s.container}>
       <div className={s.content}>
         <div className={s.titleRow}>
-          <h2><Image src="/assets/icons/myconf.svg" alt={t('dashboard.videoConference.myConferences')} width={20} height={20} />{t('dashboard.videoConference.myConferences')}</h2>
+          <h2>
+            <Image 
+              src={view === 'feed' ? "/assets/icons/lenta.svg" : "/assets/icons/myconf.svg"} 
+              alt={view === 'feed' ? t('dashboard.videoConference.liveFeed') || 'Live Feed' : t('dashboard.videoConference.myConferences')} 
+              width={20} 
+              height={20} 
+            />
+            {view === 'feed' ? (t('dashboard.videoConference.liveFeed') || 'Сейчас в эфире') : t('dashboard.videoConference.myConferences')}
+          </h2>
 
           <div className={s.actions}>
             {connectedInfo && <Button variant="primary" onClick={leaveRoom}>{t('dashboard.videoConference.exit')}</Button>}
@@ -479,7 +604,11 @@ export default function VideoConferencePage() {
         </div>
 
         <div className={s.actionBar}>
-          <button className={`${s.pill} ${s.pillRed}`} onClick={startStream} > 
+          <button 
+            className={`${s.pill} ${s.pillRed}`} 
+            onClick={handleStartStreamClick}
+            disabled={joining}
+          > 
             <span className={s.pillIconLive}></span>
             <span className={s.pillText}>{t('dashboard.videoConference.startStream')}</span>
           </button>
@@ -496,56 +625,135 @@ export default function VideoConferencePage() {
         {mounted && (
           <div className={s.listsColumns}>
             <div className={s.listColumn}>
-              <div className={s.listTitle}>{t('dashboard.videoConference.scheduled')}</div>
-              <div className={s.cardsGrid}>
-                {scheduledList.length === 0 ? (
-                  <div className={s.emptyBox}>{t('dashboard.videoConference.noScheduledMeetings')}</div>
-                ) : scheduledList.map((it) => (
-                  <div key={it.id} className={s.card}>
-                    <div className={s.cardHeader}>{t('dashboard.videoConference.conference')}</div>
-                    <div className={s.cardBody}>
-                      <div className={s.cardTitle}>{it.topic || t('dashboard.videoConference.withoutTopic')}</div>
-                      <div className={s.cardMeta} suppressHydrationWarning>{t('dashboard.videoConference.date')}: {formatDT(it.planned_time)}</div>
-                      <div className={s.cardMeta}>{t('dashboard.videoConference.type')}: {it.type}</div>
+              {view === 'feed' ? (
+                <>
+                  <div className={s.listTitle}>{t('dashboard.videoConference.liveFeed') || 'Сейчас в эфире'}</div>
+                  {loadingActiveStreams ? (
+                    <div className={s.emptyBox}>{t('dashboard.videoConference.loading') || 'Загрузка...'}</div>
+                  ) : activeStreams.length === 0 ? (
+                    <div className={s.emptyBox}>{t('dashboard.videoConference.noActiveStreams') || 'Нет активных эфиров'}</div>
+                  ) : (
+                    <>
+                      <div className={s.streamsGrid}>
+                        {activeStreams.map((stream) => (
+                          <div 
+                            key={stream.id} 
+                            className={s.streamCard}
+                            onClick={() => handleStreamClick(stream.id)}
+                          >
+                            <div className={s.streamThumbnail}>
+                              {stream.previewUrl ? (
+                                <img 
+                                  src={stream.previewUrl} 
+                                  alt={stream.topic || t('dashboard.videoConference.withoutTopic')}
+                                  className={s.streamPreviewImage}
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement
+                                    target.style.display = 'none'
+                                    const placeholder = target.nextElementSibling as HTMLElement
+                                    if (placeholder) placeholder.style.display = 'flex'
+                                  }}
+                                />
+                              ) : null}
+                              <div className={s.streamThumbnailPlaceholder} style={{ display: stream.previewUrl ? 'none' : 'flex' }}>
+                                <div className={s.playIcon}></div>
+                              </div>
+                              <div className={s.streamTopicOverlay}>
+                                <span className={s.streamTopicText}>{stream.topic || t('dashboard.videoConference.withoutTopic')}</span>
+                              </div>
+                              <div className={s.streamOverlay}>
+                                <span className={s.streamViews}>
+                                  <span className={s.viewIcon}></span>
+                                  {formatViewCount(stream.views)}
+                                </span>
+                                <span className={s.streamDuration}>{formatDuration(stream.createdAt)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {(totalPages > 1 || totalElements > 0) && (
+                        <div className={s.pagination}>
+                          <div className={s.paginationInfo}>
+                            {t('dashboard.videoConference.page') || 'Стр.'} {page + 1} {totalPages > 0 && `${t('dashboard.videoConference.of') || 'из'} ${totalPages}`} · {t('dashboard.videoConference.total') || 'Всего'}: {totalElements}
+                          </div>
+                          {totalPages > 1 && (
+                            <div className={s.paginationControls}>
+                              <button 
+                                onClick={() => setPage(p => Math.max(0, p - 1))} 
+                                disabled={page === 0 || loadingActiveStreams}
+                                className={s.paginationBtn}
+                              >
+                                {t('dashboard.videoConference.back') || 'Назад'}
+                              </button>
+                              <button 
+                                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} 
+                                disabled={page >= totalPages - 1 || loadingActiveStreams}
+                                className={s.paginationBtn}
+                              >
+                                {t('dashboard.videoConference.next') || 'Вперёд'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className={s.listTitle}>{t('dashboard.videoConference.scheduled')}</div>
+                  <div className={s.cardsGrid}>
+                    {scheduledList.length === 0 ? (
+                      <div className={s.emptyBox}>{t('dashboard.videoConference.noScheduledMeetings')}</div>
+                    ) : scheduledList.map((it) => (
+                      <div key={it.id} className={s.card}>
+                        <div className={s.cardHeader}>{t('dashboard.videoConference.conference')}</div>
+                        <div className={s.cardBody}>
+                          <div className={s.cardTitle}>{it.topic || t('dashboard.videoConference.withoutTopic')}</div>
+                          <div className={s.cardMeta} suppressHydrationWarning>{t('dashboard.videoConference.date')}: {formatDT(it.planned_time)}</div>
+                          <div className={s.cardMeta}>{t('dashboard.videoConference.type')}: {it.type}</div>
+                        </div>
+                        <div className={s.cardFooter}>
+                          <button className={s.watchBtn} onClick={() => {
+                            const conferenceUrl = `/${language}/dashboard/video-conference/${it.id}`
+                            window.open(conferenceUrl, '_blank')
+                          }}>{t('dashboard.videoConference.openPage')}</button>
+                          {(() => {
+                            const currentUserId = Number((personalData as any)?.id || userId || 0)
+                            const creatorId = it.createdBy != null ? Number(it.createdBy) : null
+                            return creatorId !== null && currentUserId === creatorId && currentUserId > 0 ? (
+                              <button className={s.deleteBtn} onClick={() => deleteConference(it.id)}>{t('dashboard.videoConference.delete')}</button>
+                            ) : null
+                          })()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {totalPages > 1 && (
+                    <div className={s.pagination}>
+                      <div className={s.paginationInfo}>
+                        {t('dashboard.videoConference.page') || 'Стр.'} {page + 1} {t('dashboard.videoConference.of') || 'из'} {totalPages} · {t('dashboard.videoConference.total') || 'Всего'}: {totalElements}
+                      </div>
+                      <div className={s.paginationControls}>
+                        <button 
+                          onClick={() => setPage(p => Math.max(0, p - 1))} 
+                          disabled={page === 0 || loading}
+                          className={s.paginationBtn}
+                        >
+                          {t('dashboard.videoConference.back') || 'Назад'}
+                        </button>
+                        <button 
+                          onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} 
+                          disabled={page >= totalPages - 1 || loading}
+                          className={s.paginationBtn}
+                        >
+                          {t('dashboard.videoConference.next') || 'Вперёд'}
+                        </button>
+                      </div>
                     </div>
-                    <div className={s.cardFooter}>
-                      <button className={s.watchBtn} onClick={() => {
-                        const conferenceUrl = `/${language}/dashboard/video-conference/${it.id}`
-                        window.open(conferenceUrl, '_blank')
-                      }}>{t('dashboard.videoConference.openPage')}</button>
-                      {(() => {
-                        const currentUserId = Number((personalData as any)?.id || userId || 0)
-                        const creatorId = it.createdBy != null ? Number(it.createdBy) : null
-                        return creatorId !== null && currentUserId === creatorId && currentUserId > 0 ? (
-                          <button className={s.deleteBtn} onClick={() => deleteConference(it.id)}>{t('dashboard.videoConference.delete')}</button>
-                        ) : null
-                      })()}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {totalPages > 1 && (
-                <div className={s.pagination}>
-                  <div className={s.paginationInfo}>
-                    Стр. {page + 1} из {totalPages} · Всего: {totalElements}
-                  </div>
-                  <div className={s.paginationControls}>
-                    <button 
-                      onClick={() => setPage(p => Math.max(0, p - 1))} 
-                      disabled={page === 0 || loading}
-                      className={s.paginationBtn}
-                    >
-                      Назад
-                    </button>
-                    <button 
-                      onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} 
-                      disabled={page >= totalPages - 1 || loading}
-                      className={s.paginationBtn}
-                    >
-                      Вперёд
-                    </button>
-                  </div>
-                </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -557,8 +765,71 @@ export default function VideoConferencePage() {
       </div>
 
       <div className={s.rightWidgets}>
-        <RightWidgets />
+        <RightWidgets hideActiveStreams={view === 'feed'} />
       </div>
+
+      <Modal 
+        isOpen={showStreamModal} 
+        onClose={handleCloseStreamModal}
+        title={t('dashboard.videoConference.startStream') || 'Start Stream'}
+        closeButton={true}
+      >
+        <div className={s.streamModalContent}>
+          <div className={s.streamFormFields}>
+            <div className={s.streamField}>
+              <label className={s.streamLabel}>
+                {t('dashboard.videoConference.topic') || 'Topic'} <span className={s.required}>*</span>
+              </label>
+              <input
+                type="text"
+                className={s.streamInput}
+                placeholder={t('dashboard.videoConference.topicPlaceholder') || 'Enter stream topic'}
+                value={streamTopic}
+                onChange={e => {
+                  setStreamTopic(e.target.value)
+                  if (error) setError(null)
+                }}
+                disabled={joining}
+              />
+            </div>
+            <div className={s.streamField}>
+              <label className={s.streamLabel}>
+                {t('dashboard.videoConference.description') || 'Description'}
+              </label>
+              <textarea
+                className={s.streamTextarea}
+                placeholder={t('dashboard.videoConference.descriptionPlaceholder') || 'Enter stream description (optional)'}
+                value={streamDescription}
+                onChange={e => setStreamDescription(e.target.value)}
+                disabled={joining}
+                rows={3}
+              />
+            </div>
+          </div>
+          {error && (
+            <div className={s.streamError}>
+              {error}
+            </div>
+          )}
+          <div className={s.streamModalActions}>
+            <Button 
+              variant="border" 
+              onClick={handleCloseStreamModal}
+              disabled={joining}
+            >
+              {t('dashboard.videoConference.cancel') || 'Cancel'}
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={startStream}
+              disabled={joining || !streamTopic.trim()}
+              loading={joining}
+            >
+              {t('dashboard.videoConference.start') || 'Start'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }
