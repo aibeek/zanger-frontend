@@ -168,6 +168,7 @@ export default function VideoConferenceLinkPage() {
       sessionStorage.removeItem('meet_stream_started')
       sessionStorage.removeItem('meet_can_publish')
       sessionStorage.removeItem('meet_identity')
+      sessionStorage.removeItem('meet_creator_user_id')
       sessionStorage.removeItem('meet_topic')
     }
   }, []) // Empty dependency array - runs once on mount and cleanup on unmount
@@ -222,6 +223,12 @@ export default function VideoConferenceLinkPage() {
             planned_time: confRes.planned_time ? String(confRes.planned_time) : undefined, 
             code: confRes.code ? String(confRes.code) : undefined 
           })
+          // Set creatorUserId if available and not already set
+          if (confRes.creatorUserId && creatorUserId === null) {
+            setCreatorUserId(Number(confRes.creatorUserId))
+          } else if (confRes.userId && creatorUserId === null) {
+            setCreatorUserId(Number(confRes.userId))
+          }
           return
         }
       } catch (e) {
@@ -655,11 +662,27 @@ export default function VideoConferenceLinkPage() {
         canPub = streamCanPublish
         setIsStream(true)
         
+        // Retrieve and set creatorUserId from sessionStorage
+        const storedCreatorUserId = sessionStorage.getItem('meet_creator_user_id')
+        if (storedCreatorUserId) {
+          const creatorId = Number(storedCreatorUserId)
+          if (!isNaN(creatorId)) {
+            setCreatorUserId(creatorId)
+          }
+        } else {
+          // Fallback: if not stored, use current user's ID (they started the stream)
+          const currentUserId = Number(userId || (personalData as any)?.id || 0)
+          if (currentUserId > 0) {
+            setCreatorUserId(currentUserId)
+          }
+        }
+        
         // Clear sessionStorage after use
         sessionStorage.removeItem('meet_token')
         sessionStorage.removeItem('meet_stream_started')
         sessionStorage.removeItem('meet_can_publish')
         sessionStorage.removeItem('meet_identity')
+        sessionStorage.removeItem('meet_creator_user_id')
       } else {
         // Normal join flow
         const data = await httpClientWithAuth<any>(`${BASE_API}/join`, {

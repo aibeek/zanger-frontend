@@ -337,11 +337,12 @@ export default function VideoConferencePage() {
         body: JSON.stringify(requestBody),
       })
 
-      // Response contains: liveKitToken (or token), conferenceId, identity, code
+      // Response contains: liveKitToken (or token), conferenceId, identity, code, creatorUserId (or userId)
       const token = streamData.liveKitToken || streamData.token || streamData.livekitToken
       const newConferenceId = streamData.conferenceId || streamData.id
       const identity = streamData.identity
       const code = streamData.code
+      const creatorUserId = streamData.creatorUserId || streamData.userId || userId
 
       if (!token) {
         throw new Error('Token not found in stream/start response')
@@ -357,6 +358,10 @@ export default function VideoConferencePage() {
       sessionStorage.setItem('meet_can_publish', 'true')
       if (identity) {
         sessionStorage.setItem('meet_identity', identity)
+      }
+      // Store creatorUserId so we can identify the stream owner
+      if (creatorUserId) {
+        sessionStorage.setItem('meet_creator_user_id', String(creatorUserId))
       }
 
       // Close modal and clear form
