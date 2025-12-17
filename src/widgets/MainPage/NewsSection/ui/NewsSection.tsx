@@ -2,11 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
-import { useState, useEffect } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
+import { useState, useEffect, useCallback } from 'react'
 
 import instagramIcon from '@/app/assets/icons/instagram.svg'
 import { Modal, useModal } from '@/shared/ui-kit/Modal'
+import { newsApi, NewsItem as ApiNewsItem } from '@/shared/api'
 
 import s from './NewsSection.module.scss'
 
@@ -24,189 +25,72 @@ interface NewsItem {
 
 export const NewsSection = () => {
 	const t = useTranslations('lending.newsSection')
+	const locale = useLocale()
 	const [currentSlide, setCurrentSlide] = useState(0)
 	const { isOpen, open, close } = useModal()
 	const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
+	const [newsItems, setNewsItems] = useState<NewsItem[]>([])
+	const [isLoading, setIsLoading] = useState(true)
 	const defaultInstagramLink = t('modal.instagramUrl')
 
-	// After 18:00 pilot mode: AI audiobot Zanger accepts applications at 5510
-	const [isAfterSix, setIsAfterSix] = useState(false)
-	useEffect(() => {
-		const check = () => setIsAfterSix(new Date().getHours() >= 18)
-		check()
-		const id = setInterval(check, 60_000)
-		return () => clearInterval(id)
-	}, [])
+	// Преобразование данных из API в формат компонента
+	const mapApiNewsToLocal = useCallback((apiNews: ApiNewsItem): NewsItem => {
+		const publishedDate = apiNews.published_at 
+			? new Date(apiNews.published_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+			: ''
+		
+		// Обработка URL изображения
+		let imageUrl = '/assets/images/news.png' // fallback изображение
+		const rawImage = apiNews.image_url || apiNews.image
+		if (rawImage) {
+			// Проверяем что URL абсолютный
+			if (rawImage.startsWith('http://') || rawImage.startsWith('https://')) {
+				imageUrl = rawImage
+			} else if (rawImage.startsWith('/')) {
+				// Относительный путь - добавляем домен API
+				imageUrl = `https://api.zanger-app.kz${rawImage}`
+			}
+		}
+		
+		return {
+			id: apiNews.slug,
+			title: apiNews.title,
+			description: apiNews.excerpt || '',
+			date: publishedDate,
+			image: imageUrl,
+			readMore: t('readMore'),
+			fullDescription: apiNews.content || apiNews.excerpt || '',
+			eventDay: apiNews.title,
+			instagramLink: defaultInstagramLink
+		}
+	}, [t, defaultInstagramLink])
 
-	const newsItems: NewsItem[] = [
-		{
-			id: 'prokuratura-day',
-			title: t('prokuraturaDay.title'),
-			description: t('prokuraturaDay.description'),
-			date: '06.12.2025',
-			image: '/assets/images/prokuratura.jpeg',
-			readMore: t('readMore'),
-			fullDescription: t('prokuraturaDay.fullDescription'),
-			eventDay: t('prokuraturaDay.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'advokat-meeting',
-			title: t('advokatMeeting.title'),
-			description: t('advokatMeeting.description'),
-			date: '05.12.2025',
-			image: '/assets/images/advokat.jpeg',
-			readMore: t('readMore'),
-			fullDescription: t('advokatMeeting.fullDescription'),
-			eventDay: t('advokatMeeting.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'ecp-module-launch',
-			title: 'Электронное подписание документов',
-			description: 'На платформе ZANGER запущен модуль электронного подписания документов с использованием ЭЦП',
-			date: '02.12.2025',
-			image: '/assets/images/ecpnews.jpeg',
-			readMore: t('readMore'),
-			fullDescription: 'Электронное подписание документов\n\nНа платформе ZANGER запущен модуль электронного подписания документов с использованием ЭЦП\n\nМы запустили новый функцирнал — электронное подписание документов с использованием ЭЦП и подтверждением подлинности через Национальный удостоверяющий центр Республики Казахстан (НУЦ РК).\nТеперь юристы и клиенты могут подписывать юридически значимые документы онлайн, без личных встреч и бумажной волокиты.\n\nЧто дает новый модуль:\n\n•  Подписание документов ЭЦП сторон в личном кабинете платформы.\n•  Поддержка многосторонних документов — один договор могут подписать несколько участников, каждый со своей ЭЦП.\n•  Проверка подлинности подписи через НУЦ РК — система автоматически обращается к сервисам Национального удостоверяющего центра и подтверждает валидность сертификатов всех подписантов.\n•  Юридически значимый электронный документооборот — подписанные файлы имеют юридическую силу и сохраняются в профилях сторон\n•  Безопасность и конфиденциальность — передача и хранение документов осуществляется с соблюдением требований информационной безопасности.\n\nПодключайтесь, тестируйте и подписывайте документы онлайн — до конца года это бесплатно для всех!\n\nПресс-служба платформы ZANGER',
-			eventDay: 'Запуск ЭЦП на платформе',
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'narxoz-clinic',
-			title: t('narxozClinic.title'),
-			description: t('narxozClinic.description'),
-			date: '28.11.2025',
-			image: '/assets/images/narkoz.jpeg',
-			readMore: t('readMore'),
-			fullDescription: t('narxozClinic.fullDescription'),
-			eventDay: t('narxozClinic.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'shanyraq-forum',
-			title: 'Участие в форуме "Shanyraq 2025"',
-			description: 'Команда Zanger приняла участие в ежегодном бизнес-форуме SHANYRAQ 2025',
-			date: '10.11.2025',
-			image: '/assets/images/shanyraq.jpeg',
-			readMore: t('readMore'),
-			fullDescription:
-				'Команда Zanger приняла участие в ежегодном бизнес-форуме SHANYRAQ 2025, который прошёл 8 ноября 2025 года в г. Алматы. На площадке форума наши специалисты представили инновационные решения и обменялись опытом с ведущими предпринимателями Казахстана. Мы провели серию продуктивных встреч, обсудили актуальные тенденции развития бизнеса и рассматривали возможности будущего сотрудничества с участниками форума. Будем рады внедрять полученные идеи в работу, укреплять позиции компании Zanger на рынке и открывать новые направления для роста.',
-			eventDay: 'Бизнес-форум SHANYRAQ 2025',
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'ai-audiobot-zanger',
-			title: 'ИИ аудиобот Zanger',
-			description: 'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
-			date: '08.11.2025', // фиксированная дата вместо динамической
-			image: '/assets/images/botai.jpeg',
-			readMore: t('readMore'),
-			fullDescription:
-				'Аудиобот принимает заявки на казахском и русском языках в нерабочее время по номеру 5510',
-			eventDay: 'Аудиобот работает в нерабочее время',
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'legal-newspaper-interview',
-			title: t('pressInterview.title'),
-			description: t('pressInterview.description'),
-			date: '04.11.2025',
-			image: '/assets/images/gaxet.jpeg',
-			readMore: t('readMore'),
-			fullDescription: t('pressInterview.fullDescription'),
-			eventDay: t('pressInterview.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'whatsapp-bot',
-			title: t('whatsappBot.title'),
-			description: t('whatsappBot.description'),
-			date: '03.11.2025',
-			image: '/assets/images/bot.png',
-			readMore: t('readMore'),
-			fullDescription: t('whatsappBot.fullDescription'),
-			eventDay: t('whatsappBot.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'video-presentation',
-			title: t('videoPresentation.title'),
-			description: t('videoPresentation.description'),
-			date: '01.11.2025',
-			image: '/assets/images/newsvideo.png',
-			readMore: t('readMore'),
-			fullDescription: t('videoPresentation.fullDescription'),
-			eventDay: t('videoPresentation.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'e-sign-module',
-			title: t('eSignModule.title'),
-			description: t('eSignModule.description'),
-			date: '28.10.2025',
-			image: '/assets/images/newsesp.jpg',
-			readMore: t('readMore'),
-			fullDescription: t('eSignModule.fullDescription'),
-			eventDay: t('eSignModule.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'mobile-app-update',
-			title: t('mobileAppUpdate.title'),
-			description: t('mobileAppUpdate.description'),
-			date: '26.10.2025',
-			image: '/assets/images/newssss.png',
-			readMore: t('readMore'),
-			fullDescription: t('mobileAppUpdate.fullDescription'),
-			eventDay: t('mobileAppUpdate.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'live-applications',
-			title: t('liveApplications.title'),
-			description: t('liveApplications.description'),
-			date: '21.10.2025',
-			image: '/assets/images/news.png',
-			readMore: t('readMore'),
-			fullDescription: t('liveApplications.fullDescription'),
-			eventDay: t('liveApplications.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'new-laws',
-			title: t('newLaws.title'),
-			description: t('newLaws.description'),
-			date: '20.10.2025',
-			image: '/assets/images/hub.jpg',
-			readMore: t('readMore'),
-			fullDescription: t('newLaws.fullDescription'),
-			eventDay: t('newLaws.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-		{
-			id: 'digital-bridge',
-			title: t('digitalBridge.title'),
-			description: t('digitalBridge.description'),
-			date: '17.10.2025',
-			image: '/assets/images/dgital.jpeg',
-			readMore: t('readMore'),
-			fullDescription: t('digitalBridge.fullDescription'),
-			eventDay: t('digitalBridge.eventDay'),
-			instagramLink: t('digitalBridge.instagramUrl')
-		},
-		{
-			id: 'legal-statistics',
-			title: t('legalStatistics.title'),
-			description: t('legalStatistics.description'),
-			date: '05.06.2025',
-			image: '/assets/images/news-2.png',
-			readMore: t('readMore'),
-			fullDescription: t('legalStatistics.fullDescription'),
-			eventDay: t('legalStatistics.eventDay'),
-			instagramLink: defaultInstagramLink
-		},
-	]
+	// Загрузка новостей из API
+	useEffect(() => {
+		const fetchNews = async () => {
+			try {
+				setIsLoading(true)
+				const apiLocale = locale === 'kz' ? 'kk' : locale
+				const response = await newsApi.getLatest({ locale: apiLocale, limit: 15 })
+				
+				if (response.success && response.data.length > 0) {
+					const mappedNews = response.data.map(mapApiNewsToLocal)
+					setNewsItems(mappedNews)
+				} else {
+					// Если API пустой - не показываем секцию
+					setNewsItems([])
+				}
+			} catch (error) {
+				console.warn('Не удалось загрузить новости из API:', error)
+				// Если ошибка - не показываем секцию
+				setNewsItems([])
+			} finally {
+				setIsLoading(false)
+			}
+		}
+
+		fetchNews()
+	}, [locale, mapApiNewsToLocal])
 
 	const handleCloseModal = () => {
 		close()
@@ -219,20 +103,53 @@ export const NewsSection = () => {
 	}
 
 	const nextSlide = () => {
+		if (newsItems.length === 0) return
 		setCurrentSlide((prev) => (prev + 1) % newsItems.length)
 	}
 
 	const prevSlide = () => {
+		if (newsItems.length === 0) return
 		setCurrentSlide((prev) => (prev - 1 + newsItems.length) % newsItems.length)
 	}
 
 	const getVisibleItems = () => {
+		if (newsItems.length === 0) return []
 		const items = []
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < Math.min(3, newsItems.length); i++) {
 			const index = (currentSlide + i) % newsItems.length
 			items.push(newsItems[index])
 		}
 		return items
+	}
+
+	// Показываем скелетон пока загружаются данные
+	if (isLoading) {
+		return (
+			<section id="news" className={s.wrapper}>
+				<div className={s.container}>
+					<div className={s.titleLine}></div>
+					<h2 className={s.title}>{t('title')}</h2>
+					<div className={s.newsGrid}>
+						{[1, 2, 3].map((i) => (
+							<div key={i} className={s.newsCard} style={{ opacity: 0.5 }}>
+								<div className={s.imageContainer} style={{ background: 'rgba(255,255,255,0.1)' }} />
+								<div className={s.content}>
+									<div className={s.textContent}>
+										<div style={{ height: 24, background: 'rgba(255,255,255,0.1)', borderRadius: 4 }} />
+										<div style={{ height: 48, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginTop: 8 }} />
+									</div>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			</section>
+		)
+	}
+
+	// Не показываем секцию если нет новостей
+	if (newsItems.length === 0) {
+		return null
 	}
 
 	return (
