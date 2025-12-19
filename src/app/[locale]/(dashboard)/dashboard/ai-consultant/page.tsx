@@ -7,6 +7,10 @@ import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { API_URL } from '@/shared/config'
 import Cookies from 'js-cookie'
 import { useLoginStore } from '@/features/auth/login'
+import { Modal, Button } from '@/shared/ui-kit'
+import { useLocale } from 'next-intl'
+import { useRouter } from 'next/navigation'
+ 
  
 
 interface Message {
@@ -41,6 +45,9 @@ export default function AiConsultantPage() {
     const [renameInput, setRenameInput] = useState('')
     const { personalData } = useLoginStore()
     const isAuthenticated = !!personalData
+    const [isWipOpen, setIsWipOpen] = useState(true)
+    const locale = useLocale()
+    const router = useRouter()
     // const [showBanner, setShowBanner] = useState(true)
 
     // Guest Token Logic
@@ -255,6 +262,7 @@ export default function AiConsultantPage() {
 
     return (
         <div className={s.profileContent}>
+            <WipModal open={isWipOpen} onClose={() => router.push(`/${locale}/dashboard`)} />
             <div className={s.profileSettings}>
                 <div className={s.chatArea}>
                     <div className={s.chatHeader}>
@@ -556,4 +564,19 @@ export default function AiConsultantPage() {
         }
 
         return <div className={s.messageContent}>{nodes}</div>
+    }
+
+    ;(() => {
+        /* keep modal mounted at top-level render */
+    })()
+
+    export const WipModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+        return (
+            <Modal isOpen={open} onClose={onClose} title="Модуль в разработке" closeButton>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <p style={{ fontSize: 16, color: '#333' }}>Скоро здесь появится ИИ‑Консультант.</p>
+                    <Button variant="primary" onClick={onClose}>Понятно</Button>
+                </div>
+            </Modal>
+        )
     }

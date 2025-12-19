@@ -109,7 +109,7 @@ export const ModulesSection = () => {
     }
 
     if (isAi) {
-      router.push(`/${locale}/dashboard/ai-consultant`)
+      setIsModalOpen(true)
       return
     }
 

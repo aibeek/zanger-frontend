@@ -66,7 +66,7 @@ export const ModulesBar = () => {
       return
     }
     if (label === aiConsultantLabel) {
-      router.push(`/${language}/dashboard/ai-consultant`)
+      setIsModalOpen(true)
       return
     }
     if (label === videoConferenceLabel) {
