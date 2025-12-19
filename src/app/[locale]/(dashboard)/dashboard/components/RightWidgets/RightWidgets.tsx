@@ -1,19 +1,36 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import { useLoginStore } from '@/features/auth/login'
 import { Modal, Button } from '@/shared/ui-kit'
 import Image from 'next/image'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
-import { API_URL } from '@/shared/config'
+import { API_URL, VIDEO_API_BASE_URL } from '@/shared/config'
+import { useRouter } from 'next/navigation'
 import s from './RightWidgets.module.scss'
 
-export const RightWidgets = () => {
+interface ActiveStream {
+    id: string
+    code: string
+    topic: string
+    type: string
+    createdAt: string
+    plannedTime?: string
+    views?: number,
+    previewUrl?: string
+}
+
+interface RightWidgetsProps {
+    hideActiveStreams?: boolean
+}
+
+export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) => {
     const t = useTranslations()
     const locale = useLocale()
     const pathname = usePathname()
+    const router = useRouter()
     const isVCPage = Boolean(pathname && pathname.includes('/dashboard/video-conference'))
     const [mounted, setMounted] = useState(false)
     const [currentDate, setCurrentDate] = useState<number | null>(null)
@@ -28,7 +45,10 @@ export const RightWidgets = () => {
     const [scheduledCode, setScheduledCode] = useState<string>('')
     const [scheduledLink, setScheduledLink] = useState<string>('')
     const [scheduledData, setScheduledData] = useState<any | null>(null)
+    const [activeStreams, setActiveStreams] = useState<ActiveStream[]>([])
+    const [loadingStreams, setLoadingStreams] = useState(false)
     const BASE = `${API_URL}/livekit`
+    const VIDEO_BASE = `${VIDEO_API_BASE_URL}/java-api`
     
     const monthNames = [
         'january', 'february', 'march', 'april', 'may', 'june',
@@ -56,6 +76,83 @@ export const RightWidgets = () => {
         window.addEventListener('open-vc-schedule', handler as any)
         return () => window.removeEventListener('open-vc-schedule', handler as any)
     }, [])
+
+    const loadActiveStreams = useCallback(async () => {
+        setLoadingStreams(true)
+        try {
+            const res = await httpClientWithAuth<any>(`${VIDEO_BASE}/stream/active?page=0&size=3`, {
+                method: 'GET',
+            })
+            const items = Array.isArray(res?.content) ? res.content : []
+            const mappedStreams: ActiveStream[] = items.map((item: any) => ({
+                id: String(item.id || ''),
+                code: String(item.code || ''),
+                topic: item.topic || '',
+                type: String(item.type || ''),
+                createdAt: item.createdAt || item.created_at || '',
+                plannedTime: item.plannedTime || item.planned_time || '',
+                views: item.participantCount || 0,
+                previewUrl: item.previewUrl || item.preview_url || item.frameUrl || item.frame_url || undefined,
+            }))
+            setActiveStreams(mappedStreams)
+        } catch (e) {
+            console.error('Failed to load active streams:', e)
+            setActiveStreams([])
+        } finally {
+            setLoadingStreams(false)
+        }
+    }, [VIDEO_BASE])
+
+    // Load active streams when on video conference page
+    useEffect(() => {
+        if (isVCPage && mounted) {
+            loadActiveStreams()
+            // Refresh every 30 seconds
+            const interval = setInterval(loadActiveStreams, 30000)
+            return () => clearInterval(interval)
+        }
+    }, [isVCPage, mounted, loadActiveStreams])
+
+    // Format view count (placeholder - API doesn't provide this yet)
+    const formatViewCount = (count?: number): string => {
+        // TODO: Replace with actual view count from API when available
+        // For now, show a placeholder
+        if (count && count > 0) {
+            if (count >= 1000) {
+                const thousands = Math.floor(count / 1000)
+                return `${thousands} тыс.`
+            }
+            return String(count)
+        }
+        // Show placeholder when no data available
+        return '—'
+    }
+
+    // Format duration from createdAt timestamp
+    const formatDuration = (createdAt: string): string => {
+        if (!createdAt) return '0 мин'
+        try {
+            const startTime = new Date(createdAt).getTime()
+            const now = Date.now()
+            const diffMs = now - startTime
+            const diffMinutes = Math.floor(diffMs / 60000)
+            
+            if (diffMinutes < 1) return 'только что'
+            if (diffMinutes < 60) return `${diffMinutes} мин`
+            
+            const hours = Math.floor(diffMinutes / 60)
+            if (hours === 1) return '1 час'
+            return `${hours} ч`
+        } catch {
+            return '0 мин'
+        }
+    }
+
+    const handleStreamClick = (streamId: string) => {
+        const languageMatch = pathname.match(/^\/(\w{2})\//)
+        const language = (languageMatch?.[1] || 'ru') as string
+        router.push(`/${language}/dashboard/video-conference/${streamId}`)
+    }
 
 
     const onCopy = async (text: string) => {
@@ -152,6 +249,60 @@ export const RightWidgets = () => {
                         <Image src="/assets/icons/calendar.svg" alt="calendar" width={20} height={20} className={s.calendarIcon} />
                         <span>Запланировать ВКС</span>
                     </div>
+                </div>
+            )}
+
+            {/* Active Streams Widget */}
+            {isVCPage && !hideActiveStreams && (
+                <div className={s.widget}>
+                    <div className={s.widgetHeader}>
+                        <h3 className={s.widgetTitle}>Сейчас в эфире</h3>
+                    </div>
+                    {loadingStreams ? (
+                        <div className={s.streamsLoading}>Загрузка...</div>
+                    ) : activeStreams.length === 0 ? (
+                        <div className={s.streamsEmpty}>Нет активных эфиров</div>
+                    ) : (
+                        <div className={s.streamsList}>
+                            {activeStreams.map((stream) => (
+                                <div 
+                                    key={stream.id} 
+                                    className={s.streamItem}
+                                    onClick={() => handleStreamClick(stream.id)}
+                                >
+                                    <div className={s.streamThumbnail}>
+                                        {stream.previewUrl ? (
+                                            <img 
+                                                src={stream.previewUrl} 
+                                                alt={stream.topic || 'Stream preview'}
+                                                className={s.streamPreviewImage}
+                                                onError={(e) => {
+                                                    // Fallback to placeholder if image fails to load
+                                                    const target = e.target as HTMLImageElement
+                                                    target.style.display = 'none'
+                                                    const placeholder = target.nextElementSibling as HTMLElement
+                                                    if (placeholder) placeholder.style.display = 'flex'
+                                                }}
+                                            />
+                                        ) : null}
+                                        <div className={s.streamThumbnailPlaceholder} style={{ display: stream.previewUrl ? 'none' : 'flex' }}>
+                                            <div className={s.playIcon}></div>
+                                        </div>
+                                        <div className={s.streamTopicOverlay}>
+                                            <span className={s.streamTopicText}>{stream.topic || 'Без названия'}</span>
+                                        </div>
+                                        <div className={s.streamOverlay}>
+                                            <span className={s.streamViews}>
+                                                <span className={s.viewIcon}></span>
+                                                {formatViewCount(stream.views)}
+                                            </span>
+                                            <span className={s.streamDuration}>{formatDuration(stream.createdAt)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 

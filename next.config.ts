@@ -6,6 +6,9 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
     transpilePackages: ['antd', 'rc-upload'],
+    
+    // Явно указываем корень проекта чтобы избежать проблем с множественными lockfiles
+    outputFileTracingRoot: path.join(__dirname),
 
     experimental: {},
 
@@ -103,8 +106,7 @@ const nextConfig: NextConfig = {
 		return [
 			{
 				source: '/api/proxy/:path*',
-				destination: 'http://localhost:8000/:path*',
-
+				destination: 'https://api.zanger-app.kz/api/:path*',
 			},
 		]
 	},

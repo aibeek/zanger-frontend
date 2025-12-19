@@ -17,6 +17,7 @@ import SupportIcon from '@/app/assets/icons/dashboard-icons/support.svg'
 import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
 import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
+import ChatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 
 interface DashboardHeaderProps {
     language: string
@@ -51,6 +52,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
             '/dashboard/faq': 'dashboard.sidebar.faq',
             '/dashboard/support': 'dashboard.sidebar.support',
             '/dashboard/video-conference': 'dashboard.sidebar.vcMyConferences',
+            '/dashboard/ai-consultant': 'dashboard.footer.sections.aiConsultant',
         }
 
         // Удаляем язык из пути для поиска
@@ -69,6 +71,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         if (pathWithoutLang.startsWith('/dashboard/faq')) return FaqIcon
         if (pathWithoutLang.startsWith('/dashboard/support')) return SupportIcon
         if (pathWithoutLang.startsWith('/dashboard/video-conference')) return '/assets/icons/vks.svg'
+        if (pathWithoutLang.startsWith('/dashboard/ai-consultant')) return ChatIcon
         
         return MainIcon
     }

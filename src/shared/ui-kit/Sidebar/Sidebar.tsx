@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Cookies from 'js-cookie'
 import { useTranslations } from 'next-intl'
 import { useLoginStore } from '@/features/auth/login'
@@ -37,6 +37,7 @@ interface MenuItem {
 export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const { personalData, reset } = useLoginStore()
     const pathname = usePathname()
+    const searchParams = useSearchParams()
     const router = useRouter()
     const t = useTranslations()
     
@@ -112,7 +113,6 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             title: t('dashboard.sidebar.vcLiveFeed'),
             icon: '/assets/icons/lenta.svg',
             href: `/${language}/dashboard/video-conference?view=feed`,
-            disabled: true,
         },
         {
             id: 'vc-events',
@@ -194,8 +194,26 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
 
             <nav className={s.navigation}>
                 {menuItems.map((item) => {
-                    const isDefaultVC = inVideoContext && pathWithoutLang === '/dashboard/video-conference'
-                    const isActive = inVideoContext ? (isDefaultVC ? item.id === 'vc-my' : false) : pathname === item.href.split('?')[0]
+                    let isActive = false
+                    if (inVideoContext) {
+                        const currentView = searchParams.get('view') || 'my'
+                        const isDefaultVC = pathWithoutLang === '/dashboard/video-conference' && !searchParams.get('view')
+                        
+                        if (item.id === 'vc-my') {
+                            isActive = isDefaultVC || currentView === 'my'
+                        } else if (item.id === 'vc-feed') {
+                            isActive = currentView === 'feed'
+                        } else if (item.id === 'vc-events') {
+                            isActive = currentView === 'events'
+                        } else if (item.id === 'vc-settings') {
+                            isActive = currentView === 'settings'
+                        } else {
+                            // For other items, check pathname match
+                            isActive = pathname === item.href.split('?')[0]
+                        }
+                    } else {
+                        isActive = pathname === item.href.split('?')[0]
+                    }
                     const className = `${s.navItem} ${isActive ? s.navItemActive : ''} ${item.disabled ? s.navItemDisabled : ''}`
                     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
                         if (item.disabled) {

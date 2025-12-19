@@ -636,11 +636,11 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 19; // keep in sync with actual number of cards
-// увеличенная продолжительность для 17 карточек
-$duration-desktop: 60s; // увеличено для лучшего расстояния
-$duration-tablet: 51s;  // увеличено для лучшего расстояния
-$duration-mobile: 43s;  // увеличено для лучшего расстояния
+$cards-count: 20; // keep in sync with actual number of cards
+// увеличенная продолжительность для 20 карточек
+$duration-desktop: 63s; // увеличено для лучшего расстояния
+$duration-tablet: 54s;  // увеличено для лучшего расстояния
+$duration-mobile: 45s;  // увеличено для лучшего расстояния
 
 $step-desktop: math.div($duration-desktop, $cards-count);
 $step-tablet: math.div($duration-tablet, $cards-count);

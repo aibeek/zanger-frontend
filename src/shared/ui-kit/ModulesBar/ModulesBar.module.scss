@@ -1,6 +1,6 @@
 .sections {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 12px 0 0 0;
 }
@@ -9,7 +9,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 140px;
+  max-width: 200px;
   padding: 8px 10px;
   background: linear-gradient(135deg, #274b9f 0%, #16366f 100%);
   color: #fff;
