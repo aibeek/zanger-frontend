@@ -167,10 +167,10 @@ export const lawyerApi = {
 		})
 	},
 
-	setAutoRenew: (number: number) => {
-		httpClientWithAuth(`${API_URL}/profile/lawyers/auto-renew`, {
+	setAutoRenew: (value: number): Promise<{ message: string }> => {
+		return httpClientWithAuth(`${API_URL}/profile/lawyers/auto-renew`, {
 			method: 'PATCH',
-			body: JSON.stringify({ number }),
+			body: JSON.stringify({ is_auto_renew: value }),
 		})
 	},
 }

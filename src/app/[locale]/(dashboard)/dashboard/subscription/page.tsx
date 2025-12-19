@@ -93,14 +93,43 @@ export default function SubscriptionPage() {
     }
 
     const handleExtend = async () => {
-        // TODO: Логика продления подписки
-        toast.success('Функция продления в разработке')
+        // Продление = создание новой подписки (такой же логикой как при первой подписке)
+        const plan = monthlyPlanId ? plans?.find(p => p.id === monthlyPlanId) : null
+        if (!plan) {
+            toast.error('Тариф не найден')
+            return
+        }
+
+        setLoading(true)
+        try {
+            const res = await lawyerApi.subscribe(plan.id, true)
+            if (res?.link) {
+                window.location.href = res.link
+                return
+            }
+            toast.success(res?.message || 'Запрос на продление создан')
+        } catch (e: any) {
+            toast.error(e?.message || 'Не удалось продлить подписку')
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleCancel = async () => {
-        // TODO: Логика отмены подписки
-        if (window.confirm('Вы уверены, что хотите отменить подписку?')) {
-            toast.success('Функция отмены в разработке')
+        // Отмена подписки = отключение автопродления
+        if (window.confirm('Вы уверены, что хотите отменить автопродление подписки? Подписка будет действовать до конца оплаченного периода.')) {
+            setLoading(true)
+            try {
+                await lawyerApi.setAutoRenew(0)
+                toast.success('Автопродление подписки отключено. Подписка будет действовать до ' + 
+                    new Date(subscription!.ends_at).toLocaleDateString('ru-RU'))
+                // Обновляем данные пользователя
+                window.location.reload()
+            } catch (e: any) {
+                toast.error(e?.message || 'Не удалось отменить подписку')
+            } finally {
+                setLoading(false)
+            }
         }
     }
 
@@ -147,10 +176,10 @@ export default function SubscriptionPage() {
                         </div>
 
                         <div className={s.actions}>
-                            <button className={s.extendButton} onClick={handleExtend}>
-                                {t('extendButton')}
+                            <button className={s.extendButton} onClick={handleExtend} disabled={loading}>
+                                {loading ? 'Загрузка...' : t('extendButton')}
                             </button>
-                            <button className={s.cancelButton} onClick={handleCancel}>
+                            <button className={s.cancelButton} onClick={handleCancel} disabled={loading}>
                                 {t('cancelButton')}
                             </button>
                         </div>
