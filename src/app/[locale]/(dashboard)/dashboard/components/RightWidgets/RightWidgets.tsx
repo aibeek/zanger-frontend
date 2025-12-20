@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { httpClientWithAuth } from '@/shared/api/httpClient'
 import { API_URL, VIDEO_API_BASE_URL } from '@/shared/config'
 import { useRouter } from 'next/navigation'
+import Cookies from 'js-cookie'
 import s from './RightWidgets.module.scss'
 
 interface ActiveStream {
@@ -47,6 +48,7 @@ export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) =
     const [scheduledData, setScheduledData] = useState<any | null>(null)
     const [activeStreams, setActiveStreams] = useState<ActiveStream[]>([])
     const [loadingStreams, setLoadingStreams] = useState(false)
+    const role = Cookies.get('role')
     const BASE = `${API_URL}/livekit`
     const VIDEO_BASE = `${VIDEO_API_BASE_URL}/java-api`
     
@@ -243,6 +245,26 @@ export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) =
                     </div>
                 </div>
             </div>
+
+            {/* Lawyer Guide Widget */}
+            {role === 'lawyer' && (
+                <div className={s.lawyerGuideWidget}>
+                    <div className={s.lawyerGuideHeader}>
+                        <div className={s.lawyerGuideIcon}>📋</div>
+                        <h3 className={s.lawyerGuideTitle}>Руководство для юристов</h3>
+                    </div>
+                    <div className={s.lawyerGuide}>
+                        <ol className={s.guideList}>
+                            <li><strong>Заполните профиль</strong><span>Укажите данные, фото и статус</span></li>
+                            <li><strong>Загрузите документы</strong><span>Дождитесь проверки администратором</span></li>
+                            <li><strong>Укажите специализации</strong><span>Направления права и регионы</span></li>
+                            <li><strong>Оплатите подписку</strong><span>Раздел «Моя подписка»</span></li>
+                            <li><strong>Получайте заявки</strong><span>Откройте раздел «Заявки»</span></li>
+                        </ol>
+                    </div>
+                </div>
+            )}
+
             {isVCPage && (
                 <div className={s.scheduleAction}>
                     <div className={s.calendarActionBtn} onClick={() => setIsScheduleOpen(true)}>

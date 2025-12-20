@@ -191,6 +191,104 @@
     }
 }
 
+// Lawyer Guide Widget
+.lawyerGuideWidget {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.lawyerGuideHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.lawyerGuideIcon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.lawyerGuideTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e40af;
+    margin: 0;
+}
+
+.lawyerGuide {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.guideList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    counter-reset: guide-counter;
+
+    li {
+        position: relative;
+        padding-left: 36px;
+        counter-increment: guide-counter;
+        background: white;
+        border-radius: 8px;
+        padding: 10px 10px 10px 36px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+        }
+
+        &::before {
+            content: counter(guide-counter);
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        strong {
+            color: #1e293b;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        span {
+            color: #64748b;
+            font-size: 12px;
+        }
+    }
+}
+
 // Events Widget
 .eventsList {
     display: flex;
