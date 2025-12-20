@@ -566,10 +566,6 @@ export default function AiConsultantPage() {
         return <div className={s.messageContent}>{nodes}</div>
     }
 
-    ;(() => {
-        /* keep modal mounted at top-level render */
-    })()
-
     const WipModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
         return (
             <Modal isOpen={open} onClose={onClose} title="Модуль в разработке" closeButton>
