@@ -62,7 +62,12 @@
 		"successComplete": "Өтініш сәтті аяқталды",
 		"errorComplete": "Өтінішті аяқтауда қате пайда болды",
 		"needSubscription": "Өтінімдерге жауап беру үшін жазылым жасау керек",
-		"subscriptionRequiredToViewFull": "Өтінімдердің толық сипаттамасын көру үшін жазылым жасаңыз"
+		"subscriptionRequiredToViewFull": "Өтінімдердің толық сипаттамасын көру үшін жазылым жасаңыз",
+		"archivedApplications": "Мұрағат",
+		"noArchivedApplications": "Мұрағатталған өтінімдер жоқ",
+		"toArchive": "Мұрағатқа",
+		"archiving": "Мұрағаттау...",
+		"archived": "Мұрағатта"
 	},
 
 	"profile": {

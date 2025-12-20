@@ -122,6 +122,25 @@ export const lawyerApi = {
 			method: 'POST',
 		}),
 
+	archiveResponse: (id: number) =>
+		httpClientWithAuth(`${API_URL}/lawyers/responses/${id}/archive`, {
+			method: 'POST',
+		}),
+
+	deleteResponse: (id: number) =>
+		httpClientWithAuth(`${API_URL}/lawyers/responses/${id}`, {
+			method: 'DELETE',
+		}),
+
+	getArchivedResponses: (params?: { page?: number; per_page?: number }) => {
+		const query = createQuery(params)
+		const url = `${API_URL}/lawyers/responses/archived${query}`
+
+		return httpClientWithAuth(url, {
+			method: 'GET',
+		})
+	},
+
 	getAllSubscriptionPlans: (): Promise<{ data: SubscriptionPlanRaw[] }> => {
 		return httpClientWithAuth(`${API_URL}/plans`, {
 			method: 'GET',
