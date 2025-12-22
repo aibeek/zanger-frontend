@@ -87,14 +87,14 @@ export const ModulesBar = () => {
         const isCommunity = section === 'Сообщество'
         const isCRM = section === 'CRM'
         const isSeminars = section === 'Семинары'
-        const label = section === databaseLabel ? 'Проверка КГ' : section
+        const label = section === databaseLabel ? 'Проверка\nконтрагента' : section
         return (
           <button
             key={index}
             className={`${s.section} ${(isDigital || isApplications || isAi || isPilot) ? s.sectionEdo : ''}`}
             onClick={() => handleSectionClick(section)}
           >
-            <span className={s.label}>
+            <span className={s.label} style={isDatabase ? { fontSize: '14px', whiteSpace: 'pre-line' } : undefined}>
               {isDigital && (
                 <span className={s.docIcon} aria-hidden>
                   <Image src={docIcon} alt="doc" width={26} height={26} />

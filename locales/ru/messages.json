@@ -69,7 +69,12 @@
 		"successComplete": "Заявка успешно завершена",
 		"errorComplete": "Ошибка при завершении заявки",
 		"needSubscription": "Необходимо оформить подписку для отклика на заявки",
-		"subscriptionRequiredToViewFull": "Оформите подписку, чтобы видеть полное описание заявок"
+		"subscriptionRequiredToViewFull": "Оформите подписку, чтобы видеть полное описание заявок",
+		"archivedApplications": "Архивные",
+		"noArchivedApplications": "Нет архивных заявок",
+		"toArchive": "В архив",
+		"archiving": "Архивация...",
+		"archived": "В архиве"
 	},
 
 	"profile": {
