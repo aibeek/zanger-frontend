@@ -34,8 +34,11 @@ export default function AiConsultantPage() {
     const [inputValue, setInputValue] = useState('')
     const [loading, setLoading] = useState(false)
     const [sending, setSending] = useState(false)
+    const [elapsedTime, setElapsedTime] = useState(0)
+    const [responseTime, setResponseTime] = useState<number | null>(null)
     const messagesContainerRef = useRef<HTMLDivElement>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
+    const timerRef = useRef<NodeJS.Timeout | null>(null)
     const [menuOpenId, setMenuOpenId] = useState<number | null>(null)
     const [showArchivedModal, setShowArchivedModal] = useState(false)
     const [showDeletedModal, setShowDeletedModal] = useState(false)
@@ -45,7 +48,6 @@ export default function AiConsultantPage() {
     const [renameInput, setRenameInput] = useState('')
     const { personalData } = useLoginStore()
     const isAuthenticated = !!personalData
-    const [isWipOpen, setIsWipOpen] = useState(true)
     const locale = useLocale()
     const router = useRouter()
     // const [showBanner, setShowBanner] = useState(true)
@@ -203,6 +205,15 @@ export default function AiConsultantPage() {
         if (!inputValue.trim()) return
 
         setSending(true)
+        setElapsedTime(0)
+        setResponseTime(null)
+        
+        // Start timer
+        const startTime = Date.now()
+        timerRef.current = setInterval(() => {
+            setElapsedTime(Math.floor((Date.now() - startTime) / 1000))
+        }, 1000)
+        
         const content = inputValue
         setInputValue('')
 
@@ -228,12 +239,34 @@ export default function AiConsultantPage() {
                 body: JSON.stringify({ content }),
                 headers: getHeaders()
             })
-            setMessages(prev => [...prev, response])
+            
+            // Stop timer and save response time
+            if (timerRef.current) {
+                clearInterval(timerRef.current)
+                timerRef.current = null
+            }
+            const finalTime = Math.floor((Date.now() - startTime) / 1000)
+            setResponseTime(finalTime)
+            
+            // Add response time message
+            const responseTimeMsg: Message = {
+                id: Date.now() + 1,
+                role: 'system',
+                content: `*Ответ получен за ${finalTime}с*`,
+                created_at: new Date().toISOString()
+            }
+            
+            setMessages(prev => [...prev, response, responseTimeMsg])
             fetchConversations()
             fetchMessages(chatId)
 
         } catch (error) {
             console.error('Failed to send message', error)
+            // Stop timer on error too
+            if (timerRef.current) {
+                clearInterval(timerRef.current)
+                timerRef.current = null
+            }
         } finally {
             setSending(false)
         }
@@ -260,9 +293,16 @@ export default function AiConsultantPage() {
         }
     }, [messages])
 
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current)
+            }
+        }
+    }, [])
+
     return (
         <div className={s.profileContent}>
-            <WipModal open={isWipOpen} onClose={() => router.push(`/${locale}/dashboard`)} />
             <div className={s.profileSettings}>
                 <div className={s.chatArea}>
                     <div className={s.chatHeader}>
@@ -292,6 +332,9 @@ export default function AiConsultantPage() {
                                     <span className={s.typingDot}></span>
                                     <span className={s.typingDot}></span>
                                     <span className={s.typingDot}></span>
+                                </div>
+                                <div style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>
+                                    Обработка запроса... {elapsedTime}с
                                 </div>
                             </div>
                         )}
@@ -444,8 +487,13 @@ export default function AiConsultantPage() {
         const parts = text.split(/\*\*(.*?)\*\*/)
         const nodes: (string | ReactNode)[] = []
         for (let i = 0; i < parts.length; i++) {
-            if (i % 2 === 1) nodes.push(<strong key={`str-${i}`}>{parts[i]}</strong>)
-            else if (parts[i]) nodes.push(parts[i])
+            if (i % 2 === 1) {
+                // Внутри ** - жирный текст
+                nodes.push(<strong key={`str-${i}`}>{parts[i]}</strong>)
+            } else if (parts[i]) {
+                // Обычный текст - НЕ жирный
+                nodes.push(parts[i])
+            }
         }
         return nodes
     }
@@ -467,7 +515,7 @@ export default function AiConsultantPage() {
             const cleanLabel = label.replace(/^\s*\*\*/, '').replace(/\*\*\s*$/, '')
             nodes.push(
                 <a key={`lnk-${start}`} href={url} target="_blank" rel="noopener noreferrer">
-                    <strong>{cleanLabel}</strong>
+                    {cleanLabel}
                 </a>
             )
             lastIndex = start + full.length
@@ -488,7 +536,7 @@ export default function AiConsultantPage() {
             const siteName = SITE_NAME_MAP[hostName] || hostName.replace(/^www\./, '').split('.')[0].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
             nodes.push(
                 <a key={`url-${lastIndex + st}`} href={url} target="_blank" rel="noopener noreferrer">
-                    <strong>{siteName}</strong>
+                    {siteName}
                 </a>
             )
             offset = st + m[0].length
@@ -501,30 +549,53 @@ export default function AiConsultantPage() {
     const MessageContent = ({ content }: { content: string }) => {
         const trimmed = content.trim().replace(/\r/g, '')
         const lines = trimmed.split(/\n/)
-        const orderedRegex = /^\s*\d+[\.)]?\s+(.*)$/
-        const unorderedRegex = /^\s*[-•]\s+(.*)$/
 
         const nodes: ReactNode[] = []
         let i = 0
-
-        const pushParagraph = (text: string) => {
-            if (!text) return
-            const paragraphs = text.split(/\n\n+/)
-            paragraphs.forEach((p, idx) => nodes.push(<p key={`p-${nodes.length}-${idx}`}>{renderInline(p)}</p>))
-        }
 
         while (i < lines.length) {
             // skip extra blank lines
             if (!lines[i].trim()) { i++; continue }
 
-            // horizontal rule
-            if (/^\s*-{3,}\s*$/.test(lines[i])) {
+            // horizontal rule (--- or ***)
+            if (/^\s*[-*]{3,}\s*$/.test(lines[i])) {
                 nodes.push(<hr key={`hr-${i}`} className={s.hr} />)
                 i++
                 continue
             }
 
+            // heading with ### or ** at start and end
+            const headingHashMatch = lines[i].match(/^\s*(#{1,6})\s+(.+)$/)
+            const headingBoldMatch = lines[i].match(/^\s*\*\*(.+?)\*\*\s*$/)
+            
+            if (headingHashMatch) {
+                const level = Math.min(headingHashMatch[1].length, 6)
+                const text = headingHashMatch[2].trim()
+                const content = renderInline(text)
+                
+                switch (level) {
+                    case 1: nodes.push(<h1 key={`h-${i}`}>{content}</h1>); break
+                    case 2: nodes.push(<h2 key={`h-${i}`}>{content}</h2>); break
+                    case 3: nodes.push(<h3 key={`h-${i}`}>{content}</h3>); break
+                    case 4: nodes.push(<h4 key={`h-${i}`}>{content}</h4>); break
+                    case 5: nodes.push(<h5 key={`h-${i}`}>{content}</h5>); break
+                    case 6: nodes.push(<h6 key={`h-${i}`}>{content}</h6>); break
+                }
+                i++
+                continue
+            }
+
+            if (headingBoldMatch) {
+                const text = headingBoldMatch[1].trim()
+                nodes.push(<h3 key={`h-bold-${i}`}>{renderInline(text)}</h3>)
+                i++
+                continue
+            }
+
             // detect list block
+            const orderedRegex = /^\s*\d+[\.)]?\s+(.*)$/
+            const unorderedRegex = /^\s*[-•]\s+(.*)$/
+
             const isOrdered = orderedRegex.test(lines[i])
             const isUnordered = unorderedRegex.test(lines[i])
 
@@ -552,27 +623,23 @@ export default function AiConsultantPage() {
                 continue
             }
 
-            // accumulate paragraph until a blank line or a list starts
-            const buf: string[] = []
+            // accumulate single paragraph until blank line or special element
+            const paragraphLines: string[] = []
             while (i < lines.length) {
-                if (!lines[i].trim()) { i++; break }
-                if (orderedRegex.test(lines[i]) || unorderedRegex.test(lines[i])) break
-                buf.push(lines[i])
+                if (!lines[i].trim()) break // blank line ends paragraph
+                if (/^\s*[-*]{3,}\s*$/.test(lines[i])) break // horizontal rule
+                if (/^\s*(#{1,6})\s+/.test(lines[i])) break // heading with ###
+                if (/^\s*\*\*(.+?)\*\*\s*$/.test(lines[i])) break // heading with **
+                if (orderedRegex.test(lines[i]) || unorderedRegex.test(lines[i])) break // list
+                paragraphLines.push(lines[i])
                 i++
             }
-            pushParagraph(buf.join('\n'))
+            
+            if (paragraphLines.length > 0) {
+                const paragraphText = paragraphLines.join('\n')
+                nodes.push(<p key={`p-${i}`}>{renderInline(paragraphText)}</p>)
+            }
         }
 
         return <div className={s.messageContent}>{nodes}</div>
-    }
-
-    const WipModal = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-        return (
-            <Modal isOpen={open} onClose={onClose} title="Модуль в разработке" closeButton>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <p style={{ fontSize: 16, color: '#333' }}>Скоро здесь появится ИИ‑Консультант.</p>
-                    <Button variant="primary" onClick={onClose}>Понятно</Button>
-                </div>
-            </Modal>
-        )
     }
