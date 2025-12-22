@@ -4,7 +4,7 @@ import { useModal } from '@/shared/ui-kit'
 import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { refreshUser } from '@/shared/lib/helpers/refreshUser'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import {
     ProfileChangePassword,
     ProfileDelete,
@@ -174,6 +174,7 @@ export default function ProfilePage() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const pathname = usePathname()
+    const locale = useLocale()
     const role = Cookies.get('role')
 
     const { close, open, isOpen } = useModal()
@@ -331,6 +332,10 @@ export default function ProfilePage() {
                         <button className={s.actionCard} onClick={() => openModal('payment')}>
                             <Image src={paymentIcon} alt="" width={24} height={24} />
                             <span>{t('profile.menu_items.payment_methods')}</span>
+                        </button>
+                        <button className={s.actionCard} onClick={() => router.push(`/${locale}/dashboard/ai-consultant`)}>
+                            <Image src={supportIcon} alt="" width={24} height={24} />
+                            <span>ИИ-консультант</span>
                         </button>
                     </div>
 

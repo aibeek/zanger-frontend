@@ -88,6 +88,16 @@ export const ModulesSection = () => {
       normalized.includes('ИИ') ||
       normalized.includes('КОНСУЛЬТАНТ')
 
+    if (isAi) {
+      const res = await authService.check()
+      if (res?.isAuthenticated) {
+        router.push(`/${locale}/dashboard/ai-consultant`)
+      } else {
+        router.push(`/${locale}/auth/login`)
+      }
+      return
+    }
+
     if (isEdoOrEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
@@ -105,11 +115,6 @@ export const ModulesSection = () => {
       } else {
         router.push(`/${locale}/auth/login`)
       }
-      return
-    }
-
-    if (isAi) {
-      setIsModalOpen(true)
       return
     }
 

@@ -45,7 +45,7 @@ export const ModulesBar = () => {
     ? [
         t('dashboard.footer.sections.applications'),
         t('dashboard.footer.sections.digitalSignature'),
-        // t('dashboard.footer.sections.aiConsultant'),
+        t('dashboard.footer.sections.aiConsultant'),
         t('dashboard.footer.sections.videoConference'),
       ]
     : allSections
@@ -66,7 +66,7 @@ export const ModulesBar = () => {
       return
     }
     if (label === aiConsultantLabel) {
-      setIsModalOpen(true)
+      router.push(`/${language}/dashboard/ai-consultant`)
       return
     }
     if (label === videoConferenceLabel) {
