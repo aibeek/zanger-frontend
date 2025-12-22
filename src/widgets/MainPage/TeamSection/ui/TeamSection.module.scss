@@ -588,28 +588,28 @@
 
 @keyframes moveRightToLeft {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 2600px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 3200px));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2100px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2600px));
   }
 }
 
 @keyframes moveRightToLeftMobile {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2350px)));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2900px)));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1900px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2400px));
   }
 }
 
 @keyframes moveRightToLeftSmall {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2150px)));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2700px)));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 1800px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2200px));
   }
 }
 
@@ -636,11 +636,11 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 20; // keep in sync with actual number of cards
-// увеличенная продолжительность для 20 карточек
-$duration-desktop: 63s; // увеличено для лучшего расстояния
-$duration-tablet: 54s;  // увеличено для лучшего расстояния
-$duration-mobile: 45s;  // увеличено для лучшего расстояния
+$cards-count: 22; // keep in sync with actual number of cards
+// увеличенная продолжительность для 22 карточек
+$duration-desktop: 72s; // увеличено для лучшего расстояния
+$duration-tablet: 62s;  // увеличено для лучшего расстояния
+$duration-mobile: 52s;  // увеличено для лучшего расстояния
 
 $step-desktop: math.div($duration-desktop, $cards-count);
 $step-tablet: math.div($duration-tablet, $cards-count);
