@@ -272,7 +272,7 @@ export const TeamSection = () => {
     },
     {
       id: 21,
-      name: 'Адильбек Бамурзин',
+      name: 'Адильбек Баймурзина',
       position: 'Юридический консультант',
       experience: 'Профессиональный опыт более 11 лет',
       moreExperience:
