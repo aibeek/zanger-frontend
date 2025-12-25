@@ -3,7 +3,6 @@ stages:
   - deploy
 
 variables:
-  # Чтобы не было "Appending" мусора в .env
   GA_ID: "G-B7HNWM1W8G"
 
 before_script:
@@ -26,10 +25,16 @@ build image:
     - ps
   script:
     - echo "# Build Stage start"
+    - pwd
+    - ls -la
+    - ls -la .docker/nextjs || true
+
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    # если Dockerfile в корне проекта:
-    - docker build -t "$CI_REGISTRY_IMAGE:${TAG}" .
+
+    # Dockerfile лежит в .docker/nextjs/Dockerfile, контекст = текущая папка
+    - docker build -f .docker/nextjs/Dockerfile -t "$CI_REGISTRY_IMAGE:${TAG}" .
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
+
     - echo "# Build Stage end"
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
@@ -38,7 +43,7 @@ build image:
 # -------------------------
 # 2) DEPLOY DEV (pull+up без down)
 # -------------------------
-deploy to dev server:
+deploy to server:
   stage: deploy
   tags:
     - kulenkov
@@ -48,6 +53,10 @@ deploy to dev server:
   script:
     - echo "# Deploy DEV start"
     - echo "update project in $HOME_DIR"
+
+    # важно: /app/... — боевой каталог, там git может ругаться на ownership
+    - git -C "$HOME_DIR" config --global --add safe.directory "$HOME_DIR" || true
+
     - git -C "$HOME_DIR" reset --hard
     - git -C "$HOME_DIR" checkout -- .
     - git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
@@ -70,7 +79,7 @@ deploy to dev server:
     - docker compose -p "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}" --env-file "$HOME_DIR/.env.docker-compose" -f "$HOME_DIR/docker-compose.yml" pull
     - docker compose -p "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}" --env-file "$HOME_DIR/.env.docker-compose" -f "$HOME_DIR/docker-compose.yml" up -d --remove-orphans
 
-    # опционально: чистка мягче, чем system prune -a
+    # мягкая чистка
     - docker image prune -f || true
 
     - echo "# Deploy DEV end"
