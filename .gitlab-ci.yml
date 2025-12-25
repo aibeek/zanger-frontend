@@ -29,16 +29,17 @@ build image:
     - ls -la
     - ls -la .docker/nextjs || true
 
-    # Проверим, что переменные реально пришли в job
-    - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables + Protected flag)" && exit 1)
+    # Проверка: переменные должны быть доступны в job
+    - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
     - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" || (echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing" && exit 1)
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
-    # ВАЖНО: передаём NEXT_PUBLIC_* внутрь docker build
-    - docker build -f .docker/nextjs/Dockerfile \
+    # ВАЖНО: docker build в YAML делаем многострочным блоком
+    - |
+      docker build -f .docker/nextjs/Dockerfile \
         --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL_PROD="$NEXT_PUBLIC_BASE_URL_PROD" \
@@ -52,7 +53,7 @@ build image:
     - if: '$CI_COMMIT_BRANCH == "main"'
 
 # -------------------------
-# 2) DEPLOY DEV (pull+up without down)
+# 2) DEPLOY DEV (pull+up, без down)
 # -------------------------
 deploy to server:
   stage: deploy
@@ -65,7 +66,7 @@ deploy to server:
     - echo "# Deploy DEV start"
     - echo "update project in $HOME_DIR"
 
-    # safe.directory: чтобы git не ругался
+    # safe.directory, чтобы git не ругался
     - git config --global --add safe.directory "$HOME_DIR" || true
 
     - git -C "$HOME_DIR" reset --hard
@@ -73,7 +74,7 @@ deploy to server:
     - git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
     - cd "$HOME_DIR"
 
-    # фиксируем tag для compose
+    # обновляем tag для docker-compose
     - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
 
     # GA ID: replace-or-add (без дублей)
