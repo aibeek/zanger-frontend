@@ -68,7 +68,7 @@ export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobi
       <div className={s.logo}>
         <div className={s.logoContent}>
           <Image
-            src="/logo.svg"
+            src="/happynewyear.svg"
             alt="ZANGER"
             width={40}
             height={48}

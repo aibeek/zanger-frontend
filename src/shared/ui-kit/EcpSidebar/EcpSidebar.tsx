@@ -52,7 +52,7 @@ export const EcpSidebar: React.FC = () => {
     <aside className={s.aside}>
       <div className={s.logo}>
         <Image
-          src="/logo.svg"
+          src="/happynewyear.svg"
           alt="ZANGER"
           width={40}
           height={48}

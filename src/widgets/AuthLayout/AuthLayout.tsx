@@ -36,7 +36,7 @@ export function AuthLayout({
           <div className={s.leftPanelContent}>
             <div className={s.brandBlock}>
               <div className={s.brandHeader}>
-                <Image src="/logo.svg" alt="Zanger" width={60} height={60} />
+                <Image src="/happynewyear.svg" alt="Zanger" width={60} height={60} />
                 <h2 className={s.brandTitle}>ZANGER</h2>
               </div>
               <p className={s.brandSubtitle}>Юридическая платформа Zanger</p>
@@ -57,7 +57,7 @@ export function AuthLayout({
                   // Центрированный логотип для страницы логина
                   <div className={s.centerLogoContainer}>
                     <Link href="/" className={s.logoLink}>
-                      <Image src="/logo.svg" alt="Zanger" width={28} height={28} />
+                      <Image src="/happynewyear.svg" alt="Zanger" width={28} height={28} />
                       <span className={s.logoText}>ZANGER</span>
                     </Link>
                     <div className={s.navLinkContainer}>
@@ -71,7 +71,7 @@ export function AuthLayout({
                   // Обычная навигация для других страниц
                   <>
                     <Link href="/" className={s.logoLink}>
-                      <Image src="/logo.svg" alt="Zanger" width={28} height={28} />
+                      <Image src="/happynewyear.svg" alt="Zanger" width={28} height={28} />
                       <span className={s.logoText}>ZANGER</span>
                     </Link>
                     <div className={s.navLinkContainer}>

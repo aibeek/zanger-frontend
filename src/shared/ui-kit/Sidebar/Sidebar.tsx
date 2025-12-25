@@ -164,7 +164,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     onClick={onMobileClose}
                     aria-label={t('dashboard.sidebar.main')}
                 >
-                    <Image src="/logo.svg" alt="Zanger Logo" className={s.logoIcon} width={40} height={48} priority />
+                        <Image src="/happynewyear.svg" alt="Zanger Logo" className={s.logoIcon} width={40} height={48} priority />
                     <span className={s.logoText}>ZANGER</span>
                 </Link>
                 {onMobileClose && (

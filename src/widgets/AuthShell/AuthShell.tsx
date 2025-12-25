@@ -52,7 +52,7 @@ export function AuthShell({
         <aside className={s.promo} aria-hidden>
           <div className={s.promoInner}>
             <div className={s.brandBlock}>
-              <Image src="/logo.svg" alt="Zanger" width={140} height={140} />
+              <Image src="/happynewyear.svg" alt="Zanger" width={140} height={140} />
               <h2 className={s.brandTitle}>ZANGER</h2>
               <p className={s.brandSubtitle}>{t('platformTitle')}</p>
               <p className={s.brandDescription}>{t('platformDescription')}</p>

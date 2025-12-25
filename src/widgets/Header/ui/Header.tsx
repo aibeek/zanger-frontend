@@ -257,10 +257,10 @@ export const Header = ({ variant }: { variant: 'user-variant' | 'lending-variant
 									href="/"
 									className={s.logoLink}>
 									<Image
-										src="/logo.svg"
+										src="/happynewyear.svg"
 										alt="ZANGER"
 										width={160}
-										height={45}
+										height={160}
 										priority
 										style={{ width: 'auto', height: 'auto' }}
 									/>
