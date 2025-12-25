@@ -1,59 +1,78 @@
 stages:
+  - build
   - deploy
 
+variables:
+  # Чтобы не было "Appending" мусора в .env
+  GA_ID: "G-B7HNWM1W8G"
+
 before_script:
-  - export LAST_ROOT_NAMESPACE="$(echo $CI_PROJECT_NAMESPACE | rev | cut -d'/' -f1 | rev)"
+  - export LAST_ROOT_NAMESPACE="$(echo "$CI_PROJECT_NAMESPACE" | rev | cut -d'/' -f1 | rev)"
   - export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}-test"
-  - if [ $CI_COMMIT_REF_NAME = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
-  - export TAG="$CI_COMMIT_REF_SLUG-$(echo $CI_COMMIT_TIMESTAMP | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
+  - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
+  - export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
   - export HOME_DIR="/app/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
   - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
+  - echo "Image tag - ${TAG}"
 
+# -------------------------
+# 1) BUILD (сборка+push)
+# -------------------------
+build image:
+  stage: build
+  tags:
+    - kulenkov
+    - dev
+    - ps
+  script:
+    - echo "# Build Stage start"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    # если Dockerfile в корне проекта:
+    - docker build -t "$CI_REGISTRY_IMAGE:${TAG}" .
+    - docker push "$CI_REGISTRY_IMAGE:${TAG}"
+    - echo "# Build Stage end"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# -------------------------
+# 2) DEPLOY DEV (pull+up без down)
+# -------------------------
 deploy to dev server:
   stage: deploy
   tags:
     - kulenkov
     - dev
     - ps
+  needs: ["build image"]
   script:
-    - echo "# Deploy Stage start"
+    - echo "# Deploy DEV start"
     - echo "update project in $HOME_DIR"
-    - git -C $HOME_DIR reset --hard
-    - git -C $HOME_DIR checkout -- .
-    - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
-    - cd $HOME_DIR
-    - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
-    # 👇 Добавляем Google Analytics ID в окружение фронта
-    - echo "NEXT_PUBLIC_GA_ID=G-B7HNWM1W8G" >> $HOME_DIR/.env.docker-compose
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
-    - docker system prune -a -f
-    - echo "# Deploy Stage end"
-  only:
-    - dev
+    - git -C "$HOME_DIR" reset --hard
+    - git -C "$HOME_DIR" checkout -- .
+    - git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
+    - cd "$HOME_DIR"
 
-deploy to prod server:
-  stage: deploy
-  tags:
-    - lawyerplace
-    - prod
-    - pskz
-  when: manual
-  script:
-    - echo "# Deploy Stage start"
-    - echo "update project in $HOME_DIR"
-    - git -C $HOME_DIR reset --hard
-    - git -C $HOME_DIR checkout -- .
-    - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
-    - cd $HOME_DIR
-    - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
-    - echo "NEXT_PUBLIC_GA_ID=G-B7HNWM1W8G" >> $HOME_DIR/.env.docker-compose
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker rm -f lawyerplace-frontend || true     # 👈 добавляем эту строку
-    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
-    - docker system prune -a -f
-    - echo "# Deploy Stage end"
-  only:
-    - dev
+    # фиксируем tag для compose
+    - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
+
+    # GA ID: replace-or-add (без дублей)
+    - |
+      if grep -q '^NEXT_PUBLIC_GA_ID=' "$HOME_DIR/.env.docker-compose"; then
+        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" "$HOME_DIR/.env.docker-compose"
+      else
+        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> "$HOME_DIR/.env.docker-compose"
+      fi
+
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+    # ВАЖНО: без down — меньше/нет 502
+    - docker compose -p "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}" --env-file "$HOME_DIR/.env.docker-compose" -f "$HOME_DIR/docker-compose.yml" pull
+    - docker compose -p "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}" --env-file "$HOME_DIR/.env.docker-compose" -f "$HOME_DIR/docker-compose.yml" up -d --remove-orphans
+
+    # опционально: чистка мягче, чем system prune -a
+    - docker image prune -f || true
+
+    - echo "# Deploy DEV end"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
