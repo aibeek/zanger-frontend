@@ -315,7 +315,7 @@ export default function AiConsultantPage() {
                     <div className={s.messages} ref={messagesContainerRef}>
                         {!currentChatId && messages.length === 0 ? (
                             <div className={s.emptyState}>
-                                <h3>ИИ-Консультант 1</h3>
+                                <h3>ИИ-Консультант</h3>
                                 <p>Задайте свой вопрос по законодательству РК</p>
                             </div>
                         ) : (

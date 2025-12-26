@@ -13,6 +13,7 @@ before_script:
   - export HOME_DIR="/app/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
   - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
   - echo "Image tag - ${TAG}"
+  - echo "HOME_DIR - ${HOME_DIR}"
 
 # -------------------------
 # 1) BUILD (build+push image)
@@ -20,9 +21,10 @@ before_script:
 build image:
   stage: build
   tags:
-    - kulenkov
-    - dev
-    - ps
+    - dev29260
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo "# Build Stage start"
     - pwd
@@ -37,7 +39,6 @@ build image:
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
-    # ВАЖНО: docker build в YAML делаем многострочным блоком
     - |
       docker build -f .docker/nextjs/Dockerfile \
         --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
@@ -48,21 +49,22 @@ build image:
 
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
     - echo "# Build Stage end"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-    - if: '$CI_COMMIT_BRANCH == "main"'
 
+# -------------------------
+# 2) DEPLOY DEV (pull + recreate only frontend)
+# -------------------------
 deploy to server:
   stage: deploy
   tags:
-    - kulenkov
-    - dev
-    - ps
+    - dev29260
   needs: ["build image"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
     - echo "# Deploy DEV start"
+    - echo "RUNNING ON HOST: $(hostname)"
+    - docker info --format 'DockerServer={{.Name}} ServerVersion={{.ServerVersion}}' || true
+
     - echo "update project in $HOME_DIR"
 
     # Git safe.directory (fix dubious ownership)
@@ -97,21 +99,32 @@ deploy to server:
       fi
       echo "Using compose: $COMPOSE"
 
-      PROJECT="${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}"
       FILE="$HOME_DIR/docker-compose.yml"
       ENVFILE="$HOME_DIR/.env.docker-compose"
       SERVICE="lawyerplace-frontend"
 
-      # 1) Всегда тянем свежий образ для конкретного сервиса
+      # Берём compose project name из реально существующего контейнера (чтобы не попасть в другой проект)
+      PROJECT=$(docker inspect lawyerplace-frontend --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || echo "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}")
+      echo "Using compose project: $PROJECT"
+
+      echo "Services in compose:"
+      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" config --services || true
+
+      echo "Pull fresh image for $SERVICE"
       $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" pull "$SERVICE"
 
-      # 2) Железно пересоздаём только этот сервис (без зависимостей)
-      #    --force-recreate = пересоздать контейнер
-      #    --no-deps = не трогать остальные сервисы
+      echo "Recreate ONLY $SERVICE (no deps)"
       $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" up -d --no-deps --force-recreate "$SERVICE"
 
-      # (опционально) показать какой image сейчас у контейнера
-      docker inspect "$SERVICE" --format 'Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}' || true
+      # Печать факта: какой образ и когда создан контейнер
+      CID=$($COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps -q "$SERVICE" || true)
+      if [ -n "$CID" ]; then
+        docker inspect "$CID" --format 'Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}'
+      else
+        echo "ERROR: cannot find container id for service $SERVICE"
+        $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps || true
+        exit 1
+      fi
 
     # мягкая чистка (НЕ system prune -a)
     - docker image prune -f || true
