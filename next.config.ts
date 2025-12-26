@@ -55,11 +55,24 @@ const nextConfig: NextConfig = {
 	// ---- IMAGES ----
 	images: {
 		remotePatterns: [
-			{ protocol: 'http', hostname: 'localhost', port: '8000', pathname: '/storage/images/**' },
-			{ protocol: 'https', hostname: 'api.lawyerplace.kulenkov-group.kz' },
-			{ protocol: 'https', hostname: 'api.zanger-app.kz' },
+			{
+				protocol: 'http',
+				hostname: 'localhost',
+				port: '8000',
+				pathname: '/storage/images/**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'api.lawyerplace.kulenkov-group.kz',
+				pathname: '/**',
+			},
+			{
+				protocol: 'https',
+				hostname: 'api.zanger-app.kz',
+				pathname: '/storage/**', // <-- ВАЖНО
+			},
 		],
-		dangerouslyAllowSVG: true,
+  		dangerouslyAllowSVG: true,
 
 		// правильная CSP, НЕ блокирующая Google Analytics
 		contentSecurityPolicy:
