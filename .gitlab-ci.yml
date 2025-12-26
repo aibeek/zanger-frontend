@@ -15,9 +15,6 @@ before_script:
   - echo "Image tag - ${TAG}"
   - echo "HOME_DIR - ${HOME_DIR}"
 
-# -------------------------
-# 1) BUILD (build+push image)
-# -------------------------
 build image:
   stage: build
   tags:
@@ -31,7 +28,6 @@ build image:
     - ls -la
     - ls -la .docker/nextjs || true
 
-    # Проверка: переменные должны быть доступны в job
     - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
@@ -50,9 +46,6 @@ build image:
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
     - echo "# Build Stage end"
 
-# -------------------------
-# 2) DEPLOY DEV (pull + recreate only frontend)
-# -------------------------
 deploy to server:
   stage: deploy
   tags:
@@ -61,37 +54,38 @@ deploy to server:
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - echo "# Deploy DEV start"
-    - echo "RUNNING ON HOST: $(hostname)"
-    - docker info --format 'DockerServer={{.Name}} ServerVersion={{.ServerVersion}}' || true
-
-    - echo "update project in $HOME_DIR"
-
-    # Git safe.directory (fix dubious ownership)
-    - git config --global --add safe.directory "$HOME_DIR" || true
-
-    # обновляем рабочую директорию на сервере
-    - git -C "$HOME_DIR" reset --hard
-    - git -C "$HOME_DIR" checkout -- .
-    - git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
-    - cd "$HOME_DIR"
-
-    # Обновляем тег образа в env-файле compose
-    - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
-
-    # GA ID: replace-or-add (без дублей)
     - |
+      set -e
+
+      echo "# Deploy DEV start"
+      echo "RUNNING ON HOST: $(hostname)"
+      docker info --format "DockerServer={{.Name}} ServerVersion={{.ServerVersion}}" || true
+
+      echo "update project in $HOME_DIR"
+
+      # Git safe.directory (fix dubious ownership)
+      git config --global --add safe.directory "$HOME_DIR" || true
+
+      # обновляем рабочую директорию на сервере
+      git -C "$HOME_DIR" reset --hard
+      git -C "$HOME_DIR" checkout -- .
+      git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
+      cd "$HOME_DIR"
+
+      # Обновляем тег образа в env-файле compose
+      sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
+
+      # GA ID: replace-or-add (без дублей)
       if grep -q '^NEXT_PUBLIC_GA_ID=' "$HOME_DIR/.env.docker-compose"; then
         sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" "$HOME_DIR/.env.docker-compose"
       else
         echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> "$HOME_DIR/.env.docker-compose"
       fi
 
-    # Login registry
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      # Login registry
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
-    # Выбираем compose (v2 или v1)
-    - |
+      # Выбираем compose (v2 или v1)
       if docker compose version >/dev/null 2>&1; then
         COMPOSE="docker compose"
       else
@@ -103,12 +97,12 @@ deploy to server:
       ENVFILE="$HOME_DIR/.env.docker-compose"
       SERVICE="lawyerplace-frontend"
 
-      # Берём compose project name из реально существующего контейнера (чтобы не попасть в другой проект)
-      PROJECT=$(docker inspect lawyerplace-frontend --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || echo "${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}")
+      # ВАЖНО: берём имя compose-проекта из реально существующего контейнера
+      PROJECT="$(docker inspect lawyerplace-frontend --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || true)"
+      if [ -z "$PROJECT" ]; then
+        PROJECT="${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}"
+      fi
       echo "Using compose project: $PROJECT"
-
-      echo "Services in compose:"
-      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" config --services || true
 
       echo "Pull fresh image for $SERVICE"
       $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" pull "$SERVICE"
@@ -116,17 +110,14 @@ deploy to server:
       echo "Recreate ONLY $SERVICE (no deps)"
       $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" up -d --no-deps --force-recreate "$SERVICE"
 
-      # Печать факта: какой образ и когда создан контейнер
-      CID=$($COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps -q "$SERVICE" || true)
+      CID="$($COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps -q "$SERVICE" || true)"
       if [ -n "$CID" ]; then
-        docker inspect "$CID" --format 'Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}'
+        docker inspect "$CID" --format "Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}"
       else
         echo "ERROR: cannot find container id for service $SERVICE"
         $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps || true
         exit 1
       fi
 
-    # мягкая чистка (НЕ system prune -a)
-    - docker image prune -f || true
-
-    - echo "# Deploy DEV end"
+      docker image prune -f || true
+      echo "# Deploy DEV end"
