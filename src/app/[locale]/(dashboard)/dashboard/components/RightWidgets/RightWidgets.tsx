@@ -234,7 +234,7 @@ export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) =
                         ))}
                     </div>
                     <div className={s.calendarDays} suppressHydrationWarning>
-                        {Array.from({ length: 30 }, (_, i) => i + 1).map(day => (
+                        {Array.from({ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() }, (_, i) => i + 1).map(day => (
                             <button 
                                 key={day} 
                                 className={`${s.calendarDay} ${day === currentDate ? s.calendarDayActive : ''}`}
