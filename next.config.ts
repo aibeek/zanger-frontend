@@ -69,7 +69,7 @@ const nextConfig: NextConfig = {
 			{
 				protocol: 'https',
 				hostname: 'api.zanger-app.kz',
-				pathname: '/storage/**', // <-- ВАЖНО
+				pathname: '/**',
 			},
 		],
   		dangerouslyAllowSVG: true,
