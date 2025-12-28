@@ -102,7 +102,6 @@ export const MainSection = () => {
 								className={s.phonesImg}
 								width={260}
 								height={260}
-								style={{ width: 'auto', height: 'auto' }}
 							/>
 						</div>
 						<div className={s.appStores}>

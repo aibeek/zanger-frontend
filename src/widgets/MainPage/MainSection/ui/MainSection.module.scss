@@ -552,7 +552,6 @@ $header-height-sm: 56px; // mobilee
 		flex: 1;
 		position: relative;
 		width: 100%;
-		max-width: 600px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -583,28 +582,34 @@ $header-height-sm: 56px; // mobilee
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		
-		@media (max-width: 1024px) {
-			height: 340px;
-		}
-		
-		@media (max-width: 900px) {
-			height: 300px;
-		}
-		
-		@media (max-width: 768px) {
-			height: 280px;
-		}
+		flex-shrink: 0; // Не сжимать контейнер
 	}
 
 	.phonesImg {
-		max-width: 100%;
 		height: auto;
+		max-width: 70%; // Базовый размер для всех ноутбуков
 		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
 		transform: perspective(1000px) rotateY(-10deg);
 		
+		@media (max-width: 1366px) {
+			max-width: 40%; // Одинаковый размер
+		}
+		
+		@media (max-width: 1200px) {
+			max-width: 45%; // Чуть больше на меньших экранах
+		}
+		
+		@media (max-width: 1024px) {
+			max-width: 50%;
+		}
+		
+		@media (max-width: 900px) {
+			max-width: 60%;
+		}
+		
 		@media (max-width: 768px) {
 			transform: none;
+			max-width: 100%;
 		}
 	}
 
