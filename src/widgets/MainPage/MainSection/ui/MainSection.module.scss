@@ -1,119 +1,816 @@
-stages:
-  - build
-  - deploy
+@import '@/app/styles/vars.scss';
 
-variables:
-  GA_ID: "G-B7HNWM1W8G"
+// Header heights used to offset the hero from a fixed header
+$header-height-lg: 80px; // desktop
+$header-height-md: 64px; // tablet
+$header-height-sm: 56px; // mobilee
 
-before_script:
-  - export LAST_ROOT_NAMESPACE="$(echo "$CI_PROJECT_NAMESPACE" | rev | cut -d'/' -f1 | rev)"
-  - export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}-test"
-  - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
-  - export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
-  - export HOME_DIR="/app/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
-  - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
-  - echo "Image tag - ${TAG}"
+.wrapper {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background: transparent;
+	overflow: hidden;
+	// push content below fixed header and keep near full viewport height
+	padding-top: $header-height-lg;
+	min-height: calc(100vh - #{$header-height-lg});
 
-# -------------------------
-# 1) BUILD (build+push image)
-# -------------------------
-build image:
-  stage: build
-  tags:
-    - kulenkov
-    - dev
-    - ps
-  script:
-    - echo "# Build Stage start"
-    - pwd
-    - ls -la
-    - ls -la .docker/nextjs || true
 
-    # Проверка: переменные должны быть доступны в job
-    - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
-    - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
-    - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
-    - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" || (echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing" && exit 1)
+	.abstractLandscape {
+		position: absolute;
+		// start the rounded card below the header
+		top: calc(40px + #{$header-height-lg});
+		left: 20px;
+		right: 20px;
+		max-width: 1680px;
+		width: auto;
+		margin: 0 auto;
+		z-index: 1;
+		border-radius: 20px;
+		overflow: hidden;
 
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+		
+		@media (max-width: 1600px) {
+			left: 30px;
+			right: 30px;
+			top: calc(40px + #{$header-height-lg});
+		}
+		
+		@media (max-width: 1024px) {
+			left: 20px;
+			right: 20px;
+			top: calc(30px + #{$header-height-md});
+			height: calc(100vh - 60px);
+		}
+		
+		@media (max-width: 768px) {
+			/* Full-bleed hero on phones */
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 100vh;
+			min-height: 100dvh; /* modern mobile viewport units */
+			border-radius: 0;
+			background-size: cover;
+			background-position: center top;
+		}
+		
+		@media (max-width: 480px) {
+			/* Ensure truly edge-to-edge on very small screens */
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 100vh;
+			min-height: 100dvh;
+			border-radius: 0;
+			background-size: cover;
+			background-position: center top;
+		}
+	}
 
-    # ВАЖНО: docker build в YAML делаем многострочным блоком
-    - |
-      docker build -f .docker/nextjs/Dockerfile \
-        --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
-        --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
-        --build-arg NEXT_PUBLIC_BASE_URL_PROD="$NEXT_PUBLIC_BASE_URL_PROD" \
-        --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
-        -t "$CI_REGISTRY_IMAGE:${TAG}" .
+	.bgVideo {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 20%;
+		z-index: 0;
+	}
 
-    - docker push "$CI_REGISTRY_IMAGE:${TAG}"
-    - echo "# Build Stage end"
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-    - if: '$CI_COMMIT_BRANCH == "main"'
+	.container {
+		display: flex;
+		align-items: flex-start; // align columns by top so hubsBadge lines up with title
+		justify-content: space-between;
+		max-width: 1600px;
+		width: 100%;
+		height: auto;
+		margin: 0 auto;
+		padding: 190px 100px 60px 100px;
+		position: relative;
+		z-index: 100;
+		
+		@media (max-width: 1600px) {
+			padding: 190px 100px 60px 100px
+		}
+		
+		@media (max-width: 1200px) {
+			padding: 130px 40px 40px 40px;
+		}
+		
+		@media (max-width: 1024px) {
+			padding: 85px 30px 30px 30px;
+		}
+		
+		@media (max-width: 900px) {
+			flex-direction: column;
+			padding: 80px 20px 20px 20px;
+			text-align: left;
+			align-items: flex-start;
+		}
+		
+		@media (max-width: 768px) {
+			flex-direction: column;
+			padding: 60px 10px 15px 10px;
+			text-align: left;
+			align-items: flex-start;
+		}
+		
+		@media (max-width: 480px) {
+			padding: 100px 8px 10px 8px;
+		}
+	}
 
-deploy to server:
-  stage: deploy
-  tags:
-    - kulenkov
-    - dev
-    - ps
-  needs: ["build image"]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-  script:
-    - echo "# Deploy DEV start"
-    - echo "update project in $HOME_DIR"
+	.textSection {
+		flex: 1;
+		max-width: 600px;
+		margin-top: -60px;
+		
+		@media (max-width: 1200px) {
+			max-width: 550px;
+			margin-top: -40px;
+		}
+		
+		@media (max-width: 1024px) {
+			max-width: 500px;
+		}
+		
+		@media (max-width: 900px) {
+			max-width: 100%;
+			margin-bottom: 30px;
+			margin-top: 0;
+		}
+		
+		@media (max-width: 768px) {
+			max-width: 100%;
+			margin-bottom: 40px;
+		}
+	}
 
-    # Git safe.directory (fix dubious ownership)
-    - git config --global --add safe.directory "$HOME_DIR" || true
 
-    # обновляем рабочую директорию на сервере
-    - git -C "$HOME_DIR" reset --hard
-    - git -C "$HOME_DIR" checkout -- .
-    - git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
-    - cd "$HOME_DIR"
 
-    # Обновляем тег образа в env-файле compose
-    - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
+	.title {
+		font-size: 40px;
+		font-family: 'Inter', sans-serif;
+		font-weight: 700;                
+		color: #ffffff;
+		line-height: 1.2;
+		margin: 0 0 20px 0;
+		text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+		white-space: nowrap;
 
-    # GA ID: replace-or-add (без дублей)
-    - |
-      if grep -q '^NEXT_PUBLIC_GA_ID=' "$HOME_DIR/.env.docker-compose"; then
-        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" "$HOME_DIR/.env.docker-compose"
-      else
-        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> "$HOME_DIR/.env.docker-compose"
-      fi
+		@media (max-width: 1200px) {
+			font-size: 36px;
+		}
+		
+		@media (max-width: 1024px) {
+			font-size: 32px;
+		}
+		
+		@media (max-width: 900px) {
+			font-size: 34px;
+			white-space: normal;
+			line-height: 1.1;
+		}
+		
+		@media (max-width: 768px) {
+			font-size: 30px;
+			white-space: normal;
+			line-height: 1.2;
+			margin-bottom: 15px;
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 26px;
+			line-height: 1.3;
+			margin-bottom: 12px;
+		}
+		
+		@media (max-width: 380px) {
+			font-size: 24px;
+			line-height: 1.3;
+		}
+	}
 
-    # Login registry
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+	.descrContainer {
+		margin-bottom: 20px;
+		
+		@media (max-width: 900px) {
+			margin-bottom: 45px;
+		}
+		
+		@media (max-width: 768px) {
+			margin-bottom: 30px;
+		}
+		
+		@media (max-width: 480px) {
+			margin-bottom: 22px;
+		}
+	}
 
-    # Выбираем compose (v2 или v1)
-    - |
-      if docker compose version >/dev/null 2>&1; then
-        COMPOSE="docker compose"
-      else
-        COMPOSE="docker-compose"
-      fi
-      echo "Using compose: $COMPOSE"
+	// --- Domains info block ---
+	.domainsInfo {
+		margin-bottom: 24px;
+		padding: 14px 16px;
+		border-radius: 14px;
+		background: rgba(0, 0, 0, 0.32);
+		backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		max-width: 480px;
+		box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
 
-      PROJECT="${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}"
-      FILE="$HOME_DIR/docker-compose.yml"
-      ENVFILE="$HOME_DIR/.env.docker-compose"
-      SERVICE="lawyerplace-frontend"
+		@media (max-width: 900px) {
+			max-width: 100%;
+		}
+	}
 
-      # 1) Всегда тянем свежий образ для конкретного сервиса
-      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" pull "$SERVICE"
+	.domainsLabel {
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.88);
+	}
 
-      # 2) Железно пересоздаём только этот сервис (без зависимостей)
-      #    --force-recreate = пересоздать контейнер
-      #    --no-deps = не трогать остальные сервисы
-      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" up -d --no-deps --force-recreate "$SERVICE"
+	.domainsList {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
 
-      # (опционально) показать какой image сейчас у контейнера
-      docker inspect "$SERVICE" --format 'Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}' || true
+	.domainItem {
+		padding: 6px 10px;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		background: rgba(15, 23, 42, 0.7);
+		color: #f9fafb;
+		font-size: 13px;
+		font-weight: 500;
+		text-decoration: none;
+		transition: all 0.18s ease;
+		backdrop-filter: blur(10px);
+		white-space: nowrap;
 
-    # мягкая чистка (НЕ system prune -a)
-    - docker image prune -f || true
+		&:hover {
+			background: rgba(248, 250, 252, 0.1);
+			border-color: rgba(255, 255, 255, 0.9);
+			transform: translateY(-1px);
+			box-shadow: 0 10px 30px rgba(15, 23, 42, 0.55);
+		}
 
-    - echo "# Deploy DEV end"
+		@media (max-width: 480px) {
+			font-size: 12px;
+			padding: 6px 9px;
+		}
+	}
+
+	.descr {
+		font-size: 18px;
+		color: #AAB0BC; // per request: change only this text color
+		line-height: 1.4;
+		margin: 0 0 16px 0;
+		word-wrap: break-word;
+		
+		@media (max-width: 1024px) {
+			font-size: 17px;
+		}
+		
+		@media (max-width: 900px) {
+			font-size: 16px;
+			line-height: 1.5;
+		}
+		
+		@media (max-width: 768px) {
+			font-size: 15px;
+			line-height: 1.5;
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 14px;
+			line-height: 1.6;
+		}
+	}
+
+	.hubsBadge {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px; // tighter so it fits one line with label
+		padding: 0;
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		position: relative;
+		margin-top: 0; // align with title top
+		white-space: nowrap; // enforce single line
+	}
+
+	// Mobile-only placement of the hubs badge under the title
+	.hubsBadgeMobile {
+		display: none;
+		@media (max-width: 768px) {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			gap: 8px;
+			margin: 14px 0 10px 0; // a bit lower from the button
+		}
+	}
+
+	.hubsLogo {
+		flex-shrink: 0;
+		border-radius: 0;
+		filter: none;
+		object-fit: contain;
+		width: 200px;
+		height: auto;
+		
+		@media (max-width: 768px) {
+			width: min(200px, 60vw); // even larger on phones
+		}
+		
+		@media (max-width: 480px) {
+			width: min(220px, 70vw); // maximum for small phones
+		}
+	}
+
+	.hubsText {
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.9);
+		font-weight: 700;
+		letter-spacing: 0.4px;
+		text-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+		white-space: nowrap;
+		
+		@media (max-width: 768px) {
+			font-size: 16px; // bump a bit more on tablets/phones
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 15px; // bump more on small phones
+			letter-spacing: 0.4px;
+		}
+	}
+
+	.numberSection {
+		position: relative;
+		margin-bottom: 20px;
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		
+		@media (max-width: 768px) {
+			margin-bottom: 16px;
+			gap: 15px;
+		}
+		
+		@media (max-width: 480px) {
+			margin-bottom: 12px;
+			gap: 12px;
+		}
+	}
+
+	.bigNumber {
+		font-size: 96px;
+		font-weight: 700;
+		color: #ffffff;
+		line-height: 1;
+		text-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+		
+		@media (max-width: 1024px) {
+			font-size: 82px;
+		}
+		
+		@media (max-width: 900px) {
+			font-size: 76px;
+		}
+		
+		@media (max-width: 768px) {
+			font-size: 64px;
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 56px;
+		}
+		
+		@media (max-width: 380px) {
+			font-size: 46px;
+		}
+	}
+
+	.numberBadge {
+		background: #ef4444;
+		color: white;
+		padding: 6px 14px;
+		border-radius: 8px;
+		font-size: 16px;
+		font-weight: 700;
+		position: relative;
+		top: -20px;
+		
+		@media (max-width: 768px) {
+			font-size: 13px;
+			padding: 5px 11px;
+			top: -15px;
+		}
+	}
+
+	.disclaimer {
+		margin-bottom: 30px;
+		max-width: 400px;
+		
+		@media (max-width: 768px) {
+			margin-bottom: 24px;
+			max-width: 100%;
+		}
+		
+		@media (max-width: 480px) {
+			margin-bottom: 20px;
+		}
+		
+		p {
+			font-size: 18px;
+			color: #ffffff;
+			margin: 0;
+			font-weight: 700;
+			line-height: 1.4;
+			white-space: normal;
+			word-wrap: break-word;
+			
+			@media (max-width: 900px) {
+				font-size: 16px;
+			}
+			
+			@media (max-width: 768px) {
+				font-size: 15px;
+				line-height: 1.5;
+			}
+			
+			@media (max-width: 480px) {
+				font-size: 14px;
+				line-height: 1.5;
+			}
+		}
+	}
+
+	.actionButtons {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		flex-wrap: nowrap; // keep in one line on desktop
+		
+		@media (max-width: 900px) {
+			gap: 10px;
+		}
+		
+		@media (max-width: 600px) {
+			flex-direction: column;
+			width: 100%;
+			gap: 12px;
+		}
+		
+		@media (max-width: 480px) {
+			flex-direction: column;
+			width: 100%;
+		}
+	}
+
+	.requestButtonContainer {
+		display: flex;
+		justify-content: flex-end;
+		width: auto;
+		margin-top: 0;
+		margin-left: auto; // push to the right edge in the same row
+		
+		@media (max-width: 600px) {
+			width: 100%;
+			justify-content: center;
+			margin-top: 12px; // spacing when stacked on mobile
+		}
+	}
+
+	.phoneButton {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
+		width: auto;
+		height: 50px;
+		padding: 12px 26px;
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 1);
+		color: #000000;
+		text-decoration: none;
+		font-size: 15px;
+		font-weight: 700;
+		border: none;
+		transition: all 0.1s ease;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+		
+		
+		@media (max-width: 480px) {
+			width: 100%;
+			justify-content: center;
+			padding: 10px 20px;
+			height: 46px;
+		}
+	}
+
+	.phoneIcon {
+		filter: brightness(0) saturate(100%) invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+	}
+
+	.requestButton {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		gap: 10px;
+		width: auto;
+		height: 50px;
+		padding: 12px 26px;
+		border-radius: 10px;
+		background: rgb(255, 255, 255, 1);
+		color: rgba(29, 110, 216, 1);
+		text-decoration: none;
+		font-size: 15px;
+		font-weight: 700;
+		
+		@media (max-width: 480px) {
+			width: 100%;
+			text-align: center;
+			padding: 10px 20px;
+			height: 46px;
+		}
+	}
+
+	.phoneImages {
+		flex: 1;
+		position: relative;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		margin-top: -60px;
+		
+		@media (max-width: 1024px) {
+			max-width: 500px;
+			gap: 25px;
+			margin-top: -40px;
+		}
+		
+		@media (max-width: 900px) {
+			max-width: 450px;
+			gap: 20px;
+			margin-top: 20px;
+		}
+		
+		@media (max-width: 768px) {
+			display: none; /* hide on mobile phones */
+		}
+	}
+
+	.phoneContainer {
+		position: relative;
+		width: auto;
+		height: auto;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-shrink: 0; // Не сжимать контейнер
+	}
+
+	.phonesImg {
+		height: auto;
+		max-width: 70%; // Базовый размер для всех ноутбуков
+		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+		transform: perspective(1000px) rotateY(-10deg);
+		
+		@media (max-width: 1366px) {
+			max-width: 40%; // Одинаковый размер
+		}
+		
+		@media (max-width: 1200px) {
+			max-width: 45%; // Чуть больше на меньших экранах
+		}
+		
+		@media (max-width: 1024px) {
+			max-width: 50%;
+		}
+		
+		@media (max-width: 900px) {
+			max-width: 60%;
+		}
+		
+		@media (max-width: 768px) {
+			transform: none;
+			max-width: 100%;
+		}
+	}
+
+	.appStores {
+		display: flex;
+		gap: 16px;
+		align-items: center;
+		justify-content: center;
+		
+		@media (max-width: 480px) {
+			flex-direction: column;
+			gap: 12px;
+		}
+		
+		a {
+			transition: transform 0.3s ease;
+			
+			&:hover {
+				transform: translateY(-2px);
+			}
+		}
+		
+		img {
+			border-radius: 8px;
+			box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+		}
+	}
+
+	.mobileVersionText {
+		margin-top: 10px; // fix invalid value
+		padding: 12px 12px;
+		background: #ffffff; // white background per request
+		border-radius: 10px;
+		border: 1px solid rgba(0, 0, 0, 0.12); // subtle border on white
+		backdrop-filter: none; // no blur on solid white
+		text-align: center;
+		position: relative;
+		display: -webkit-box; // allow line clamp
+		display: -webkit-box; // allow line clamp
+		/* Standard and prefixed line clamp */
+		line-clamp: 2; // standard property for compatibility
+		-webkit-line-clamp: 2; // exactly two lines
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		white-space: normal; // allow wrapping
+		max-width: 720px; // force wrapping to two lines on desktop
+		width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		
+		@media (max-width: 768px) {
+			padding: 16px 24px;
+			margin-top: 25px;
+			border-radius: 16px;
+			max-width: 90vw; // keep two lines on tablets/phones
+		}
+		
+		@media (max-width: 480px) {
+			padding: 16px 20px;
+			margin-top: 20px;
+			border-radius: 14px;
+			max-width: 92vw;
+		}
+	}
+
+	.developmentLabel {
+		display: block;
+		font-size: 14px;
+		font-weight: 500; // make text bold
+		color: #000000; // black text per request
+		text-shadow: none; // remove glow for better contrast on white
+		line-height: 1.5;
+		letter-spacing: 0.5px;
+		position: relative;
+		z-index: 1;
+		white-space: nowrap; // force single line
+		
+		@media (max-width: 768px) {
+			font-size: 16px;
+		}
+		
+		@media (max-width: 480px) {
+			font-size: 14px;
+			line-height: 1.6;
+			letter-spacing: 0.3px;
+		}
+	}
+
+@keyframes abstractGlow {
+	0% {
+		opacity: 0.5;
+	}
+	50% {
+		opacity: 0.8;
+	}
+	100% {
+		opacity: 0.5;
+	}
+
+}
+
+.sentinel {
+	width: 100%;
+	height: 1px;
+	pointer-events: none;
+	margin-top: auto;
+}
+
+@keyframes fadeInUp {
+	0% {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes bounce {
+	0%, 20%, 50%, 80%, 100% {
+		transform: translateY(0);
+	}
+	40% {
+		transform: translateY(-10px);
+	}
+	60% {
+		transform: translateY(-5px);
+	}
+}
+
+// --- Адаптация под ноутбуки 1366×768 ---
+@media (max-width: 1366px) {
+	// adjust wrapper offset for medium screens
+	& {
+		padding-top: $header-height-md;
+		min-height: calc(100vh - #{$header-height-md});
+	}
+  .container {
+    padding: 130px 40px 40px 40px;
+    height: auto; // чтобы блок не обрезался
+  }
+
+	.textSection {
+		margin-top: 5px;
+	}
+
+  .title {
+    font-size: 36px;
+    line-height: 1.1;
+    white-space: normal; // разрешаем перенос
+  }
+
+  .descrContainer {
+    margin-bottom: 60px; // вместо 100px
+  }
+
+  .descr {
+    font-size: 18px;
+  }
+
+  .bigNumber {
+    font-size: 80px; // вместо 120px
+  }
+
+  .phoneContainer {
+    height: 260px; // меньше, чем 320px
+  }
+
+  .phonesImg {
+    max-width: 110%; // было 140%
+  }
+
+	.phoneImages {
+		margin-top: -30px;
+	}
+
+  .phoneButton,
+  .requestButton {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+
+  .mobileVersionText {
+    padding: 12px 24px;
+  }
+}
+
+// Tablet: reduce header offset
+@media (max-width: 1024px) {
+	& {
+		padding-top: $header-height-md;
+		min-height: calc(100vh - #{$header-height-md});
+	}
+}
+
+// Mobile: smallest header offset
+@media (max-width: 768px) {
+	& {
+		padding-top: $header-height-sm;
+		min-height: calc(100vh - #{$header-height-sm});
+	}
+}
+}
