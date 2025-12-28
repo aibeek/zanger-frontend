@@ -1,59 +1,123 @@
 stages:
+  - build
   - deploy
 
+variables:
+  GA_ID: "G-B7HNWM1W8G"
+
 before_script:
-  - export LAST_ROOT_NAMESPACE="$(echo $CI_PROJECT_NAMESPACE | rev | cut -d'/' -f1 | rev)"
+  - export LAST_ROOT_NAMESPACE="$(echo "$CI_PROJECT_NAMESPACE" | rev | cut -d'/' -f1 | rev)"
   - export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}-test"
-  - if [ $CI_COMMIT_REF_NAME = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
-  - export TAG="$CI_COMMIT_REF_SLUG-$(echo $CI_COMMIT_TIMESTAMP | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
+  - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
+  - export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
   - export HOME_DIR="/app/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
   - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
+  - echo "Image tag - ${TAG}"
+  - echo "HOME_DIR - ${HOME_DIR}"
 
-deploy to dev server:
+build image:
+  stage: build
+  tags:
+    - dev29260
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - echo "# Build Stage start"
+    - pwd
+    - ls -la
+    - ls -la .docker/nextjs || true
+
+    - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
+    - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
+    - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
+    - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" || (echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing" && exit 1)
+
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+    - |
+      docker build -f .docker/nextjs/Dockerfile \
+        --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
+        --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
+        --build-arg NEXT_PUBLIC_BASE_URL_PROD="$NEXT_PUBLIC_BASE_URL_PROD" \
+        --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
+        -t "$CI_REGISTRY_IMAGE:${TAG}" .
+
+    - docker push "$CI_REGISTRY_IMAGE:${TAG}"
+    - echo "# Build Stage end"
+
+deploy to server:
   stage: deploy
   tags:
-    - kulenkov
-    - dev
-    - ps
+    - dev29260
+  needs: ["build image"]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - echo "# Deploy Stage start"
-    - echo "update project in $HOME_DIR"
-    - git -C $HOME_DIR reset --hard
-    - git -C $HOME_DIR checkout -- .
-    - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
-    - cd $HOME_DIR
-    - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
-    # 👇 Добавляем Google Analytics ID в окружение фронта
-    - echo "NEXT_PUBLIC_GA_ID=G-B7HNWM1W8G" >> $HOME_DIR/.env.docker-compose
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker-compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
-    - docker system prune -a -f
-    - echo "# Deploy Stage end"
-  only:
-    - dev
+    - |
+      set -e
 
-deploy to prod server:
-  stage: deploy
-  tags:
-    - lawyerplace
-    - prod
-    - pskz
-  when: manual
-  script:
-    - echo "# Deploy Stage start"
-    - echo "update project in $HOME_DIR"
-    - git -C $HOME_DIR reset --hard
-    - git -C $HOME_DIR checkout -- .
-    - git -C $HOME_DIR pull origin ${CI_COMMIT_BRANCH}
-    - cd $HOME_DIR
-    - sed -i 's/SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG='${TAG}'/' $HOME_DIR/.env.docker-compose
-    - echo "NEXT_PUBLIC_GA_ID=G-B7HNWM1W8G" >> $HOME_DIR/.env.docker-compose
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml down
-    - docker rm -f lawyerplace-frontend || true     # 👈 добавляем эту строку
-    - docker compose -p ${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME} --env-file $HOME_DIR/.env.docker-compose -f $HOME_DIR/docker-compose.yml up -d
-    - docker system prune -a -f
-    - echo "# Deploy Stage end"
-  only:
-    - dev
+      echo "# Deploy DEV start"
+      echo "RUNNING ON HOST: $(hostname)"
+      docker info --format "DockerServer={{.Name}} ServerVersion={{.ServerVersion}}" || true
+
+      echo "update project in $HOME_DIR"
+
+      # Git safe.directory (fix dubious ownership)
+      git config --global --add safe.directory "$HOME_DIR" || true
+
+      # обновляем рабочую директорию на сервере
+      git -C "$HOME_DIR" reset --hard
+      git -C "$HOME_DIR" checkout -- .
+      git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
+      cd "$HOME_DIR"
+
+      # Обновляем тег образа в env-файле compose
+      sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
+
+      # GA ID: replace-or-add (без дублей)
+      if grep -q '^NEXT_PUBLIC_GA_ID=' "$HOME_DIR/.env.docker-compose"; then
+        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" "$HOME_DIR/.env.docker-compose"
+      else
+        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> "$HOME_DIR/.env.docker-compose"
+      fi
+
+      # Login registry
+      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+      # Выбираем compose (v2 или v1)
+      if docker compose version >/dev/null 2>&1; then
+        COMPOSE="docker compose"
+      else
+        COMPOSE="docker-compose"
+      fi
+      echo "Using compose: $COMPOSE"
+
+      FILE="$HOME_DIR/docker-compose.yml"
+      ENVFILE="$HOME_DIR/.env.docker-compose"
+      SERVICE="lawyerplace-frontend"
+
+      # ВАЖНО: берём имя compose-проекта из реально существующего контейнера
+      PROJECT="$(docker inspect lawyerplace-frontend --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || true)"
+      if [ -z "$PROJECT" ]; then
+        PROJECT="${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}"
+      fi
+      echo "Using compose project: $PROJECT"
+
+      echo "Pull fresh image for $SERVICE"
+      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" pull "$SERVICE"
+
+      echo "Recreate ONLY $SERVICE (no deps)"
+      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" up -d --no-deps --force-recreate "$SERVICE"
+
+      CID="$($COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps -q "$SERVICE" || true)"
+      if [ -n "$CID" ]; then
+        docker inspect "$CID" --format "Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}"
+      else
+        echo "ERROR: cannot find container id for service $SERVICE"
+        $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps || true
+        exit 1
+      fi
+
+      docker image prune -f || true
+      echo "# Deploy DEV end"
