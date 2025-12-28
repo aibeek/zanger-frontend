@@ -587,7 +587,7 @@ $header-height-sm: 56px; // mobilee
 
 	.phonesImg {
 		height: auto;
-		max-width: 70%; // Базовый размер для всех ноутбуков
+		max-width: 100%; // Базовый размер для всех ноутбуков
 		filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
 		transform: perspective(1000px) rotateY(-10deg);
 		
