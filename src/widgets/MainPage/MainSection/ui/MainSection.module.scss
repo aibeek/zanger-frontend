@@ -13,7 +13,7 @@ $header-height-sm: 56px; // mobilee
 	overflow: hidden;
 	// push content below fixed header and keep near full viewport height
 	padding-top: $header-height-lg;
-	min-height: calc(100vh - #{$header-height-lg});
+	min-height: calc(140vh - #{$header-height-lg});
 
 
 	.abstractLandscape {
