@@ -1,13 +1,14 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import { Button, DescriptionText } from '@/shared/ui-kit'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 
-import { Archive, Eye, Phone, Trash2 } from 'lucide-react'
+import { Archive, Eye, Phone, Trash2, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ApplicationDetailsModal } from '@/app/[locale]/(dashboard)/dashboard/applications/components/ApplicationDetailsModal'
 
 import s from './MyResponsesList.module.scss'
@@ -22,13 +23,17 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 	const [deletingId, setDeletingId] = useState<number | null>(null)
 
 	// Функция для обработки нажатия на кнопку "Перейти в чат"
-	const handleGoToChat = (orderId: number) => {
-		console.log('🚀 handleGoToChat called for order:', orderId)
-		toast('Функционал чата находится в разработке', {
-			icon: '🚧',
-			duration: 3000,
-		})
-	}
+    const router = useRouter()
+    const locale = useLocale()
+
+	    const handleGoToChat = (application: any, participantId?: number | string, participantName?: string) => {
+        const query = new URLSearchParams({
+            applicationId: application.id.toString(),
+            participantName: participantName || 'Client', 
+            participantId: participantId?.toString() || '' 
+        })
+        router.push(`/${locale}/dashboard/chats?${query.toString()}`)
+    }
 
 	const handleArchive = async (id: number) => {
 		setArchivingId(id)
@@ -136,6 +141,7 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
                                             </div>
                                         </div>
 									</div>
+
 								</motion.article>
 							</div>
 						)
@@ -159,8 +165,11 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 				<ApplicationDetailsModal
 					application={selectedApp}
 					onClose={() => setSelectedApp(null)}
-					onRespond={() => {}} // В моих заявках кнопка "В мои заявки" не нужна или должна быть скрыта
+					onRespond={() => {}} 
 					isResponding={false}
+                    onChat={(participantId, participantName) => {
+                        handleGoToChat(selectedApp, participantId, participantName)
+                    }}
 				/>
 			)}
 		</div>

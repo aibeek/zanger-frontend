@@ -121,6 +121,28 @@
 	&:hover {
 		background: #F3F4F6;
 	}
+
+	&:hover {
+		background: #F3F4F6;
+	}
+}
+
+.chatBtn {
+    flex: 1;
+    background: #E0F2FE;
+    color: #0284C7;
+    border: 1px solid #BAE6FD;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-left: 0; 
+    
+    &:hover {
+        background: #BAE6FD;
+    }
 }
 
 @keyframes slideIn {

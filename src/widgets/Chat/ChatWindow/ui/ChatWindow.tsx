@@ -178,12 +178,7 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
             rows={1}
           />
           <div className={s.inputActions}>
-            <button className={s.actionButton} title="Прикрепить файл">
-              📎
-            </button>
-            <button className={s.actionButton} title="Голосовое сообщение">
-              🎤
-            </button>
+
             <button
               onClick={handleSendMessage}
               disabled={!message.trim()}

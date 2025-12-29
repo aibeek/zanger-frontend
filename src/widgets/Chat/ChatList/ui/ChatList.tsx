@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { ChatListProps } from '../../types'
 import s from './ChatList.module.scss'
 
-export const ChatList: FC<ChatListProps> = ({ chats, selectedChatId, onChatSelect }) => {
+export const ChatList: FC<ChatListProps & { onChatDelete?: (id: string) => void }> = ({ chats, selectedChatId, onChatSelect, onChatDelete }) => {
   const formatDate = (date: Date) => {
     const now = new Date()
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
@@ -80,6 +80,20 @@ export const ChatList: FC<ChatListProps> = ({ chats, selectedChatId, onChatSelec
                 {chat.unreadCount > 99 ? '99+' : chat.unreadCount}
               </div>
             )}
+
+            <button
+                className={s.deleteButton}
+                onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    if (confirm('Вы уверены, что хотите удалить этот чат?')) {
+                        onChatDelete?.(chat.id)
+                    }
+                }}
+                title="Удалить чат"
+            >
+                🗑️
+            </button>
           </div>
         ))}
       </div>

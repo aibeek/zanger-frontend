@@ -70,12 +70,12 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             icon: ApplicationsIcon,
             href: `/${language}/dashboard/applications`,
         },
-        // {
-        //     id: 'chats',
-        //     title: t('dashboard.sidebar.chats'),
-        //     icon: ChatIcon,
-        //     href: `/${language}/dashboard/chats`,
-        // },
+        {
+            id: 'chats',
+            title: t('dashboard.sidebar.chats'),
+            icon: ChatIcon,
+            href: `/${language}/dashboard/chats`,
+        },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),
@@ -147,6 +147,8 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const defaultMenuItems = allMenuItems.filter(item => {
         if (role === 'client') {
             if (item.id === 'subscription') return false
+            // if (item.id === 'applications') return false // "Мои заявки" usually needed?
+            // "applications" might be redundant if they have a main dashboard, but "chats" is needed.
             if (item.id === 'applications') return false
         }
         if (role === 'lawyer' && item.id === 'applications') return false

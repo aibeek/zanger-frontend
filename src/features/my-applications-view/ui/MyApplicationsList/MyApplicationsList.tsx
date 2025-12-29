@@ -7,6 +7,9 @@ import { Button, ListLoader } from '@/shared/ui-kit'
 import { useTranslations } from 'next-intl'
 import toast from 'react-hot-toast'
 import { clientApi } from '@/shared/api'
+import { useRouter } from 'next/navigation'
+import { useLocale } from 'next-intl'
+import { MessageCircle } from 'lucide-react'
 
 import s from './MyApplicationsList.module.scss'
 import { CompleteApplicationForm } from '../CompleteApplicationForm'
@@ -19,6 +22,15 @@ export const MyApplicationsList = ({ items, loadMore, isLoadingMore, isReachingE
 	const t = useTranslations('myApplications')
 	const loadMoreRef = useRef(null)
 	useInfiniteScroll({ loadMore, isLoadingMore, isReachingEnd, loadMoreRef })
+    
+    const router = useRouter()
+    const locale = useLocale()
+
+    const handleGoToChat = (applicationId: number) => {
+        // Предполагаем, что собеседник - Юрист (имя неизвестно или берем из заявки если доступно)
+        // Для клиента собеседник - "Юрист" (или имя если есть в item.lawyer)
+        router.push(`/${locale}/dashboard/chats?applicationId=${applicationId}&participantName=Юрист`)
+    }
 
 	const canEditOrDelete = (status: string) => {
 		// Разрешаем редактирование и завершение для всех статусов

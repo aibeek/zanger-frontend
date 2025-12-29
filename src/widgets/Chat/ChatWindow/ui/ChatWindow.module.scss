@@ -132,7 +132,7 @@
         left: 0;
         right: 0;
         height: 1px;
-        background: #e5e7eb;
+        background: #cbd5e1; // Darker line
         z-index: 1;
       }
 
@@ -207,7 +207,7 @@
   // Поле ввода
   .inputArea {
     padding: 20px 24px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid #cbd5e1; // Clearer separator
     background: #ffffff;
 
     .inputContainer {
