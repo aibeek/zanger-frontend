@@ -18,9 +18,7 @@ before_script:
 build image:
   stage: build
   tags:
-    - prod
-    - pskz
-    - lawyerplace
+    - dev29260
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -51,9 +49,7 @@ build image:
 deploy to server:
   stage: deploy
   tags:
-    - prod
-    - pskz
-    - lawyerplace
+    - dev29260
   needs: ["build image"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
