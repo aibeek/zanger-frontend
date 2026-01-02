@@ -2,6 +2,7 @@
 
 import { FC } from 'react'
 import Image from 'next/image'
+import { Trash2 } from 'lucide-react'
 import { ChatListProps } from '../../types'
 import s from './ChatList.module.scss'
 
@@ -28,6 +29,16 @@ export const ChatList: FC<ChatListProps & { onChatDelete?: (id: string) => void 
   const truncateText = (text: string, maxLength: number = 50) => {
     if (text.length <= maxLength) return text
     return text.substring(0, maxLength) + '...'
+  }
+
+  if (chats.length === 0) {
+    return (
+      <div className={s.chatList}>
+        <div className={s.emptyList}>
+          <p>Нет активных диалогов</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -92,7 +103,7 @@ export const ChatList: FC<ChatListProps & { onChatDelete?: (id: string) => void 
                 }}
                 title="Удалить чат"
             >
-                🗑️
+                <Trash2 size={14} />
             </button>
           </div>
         ))}

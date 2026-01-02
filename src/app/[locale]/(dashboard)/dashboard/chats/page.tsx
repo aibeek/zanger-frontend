@@ -8,7 +8,7 @@ export default function ChatsPage() {
       <div className={s.chatArea}>
         <Chat />
       </div>
-      <RightWidgets />
+      <RightWidgets hideLawyerGuide />
     </div>
   );
 }
