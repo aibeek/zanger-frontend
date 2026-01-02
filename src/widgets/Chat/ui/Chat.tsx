@@ -36,7 +36,7 @@ export const Chat: FC<ChatPageProps> = ({ currentUserId }) => {
   const fetchChats = async () => {
     if (!effectiveUserId) return []
     try {
-        const data = await httpClientWithAuth(`${API_URL}/chats`)
+        const data = await httpClientWithAuth(`${API_URL}/chats`) as any[]
         // Map backend data to frontend ChatType
         const mappedChats: ChatType[] = data.map((item: any) => {
             const isMeClient = item.client_id.toString() === effectiveUserId.toString()
@@ -145,7 +145,7 @@ export const Chat: FC<ChatPageProps> = ({ currentUserId }) => {
     
     // Fetch full details
     try {
-        const data = await httpClientWithAuth(`${API_URL}/chats/${chatId}`)
+        const data = await httpClientWithAuth(`${API_URL}/chats/${chatId}`) as any
         // data: { chat, messages }
         
         const messages: Message[] = data.messages.map((m: any) => ({
@@ -211,7 +211,7 @@ export const Chat: FC<ChatPageProps> = ({ currentUserId }) => {
             body: JSON.stringify({ content })
         })
         // Update ID
-        const savedMsg = res
+        const savedMsg = res as any
         setChats(prev => prev.map(c => {
              if (c.id !== selectedChatId) return c
              return {
