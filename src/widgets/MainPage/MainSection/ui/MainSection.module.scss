@@ -22,6 +22,7 @@ $header-height-sm: 56px; // mobilee
 		top: calc(40px + #{$header-height-lg});
 		left: 20px;
 		right: 20px;
+		bottom: 20px;
 		max-width: 1680px;
 		width: auto;
 		margin: 0 auto;
@@ -87,7 +88,7 @@ $header-height-sm: 56px; // mobilee
 		width: 100%;
 		height: auto;
 		margin: 0 auto;
-		padding: 190px 100px 60px 100px;
+		padding: 120px 100px 60px 100px;
 		position: relative;
 		z-index: 100;
 

@@ -65,17 +65,11 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             href: `/${language}/dashboard/profile`,
         },
         {
-            id: 'applications',
-            title: t('dashboard.sidebar.applications'),
-            icon: ApplicationsIcon,
-            href: `/${language}/dashboard/applications`,
+            id: 'chats',
+            title: t('dashboard.sidebar.chats'),
+            icon: ChatIcon,
+            href: `/${language}/dashboard/chats`,
         },
-        // {
-        //     id: 'chats',
-        //     title: t('dashboard.sidebar.chats'),
-        //     icon: ChatIcon,
-        //     href: `/${language}/dashboard/chats`,
-        // },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),
@@ -145,11 +139,8 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
 
     // Фильтруем пункты меню в зависимости от роли
     const defaultMenuItems = allMenuItems.filter(item => {
-        if (role === 'client') {
-            if (item.id === 'subscription') return false
-            if (item.id === 'applications') return false
-        }
-        if (role === 'lawyer' && item.id === 'applications') return false
+        // Подписка только для юристов
+        if (role === 'client' && item.id === 'subscription') return false
         return true
     })
 

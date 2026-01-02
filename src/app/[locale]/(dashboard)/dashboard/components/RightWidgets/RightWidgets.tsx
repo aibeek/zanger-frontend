@@ -25,9 +25,10 @@ interface ActiveStream {
 
 interface RightWidgetsProps {
     hideActiveStreams?: boolean
+    hideLawyerGuide?: boolean
 }
 
-export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) => {
+export const RightWidgets = ({ hideActiveStreams = false, hideLawyerGuide = false }: RightWidgetsProps) => {
     const t = useTranslations()
     const locale = useLocale()
     const pathname = usePathname()
@@ -247,7 +248,7 @@ export const RightWidgets = ({ hideActiveStreams = false }: RightWidgetsProps) =
             </div>
 
             {/* Lawyer Guide Widget */}
-            {role === 'lawyer' && (
+            {role === 'lawyer' && !hideLawyerGuide && (
                 <div className={s.lawyerGuideWidget}>
                     <div className={s.lawyerGuideHeader}>
                         <div className={s.lawyerGuideIcon}>📋</div>
