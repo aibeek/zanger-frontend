@@ -128,9 +128,27 @@ $header-height-sm: 56px; // mobilee
 		max-width: 600px;
 		margin-top: -60px;
 
+		// Edge browser - lower the title
+		@supports (-ms-ime-align: auto) {
+			margin-top: 100px;
+		}
+
+		// Chrome/Chromium - raise the title
+		@supports (not (-ms-ime-align: auto)) and (-webkit-appearance: none) {
+			margin-top: -100px;
+		}
+
 		@media (max-width: 1200px) {
 			max-width: 550px;
 			margin-top: -40px;
+
+			@supports (-ms-ime-align: auto) {
+				margin-top: -10px;
+			}
+
+			@supports (not (-ms-ime-align: auto)) and (-webkit-appearance: none) {
+				margin-top: -60px;
+			}
 		}
 
 		@media (max-width: 1024px) {
