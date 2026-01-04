@@ -11,9 +11,18 @@ $header-height-sm: 56px; // mobilee
 	flex-direction: column;
 	background: transparent;
 	overflow: hidden;
-	// push content below fixed header and keep near full viewport height
+	// push content below fixed header
 	padding-top: $header-height-lg;
-	min-height: calc(100vh - #{$header-height-lg});
+	// match hero height exactly (top offset + hero height)
+	min-height: calc(100vh - 60px);
+
+	@media (max-width: 1024px) {
+		min-height: calc(100vh - 30px);
+	}
+
+	@media (max-width: 768px) {
+		min-height: 100vh;
+	}
 
 
 	.abstractLandscape {
@@ -22,7 +31,9 @@ $header-height-sm: 56px; // mobilee
 		top: calc(40px + #{$header-height-lg});
 		left: 20px;
 		right: 20px;
-		bottom: 20px;
+		bottom: unset;
+		// explicit height instead of stretching to bottom
+		height: calc(100vh - #{$header-height-lg} - 100px);
 		max-width: 1680px;
 		width: auto;
 		margin: 0 auto;
@@ -41,7 +52,7 @@ $header-height-sm: 56px; // mobilee
 			left: 20px;
 			right: 20px;
 			top: calc(30px + #{$header-height-md});
-			height: calc(100vh - 60px);
+			height: calc(100vh - #{$header-height-md} - 60px);
 		}
 
 		@media (max-width: 768px) {
@@ -88,38 +99,38 @@ $header-height-sm: 56px; // mobilee
 		width: 100%;
 		height: auto;
 		margin: 0 auto;
-		padding: 120px 100px 60px 100px;
+		padding: 200px 100px 0 100px;
 		position: relative;
 		z-index: 100;
 
 		@media (max-width: 1600px) {
-			padding: 190px 100px 60px 100px
+			padding: 190px 100px 0 100px;
 		}
 
 		@media (max-width: 1200px) {
-			padding: 130px 40px 40px 40px;
+			padding: 130px 40px 0 40px;
 		}
 
 		@media (max-width: 1024px) {
-			padding: 85px 30px 30px 30px;
+			padding: 85px 30px 0 30px;
 		}
 
 		@media (max-width: 900px) {
 			flex-direction: column;
-			padding: 80px 20px 20px 20px;
+			padding: 80px 20px 0 20px;
 			text-align: left;
 			align-items: flex-start;
 		}
 
 		@media (max-width: 768px) {
 			flex-direction: column;
-			padding: 60px 10px 15px 10px;
+			padding: 60px 10px 0 10px;
 			text-align: left;
 			align-items: flex-start;
 		}
 
 		@media (max-width: 480px) {
-			padding: 100px 8px 10px 8px;
+			padding: 100px 8px 0 8px;
 		}
 	}
 
@@ -732,10 +743,10 @@ $header-height-sm: 56px; // mobilee
 
 	.sentinel {
 		width: 100%;
-		height: 1px;
+		height: 1px; // minimal height for intersection observer
 		pointer-events: none;
-		margin-top: auto;
 	}
+
 
 	@keyframes fadeInUp {
 		0% {
@@ -774,11 +785,10 @@ $header-height-sm: 56px; // mobilee
 		// adjust wrapper offset for medium screens
 		& {
 			padding-top: $header-height-md;
-			min-height: calc(100vh - #{$header-height-md});
 		}
 
 		.container {
-			padding: 130px 40px 40px 40px;
+			padding: 130px 40px 0 40px;
 			height: auto; // чтобы блок не обрезался
 		}
 
@@ -831,7 +841,6 @@ $header-height-sm: 56px; // mobilee
 	@media (max-width: 1024px) {
 		& {
 			padding-top: $header-height-md;
-			min-height: calc(100vh - #{$header-height-md});
 		}
 	}
 
@@ -839,7 +848,6 @@ $header-height-sm: 56px; // mobilee
 	@media (max-width: 768px) {
 		& {
 			padding-top: $header-height-sm;
-			min-height: calc(100vh - #{$header-height-sm});
 		}
 	}
 }
