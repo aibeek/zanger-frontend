@@ -181,6 +181,7 @@ export default function ProfilePage() {
     const [popupStatus, setPopupStatus] = useState<'success' | 'failed' | null>(null)
     const [popupMessage, setPopupMessage] = useState<string | null>(null)
     const [showBanner, setShowBanner] = useState<boolean>(true)
+    const [showPromoBanner, setShowPromoBanner] = useState<boolean>(true)
     
     useEffect(() => {
         const checkParams = async () => {
@@ -256,6 +257,24 @@ export default function ProfilePage() {
         return (
             <div className={s.profileContent}>
                 <div className={s.profileSettings}>
+                    {/* Promo Banner */}
+                    {showPromoBanner && (
+                        <div className={s.promoBanner}>
+                            <div className={s.promoBannerContent}>
+                                <span className={s.promoBannerNewPrice}>{t('profile.promo_banner.newPrice')}</span>
+                                <span className={s.promoBannerOldPrice}>{t('profile.promo_banner.oldPrice')}</span>
+                                <span className={s.promoBannerDescription}>{t('profile.promo_banner.description')}</span>
+                            </div>
+                            <button 
+                                className={s.promoBannerCloseBtn}
+                                onClick={() => setShowPromoBanner(false)}
+                                aria-label={t('profile.promo_banner.hide')}
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    )}
+
                     {/* Info Banner for Lawyers */}
                     {showBanner && (
                         <div className={s.infoBanner}>
