@@ -10,9 +10,6 @@ RUN npm ci --legacy-peer-deps
 FROM node:18-alpine AS build
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
 # NEXT_PUBLIC_* нужны во время next build
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_BASE_URL
@@ -23,8 +20,20 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
 ENV NEXT_PUBLIC_BASE_URL_PROD=$NEXT_PUBLIC_BASE_URL_PROD
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-
 ENV NODE_ENV=production
+
+# Копируем node_modules из deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Копируем только нужные файлы (порядок важен для кэширования)
+COPY package*.json ./
+COPY next.config.ts tsconfig.json ./
+COPY tailwind.config.js postcss.config.js ./
+COPY eslint.config.mjs ./
+COPY public ./public
+COPY locales ./locales
+COPY src ./src
+
 RUN npm run build
 
 

@@ -24,10 +24,8 @@ build image:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo "# Build Stage start"
-    - pwd
-    - ls -la
-    - ls -la .docker/nextjs || true
 
+    # Проверка переменных
     - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
     - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
@@ -35,15 +33,28 @@ build image:
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
+    # Пробуем использовать кэш из предыдущих билдов
+    - docker pull "$CI_REGISTRY_IMAGE:latest" || true
+
+    # Билд с кэшированием
     - |
       docker build -f .docker/nextjs/Dockerfile \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
+        --cache-from "$CI_REGISTRY_IMAGE:latest" \
         --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL_PROD="$NEXT_PUBLIC_BASE_URL_PROD" \
         --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
-        -t "$CI_REGISTRY_IMAGE:${TAG}" .
+        -t "$CI_REGISTRY_IMAGE:${TAG}" \
+        -t "$CI_REGISTRY_IMAGE:latest" .
 
+    # Пушим оба тега (версионный + latest для кэша)
     - docker push "$CI_REGISTRY_IMAGE:${TAG}"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+    
+    # Чистим старые образы
+    - docker image prune -f --filter "until=168h"
+    
     - echo "# Build Stage end"
 
 deploy to server:
