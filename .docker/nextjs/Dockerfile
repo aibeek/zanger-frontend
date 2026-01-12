@@ -28,7 +28,6 @@ COPY --from=deps /app/node_modules ./node_modules
 # Копируем только нужные файлы (порядок важен для кэширования)
 COPY package*.json ./
 COPY next.config.ts tsconfig.json ./
-COPY tailwind.config.js postcss.config.js ./
 COPY eslint.config.mjs ./
 COPY public ./public
 COPY locales ./locales
