@@ -10,6 +10,72 @@
     flex: 1;
 }
 
+// Promo Banner
+.promoBanner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    position: relative;
+}
+
+.promoBannerContent {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.promoBannerNewPrice {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFD700;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.promoBannerOldPrice {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: line-through;
+    text-decoration-color: #FF6B6B;
+    text-decoration-thickness: 2px;
+}
+
+.promoBannerDescription {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+}
+
+.promoBannerCloseBtn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+    }
+}
+
 // Info Banner for Lawyers and Clients
 .infoBanner {
     display: flex;

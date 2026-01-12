@@ -1,9 +1,9 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import Snowfall from 'react-snowfall'
 import phone from '@/app/assets/icons/phone.svg'
 import logo from '../../../../../public/happynewyear.svg'
 import { Header } from '@/widgets/Header'
@@ -18,6 +18,7 @@ import HubsLogoRU from '../../../../../public/assets/images/hub.svg'
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
 	const locale = useLocale()
+    
 	const HubsLogo = locale === 'kz' ? HubsLogoKZ : HubsLogoRU
 	const hubsDimensions = {
 		width: HubsLogo.width,
@@ -26,17 +27,6 @@ export const MainSection = () => {
 
 	return (
 		<section id="mainSection" className={s.wrapper}>
-			<Snowfall
-				color="#fff"
-				snowflakeCount={150}
-				style={{
-					position: 'fixed',
-					width: '100vw',
-					height: '100vh',
-					zIndex: 9999,
-					pointerEvents: 'none',
-				}}
-			/>
 			<Header variant={'lending-variant'} />
 			<div className={s.abstractLandscape}>
 				<video

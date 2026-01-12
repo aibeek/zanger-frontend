@@ -138,31 +138,38 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
 
       {/* Область сообщений */}
       <div className={s.messagesArea}>
-        {messageGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className={s.messageGroup}>
-            <div className={s.dateSeparator}>
-              <span>{group.date}</span>
-            </div>
-            
-            {group.messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`${s.message} ${
-                  msg.senderId === currentUserId ? s.sent : s.received
-                }`}
-              >
-                <div className={s.messageContent}>
-                  <div className={s.bubble}>
-                    {msg.content}
-                  </div>
-                  <div className={s.timestamp}>
-                    {formatTime(msg.timestamp)}
+        {messageGroups.length === 0 ? (
+          <div className={s.noMessages}>
+            <p>Нет сообщений</p>
+            <span>Напишите первое сообщение, чтобы начать диалог</span>
+          </div>
+        ) : (
+          messageGroups.map((group, groupIndex) => (
+            <div key={groupIndex} className={s.messageGroup}>
+              <div className={s.dateSeparator}>
+                <span>{group.date}</span>
+              </div>
+              
+              {group.messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`${s.message} ${
+                    msg.senderId === currentUserId ? s.sent : s.received
+                  }`}
+                >
+                  <div className={s.messageContent}>
+                    <div className={s.bubble}>
+                      {msg.content}
+                    </div>
+                    <div className={s.timestamp}>
+                      {formatTime(msg.timestamp)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        ))}
+              ))}
+            </div>
+          ))
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -178,12 +185,7 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
             rows={1}
           />
           <div className={s.inputActions}>
-            <button className={s.actionButton} title="Прикрепить файл">
-              📎
-            </button>
-            <button className={s.actionButton} title="Голосовое сообщение">
-              🎤
-            </button>
+
             <button
               onClick={handleSendMessage}
               disabled={!message.trim()}

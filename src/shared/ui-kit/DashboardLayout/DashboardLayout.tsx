@@ -5,6 +5,7 @@ import { useLoginStore } from '@/features/auth/login'
 import { EcpSidebar } from '@/shared/ui-kit/EcpSidebar'
 import { ApplicationsSidebar } from '@/shared/ui-kit/ApplicationsSidebar'
 import { Sidebar } from '@/shared/ui-kit/Sidebar'
+import { CommunitySidebar } from '@/shared/ui-kit/CommunitySidebar'
 import { usePathname } from 'next/navigation'
 import { DashboardHeader } from './DashboardHeader'
 import { DashboardFooter } from './DashboardFooter'
@@ -40,8 +41,10 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
         return <div className={s.loader}>Загрузка...</div>
     }
 
-    const isApplicationsPage = pathname.replace(/^\/[a-z]{2}/, '').startsWith('/dashboard/applications')
-    const isEcpPage = pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp')
+    const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
+    const isApplicationsPage = pathWithoutLang.startsWith('/dashboard/applications')
+    const isEcpPage = pathWithoutLang.startsWith('/ecp')
+    const isCommunityPage = pathWithoutLang.startsWith('/community')
 
     return (
         <div className={s.layout}>
@@ -68,7 +71,9 @@ export const DashboardLayout = ({ children, language }: DashboardLayoutProps) =>
 
             {/* Sidebar */}
             <div className={`${s.sidebarContainer} ${isMobileSidebarOpen ? s.mobileOpen : ''}`}>
-                {pathname.replace(/^\/[a-z]{2}/, '').startsWith('/ecp') ? (
+                {isCommunityPage ? (
+                    <CommunitySidebar language={language} onMobileClose={closeMobileSidebar} />
+                ) : pathWithoutLang.startsWith('/ecp') ? (
                     <EcpSidebar />
                 ) : isApplicationsPage ? (
                     <ApplicationsSidebar onMobileClose={closeMobileSidebar} />

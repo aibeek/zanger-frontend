@@ -1,4 +1,4 @@
-import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection, ScrollTopButton, DomainsSection } from '@/widgets/MainPage'
+import { DescriptionSection, MainSection, TeamSection, AboutSection, ModulesSection, ResourcesSection, NewsSection, ScrollTopButton } from '@/widgets/MainPage'
 import { LocalVideoSection } from '@/widgets/MainPage/LocalVideoSection'
 import { Footer } from '@/widgets/Footer'
 import { WhatsAppFloat } from '@/widgets/WhatsAppFloat'
@@ -11,7 +11,6 @@ export default async function Home() {
 				<MainSection />
 				<ModulesSection />
 			<NewsSection />
-			<DomainsSection />
 			<LocalVideoSection
 				videos={[
 					{

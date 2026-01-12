@@ -11,13 +11,15 @@ interface ApplicationDetailsModalProps {
 	onClose: () => void
 	onRespond: (id: number) => void
 	isResponding?: boolean
+    onChat?: (participantId?: number | string, participantName?: string) => void
 }
 
 export const ApplicationDetailsModal = ({ 
     application, 
     onClose, 
     onRespond,
-    isResponding = false 
+    isResponding = false,
+    onChat 
 }: ApplicationDetailsModalProps) => {
     const t = useTranslations('applications')
     const [detailed, setDetailed] = useState<any>(null)
@@ -95,13 +97,32 @@ export const ApplicationDetailsModal = ({
                 
                 <div className={s.actions}>
                     
-                    <button 
-                        className={s.respondBtn}
-                        onClick={() => onRespond(app.id)}
-                        disabled={isResponding}
-                    >
-						{isResponding ? 'Обработка...' : 'В "Мои заявки"'}
-					</button>
+                    {/* Если передан onChat, показываем кнопку Чата */}
+                    {/* Если onRespond доступен (не заглушка), показываем кнопку отклика (или "В Мои заявки") */}
+                    
+                    {/* Логика отображения: 
+                        1. Если это "Мои заявки" (передан onChat), показываем кнопку Чат.
+                        2. Если это "Новые заявки" (onChat не передан или null), показываем кнопку "В Мои заявки" (onRespond).
+                    */}
+
+                    {onRespond && onRespond.name !== 'mockConstructor' && ( // Простая проверка, но лучше полагаться на пропы
+                         <button 
+                            className={s.respondBtn}
+                            onClick={() => onRespond(app.id)}
+                            disabled={isResponding}
+                        >
+                            {isResponding ? 'Обработка...' : 'В "Мои заявки"'}
+                        </button>
+                    )}
+
+                    {onChat && (
+                        <button
+                            className={s.chatBtn}
+                            onClick={() => onChat(app.user?.id || 0, app.user?.name || 'Client')}
+                        >
+                            Чат с клиентом
+                        </button>
+                    )}
 				</div>
 			</div>
 		</div>

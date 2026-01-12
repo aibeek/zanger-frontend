@@ -13,6 +13,7 @@ import s from './ApplicationsSidebar.module.scss'
 // Icons
 import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
 import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
+import ChatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
 import SubscriptionIcon from '@/app/assets/icons/dashboard-icons/subscription.svg'
 import FaqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 
@@ -48,6 +49,12 @@ export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobi
       title: t('dashboard.sidebar.profile'),
       icon: ProfileIcon,
       href: `/${locale}/dashboard/profile`,
+    },
+    {
+      id: 'chats',
+      title: t('dashboard.sidebar.chats'),
+      icon: ChatIcon,
+      href: `/${locale}/dashboard/chats`,
     },
     {
       id: 'subscription',

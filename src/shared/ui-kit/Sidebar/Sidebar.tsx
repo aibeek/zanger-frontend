@@ -9,6 +9,7 @@ import { useLoginStore } from '@/features/auth/login'
 import { authService } from '@/features/auth/login/service'
 import { ProfileAvatar } from '@/entities/profile'
 import s from './Sidebar.module.scss'
+import { useSnow } from '@/shared/ui-kit/SnowProvider/SnowProvider'
 
 // Dashboard icons
 import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
@@ -44,6 +45,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const name = personalData?.name ?? ''
     const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
     const role = Cookies.get('role')
+    const { snowEnabled, toggleSnow } = useSnow()
     
     const handleLogout = () => {
         authService.logout()
@@ -65,17 +67,11 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
             href: `/${language}/dashboard/profile`,
         },
         {
-            id: 'applications',
-            title: t('dashboard.sidebar.applications'),
-            icon: ApplicationsIcon,
-            href: `/${language}/dashboard/applications`,
+            id: 'chats',
+            title: t('dashboard.sidebar.chats'),
+            icon: ChatIcon,
+            href: `/${language}/dashboard/chats`,
         },
-        // {
-        //     id: 'chats',
-        //     title: t('dashboard.sidebar.chats'),
-        //     icon: ChatIcon,
-        //     href: `/${language}/dashboard/chats`,
-        // },
         {
             id: 'subscription',
             title: t('dashboard.sidebar.subscription'),
@@ -145,11 +141,8 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
 
     // Фильтруем пункты меню в зависимости от роли
     const defaultMenuItems = allMenuItems.filter(item => {
-        if (role === 'client') {
-            if (item.id === 'subscription') return false
-            if (item.id === 'applications') return false
-        }
-        if (role === 'lawyer' && item.id === 'applications') return false
+        // Подписка только для юристов
+        if (role === 'client' && item.id === 'subscription') return false
         return true
     })
 
@@ -167,6 +160,39 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                         <Image src="/happynewyear.svg" alt="Zanger Logo" className={s.logoIcon} width={40} height={48} priority />
                     <span className={s.logoText}>ZANGER</span>
                 </Link>
+                {/* Snow toggle next to logo */}
+                <button
+                    className={s.snowToggle}
+                    onClick={toggleSnow}
+                    aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
+                    title={snowEnabled ? 'Выключить снег' : 'Включить снег'}
+                >
+                    <svg
+                        className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''}`}
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="m10 20-1.25-2.5L6 18"></path>
+                        <path d="M10 4 8.75 6.5 6 6"></path>
+                        <path d="m14 20 1.25-2.5L18 18"></path>
+                        <path d="m14 4 1.25 2.5L18 6"></path>
+                        <path d="m17 21-3-6h-4"></path>
+                        <path d="m17 3-3 6 1.5 3"></path>
+                        <path d="M2 12h6.5L10 9"></path>
+                        <path d="m20 10-1.5 2 1.5 2"></path>
+                        <path d="M22 12h-6.5L14 15"></path>
+                        <path d="m4 10 1.5 2L4 14"></path>
+                        <path d="m7 21 3-6-1.5-3"></path>
+                        <path d="m7 3 3 6h4"></path>
+                    </svg>
+                </button>
                 {onMobileClose && (
                     <button 
                         className={s.mobileCloseBtn}
