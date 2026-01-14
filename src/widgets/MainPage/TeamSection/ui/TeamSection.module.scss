@@ -588,6 +588,24 @@
 
 @keyframes moveRightToLeft {
   0% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 4000px));
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 3200px));
+  }
+}
+
+@keyframes moveRightToLeftLaptop {
+  0% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 3600px));
+  }
+  100% {
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2900px));
+  }
+}
+
+@keyframes moveRightToLeftTablet {
+  0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 3200px));
   }
   100% {
@@ -636,13 +654,15 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 23; // keep in sync with actual number of cards
-// увеличенная продолжительность для 22 карточек
-$duration-desktop: 72s; // увеличено для лучшего расстояния
-$duration-tablet: 62s;  // увеличено для лучшего расстояния
-$duration-mobile: 52s;  // увеличено для лучшего расстояния
+$cards-count: 25; // keep in sync with actual number of cards
+// увеличенная продолжительность для 25 карточек
+$duration-desktop: 85s; // увеличено для 25 карточек
+$duration-laptop: 78s;  // для ноутбуков
+$duration-tablet: 70s;  // для планшетов
+$duration-mobile: 58s;  // для мобильных
 
 $step-desktop: math.div($duration-desktop, $cards-count);
+$step-laptop: math.div($duration-laptop, $cards-count);
 $step-tablet: math.div($duration-tablet, $cards-count);
 $step-mobile: math.div($duration-mobile, $cards-count);
 
@@ -653,19 +673,19 @@ $step-mobile: math.div($duration-mobile, $cards-count);
 		animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 
 		@media (max-width: 1600px) {
-			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
+			animation: moveRightToLeftLaptop $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
 		}
 
 		@media (max-width: 1366px) {
-			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
+			animation: moveRightToLeftLaptop $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
 		}
 
 		@media (max-width: 1024px) {
-			animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
+			animation: moveRightToLeftTablet $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
 		}
 
 		@media (max-width: 768px) {
-			animation: moveRightToLeft $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
+			animation: moveRightToLeftTablet $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
 		}
 
 		@media (max-width: 480px) {
