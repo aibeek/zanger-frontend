@@ -10,18 +10,129 @@
     flex: 1;
 }
 
+// Promo Banner Animations
+@keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translateY(-50%) scale(1); box-shadow: 0 0 20px rgba(251, 191, 36, 0.6); }
+    50% { transform: translateY(-50%) scale(1.05); box-shadow: 0 0 30px rgba(251, 191, 36, 0.9); }
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+@keyframes fireAnimation {
+    0%, 100% { transform: scale(1) rotate(-3deg); }
+    25% { transform: scale(1.1) rotate(3deg); }
+    50% { transform: scale(1.05) rotate(-2deg); }
+    75% { transform: scale(1.15) rotate(2deg); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+@keyframes slideIn {
+    0% { transform: translateX(-100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
 // Promo Banner
 .promoBanner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 16px;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
-    border-radius: 12px;
+    padding: 24px 50px 24px 90px;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 30%, #3B82F6 60%, #6366F1 100%);
+    border-radius: 20px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    box-shadow: 
+        0 10px 40px rgba(30, 64, 175, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
     position: relative;
+    overflow: hidden;
+    animation: slideIn 0.5s ease-out;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(
+            90deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.1) 25%, 
+            rgba(255, 255, 255, 0.3) 50%, 
+            rgba(255, 255, 255, 0.1) 75%, 
+            transparent 100%
+        );
+        animation: shimmer 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 60%);
+        pointer-events: none;
+    }
+}
+
+// Sparkle elements
+.sparkle {
+    position: absolute;
+    color: #FFD700;
+    font-size: 16px;
+    animation: sparkle 2s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+    text-shadow: 0 0 10px #FFD700;
+}
+
+.promoBadge {
+    background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #F59E0B 100%);
+    color: #1E3A8A;
+    font-size: 16px;
+    font-weight: 900;
+    padding: 10px 16px;
+    border-radius: 12px;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+    z-index: 2;
+    letter-spacing: -0.5px;
+
+    .badgeGlow {
+        position: absolute;
+        inset: -3px;
+        background: linear-gradient(135deg, #F59E0B, #FBBF24, #FDE68A, #FBBF24, #F59E0B);
+        border-radius: 14px;
+        z-index: -1;
+        opacity: 0.7;
+        filter: blur(6px);
+        animation: glowPulse 2s ease-in-out infinite;
+    }
 }
 
 .promoBannerContent {
@@ -29,50 +140,130 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 20px;
     flex-wrap: wrap;
+    z-index: 1;
+}
+
+.promoFireIcon {
+    font-size: 36px;
+    animation: fireAnimation 0.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.8));
+}
+
+.promoTitle {
+    font-size: 20px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #34D399 0%, #6EE7B7 50%, #34D399 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 2s linear infinite;
+    text-shadow: none;
+}
+
+.promoPriceBlock {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.promoLabel {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
 }
 
 .promoBannerNewPrice {
-    font-size: 22px;
-    font-weight: 800;
-    color: #FFD700;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-size: 34px;
+    font-weight: 900;
+    color: white;
+    position: relative;
+    text-shadow: 
+        0 0 20px rgba(255, 255, 255, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
+
+    .priceGlow {
+        position: absolute;
+        inset: -8px;
+        background: radial-gradient(ellipse, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        filter: blur(8px);
+        animation: glowPulse 1.5s ease-in-out infinite;
+        z-index: -1;
+    }
+}
+
+.promoPerMonth {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
 }
 
 .promoBannerOldPrice {
-    font-size: 16px;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 24px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
     text-decoration: line-through;
-    text-decoration-color: #FF6B6B;
-    text-decoration-thickness: 2px;
+    text-decoration-color: #EF4444;
+    text-decoration-thickness: 3px;
+    background: rgba(239, 68, 68, 0.3);
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
 }
 
-.promoBannerDescription {
-    font-size: 16px;
-    font-weight: 600;
+.promoDateBlock {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    animation: float 3s ease-in-out infinite;
+    animation-delay: 0.5s;
+}
+
+.promoCalendarIcon {
+    font-size: 18px;
+}
+
+.promoDate {
+    font-size: 14px;
     color: white;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
 
 .promoBannerCloseBtn {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    backdrop-filter: blur(10px);
+    z-index: 2;
 
     &:hover {
         background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
+        transform: scale(1.15) rotate(90deg);
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
     }
 }
 

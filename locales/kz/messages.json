@@ -72,9 +72,12 @@
 
 	"profile": {
 		"promo_banner": {
-			"newPrice": "5510 ₸",
-			"oldPrice": "18 000 ₸",
-			"description": "Айлық жазылымға арнайы акция! Ұсыныс 2026 ж. 01 наурызға дейін жарамды.",
+			"title": "Жазылымға -70% дәл қазір",
+			"label": "Барлығы",
+			"newPrice": "5 510 теңге",
+			"perMonth": "ай",
+			"oldPrice": "18 000₸",
+			"validUntil": "Акция 01.03.2026 дейін жарамды",
 			"hide": "Жасыру"
 		},
 		"lawyer_info_banner": {

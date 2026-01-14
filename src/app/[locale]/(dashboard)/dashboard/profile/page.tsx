@@ -260,11 +260,41 @@ export default function ProfilePage() {
                     {/* Promo Banner */}
                     {showPromoBanner && (
                         <div className={s.promoBanner}>
-                            <div className={s.promoBannerContent}>
-                                <span className={s.promoBannerNewPrice}>{t('profile.promo_banner.newPrice')}</span>
-                                <span className={s.promoBannerOldPrice}>{t('profile.promo_banner.oldPrice')}</span>
-                                <span className={s.promoBannerDescription}>{t('profile.promo_banner.description')}</span>
+                            {/* Animated sparkles */}
+                            <div className={s.sparkle} style={{ top: '10%', left: '5%', animationDelay: '0s' }}>✦</div>
+                            <div className={s.sparkle} style={{ top: '20%', right: '15%', animationDelay: '0.5s' }}>✦</div>
+                            <div className={s.sparkle} style={{ bottom: '15%', left: '20%', animationDelay: '1s' }}>✦</div>
+                            <div className={s.sparkle} style={{ top: '60%', right: '8%', animationDelay: '1.5s' }}>✦</div>
+                            <div className={s.sparkle} style={{ bottom: '30%', right: '25%', animationDelay: '0.7s' }}>⭐</div>
+                            
+                            {/* Pulsing badge */}
+                            <div className={s.promoBadge}>
+                                <span className={s.badgeGlow}></span>
+                                -70%
                             </div>
+                            
+                            <div className={s.promoBannerContent}>
+                                {/* Animated fire */}
+                                <span className={s.promoFireIcon}>🔥</span>
+                                
+                                <span className={s.promoTitle}>{t('profile.promo_banner.title')}</span>
+                                
+                                <div className={s.promoPriceBlock}>
+                                    <span className={s.promoLabel}>{t('profile.promo_banner.label')}</span>
+                                    <span className={s.promoBannerNewPrice}>
+                                        <span className={s.priceGlow}></span>
+                                        {t('profile.promo_banner.newPrice')}
+                                    </span>
+                                    <span className={s.promoPerMonth}>/ {t('profile.promo_banner.perMonth')}</span>
+                                    <span className={s.promoBannerOldPrice}>{t('profile.promo_banner.oldPrice')}</span>
+                                </div>
+                                
+                                <div className={s.promoDateBlock}>
+                                    <span className={s.promoCalendarIcon}>📅</span>
+                                    <span className={s.promoDate}>{t('profile.promo_banner.validUntil')}</span>
+                                </div>
+                            </div>
+                            
                             <button 
                                 className={s.promoBannerCloseBtn}
                                 onClick={() => setShowPromoBanner(false)}
