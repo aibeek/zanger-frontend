@@ -37,6 +37,7 @@ import MapLocationIcon from '@/app/assets/icons/location-blue.svg'
 import supportIcon from '@/app/assets/icons/support-phone.svg'
 import paymentIcon from '@/app/assets/icons/payment-method.svg'
 import avatarEditIcon from '@/app/assets/icons/avatar-edit.svg'
+import aiConsultantIcon from '@/../public/assets/icons/ai.svg'
 
 
 
@@ -381,10 +382,6 @@ export default function ProfilePage() {
                         <button className={s.actionCard} onClick={() => openModal('payment')}>
                             <Image src={paymentIcon} alt="" width={24} height={24} />
                             <span>{t('profile.menu_items.payment_methods')}</span>
-                        </button>
-                        <button className={s.actionCard} onClick={() => router.push(`/${locale}/dashboard/ai-consultant`)}>
-                            <Image src={supportIcon} alt="" width={24} height={24} />
-                            <span>ИИ-консультант</span>
                         </button>
                     </div>
 

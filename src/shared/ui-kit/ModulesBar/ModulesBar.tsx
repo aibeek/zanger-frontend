@@ -11,6 +11,7 @@ import monitor from '@/app/assets/icons/monitor.webp'
 import docIcon from '@/app/assets/icons/document.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
+import aiIcon from '@/../public/assets/icons/ai.png'
 import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
 import communityIcon from '@/app/assets/icons/people.svg'
 import crmIcon from '@/app/assets/icons/phone.svg'
@@ -112,7 +113,7 @@ export const ModulesBar = () => {
               )}
               {isAi && (
                 <span className={s.docIcon} aria-hidden>
-                  <Image src={chatIcon} alt="ai" width={26} height={26} />
+                  <Image src={aiIcon} alt="ai" width={26} height={26} />
                 </span>
               )}
               {(isCommunity || isCRM || isSeminars || isDatabase) && (
