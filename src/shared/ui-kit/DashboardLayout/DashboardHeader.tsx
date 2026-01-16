@@ -104,7 +104,7 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                     ) : isAiConsultantPage ? (
                         <Image 
                             src={getPageIcon()} 
-                            alt="ИИ-консультант"
+                            alt="ИИ-ассистент"
                             className={s.profileIcon}
                             width={60}
                             height={60}
