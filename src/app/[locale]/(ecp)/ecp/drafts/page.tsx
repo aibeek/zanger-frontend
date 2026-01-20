@@ -634,42 +634,47 @@ export default function EcpDraftsPage() {
                               key={i}
                               variant="otp"
                               value={smsCode[i] || ''}
+                              maxLength={1}
                               autoFocus={i === 0 && smsCode.length === 0}
                               onChange={(e) => {
                                 const inputVal = e.target.value
                                 const digits = inputVal.replace(/\D/g, '')
                                 
+                                // Если вставлено больше одной цифры - это paste
                                 if (digits.length > 1) {
-                                  // Если вставлен весь код сразу
                                   const code = digits.slice(0, 4)
                                   setSmsCode(code)
-                                  if (code.length === 4) {
-                                    const lastInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(4)`) as HTMLInputElement
-                                    lastInput?.focus()
-                                  } else if (code.length > 0) {
-                                    const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${code.length + 1})`) as HTMLInputElement
-                                    nextInput?.focus()
-                                  }
-                                } else if (digits.length === 1) {
-                                  // Одна цифра - берем только последний символ
-                                  const newCode = [...smsCode.split('')]
+                                  // Фокус на последнюю заполненную ячейку
+                                  setTimeout(() => {
+                                    const targetIndex = Math.min(code.length, 4)
+                                    const targetInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${targetIndex})`) as HTMLInputElement
+                                    targetInput?.focus()
+                                  }, 0)
+                                  return
+                                }
+                                
+                                // Одна цифра - обновляем только текущую ячейку
+                                if (digits.length === 1) {
+                                  const newCode = smsCode.split('')
                                   // Заполняем массив до нужной длины
                                   while (newCode.length < 4) {
                                     newCode.push('')
                                   }
+                                  // Обновляем только текущую ячейку
                                   newCode[i] = digits
-                                  const code = newCode.join('').slice(0, 4)
+                                  const code = newCode.join('')
                                   setSmsCode(code)
+                                  
+                                  // Переход к следующей ячейке, если не последняя
                                   if (i < 3) {
-                                    // Переход к следующей ячейке
                                     setTimeout(() => {
                                       const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
                                       nextInput?.focus()
                                     }, 0)
                                   }
                                 } else {
-                                  // Очистка
-                                  const newCode = [...smsCode.split('')]
+                                  // Очистка текущей ячейки
+                                  const newCode = smsCode.split('')
                                   while (newCode.length < 4) {
                                     newCode.push('')
                                   }
