@@ -543,42 +543,49 @@ export default function EcpCreateDocumentPage() {
           <div className={s.actions}>
             {!smsOperationId ? (
               <>
-                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, marginBottom: 12 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Способ подписания:</div>
-                  <div style={{ display: 'flex', gap: 12 }}>
-                    <button
-                      onClick={() => setSignMethod('ECP')}
-                      style={{
-                        flex: 1,
-                        background: signMethod === 'ECP' ? '#2563eb' : '#f3f4f6',
-                        color: signMethod === 'ECP' ? '#fff' : '#333',
-                        border: '1px solid #e5e7eb',
-                        padding: '10px 16px',
-                        borderRadius: 8,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      ЭЦП (NCALayer)
-                    </button>
-                    <button
-                      onClick={() => setSignMethod('SMS')}
-                      style={{
-                        flex: 1,
-                        background: signMethod === 'SMS' ? '#2563eb' : '#f3f4f6',
-                        color: signMethod === 'SMS' ? '#fff' : '#333',
-                        border: '1px solid #e5e7eb',
-                        padding: '10px 16px',
-                        borderRadius: 8,
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      SMS
-                    </button>
+                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Способ подписания:</div>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <button
+                        onClick={() => setSignMethod('ECP')}
+                        style={{
+                          flex: 1,
+                          background: signMethod === 'ECP' ? '#2563eb' : '#f3f4f6',
+                          color: signMethod === 'ECP' ? '#fff' : '#333',
+                          border: '1px solid #e5e7eb',
+                          padding: '10px 16px',
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ЭЦП (NCALayer)
+                      </button>
+                      <button
+                        onClick={() => setSignMethod('SMS')}
+                        style={{
+                          flex: 1,
+                          background: signMethod === 'SMS' ? '#2563eb' : '#f3f4f6',
+                          color: signMethod === 'SMS' ? '#fff' : '#333',
+                          border: '1px solid #e5e7eb',
+                          padding: '10px 16px',
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        SMS
+                      </button>
+                    </div>
                   </div>
+                  <Button 
+                    onClick={() => setConfirmSignOpen(true)} 
+                    style={{ whiteSpace: 'nowrap', minWidth: 'auto', padding: '10px 20px' }}
+                  >
+                    {t('signAndSend')}
+                  </Button>
                 </div>
-                <Button onClick={() => setConfirmSignOpen(true)}>{t('signAndSend')}</Button>
               </>
             ) : (
               <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, width: '100%' }}>
