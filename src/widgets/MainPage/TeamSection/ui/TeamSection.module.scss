@@ -654,10 +654,10 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 25; // keep in sync with actual number of cards
-// увеличенная продолжительность для 25 карточек
-$duration-desktop: 85s; // увеличено для 25 карточек
-$duration-laptop: 78s;  // для ноутбуков
+$cards-count: 26; // keep in sync with actual number of cards
+// увеличенная продолжительность для 26 карточек
+$duration-desktop: 65s; // для десктопов
+$duration-laptop: 58s;  // для ноутбуков
 $duration-tablet: 70s;  // для планшетов
 $duration-mobile: 58s;  // для мобильных
 
