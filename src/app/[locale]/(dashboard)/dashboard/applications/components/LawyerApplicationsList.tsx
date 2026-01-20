@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
@@ -69,6 +69,11 @@ export const LawyerApplicationsList = () => {
 	const [isLoadingMore, setIsLoadingMore] = useState(false)
 	const [selectedApp, setSelectedApp] = useState<LawyerApplication | null>(null)
 	const [isResponding, setIsResponding] = useState(false)
+	
+	// Ref для sentinel элемента (точка срабатывания infinite scroll)
+	const sentinelRef = useRef<HTMLDivElement>(null)
+	// Ref для предотвращения дублирования запросов
+	const isLoadingRef = useRef(false)
 
 	// Проверяем наличие подписки у юриста
 	const hasSubscription = personalData && 'lawyer' in personalData && personalData.lawyer?.subscription
@@ -154,10 +159,45 @@ export const LawyerApplicationsList = () => {
 	}
 
 	// Загружаем заявки при изменении фильтров
-		useEffect(() => {
-			// При изменении фильтров сбрасываем страницу на 1 и перезагружаем
-			fetchApplications(1, false)
-		}, [filters.region_id, filters.tag_id, filters.date])
+	useEffect(() => {
+		// При изменении фильтров сбрасываем страницу на 1 и перезагружаем
+		fetchApplications(1, false)
+	}, [filters.region_id, filters.tag_id, filters.date])
+	
+	// Функция для загрузки следующей страницы (используется IntersectionObserver)
+	const loadMore = useCallback(() => {
+		if (!hasMore || isLoadingRef.current || loading) return
+		isLoadingRef.current = true
+		fetchApplications(page + 1, true).finally(() => {
+			isLoadingRef.current = false
+		})
+	}, [hasMore, page, loading])
+	
+	// IntersectionObserver для infinite scroll
+	useEffect(() => {
+		const sentinel = sentinelRef.current
+		if (!sentinel) return
+		
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const [entry] = entries
+				if (entry.isIntersecting && hasMore && !isLoadingMore && !loading) {
+					loadMore()
+				}
+			},
+			{
+				// Срабатываем когда sentinel приближается к viewport (200px от нижнего края)
+				rootMargin: '0px 0px 200px 0px',
+				threshold: 0
+			}
+		)
+		
+		observer.observe(sentinel)
+		
+		return () => {
+			observer.disconnect()
+		}
+	}, [hasMore, isLoadingMore, loading, loadMore])
 
 	// Обработчики фильтров
 	const handleRegionChange = (region: any) => {
@@ -338,17 +378,15 @@ export const LawyerApplicationsList = () => {
 				</div>
 			)}
 
-			{hasMore && (
-				<div className={s.loadMoreWrap}>
-					<Button
-						variant="secondary"
-						disabled={isLoadingMore}
-						onClick={() => fetchApplications(page + 1, true)}
-					>
-						{isLoadingMore ? 'Загрузка…' : 'Показать ещё'}
-					</Button>
-				</div>
-			)}
+			{/* Sentinel элемент для infinite scroll */}
+			<div ref={sentinelRef} className={s.sentinel}>
+				{isLoadingMore && (
+					<div className={s.loadingMore}>
+						<div className={s.spinner}></div>
+						<span>Загрузка...</span>
+					</div>
+				)}
+			</div>
 
 			{selectedApp && (
 				<ApplicationDetailsModal

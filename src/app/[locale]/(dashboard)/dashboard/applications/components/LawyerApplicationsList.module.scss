@@ -79,11 +79,36 @@
     gap: 12px;
 }
 
-.loadMoreWrap {
+.sentinel {
 	display: flex;
 	justify-content: center;
+	align-items: center;
+	min-height: 60px;
 	margin-top: 24px;
 	padding-bottom: 24px;
+}
+
+.loadingMore {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: #6B7280;
+	font-size: 14px;
+}
+
+.spinner {
+	width: 24px;
+	height: 24px;
+	border: 3px solid #E5E7EB;
+	border-top-color: #2563EB;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 .applicationCard {
