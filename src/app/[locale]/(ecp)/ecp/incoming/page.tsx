@@ -257,13 +257,14 @@ export default function EcpIncomingPage() {
   }
 
   const onVerifySms = async () => {
-    if (!selectedId || !smsOperationId || !smsCode || smsCode.length !== 4) {
+    const code = smsCode.replace(/\D/g, '').slice(0, 4)
+    if (!selectedId || !smsOperationId || !code || code.length !== 4) {
       toast.error('Введите 4-значный код')
       return
     }
     try {
       setIsSigning(true)
-      const verifyRes = await ecpApi.signVerifySms(selectedId, { operation_id: smsOperationId, code: parseInt(smsCode) })
+      const verifyRes = await ecpApi.signVerifySms(selectedId, { operation_id: smsOperationId, code: parseInt(code) })
       if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
         toast.error('Неверный код')
         setIsSigning(false)
@@ -277,7 +278,7 @@ export default function EcpIncomingPage() {
         setSmsCode('')
         setSmsOperationId(null)
         setSmsPhone(null)
-        toast.success('✅ Документ успешно подписан!', {
+        toast.success('Документ успешно подписан!', {
           duration: 5000,
           icon: '✅',
           style: {
@@ -611,10 +612,12 @@ export default function EcpIncomingPage() {
                               value={smsCode[i] || ''}
                               autoFocus={i === 0 && smsCode.length === 0}
                               onChange={(e) => {
-                                const val = e.target.value.replace(/\D/g, '')
-                                if (val.length > 1) {
+                                const inputVal = e.target.value
+                                const digits = inputVal.replace(/\D/g, '')
+                                
+                                if (digits.length > 1) {
                                   // Если вставлен весь код сразу
-                                  const code = val.slice(0, 4)
+                                  const code = digits.slice(0, 4)
                                   setSmsCode(code)
                                   if (code.length === 4) {
                                     const lastInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(4)`) as HTMLInputElement
@@ -623,26 +626,29 @@ export default function EcpIncomingPage() {
                                     const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${code.length + 1})`) as HTMLInputElement
                                     nextInput?.focus()
                                   }
-                                } else if (val) {
-                                  // Одна цифра
-                                  const newCode = smsCode.split('')
-                                  newCode[i] = val
+                                } else if (digits.length === 1) {
+                                  // Одна цифра - берем только последний символ
+                                  const newCode = [...smsCode.split('')]
+                                  // Заполняем массив до нужной длины
+                                  while (newCode.length < 4) {
+                                    newCode.push('')
+                                  }
+                                  newCode[i] = digits
                                   const code = newCode.join('').slice(0, 4)
                                   setSmsCode(code)
-                                  if (i < 3 && code.length === i + 1) {
-                                    const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
-                                    nextInput?.focus()
-                                  } else if (code.length === 4) {
-                                    // Автоматически подтверждаем при вводе 4-й цифры
+                                  if (i < 3) {
+                                    // Переход к следующей ячейке
                                     setTimeout(() => {
-                                      if (code.length === 4 && !isSigning) {
-                                        onVerifySms()
-                                      }
-                                    }, 100)
+                                      const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                                      nextInput?.focus()
+                                    }, 0)
                                   }
                                 } else {
                                   // Очистка
-                                  const newCode = smsCode.split('')
+                                  const newCode = [...smsCode.split('')]
+                                  while (newCode.length < 4) {
+                                    newCode.push('')
+                                  }
                                   newCode[i] = ''
                                   setSmsCode(newCode.join(''))
                                 }
@@ -680,11 +686,6 @@ export default function EcpIncomingPage() {
                                   if (pasted.length === 4) {
                                     const lastInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(4)`) as HTMLInputElement
                                     lastInput?.focus()
-                                    setTimeout(() => {
-                                      if (pasted.length === 4 && !isSigning) {
-                                        onVerifySms()
-                                      }
-                                    }, 100)
                                   } else if (pasted.length > 0) {
                                     const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${pasted.length + 1})`) as HTMLInputElement
                                     nextInput?.focus()
