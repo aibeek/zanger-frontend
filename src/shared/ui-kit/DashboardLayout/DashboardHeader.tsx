@@ -18,6 +18,7 @@ import MainIcon from '@/app/assets/icons/dashboard-icons/Main.svg'
 import ProfileIcon from '@/app/assets/icons/dashboard-icons/myprofile.svg'
 import MyApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
 import ChatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
+import aiIcon from '@/../public/assets/icons/ai.png'
 
 interface DashboardHeaderProps {
     language: string
@@ -71,13 +72,14 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
         if (pathWithoutLang.startsWith('/dashboard/faq')) return FaqIcon
         if (pathWithoutLang.startsWith('/dashboard/support')) return SupportIcon
         if (pathWithoutLang.startsWith('/dashboard/video-conference')) return '/assets/icons/vks.svg'
-        if (pathWithoutLang.startsWith('/dashboard/ai-consultant')) return ChatIcon
+        if (pathWithoutLang.startsWith('/dashboard/ai-consultant')) return aiIcon
         
         return MainIcon
     }
 
     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
     const isVideoConferencePage = pathWithoutLang.startsWith('/dashboard/video-conference')
+    const isAiConsultantPage = pathWithoutLang.startsWith('/dashboard/ai-consultant')
 
     const roleCode = (personalData as any)?.role_id?.code
     const roleName = roleCode === 'lawyer' ? 'Юрист' : roleCode === 'client' ? 'Клиент' : ''
@@ -98,6 +100,14 @@ export const DashboardHeader = ({ language, title }: DashboardHeaderProps) => {
                             className={s.profileIcon}
                             width={35}
                             height={35}
+                        />
+                    ) : isAiConsultantPage ? (
+                        <Image 
+                            src={getPageIcon()} 
+                            alt="ИИ-ассистент"
+                            className={s.profileIcon}
+                            width={60}
+                            height={60}
                         />
                     ) : (
                         <Image 

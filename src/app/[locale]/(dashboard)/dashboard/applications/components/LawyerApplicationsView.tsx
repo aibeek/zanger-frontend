@@ -13,6 +13,7 @@ export const LawyerApplicationsView = () => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<'new' | 'my' | 'archived'>('new')
+    const [showBanner, setShowBanner] = useState(true)
 
     useEffect(() => {
         const tab = searchParams?.get('tab')
@@ -23,6 +24,16 @@ export const LawyerApplicationsView = () => {
 
 	return (
 		<div className={s.container}>
+			{showBanner && (
+				<div className={s.infoBanner}>
+					<div className={s.infoBannerIcon}>ℹ️</div>
+					<div className={s.infoBannerText}>
+						<p>В случае заинтересованности необходимо напрямую связаться с клиентом по номеру телефона, указанному в заявке.</p>
+						<p>Переписка, а также аудио- и видеозвонки с клиентом будут доступны через мобильное приложение.</p>
+					</div>
+					<button className={s.infoBannerClose} onClick={() => setShowBanner(false)}>Скрыть</button>
+				</div>
+			)}
 			<div className={s.tabsHeader}>
                 <button 
                     className={clsx(s.tabBtn, activeTab === 'new' && s.active)}

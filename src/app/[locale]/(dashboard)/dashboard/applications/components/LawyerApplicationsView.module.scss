@@ -7,6 +7,54 @@
 	margin: 0 auto;
 }
 
+.infoBanner {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+	border: 1px solid #93C5FD;
+	border-radius: 12px;
+	padding: 16px 20px;
+	margin-bottom: 20px;
+}
+
+.infoBannerIcon {
+	font-size: 20px;
+	flex-shrink: 0;
+}
+
+.infoBannerText {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	flex: 1;
+
+	p {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.5;
+		color: #1E40AF;
+	}
+}
+
+.infoBannerClose {
+	background: none;
+	border: none;
+	color: #1E40AF;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	padding: 4px 12px;
+	border-radius: 6px;
+	transition: background-color 0.2s ease;
+	flex-shrink: 0;
+	align-self: flex-start;
+
+	&:hover {
+		background-color: rgba(30, 64, 175, 0.1);
+	}
+}
+
 .tabsHeader {
 	display: flex;
 	width: 100%;
