@@ -43,6 +43,10 @@ export default function EcpCreateDocumentPage() {
   const [confirmSendOpen, setConfirmSendOpen] = React.useState(false)
   const [confirmSignOpen, setConfirmSignOpen] = React.useState(false)
   const [confirmLoading, setConfirmLoading] = React.useState(false)
+  const [signMethod, setSignMethod] = React.useState<'ECP' | 'SMS'>('ECP')
+  const [smsCode, setSmsCode] = React.useState('')
+  const [smsOperationId, setSmsOperationId] = React.useState<number | null>(null)
+  const [smsPhone, setSmsPhone] = React.useState<string | null>(null)
   
 
   const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -111,6 +115,25 @@ export default function EcpCreateDocumentPage() {
       toast.error(t('createFirst'))
       return
     }
+
+    // SMS подписание
+    if (signMethod === 'SMS') {
+      if (!selectedSignerId || typeof selectedSignerId !== 'number') {
+        toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
+        return
+      }
+      try {
+        const init = await ecpApi.signInitiate(documentId, 'SIGN_SMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
+        setSmsOperationId(init.operation_id)
+        setSmsPhone(init.phone || null)
+        toast.success(locale === 'kz' ? `SMS код ${init.phone} нөміріне жіберілді` : `SMS код отправлен на ${init.phone}`)
+      } catch (e: any) {
+        toast.error(e?.message || (locale === 'kz' ? 'SMS жіберу қате' : 'Не удалось отправить SMS'))
+      }
+      return
+    }
+
+    // ЭЦП подписание
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error(locale === 'kz' ? 'NCALayer қосыңыз' : 'Подключите NCALayer'); return }
     try {
@@ -152,9 +175,6 @@ export default function EcpCreateDocumentPage() {
         return
       }
 
-      
-
-
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(documentId, signersPayload)
       }
@@ -165,6 +185,43 @@ export default function EcpCreateDocumentPage() {
       toast.success(t('signedAndSent'))
     } catch (e: any) {
       toast.error(e?.message || 'Не удалось подписать')
+    }
+  }
+
+  const onVerifySmsAndSend = async () => {
+    if (!documentId || !smsOperationId || !smsCode || smsCode.length !== 4) {
+      toast.error(locale === 'kz' ? '4 таңбалы кодты енгізіңіз' : 'Введите 4-значный код')
+      return
+    }
+    try {
+      setConfirmLoading(true)
+      const verifyRes = await ecpApi.signVerifySms(documentId, { operation_id: smsOperationId, code: parseInt(smsCode) })
+      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
+        toast.error(locale === 'kz' ? 'Қате код' : 'Неверный код')
+        setConfirmLoading(false)
+        return
+      }
+      const completeRes = await ecpApi.signCompleteSms(documentId, { operation_id: smsOperationId })
+      if (completeRes?.success) {
+        const signersPayload: any[] = []
+        selectedCounterparties.forEach((cp) => {
+          signersPayload.push({ counterparty_id: cp.id, role: 'SIGNER', stage_no: 1 })
+        })
+        if (signersPayload.length > 0) {
+          await ecpApi.addSigners(documentId, signersPayload)
+        }
+        await ecpApi.sendForSigning(documentId)
+        const d = await ecpApi.getDocumentDetails(documentId)
+        setDetails(d)
+        setSmsCode('')
+        setSmsOperationId(null)
+        setSmsPhone(null)
+        toast.success(t('signedAndSent'))
+      }
+    } catch (e: any) {
+      toast.error(e?.message || (locale === 'kz' ? 'Қол қою қате' : 'Не удалось подписать'))
+    } finally {
+      setConfirmLoading(false)
     }
   }
 
@@ -462,8 +519,100 @@ export default function EcpCreateDocumentPage() {
 
           {/* Actions after creation (no draft button) */}
           <div className={s.actions}>
-            {/* <Button variant="secondary" onClick={() => setConfirmSendOpen(true)}>{t('sendWithoutSign')}</Button> */}
-            <Button onClick={() => setConfirmSignOpen(true)}>{t('signAndSend')}</Button>
+            {!smsOperationId ? (
+              <>
+                <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Способ подписания:</div>
+                  <div style={{ display: 'flex', gap: 12 }}>
+                    <button
+                      onClick={() => setSignMethod('ECP')}
+                      style={{
+                        flex: 1,
+                        background: signMethod === 'ECP' ? '#2563eb' : '#f3f4f6',
+                        color: signMethod === 'ECP' ? '#fff' : '#333',
+                        border: '1px solid #e5e7eb',
+                        padding: '10px 16px',
+                        borderRadius: 8,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ЭЦП (NCALayer)
+                    </button>
+                    <button
+                      onClick={() => setSignMethod('SMS')}
+                      style={{
+                        flex: 1,
+                        background: signMethod === 'SMS' ? '#2563eb' : '#f3f4f6',
+                        color: signMethod === 'SMS' ? '#fff' : '#333',
+                        border: '1px solid #e5e7eb',
+                        padding: '10px 16px',
+                        borderRadius: 8,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      SMS
+                    </button>
+                  </div>
+                </div>
+                <Button onClick={() => setConfirmSignOpen(true)}>{t('signAndSend')}</Button>
+              </>
+            ) : (
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 16, width: '100%' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+                  {locale === 'kz' ? `SMS коды ${smsPhone} нөміріне жіберілді` : `Введите код из SMS, отправленный на ${smsPhone}`}
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <Input
+                      key={i}
+                      variant="otp"
+                      value={smsCode[i] || ''}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 1)
+                        if (val) {
+                          const newCode = smsCode.split('')
+                          newCode[i] = val
+                          setSmsCode(newCode.join('').slice(0, 4))
+                          if (i < 3) {
+                            const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                            nextInput?.focus()
+                          }
+                        }
+                      }}
+                      onKeyDown={(e: any) => {
+                        if (e.key === 'Backspace' && !smsCode[i] && i > 0) {
+                          const prevInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i})`) as HTMLInputElement
+                          prevInput?.focus()
+                        }
+                      }}
+                      style={{ textAlign: 'center', fontSize: 18, fontWeight: 600 }}
+                    />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <Button
+                    onClick={onVerifySmsAndSend}
+                    disabled={confirmLoading || smsCode.length !== 4}
+                    loading={confirmLoading}
+                    style={{ flex: 1 }}
+                  >
+                    {locale === 'kz' ? 'Растау және жіберу' : 'Подтвердить и отправить'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setSmsCode('')
+                      setSmsOperationId(null)
+                      setSmsPhone(null)
+                    }}
+                  >
+                    {locale === 'kz' ? 'Болдырмау' : 'Отмена'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}

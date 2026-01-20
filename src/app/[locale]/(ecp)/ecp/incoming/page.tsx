@@ -68,6 +68,10 @@ export default function EcpIncomingPage() {
   const [declineOpen, setDeclineOpen] = React.useState(false)
   const [declineReason, setDeclineReason] = React.useState('')
   const [isSigning, setIsSigning] = React.useState(false)
+  const [signMethod, setSignMethod] = React.useState<'ECP' | 'SMS'>('ECP')
+  const [smsCode, setSmsCode] = React.useState('')
+  const [smsOperationId, setSmsOperationId] = React.useState<number | null>(null)
+  const [smsPhone, setSmsPhone] = React.useState<string | null>(null)
   const [confirmArchiveId, setConfirmArchiveId] = React.useState<number | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = React.useState<number | null>(null)
   const [isConfirmLoading, setIsConfirmLoading] = React.useState(false)
@@ -203,6 +207,24 @@ export default function EcpIncomingPage() {
 
   const onSign = async () => {
     if (!selectedId) return
+
+    // SMS подписание
+    if (signMethod === 'SMS') {
+      try {
+        setIsSigning(true)
+        const init = await ecpApi.signInitiate(selectedId, 'SIGN_SMS')
+        setSmsOperationId(init.operation_id)
+        setSmsPhone(init.phone || null)
+        toast.success(`SMS код отправлен на ${init.phone}`)
+      } catch (e: any) {
+        toast.error(e?.message || 'Не удалось отправить SMS')
+      } finally {
+        setIsSigning(false)
+      }
+      return
+    }
+
+    // ЭЦП подписание
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
@@ -227,6 +249,36 @@ export default function EcpIncomingPage() {
       await mutateDetails(d, false)
       await mutateList()
       toast.success('Подписано')
+    } catch (e: any) {
+      toast.error(e?.message || 'Не удалось подписать')
+    } finally {
+      setIsSigning(false)
+    }
+  }
+
+  const onVerifySms = async () => {
+    if (!selectedId || !smsOperationId || !smsCode || smsCode.length !== 4) {
+      toast.error('Введите 4-значный код')
+      return
+    }
+    try {
+      setIsSigning(true)
+      const verifyRes = await ecpApi.signVerifySms(selectedId, { operation_id: smsOperationId, code: parseInt(smsCode) })
+      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
+        toast.error('Неверный код')
+        setIsSigning(false)
+        return
+      }
+      const completeRes = await ecpApi.signCompleteSms(selectedId, { operation_id: smsOperationId })
+      if (completeRes?.success) {
+        const d = await ecpApi.getDocumentDetails(selectedId)
+        await mutateDetails(d, false)
+        await mutateList()
+        setSmsCode('')
+        setSmsOperationId(null)
+        setSmsPhone(null)
+        toast.success('Документ подписан')
+      }
     } catch (e: any) {
       toast.error(e?.message || 'Не удалось подписать')
     } finally {
@@ -494,10 +546,120 @@ export default function EcpIncomingPage() {
                 
                 {canSign && (
                   !declineOpen ? (
-                  <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
-                      <button onClick={onSign} disabled={isSigning} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
-                      <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>Отклонить</button>
-                    </div>
+                  <div style={{ marginTop: 12 }}>
+                    {!smsOperationId ? (
+                      <>
+                        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Способ подписания:</div>
+                          <div style={{ display: 'flex', gap: 12 }}>
+                            <button
+                              onClick={() => setSignMethod('ECP')}
+                              style={{
+                                flex: 1,
+                                background: signMethod === 'ECP' ? '#2563eb' : '#f3f4f6',
+                                color: signMethod === 'ECP' ? '#fff' : '#333',
+                                border: '1px solid #e5e7eb',
+                                padding: '10px 16px',
+                                borderRadius: 8,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              ЭЦП (NCALayer)
+                            </button>
+                            <button
+                              onClick={() => setSignMethod('SMS')}
+                              style={{
+                                flex: 1,
+                                background: signMethod === 'SMS' ? '#2563eb' : '#f3f4f6',
+                                color: signMethod === 'SMS' ? '#fff' : '#333',
+                                border: '1px solid #e5e7eb',
+                                padding: '10px 16px',
+                                borderRadius: 8,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              SMS
+                            </button>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                          <button onClick={onSign} disabled={isSigning} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700, flex: 1 }}>{isSigning ? 'Подписание…' : 'Подписать'}</button>
+                          <button onClick={() => setDeclineOpen(true)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '12px 18px', borderRadius: 12, fontWeight: 700 }}>Отклонить</button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 16 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+                          Введите код из SMS, отправленный на {smsPhone}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                          {[0, 1, 2, 3].map((i) => (
+                            <Input
+                              key={i}
+                              variant="otp"
+                              value={smsCode[i] || ''}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 1)
+                                if (val) {
+                                  const newCode = smsCode.split('')
+                                  newCode[i] = val
+                                  setSmsCode(newCode.join('').slice(0, 4))
+                                  if (i < 3) {
+                                    const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                                    nextInput?.focus()
+                                  }
+                                }
+                              }}
+                              onKeyDown={(e: any) => {
+                                if (e.key === 'Backspace' && !smsCode[i] && i > 0) {
+                                  const prevInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i})`) as HTMLInputElement
+                                  prevInput?.focus()
+                                }
+                              }}
+                              style={{ textAlign: 'center', fontSize: 18, fontWeight: 600 }}
+                            />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button
+                            onClick={onVerifySms}
+                            disabled={isSigning || smsCode.length !== 4}
+                            style={{
+                              background: smsCode.length === 4 ? '#22c55e' : '#9ca3af',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '12px 18px',
+                              borderRadius: 12,
+                              fontWeight: 700,
+                              flex: 1,
+                              cursor: smsCode.length === 4 ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            {isSigning ? 'Проверка…' : 'Подтвердить'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSmsCode('')
+                              setSmsOperationId(null)
+                              setSmsPhone(null)
+                            }}
+                            style={{
+                              background: '#f3f4f6',
+                              color: '#333',
+                              border: '1px solid #e5e7eb',
+                              padding: '12px 18px',
+                              borderRadius: 12,
+                              fontWeight: 700,
+                            }}
+                          >
+                            Отмена
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   ) : (
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 12 }}>
                       <input value={declineReason} onChange={(e) => setDeclineReason(e.target.value)} placeholder={'Причина отказа'} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '10px 12px', width: 300 }} />

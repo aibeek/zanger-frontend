@@ -57,6 +57,10 @@ export default function EcpDraftsPage() {
   const [confirmSendOpen, setConfirmSendOpen] = React.useState(false)
   const [confirmSignOpen, setConfirmSignOpen] = React.useState(false)
   const [confirmLoading, setConfirmLoading] = React.useState(false)
+  const [signMethod, setSignMethod] = React.useState<'ECP' | 'SMS'>('ECP')
+  const [smsCode, setSmsCode] = React.useState('')
+  const [smsOperationId, setSmsOperationId] = React.useState<number | null>(null)
+  const [smsPhone, setSmsPhone] = React.useState<string | null>(null)
 
   const selectedCounterparty = React.useMemo(() => {
     if (!selectedCounterpartyId) return null
@@ -197,6 +201,25 @@ export default function EcpDraftsPage() {
 
   const onSignAndSend = async () => {
     if (!selectedId) return
+
+    // SMS подписание
+    if (signMethod === 'SMS') {
+      if (!selectedSignerId || typeof selectedSignerId !== 'number') {
+        toast.error('Сначала выберите подписанта')
+        return
+      }
+      try {
+        const init = await ecpApi.signInitiate(selectedId, 'SIGN_SMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
+        setSmsOperationId(init.operation_id)
+        setSmsPhone(init.phone || null)
+        toast.success(`SMS код отправлен на ${init.phone}`)
+      } catch (e: any) {
+        toast.error(e?.message || 'Не удалось отправить SMS')
+      }
+      return
+    }
+
+    // ЭЦП подписание
     const ok = await isNcaLayerAvailable()
     if (!ok) { toast.error('Подключите NCALayer'); return }
     try {
@@ -242,9 +265,6 @@ export default function EcpDraftsPage() {
         return
       }
 
-      
-
-
       if (signersPayload.length > 0) {
         await ecpApi.addSigners(selectedId, signersPayload)
       }
@@ -256,6 +276,44 @@ export default function EcpDraftsPage() {
       setIsEditing(false)
     } catch (e: any) {
       toast.error(e?.message || 'Не удалось подписать')
+    }
+  }
+
+  const onVerifySmsAndSend = async () => {
+    if (!selectedId || !smsOperationId || !smsCode || smsCode.length !== 4) {
+      toast.error('Введите 4-значный код')
+      return
+    }
+    try {
+      setConfirmLoading(true)
+      const verifyRes = await ecpApi.signVerifySms(selectedId, { operation_id: smsOperationId, code: parseInt(smsCode) })
+      if (!verifyRes?.valid || verifyRes?.status !== 'VERIFIED') {
+        toast.error('Неверный код')
+        setConfirmLoading(false)
+        return
+      }
+      const completeRes = await ecpApi.signCompleteSms(selectedId, { operation_id: smsOperationId })
+      if (completeRes?.success) {
+        const signersPayload: any[] = []
+        if (selectedCounterpartyId) {
+          signersPayload.push({ counterparty_id: selectedCounterpartyId, role: 'SIGNER', stage_no: 1 })
+        }
+        if (signersPayload.length > 0) {
+          await ecpApi.addSigners(selectedId, signersPayload)
+        }
+        await ecpApi.sendForSigning(selectedId)
+        const d = await ecpApi.getDocumentDetails(selectedId)
+        await mutateDetails(d, false)
+        setSmsCode('')
+        setSmsOperationId(null)
+        setSmsPhone(null)
+        toast.success('Подписано и отправлено')
+        setIsEditing(false)
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'Не удалось подписать')
+    } finally {
+      setConfirmLoading(false)
     }
   }
 
@@ -513,11 +571,118 @@ export default function EcpDraftsPage() {
                         ))}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 10 }}>
-                      {/* <button onClick={() => setConfirmSendOpen(true)} style={{ background: '#2563eb', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Отправить</button> */}
-                      <button onClick={() => setConfirmSignOpen(true)} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Подписать и отправить</button>
-                      <button onClick={() => setIsEditing(false)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
-                    </div>
+                    {!smsOperationId ? (
+                      <>
+                        <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+                          <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Способ подписания:</div>
+                          <div style={{ display: 'flex', gap: 12 }}>
+                            <button
+                              onClick={() => setSignMethod('ECP')}
+                              style={{
+                                flex: 1,
+                                background: signMethod === 'ECP' ? '#2563eb' : '#f3f4f6',
+                                color: signMethod === 'ECP' ? '#fff' : '#333',
+                                border: '1px solid #e5e7eb',
+                                padding: '10px 16px',
+                                borderRadius: 8,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              ЭЦП (NCALayer)
+                            </button>
+                            <button
+                              onClick={() => setSignMethod('SMS')}
+                              style={{
+                                flex: 1,
+                                background: signMethod === 'SMS' ? '#2563eb' : '#f3f4f6',
+                                color: signMethod === 'SMS' ? '#fff' : '#333',
+                                border: '1px solid #e5e7eb',
+                                padding: '10px 16px',
+                                borderRadius: 8,
+                                fontWeight: 600,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              SMS
+                            </button>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                          <button onClick={() => setConfirmSignOpen(true)} style={{ background: '#22c55e', color: '#fff', border: 'none', padding: '10px 14px', borderRadius: 10 }}>Подписать и отправить</button>
+                          <button onClick={() => setIsEditing(false)} style={{ background: '#f3f4f6', border: '1px solid #e5e7eb', padding: '10px 14px', borderRadius: 10 }}>Отмена</button>
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 16 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>
+                          Введите код из SMS, отправленный на {smsPhone}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                          {[0, 1, 2, 3].map((i) => (
+                            <Input
+                              key={i}
+                              variant="otp"
+                              value={smsCode[i] || ''}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/\D/g, '').slice(0, 1)
+                                if (val) {
+                                  const newCode = smsCode.split('')
+                                  newCode[i] = val
+                                  setSmsCode(newCode.join('').slice(0, 4))
+                                  if (i < 3) {
+                                    const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                                    nextInput?.focus()
+                                  }
+                                }
+                              }}
+                              onKeyDown={(e: any) => {
+                                if (e.key === 'Backspace' && !smsCode[i] && i > 0) {
+                                  const prevInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i})`) as HTMLInputElement
+                                  prevInput?.focus()
+                                }
+                              }}
+                              style={{ textAlign: 'center', fontSize: 18, fontWeight: 600 }}
+                            />
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button
+                            onClick={onVerifySmsAndSend}
+                            disabled={confirmLoading || smsCode.length !== 4}
+                            style={{
+                              background: smsCode.length === 4 ? '#22c55e' : '#9ca3af',
+                              color: '#fff',
+                              border: 'none',
+                              padding: '12px 18px',
+                              borderRadius: 12,
+                              fontWeight: 700,
+                              flex: 1,
+                              cursor: smsCode.length === 4 ? 'pointer' : 'not-allowed',
+                            }}
+                          >
+                            {confirmLoading ? 'Проверка…' : 'Подтвердить и отправить'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSmsCode('')
+                              setSmsOperationId(null)
+                              setSmsPhone(null)
+                            }}
+                            style={{
+                              background: '#f3f4f6',
+                              color: '#333',
+                              border: '1px solid #e5e7eb',
+                              padding: '12px 18px',
+                              borderRadius: 12,
+                              fontWeight: 700,
+                            }}
+                          >
+                            Отмена
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

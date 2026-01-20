@@ -170,9 +170,9 @@ export const ecpApi = {
 
   signInitiate: async (
     documentId: number,
-    method: 'SIGN_CMS' | 'SIGN_XML' = 'SIGN_XML',
+    method: 'SIGN_CMS' | 'SIGN_XML' | 'SIGN_SMS' = 'SIGN_XML',
     options?: { counterparty_id?: number }
-  ): Promise<{ operation_id: number; challenge: string }> => {
+  ): Promise<{ operation_id: number; challenge?: string; phone?: string }> => {
     const body: any = { method }
     if (options?.counterparty_id) body.counterparty_id = options.counterparty_id
     const tokened = await encryptId(documentId, authToken())
@@ -201,6 +201,30 @@ export const ecpApi = {
   ): Promise<{ success: boolean; status: string }> => {
     const tokened = await encryptId(documentId, authToken())
     return esdcaHttp(`${API_URL}/documents/${tokened}/sign/complete`, {
+      method: 'POST',
+      encryptBody: true,
+      body: JSON.stringify(payload),
+    })
+  },
+
+  signVerifySms: async (
+    documentId: number,
+    payload: { operation_id: number; code: number }
+  ): Promise<{ valid: boolean; status: string; document_status?: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign/verify-sms`, {
+      method: 'POST',
+      encryptBody: true,
+      body: JSON.stringify(payload),
+    })
+  },
+
+  signCompleteSms: async (
+    documentId: number,
+    payload: { operation_id: number }
+  ): Promise<{ success: boolean; status: string }> => {
+    const tokened = await encryptId(documentId, authToken())
+    return esdcaHttp(`${API_URL}/documents/${tokened}/sign/complete-sms`, {
       method: 'POST',
       encryptBody: true,
       body: JSON.stringify(payload),
