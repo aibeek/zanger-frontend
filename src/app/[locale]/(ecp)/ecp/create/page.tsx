@@ -216,7 +216,16 @@ export default function EcpCreateDocumentPage() {
         setSmsCode('')
         setSmsOperationId(null)
         setSmsPhone(null)
-        toast.success(t('signedAndSent'))
+        toast.success(locale === 'kz' ? '✅ Құжат сәтті қол қойылды және жіберілді!' : '✅ Документ успешно подписан и отправлен!', {
+          duration: 5000,
+          icon: '✅',
+          style: {
+            background: '#22c55e',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 16,
+          },
+        })
       }
     } catch (e: any) {
       toast.error(e?.message || (locale === 'kz' ? 'Қол қою қате' : 'Не удалось подписать'))
@@ -569,22 +578,86 @@ export default function EcpCreateDocumentPage() {
                       key={i}
                       variant="otp"
                       value={smsCode[i] || ''}
+                      autoFocus={i === 0 && smsCode.length === 0}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '').slice(0, 1)
-                        if (val) {
-                          const newCode = smsCode.split('')
-                          newCode[i] = val
-                          setSmsCode(newCode.join('').slice(0, 4))
-                          if (i < 3) {
-                            const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                        const val = e.target.value.replace(/\D/g, '')
+                        if (val.length > 1) {
+                          // Если вставлен весь код сразу
+                          const code = val.slice(0, 4)
+                          setSmsCode(code)
+                          if (code.length === 4) {
+                            const lastInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(4)`) as HTMLInputElement
+                            lastInput?.focus()
+                          } else if (code.length > 0) {
+                            const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${code.length + 1})`) as HTMLInputElement
                             nextInput?.focus()
                           }
+                        } else if (val) {
+                          // Одна цифра
+                          const newCode = smsCode.split('')
+                          newCode[i] = val
+                          const code = newCode.join('').slice(0, 4)
+                          setSmsCode(code)
+                          if (i < 3 && code.length === i + 1) {
+                            const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                            nextInput?.focus()
+                          } else if (code.length === 4) {
+                            // Автоматически подтверждаем при вводе 4-й цифры
+                            setTimeout(() => {
+                              if (code.length === 4 && !confirmLoading) {
+                                onVerifySmsAndSend()
+                              }
+                            }, 100)
+                          }
+                        } else {
+                          // Очистка
+                          const newCode = smsCode.split('')
+                          newCode[i] = ''
+                          setSmsCode(newCode.join(''))
                         }
                       }}
                       onKeyDown={(e: any) => {
-                        if (e.key === 'Backspace' && !smsCode[i] && i > 0) {
+                        if (e.key === 'Backspace') {
+                          if (smsCode[i]) {
+                            // Если в ячейке есть значение - очищаем её
+                            const newCode = smsCode.split('')
+                            newCode[i] = ''
+                            setSmsCode(newCode.join(''))
+                          } else if (i > 0) {
+                            // Если ячейка пустая - переходим к предыдущей и очищаем её
+                            const newCode = smsCode.split('')
+                            newCode[i - 1] = ''
+                            setSmsCode(newCode.join(''))
+                            const prevInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i})`) as HTMLInputElement
+                            prevInput?.focus()
+                          }
+                        } else if (e.key === 'ArrowLeft' && i > 0) {
+                          e.preventDefault()
                           const prevInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i})`) as HTMLInputElement
                           prevInput?.focus()
+                        } else if (e.key === 'ArrowRight' && i < 3) {
+                          e.preventDefault()
+                          const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${i + 2})`) as HTMLInputElement
+                          nextInput?.focus()
+                        }
+                      }}
+                      onPaste={(e: any) => {
+                        e.preventDefault()
+                        const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4)
+                        if (pasted) {
+                          setSmsCode(pasted)
+                          if (pasted.length === 4) {
+                            const lastInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(4)`) as HTMLInputElement
+                            lastInput?.focus()
+                            setTimeout(() => {
+                              if (pasted.length === 4 && !confirmLoading) {
+                                onVerifySmsAndSend()
+                              }
+                            }, 100)
+                          } else if (pasted.length > 0) {
+                            const nextInput = e.target.parentElement?.parentElement?.querySelector(`input:nth-of-type(${pasted.length + 1})`) as HTMLInputElement
+                            nextInput?.focus()
+                          }
                         }
                       }}
                       style={{ textAlign: 'center', fontSize: 18, fontWeight: 600 }}
