@@ -122,6 +122,10 @@ export default function EcpCreateDocumentPage() {
         toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз' : 'Сначала выберите подписанта')
         return
       }
+      if (!selectedCounterparties || selectedCounterparties.length === 0) {
+        toast.error(locale === 'kz' ? 'Алдымен кемелерді таңдаңыз' : 'Сначала выберите контрагента')
+        return
+      }
       try {
         const init = await ecpApi.signInitiate(documentId, 'SIGN_SMS', details?.status === 'DRAFT' ? { counterparty_id: selectedSignerId } : undefined)
         setSmsOperationId(init.operation_id)
@@ -139,6 +143,10 @@ export default function EcpCreateDocumentPage() {
     try {
       if (!selectedSignerId || typeof selectedSignerId !== 'number') {
         toast.error(locale === 'kz' ? 'Алдымен қол қоюшыны таңдаңыз(Тіркелген статустан таңдаңыз)' : 'Сначала выберите подписанта(Выберите из вашего статуса)')
+        return
+      }
+      if (!selectedCounterparties || selectedCounterparties.length === 0) {
+        toast.error(locale === 'kz' ? 'Алдымен кемелерді таңдаңыз' : 'Сначала выберите контрагента')
         return
       }
 
@@ -192,6 +200,10 @@ export default function EcpCreateDocumentPage() {
     const code = smsCode.replace(/\D/g, '').slice(0, 4)
     if (!documentId || !smsOperationId || !code || code.length !== 4) {
       toast.error(locale === 'kz' ? '4 таңбалы кодты енгізіңіз' : 'Введите 4-значный код')
+      return
+    }
+    if (!selectedCounterparties || selectedCounterparties.length === 0) {
+      toast.error(locale === 'kz' ? 'Алдымен кемелерді таңдаңыз' : 'Сначала выберите контрагента')
       return
     }
     try {
