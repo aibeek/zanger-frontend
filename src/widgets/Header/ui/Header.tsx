@@ -40,7 +40,7 @@ export const Header = ({ variant }: HeaderProps) => {
 	useEffect(() => {
 		console.log('Modal isOpen changed:', isOpen)
 	}, [isOpen])
-	
+
 	// Комбинированная проверка: либо узкий экран, либо реальное мобильное устройство
 	// Only use this after component is mounted to prevent hydration mismatch
 	const shouldShowMobileModal = isHydrated && (isMobile || isMobileDevice)
@@ -59,27 +59,27 @@ export const Header = ({ variant }: HeaderProps) => {
 		if (element) {
 			const headerHeight = 120 // Высота хедера + отступ
 			const elementPosition = element.offsetTop - headerHeight
-			
-			window.scrollTo({ 
+
+			window.scrollTo({
 				top: elementPosition,
 				behavior: 'smooth'
 			})
 		}
 	}
-	
+
 	// Состояние для Live заявок и мобильного меню
 	const [showLiveApplications, setShowLiveApplications] = useState(false)
 	const [showMobileMenu, setShowMobileMenu] = useState(false)
-	
+
 	// LIVE applications types and state
 	type LiveApplicationItem = {
-	  id: number
-	  title: string
-	  description: string
-	  timeAgo: string
-	  createdDate: string // Добавлено: отформатированная дата создания
-	  location: string
-	  firstName: string
+		id: number
+		title: string
+		description: string
+		timeAgo: string
+		createdDate: string // Добавлено: отформатированная дата создания
+		location: string
+		firstName: string
 	}
 	const [liveApplications, setLiveApplications] = useState<LiveApplicationItem[]>([])
 	const [liveLoading, setLiveLoading] = useState(false)
@@ -170,7 +170,7 @@ export const Header = ({ variant }: HeaderProps) => {
 				(item?.tag?.name && (typeof item.tag.name === 'string' ? item.tag.name : item.tag.name?.ru)) ||
 				item?.specialization?.name ||
 				'Заявка'
-            const description = item?.short_description || item?.description || ''
+			const description = item?.short_description || item?.description || ''
 			const createdAt = item?.created_at || item?.createdAt || item?.created
 			const location =
 				item?.region?.name ||
@@ -229,7 +229,7 @@ export const Header = ({ variant }: HeaderProps) => {
 					fetchLatestOrders()
 				}, 3000)
 			}
-			
+
 			// Блокируем скролл на мобильных устройствах когда меню открыто
 			if (isMobile) {
 				document.body.style.overflow = 'hidden'
@@ -239,7 +239,7 @@ export const Header = ({ variant }: HeaderProps) => {
 				clearInterval(liveIntervalRef.current)
 				liveIntervalRef.current = null
 			}
-			
+
 			// Восстанавливаем скролл
 			document.body.style.overflow = ''
 		}
@@ -260,58 +260,58 @@ export const Header = ({ variant }: HeaderProps) => {
 					<div className={s.headerContent}>
 						<div className={s.left}>
 							<div className={s.logo}>
-								<Link 
+								<Link
 									href="/"
 									className={s.logoLink}>
 									<Image
-										src="/happynewyear.svg"
+										src="/logo.svg"
 										alt="ZANGER"
-										width={70}
-										height={70}
+										width={50}
+										height={50}
 										priority
 									/>
 									<span className={s.logoText}>ZANGER</span>
 								</Link>
 							</div>
 						</div>
-						
-					{isHydrated && !isMobile && (
-						<nav className={s.navigation}>
-							{/* snow toggle moved to right area (next to LangSwitcher) */}
-							<button 
-								onClick={() => scrollToSection('news')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>
-								{t('news')}
-							</button>
-							<button 
-								onClick={() => scrollToSection('about')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>{t('aboutUs')}</button>
-							<button 
-								onClick={() => scrollToSection('lawyers')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>{t('lawyers')}</button>
-							<button 
-								onClick={() => scrollToSection('info')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>{t('info')}</button>
-							<button 
-								onClick={() => scrollToSection('modules')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>{t('modules')}</button>
-							<button 
-								onClick={() => scrollToSection('resources')} 
-								className={s.navLink}
-								style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-							>{t('useful')}</button>
-						</nav>
-					)}						<div className={s.right}>
+
+						{isHydrated && !isMobile && (
+							<nav className={s.navigation}>
+								{/* snow toggle moved to right area (next to LangSwitcher) */}
+								<button
+									onClick={() => scrollToSection('news')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>
+									{t('news')}
+								</button>
+								<button
+									onClick={() => scrollToSection('about')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('aboutUs')}</button>
+								<button
+									onClick={() => scrollToSection('lawyers')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('lawyers')}</button>
+								<button
+									onClick={() => scrollToSection('info')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('info')}</button>
+								<button
+									onClick={() => scrollToSection('modules')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('modules')}</button>
+								<button
+									onClick={() => scrollToSection('resources')}
+									className={s.navLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+								>{t('useful')}</button>
+							</nav>
+						)}						<div className={s.right}>
 							{isHydrated && !isMobile && (
 								<div className={s.authBtns}>
 									{isAuthenticated && personalData ? (
@@ -372,61 +372,61 @@ export const Header = ({ variant }: HeaderProps) => {
 													href={'/live-applications'}
 													prefetch={false}
 													onClick={handleLiveClick}>
-														LIVE
-													</AppLink>
+													LIVE
+												</AppLink>
 												{showLiveApplications && (
 													<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
 														<div className={s.liveDropdownHeader}>
 															<h3>
-																	LIVE заявки
-																</h3>
-																	<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
-																</div>
-																<div className={s.liveApplicationsList}>
-													{liveError ? (
-														<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
-													) : liveApplications.length === 0 ? (
-														liveLoading ? (
-															<p style={{ padding: '12px' }}>Загрузка...</p>
-														) : (
-															<p style={{ padding: '12px' }}>Нет новых заявок</p>
-														)
-													) : (
-														<>
-															{liveApplications.map((item) => (
-														<div key={item.id} className={s.liveApplicationItem}>
-															<div className={s.liveAppHeader}>
-																<h4>{item.title}</h4>
-																<span className={s.userNameBadge}>{item.firstName || '—'}</span>
-															</div>
-															<p className={s.liveAppDescription}>{item.description}</p>
-															<div className={s.liveAppFooter}>
-																<span className={s.location}>📍 {item.location || '—'}</span>
-																<span className={s.createdDate}>🕐 {item.createdDate}</span>
-																<button
-																	className={s.respondBtn}
-																	onClick={() => {
-																		setShowLiveApplications(false)
-																		router.push('/auth/login')
-																	}}>
-																	Откликнуться
-																</button>
-															</div>
+																LIVE заявки
+															</h3>
+															<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
 														</div>
-														))}
-														<div className={s.moreBtnWrapper}>
-												<button
-													className={s.respondBtn}
-													onClick={() => {
-														setShowLiveApplications(false)
-														router.push('/auth/login')
-													}}>
-													Больше
-												</button>
-											</div>
-												</>
-											)}
-										</div>
+														<div className={s.liveApplicationsList}>
+															{liveError ? (
+																<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
+															) : liveApplications.length === 0 ? (
+																liveLoading ? (
+																	<p style={{ padding: '12px' }}>Загрузка...</p>
+																) : (
+																	<p style={{ padding: '12px' }}>Нет новых заявок</p>
+																)
+															) : (
+																<>
+																	{liveApplications.map((item) => (
+																		<div key={item.id} className={s.liveApplicationItem}>
+																			<div className={s.liveAppHeader}>
+																				<h4>{item.title}</h4>
+																				<span className={s.userNameBadge}>{item.firstName || '—'}</span>
+																			</div>
+																			<p className={s.liveAppDescription}>{item.description}</p>
+																			<div className={s.liveAppFooter}>
+																				<span className={s.location}>📍 {item.location || '—'}</span>
+																				<span className={s.createdDate}>🕐 {item.createdDate}</span>
+																				<button
+																					className={s.respondBtn}
+																					onClick={() => {
+																						setShowLiveApplications(false)
+																						router.push('/auth/login')
+																					}}>
+																					Откликнуться
+																				</button>
+																			</div>
+																		</div>
+																	))}
+																	<div className={s.moreBtnWrapper}>
+																		<button
+																			className={s.respondBtn}
+																			onClick={() => {
+																				setShowLiveApplications(false)
+																				router.push('/auth/login')
+																			}}>
+																			Больше
+																		</button>
+																	</div>
+																</>
+															)}
+														</div>
 													</div>
 												)}
 											</div>
@@ -434,16 +434,132 @@ export const Header = ({ variant }: HeaderProps) => {
 									)}
 								</div>
 							)}
-							
+
 							<LangSwitcher />
-                            
+
 
 							{/* Snow toggle placed to the right of language selector */}
 							<button
-									className={s.snowToggle}
+								className={s.snowToggle}
+								onClick={toggleSnow}
+								aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
+								title={snowEnabled ? 'Выключить снег' : 'Включить снег'}
+							>
+								<svg
+									className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''} lucide h-5 w-5 lucide-snowflake-icon lucide-snowflake`}
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								>
+									<path d="m10 20-1.25-2.5L6 18"></path>
+									<path d="M10 4 8.75 6.5 6 6"></path>
+									<path d="m14 20 1.25-2.5L18 18"></path>
+									<path d="m14 4 1.25 2.5L18 6"></path>
+									<path d="m17 21-3-6h-4"></path>
+									<path d="m17 3-3 6 1.5 3"></path>
+									<path d="M2 12h6.5L10 9"></path>
+									<path d="m20 10-1.5 2 1.5 2"></path>
+									<path d="M22 12h-6.5L14 15"></path>
+									<path d="m4 10 1.5 2L4 14"></path>
+									<path d="m7 21 3-6-1.5-3"></path>
+									<path d="m7 3 3 6h4"></path>
+								</svg>
+							</button>
+
+							{isHydrated && isMobile && (
+								<>
+									<div className={s.mobileLiveButtonWrapper} ref={liveButtonRef}>
+										<button
+											className={`${s.mobileHeaderLiveBtn}`}
+											onClick={handleLiveClick}
+										>
+											LIVE
+										</button>
+										{showLiveApplications && (
+											<>
+												<div className={s.liveDropdownBackdrop} onClick={() => setShowLiveApplications(false)} />
+												<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
+													<div className={s.liveDropdownHeader}>
+														<h3>LIVE заявки</h3>
+														<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
+													</div>
+													<div className={s.liveApplicationsList}>
+														{liveError ? (
+															<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
+														) : liveApplications.length === 0 ? (
+															liveLoading ? (
+																<p style={{ padding: '12px' }}>Загрузка...</p>
+															) : (
+																<p style={{ padding: '12px' }}>Нет новых заявок</p>
+															)
+														) : (
+															<>
+																{liveApplications.map((item) => (
+																	<div key={item.id} className={s.liveApplicationItem}>
+																		<div className={s.liveAppHeader}>
+																			<h4>{item.title}</h4>
+																			<span className={s.userNameBadge}>{item.firstName || '—'}</span>
+																		</div>
+																		<p className={s.liveAppDescription}>{item.description}</p>
+																		<div className={s.liveAppFooter}>
+																			<span className={s.location}>📍 {item.location || '—'}</span>
+																			<span className={s.createdDate}>🕐 {item.createdDate}</span>
+																			<button
+																				className={s.respondBtn}
+																				onClick={() => {
+																					setShowLiveApplications(false)
+																					router.push('/auth/login')
+																				}}>
+																				Откликнуться
+																			</button>
+																		</div>
+																	</div>
+																))}
+																<div className={s.moreBtnWrapper}>
+																	<button
+																		className={s.respondBtn}
+																		onClick={() => {
+																			setShowLiveApplications(false)
+																			router.push('/auth/login')
+																		}}>
+																		Больше
+																	</button>
+																</div>
+															</>
+														)}
+													</div>
+												</div>
+											</>
+										)}
+									</div>
+									<button
+										className={s.mobileMenuBtn}
+										onClick={() => setShowMobileMenu(!showMobileMenu)}
+									>
+										<span></span>
+										<span></span>
+										<span></span>
+									</button>
+								</>
+							)}
+						</div>
+					</div>
+
+					{/* Мобильное меню */}
+					{isHydrated && isMobile && showMobileMenu && (
+						<div className={s.mobileMenu}>
+							<div className={s.mobileNavigation}>
+								{/* Snow Toggle Button for Mobile */}
+								<button
+									className={s.snowToggleMobile}
 									onClick={toggleSnow}
 									aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
-									title={snowEnabled ? 'Выключить снег' : 'Включить снег'}
 								>
 									<svg
 										className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''} lucide h-5 w-5 lucide-snowflake-icon lucide-snowflake`}
@@ -470,240 +586,124 @@ export const Header = ({ variant }: HeaderProps) => {
 										<path d="m7 21 3-6-1.5-3"></path>
 										<path d="m7 3 3 6h4"></path>
 									</svg>
+									<span className={s.snowToggleLabel}>{snowEnabled ? 'Выключить снег' : 'Включить снег'}</span>
 								</button>
-
-							{isHydrated && isMobile && (
-								<>
-									<div className={s.mobileLiveButtonWrapper} ref={liveButtonRef}>
-										<button
-											className={`${s.mobileHeaderLiveBtn}`}
-											onClick={handleLiveClick}
-										>
-											LIVE
-										</button>
-										{showLiveApplications && (
-											<>
-												<div className={s.liveDropdownBackdrop} onClick={() => setShowLiveApplications(false)} />
-												<div className={s.liveDropdown} role="dialog" aria-label="LIVE заявки">
-													<div className={s.liveDropdownHeader}>
-														<h3>LIVE заявки</h3>
-														<button className={s.closeDropdown} onClick={() => setShowLiveApplications(false)} aria-label="Закрыть">×</button>
-													</div>
-													<div className={s.liveApplicationsList}>
-													{liveError ? (
-														<p style={{ padding: '12px', color: 'red' }}>{liveError}</p>
-													) : liveApplications.length === 0 ? (
-														liveLoading ? (
-															<p style={{ padding: '12px' }}>Загрузка...</p>
-														) : (
-															<p style={{ padding: '12px' }}>Нет новых заявок</p>
-														)
-													) : (
-														<>
-															{liveApplications.map((item) => (
-																<div key={item.id} className={s.liveApplicationItem}>
-																	<div className={s.liveAppHeader}>
-																		<h4>{item.title}</h4>
-																		<span className={s.userNameBadge}>{item.firstName || '—'}</span>
-																	</div>
-																	<p className={s.liveAppDescription}>{item.description}</p>
-																	<div className={s.liveAppFooter}>
-																		<span className={s.location}>📍 {item.location || '—'}</span>
-																		<span className={s.createdDate}>🕐 {item.createdDate}</span>
-																		<button
-																			className={s.respondBtn}
-																			onClick={() => {
-																				setShowLiveApplications(false)
-																				router.push('/auth/login')
-																			}}>
-																			Откликнуться
-																		</button>
-																	</div>
-																</div>
-															))}
-															<div className={s.moreBtnWrapper}>
-																<button
-																	className={s.respondBtn}
-																	onClick={() => {
-																		setShowLiveApplications(false)
-																		router.push('/auth/login')
-																	}}>
-																	Больше
-																</button>
-															</div>
-														</>
-													)}
-												</div>
-											</div>
-											</>
-										)}
-									</div>
-									<button
-										className={s.mobileMenuBtn}
-										onClick={() => setShowMobileMenu(!showMobileMenu)}
-									>
-										<span></span>
-										<span></span>
-										<span></span>
-									</button>
-								</>
-							)}
-						</div>
-					</div>
-
-						{/* Мобильное меню */}
-						{isHydrated && isMobile && showMobileMenu && (
-							<div className={s.mobileMenu}>
-								<div className={s.mobileNavigation}>
-									{/* Snow Toggle Button for Mobile */}
-									<button
-											className={s.snowToggleMobile}
-											onClick={toggleSnow}
-											aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
-										>
-											<svg
-												className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''} lucide h-5 w-5 lucide-snowflake-icon lucide-snowflake`}
-												width="24"
-												height="24"
-												viewBox="0 0 24 24"
-												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
-												stroke="currentColor"
-												strokeWidth="2"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											>
-												<path d="m10 20-1.25-2.5L6 18"></path>
-												<path d="M10 4 8.75 6.5 6 6"></path>
-												<path d="m14 20 1.25-2.5L18 18"></path>
-												<path d="m14 4 1.25 2.5L18 6"></path>
-												<path d="m17 21-3-6h-4"></path>
-												<path d="m17 3-3 6 1.5 3"></path>
-												<path d="M2 12h6.5L10 9"></path>
-												<path d="m20 10-1.5 2 1.5 2"></path>
-												<path d="M22 12h-6.5L14 15"></path>
-												<path d="m4 10 1.5 2L4 14"></path>
-												<path d="m7 21 3-6-1.5-3"></path>
-												<path d="m7 3 3 6h4"></path>
-											</svg>
-											<span className={s.snowToggleLabel}>{snowEnabled ? 'Выключить снег' : 'Включить снег'}</span>
-										</button>
-									<button 
-										onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('news')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('about'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('aboutUs')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('lawyers'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('lawyers')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('info'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('info')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('modules'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('modules')}
-									</button>
-									<button 
-										onClick={() => { scrollToSection('resources'); setShowMobileMenu(false); }} 
-										className={s.mobileNavLink}
-										style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-									>
-										{t('useful')}
-									</button>
-								</div>
-								
-								<div className={s.mobileAuthBtns}>
-									{isAuthenticated && personalData ? (
-										<div className={s.mobileUser}>
-											<Link
-												style={{ cursor: 'pointer' }}
-												href={`/${personalData.language}/dashboard/profile`}>
-												<Image
-													style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
-													src={personalData.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : avatar}
-													alt={t('avatarAlt')}
-													width={40}
-													height={40}
-													unoptimized={!personalData.icon || personalData.icon.includes('Lawyer.jpg')}
-												/>
-											</Link>
-											<div className={s.mobileUserInfo}>
-												<p className={s.userName}>{personalData.name}</p>
-												<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
-											</div>
-										</div>
-									) : (
-										<div className={s.mobileAuth}>
-											<AppLink
-												className={s.mobileAppLink}
-												variant={'primary'}
-												href={'/auth/login'}
-												onClick={(e) => {
-													// В мобильном меню всегда показываем модалку
-													console.log('Клик на Войти в мобильном меню')
-													console.log('isOpen:', isOpen)
-													e.preventDefault()
-													open()
-													console.log('После вызова open()')
-													setShowMobileMenu(false)
-												}}>
-												{t('login')}
-											</AppLink>
-											<AppLink
-												className={`${s.mobileAppLink} ${s.mobileLiveButton}`}
-												variant={'primary'}
-												href={'/live-applications'}
-												prefetch={false}
-												onClick={(e) => {
-													// В мобильном меню показываем модалку
-													console.log('Клик на LIVE в мобильном меню')
-													e.preventDefault()
-													open()
-													setShowMobileMenu(false)
-												}}>
-												LIVE заявки
-											</AppLink>
-											<AppLink
-												className={s.mobileAppLink}
-												variant={'primary'}
-												href={'/auth/register/select-role'}
-												onClick={(e) => {
-													// В мобильном меню всегда показываем модалку
-													console.log('Клик на Регистрация в мобильном меню')
-													console.log('isOpen:', isOpen)
-													e.preventDefault()
-													open()
-													console.log('После вызова open()')
-													setShowMobileMenu(false)
-												}}>
-												{t('register')}
-											</AppLink>
-										</div>
-									)}
-								</div>
+								<button
+									onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('news')}
+								</button>
+								<button
+									onClick={() => { scrollToSection('about'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('aboutUs')}
+								</button>
+								<button
+									onClick={() => { scrollToSection('lawyers'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('lawyers')}
+								</button>
+								<button
+									onClick={() => { scrollToSection('info'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('info')}
+								</button>
+								<button
+									onClick={() => { scrollToSection('modules'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('modules')}
+								</button>
+								<button
+									onClick={() => { scrollToSection('resources'); setShowMobileMenu(false); }}
+									className={s.mobileNavLink}
+									style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+								>
+									{t('useful')}
+								</button>
 							</div>
-						)}
-					</header>
+
+							<div className={s.mobileAuthBtns}>
+								{isAuthenticated && personalData ? (
+									<div className={s.mobileUser}>
+										<Link
+											style={{ cursor: 'pointer' }}
+											href={`/${personalData.language}/dashboard/profile`}>
+											<Image
+												style={{ borderRadius: '10px', border: '1px solid #c2c2c2' }}
+												src={personalData.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : avatar}
+												alt={t('avatarAlt')}
+												width={40}
+												height={40}
+												unoptimized={!personalData.icon || personalData.icon.includes('Lawyer.jpg')}
+											/>
+										</Link>
+										<div className={s.mobileUserInfo}>
+											<p className={s.userName}>{personalData.name}</p>
+											<p className={s.userPhone}>{formatPhoneNumber(personalData.phone)}</p>
+										</div>
+									</div>
+								) : (
+									<div className={s.mobileAuth}>
+										<AppLink
+											className={s.mobileAppLink}
+											variant={'primary'}
+											href={'/auth/login'}
+											onClick={(e) => {
+												// В мобильном меню всегда показываем модалку
+												console.log('Клик на Войти в мобильном меню')
+												console.log('isOpen:', isOpen)
+												e.preventDefault()
+												open()
+												console.log('После вызова open()')
+												setShowMobileMenu(false)
+											}}>
+											{t('login')}
+										</AppLink>
+										<AppLink
+											className={`${s.mobileAppLink} ${s.mobileLiveButton}`}
+											variant={'primary'}
+											href={'/live-applications'}
+											prefetch={false}
+											onClick={(e) => {
+												// В мобильном меню показываем модалку
+												console.log('Клик на LIVE в мобильном меню')
+												e.preventDefault()
+												open()
+												setShowMobileMenu(false)
+											}}>
+											LIVE заявки
+										</AppLink>
+										<AppLink
+											className={s.mobileAppLink}
+											variant={'primary'}
+											href={'/auth/register/select-role'}
+											onClick={(e) => {
+												// В мобильном меню всегда показываем модалку
+												console.log('Клик на Регистрация в мобильном меню')
+												console.log('isOpen:', isOpen)
+												e.preventDefault()
+												open()
+												console.log('После вызова open()')
+												setShowMobileMenu(false)
+											}}>
+											{t('register')}
+										</AppLink>
+									</div>
+								)}
+							</div>
+						</div>
+					)}
+				</header>
 
 				<Modal
 					className={s.modal}
@@ -763,7 +763,7 @@ export const Header = ({ variant }: HeaderProps) => {
 										ends_at: personalData.lawyer.subscription.ends_at,
 										formatted: new Date(personalData.lawyer.subscription.ends_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
 									})}
-									<Link 
+									<Link
 										href={`/${personalData.language}/dashboard/subscription`}
 										className={s.subscriptionButton}
 									>

@@ -16,7 +16,7 @@ export function Resolver() {
 				zIndex: '10000',
 			}}>
 			<Image
-				src={'/happynewyear.svg'}
+				src={'/logo.svg'}
 				alt={'logo'}
 				width={200}
 				height={200}

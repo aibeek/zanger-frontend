@@ -17,9 +17,9 @@ type AuthShellProps = {
   showDisclaimer?: boolean
 }
 
-export function AuthShell({ 
-  children, 
-  rightHeader, 
+export function AuthShell({
+  children,
+  rightHeader,
   title,
   showNavigation = false,
   navigationText,
@@ -31,7 +31,7 @@ export function AuthShell({
 
   const navText = navigationText || t('haveAccount')
   const navLinkText = navigationLinkText || t('loginLink')
-  
+
   // Хедер с навигацией справа вверху
   const defaultHeader = showNavigation ? (
     <div className={s.panelHeader}>
@@ -52,7 +52,7 @@ export function AuthShell({
         <aside className={s.promo} aria-hidden>
           <div className={s.promoInner}>
             <div className={s.brandBlock}>
-              <Image src="/happynewyear.svg" alt="Zanger" width={140} height={140} />
+              <Image src="/logo.svg" alt="Zanger" width={140} height={140} />
               <h2 className={s.brandTitle}>ZANGER</h2>
               <p className={s.brandSubtitle}>{t('platformTitle')}</p>
               <p className={s.brandDescription}>{t('platformDescription')}</p>
@@ -64,13 +64,13 @@ export function AuthShell({
         <main className={s.panel}>
           <div className={s.panelInner}>
             {rightHeader || defaultHeader}
-            
+
             {/* Центральный логотип с текстом */}
             <div className={s.centerBrand}>
               <Image src="/logo-blue.svg" alt="Zanger" width={48} height={48} />
               <span className={s.centerBrandText}>ZANGER</span>
             </div>
-            
+
             {title && (
               <h1 className={s.panelTitle}>
                 {title}
@@ -79,7 +79,7 @@ export function AuthShell({
             <div className={s.panelContent}>
               {children}
             </div>
-            
+
             {/* Disclaimer */}
             {showDisclaimer && (
               <div className={s.disclaimer}>

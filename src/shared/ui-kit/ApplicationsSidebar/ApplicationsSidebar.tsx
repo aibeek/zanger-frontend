@@ -75,7 +75,7 @@ export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobi
       <div className={s.logo}>
         <div className={s.logoContent}>
           <Image
-            src="/happynewyear.svg"
+            src="/logo.svg"
             alt="ZANGER"
             width={40}
             height={48}
@@ -85,7 +85,7 @@ export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobi
           <span className={s.brandText}>ZANGER</span>
         </div>
         <button className={s.mobileCloseBtn} onClick={onMobileClose}>
-            &times;
+          &times;
         </button>
       </div>
 
@@ -105,26 +105,26 @@ export const ApplicationsSidebar: React.FC<ApplicationsSidebarProps> = ({ onMobi
 
       <nav className={s.nav}>
         {menuItems.map((item) => {
-            const isActive = pathname === item.href
-            return (
-                <div 
-                    key={item.id} 
-                    className={`${s.item} ${isActive ? s.itemActive : ''}`}
-                    onClick={() => router.push(item.href)}
-                >
-                  <Image src={item.icon} alt={item.title} width={18} height={18} />
-                  <span>{item.title}</span>
-                </div>
-            )
+          const isActive = pathname === item.href
+          return (
+            <div
+              key={item.id}
+              className={`${s.item} ${isActive ? s.itemActive : ''}`}
+              onClick={() => router.push(item.href)}
+            >
+              <Image src={item.icon} alt={item.title} width={18} height={18} />
+              <span>{item.title}</span>
+            </div>
+          )
         })}
       </nav>
 
       <div className={s.footer}>
         <button className={s.logoutBtn} onClick={handleLogout}>
-            <span>{t('header.logout')}</span>
+          <span>{t('header.logout')}</span>
         </button>
         <div className={s.copyright}>
-            {t('dashboard.sidebar.copyright')}
+          {t('dashboard.sidebar.copyright')}
         </div>
       </div>
     </aside>

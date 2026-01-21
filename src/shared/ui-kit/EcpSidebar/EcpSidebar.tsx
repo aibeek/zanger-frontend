@@ -25,7 +25,7 @@ export const EcpSidebar: React.FC = () => {
     try {
       const c = await ecpApi.getCounters()
       if (c && typeof c.incoming_new === 'number') return c
-    } catch {}
+    } catch { }
     try {
       const [inboxRes, ownerRes]: any = await Promise.all([
         ecpApi.listDocuments({ inbox: true, outbox: false, page: 1, limit: 100 }),
@@ -52,7 +52,7 @@ export const EcpSidebar: React.FC = () => {
     <aside className={s.aside}>
       <div className={s.logo}>
         <Image
-          src="/happynewyear.svg"
+          src="/logo.svg"
           alt="ZANGER"
           width={40}
           height={48}
@@ -81,7 +81,7 @@ export const EcpSidebar: React.FC = () => {
           <Image src="/assets/ecp/sidebar-icons/home.svg" alt="home" width={18} height={18} />
           <span>{t('home')}</span>
         </div>
-        <div className={s.item} onClick={() => {  router.push(`/${locale}/ecp/create`) }}>
+        <div className={s.item} onClick={() => { router.push(`/${locale}/ecp/create`) }}>
           <Image src="/assets/ecp/sidebar-icons/create-document.svg" alt="create" width={18} height={18} />
           <span>{t('createDocument')}</span>
         </div>

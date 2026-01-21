@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import phone from '@/app/assets/icons/phone.svg'
-import logo from '../../../../../public/happynewyear.svg'
+import logo from '../../../../../public/logo.svg'
 import { Header } from '@/widgets/Header'
 import s from './MainSection.module.scss'
 import Iphones from '@/app/assets/images/iphones.webp'
@@ -18,7 +18,7 @@ import HubsLogoRU from '../../../../../public/assets/images/hub.svg'
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
 	const locale = useLocale()
-    
+
 	const HubsLogo = locale === 'kz' ? HubsLogoKZ : HubsLogoRU
 	const hubsDimensions = {
 		width: HubsLogo.width,
@@ -36,7 +36,7 @@ export const MainSection = () => {
 					loop
 					muted
 					playsInline
-				/>	
+				/>
 				<div className={s.container}>
 					<div className={s.textSection}>
 						{/* Title and content block (badge moved to phone side) */}
@@ -67,7 +67,7 @@ export const MainSection = () => {
 									className={s.hubsLogo}
 								/>
 							</div>
-						{/* <div className={s.requestButtonContainer}>
+							{/* <div className={s.requestButtonContainer}>
 							<Link href="/" className={s.requestButton}>
 								{t('createNew')}
 							</Link>

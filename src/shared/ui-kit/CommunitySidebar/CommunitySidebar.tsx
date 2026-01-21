@@ -11,16 +11,16 @@ import { ProfileAvatar } from '@/entities/profile'
 import s from './CommunitySidebar.module.scss'
 
 // Icons
-import { 
-    User, 
-    Newspaper, 
-    HelpCircle, 
-    UserPlus, 
-    Radio, 
-    MessageSquare, 
-    BookOpen, 
-    Calendar, 
-    HeadphonesIcon 
+import {
+    User,
+    Newspaper,
+    HelpCircle,
+    UserPlus,
+    Radio,
+    MessageSquare,
+    BookOpen,
+    Calendar,
+    HeadphonesIcon
 } from 'lucide-react'
 
 interface CommunitySidebarProps {
@@ -41,11 +41,11 @@ export const CommunitySidebar = ({ language, onMobileClose }: CommunitySidebarPr
     const pathname = usePathname()
     const router = useRouter()
     const t = useTranslations()
-    
+
     const name = personalData?.name ?? ''
     const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
     const role = Cookies.get('role')
-    
+
     const handleLogout = () => {
         authService.logout()
         reset()
@@ -118,18 +118,18 @@ export const CommunitySidebar = ({ language, onMobileClose }: CommunitySidebarPr
                     onClick={onMobileClose}
                     aria-label="Главная"
                 >
-                    <Image 
-                        src="/happynewyear.svg" 
-                        alt="Zanger Logo" 
-                        className={s.logoIcon} 
-                        width={40} 
-                        height={48} 
-                        priority 
+                    <Image
+                        src="/logo.svg"
+                        alt="Zanger Logo"
+                        className={s.logoIcon}
+                        width={40}
+                        height={48}
+                        priority
                     />
                     <span className={s.logoText}>ZANGER</span>
                 </Link>
                 {onMobileClose && (
-                    <button 
+                    <button
                         className={s.mobileCloseBtn}
                         onClick={onMobileClose}
                         aria-label="Закрыть меню"
@@ -138,7 +138,7 @@ export const CommunitySidebar = ({ language, onMobileClose }: CommunitySidebarPr
                     </button>
                 )}
             </div>
-            
+
             <div className={s.userProfile}>
                 <div className={s.avatarWrapper}>
                     <ProfileAvatar avatarUrl={icon} />
@@ -157,11 +157,11 @@ export const CommunitySidebar = ({ language, onMobileClose }: CommunitySidebarPr
                 {menuItems.map((item) => {
                     const pathWithoutLang = pathname.replace(/^\/[a-z]{2}/, '')
                     const hrefWithoutLang = item.href.replace(/^\/[a-z]{2}/, '')
-                    const isActive = pathWithoutLang === hrefWithoutLang || 
-                                     pathWithoutLang.startsWith(hrefWithoutLang + '/')
-                    
+                    const isActive = pathWithoutLang === hrefWithoutLang ||
+                        pathWithoutLang.startsWith(hrefWithoutLang + '/')
+
                     const className = `${s.navItem} ${isActive ? s.navItemActive : ''} ${item.disabled ? s.navItemDisabled : ''}`
-                    
+
                     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
                         if (item.disabled) {
                             e.preventDefault()
@@ -169,9 +169,9 @@ export const CommunitySidebar = ({ language, onMobileClose }: CommunitySidebarPr
                         }
                         onMobileClose?.()
                     }
-                    
+
                     return (
-                        <Link 
+                        <Link
                             key={item.id}
                             href={item.href}
                             className={className}

@@ -41,12 +41,12 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const t = useTranslations()
-    
+
     const name = personalData?.name ?? ''
     const icon = personalData?.icon && !personalData.icon.includes('Lawyer.jpg') ? personalData.icon : ''
     const role = Cookies.get('role')
     const { snowEnabled, toggleSnow } = useSnow()
-    
+
     const handleLogout = () => {
         authService.logout()
         reset()
@@ -146,7 +146,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
         return true
     })
 
-    const menuItems = inVideoContext ? vcMenuItems.filter(i => !['faq','support'].includes(i.id)) : defaultMenuItems
+    const menuItems = inVideoContext ? vcMenuItems.filter(i => !['faq', 'support'].includes(i.id)) : defaultMenuItems
 
     return (
         <aside className={`${s.sidebar} ${inVideoContext ? s.vc : ''}`}>
@@ -157,7 +157,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     onClick={onMobileClose}
                     aria-label={t('dashboard.sidebar.main')}
                 >
-                        <Image src="/happynewyear.svg" alt="Zanger Logo" className={s.logoIcon} width={40} height={48} priority />
+                    <Image src="/logo.svg" alt="Zanger Logo" className={s.logoIcon} width={40} height={48} priority />
                     <span className={s.logoText}>ZANGER</span>
                 </Link>
                 {/* Snow toggle next to logo */}
@@ -194,7 +194,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     </svg>
                 </button>
                 {onMobileClose && (
-                    <button 
+                    <button
                         className={s.mobileCloseBtn}
                         onClick={onMobileClose}
                         aria-label="Закрыть меню"
@@ -204,17 +204,17 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                 )}
             </div>
             <div className={s.userProfile}>
-                    <div className={s.avatarWrapper}>
-                        <ProfileAvatar avatarUrl={icon} />
+                <div className={s.avatarWrapper}>
+                    <ProfileAvatar avatarUrl={icon} />
+                </div>
+                <div className={s.userInfo}>
+                    <div className={s.userName}>{name}</div>
+                    <div className={s.userRole}>
+                        {role === 'lawyer'
+                            ? t('dashboard.sidebar.lawyerRole')
+                            : t('dashboard.sidebar.clientRole')}
                     </div>
-                    <div className={s.userInfo}>
-                        <div className={s.userName}>{name}</div>
-                        <div className={s.userRole}>
-                            {role === 'lawyer'
-                                ? t('dashboard.sidebar.lawyerRole')
-                                : t('dashboard.sidebar.clientRole')}
-                        </div>
-                    </div>
+                </div>
             </div>
 
 
@@ -224,7 +224,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                     if (inVideoContext) {
                         const currentView = searchParams.get('view') || 'my'
                         const isDefaultVC = pathWithoutLang === '/dashboard/video-conference' && !searchParams.get('view')
-                        
+
                         if (item.id === 'vc-my') {
                             isActive = isDefaultVC || currentView === 'my'
                         } else if (item.id === 'vc-feed') {
@@ -249,7 +249,7 @@ export const Sidebar = ({ language, onMobileClose }: SidebarProps) => {
                         onMobileClose?.()
                     }
                     return (
-                        <Link 
+                        <Link
                             key={item.id}
                             href={item.href}
                             className={className}
