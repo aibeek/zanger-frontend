@@ -588,46 +588,46 @@
 
 @keyframes moveRightToLeft {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 4000px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 3200px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 9180px));
   }
 }
 
 @keyframes moveRightToLeftLaptop {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 3600px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2900px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 8640px));
   }
 }
 
 @keyframes moveRightToLeftTablet {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw + 3200px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2600px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 7965px));
   }
 }
 
 @keyframes moveRightToLeftMobile {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2900px)));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2400px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 6750px));
   }
 }
 
 @keyframes moveRightToLeftSmall {
   0% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + (100vw + 2700px)));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) - 2200px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 6210px));
   }
 }
 
@@ -654,12 +654,12 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 26; // keep in sync with actual number of cards
-// увеличенная продолжительность для 26 карточек
-$duration-desktop: 65s; // для десктопов
-$duration-laptop: 58s;  // для ноутбуков
-$duration-tablet: 70s;  // для планшетов
-$duration-mobile: 58s;  // для мобильных
+$cards-count: 27; // keep in sync with actual number of cards
+// Рассчитано на основе точных дистанций для бесшовной склейки
+$duration-desktop: 40s; 
+$duration-laptop: 37s;
+$duration-tablet: 34s;
+$duration-mobile: 30s;
 
 $step-desktop: math.div($duration-desktop, $cards-count);
 $step-laptop: math.div($duration-laptop, $cards-count);
