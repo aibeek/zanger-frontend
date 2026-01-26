@@ -586,48 +586,48 @@
 	}
 }
 
-@keyframes moveRightToLeft {
+@keyframes scrollDesktopV2 {
   0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 9180px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 10080px));
   }
 }
 
-@keyframes moveRightToLeftLaptop {
+@keyframes scrollLaptopV2 {
   0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 8640px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 9520px));
   }
 }
 
-@keyframes moveRightToLeftTablet {
+@keyframes scrollTabletV2 {
   0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 7965px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 8960px));
   }
 }
 
-@keyframes moveRightToLeftMobile {
+@keyframes scrollMobileV2 {
   0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 6750px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 7840px));
   }
 }
 
-@keyframes moveRightToLeftSmall {
+@keyframes scrollSmallV2 {
   0% {
     transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw));
   }
   100% {
-    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 6210px));
+    transform: translateY(-50%) translateX(calc(var(--drag-x, 0px) + 100vw - 6720px));
   }
 }
 
@@ -654,12 +654,12 @@
 }
 
 // равномерное распределение по всей длине трека
-$cards-count: 27; // keep in sync with actual number of cards
+$cards-count: 28; // keep in sync with actual number of cards
 // Рассчитано на основе точных дистанций для бесшовной склейки
 $duration-desktop: 40s; 
-$duration-laptop: 37s;
-$duration-tablet: 34s;
-$duration-mobile: 30s;
+$duration-laptop: 38s;
+$duration-tablet: 36s;
+$duration-mobile: 31s;
 
 $step-desktop: math.div($duration-desktop, $cards-count);
 $step-laptop: math.div($duration-laptop, $cards-count);
@@ -670,30 +670,30 @@ $step-mobile: math.div($duration-mobile, $cards-count);
 	$index-offset: $i - 1;
 
 	.memberCard:nth-child(#{$i}) {
-		animation: moveRightToLeft $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
+		animation: scrollDesktopV2 $duration-desktop linear infinite -#{$step-desktop * $index-offset} !important;
 
 		@media (max-width: 1600px) {
-			animation: moveRightToLeftLaptop $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
+			animation: scrollLaptopV2 $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
 		}
 
 		@media (max-width: 1366px) {
-			animation: moveRightToLeftLaptop $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
+			animation: scrollLaptopV2 $duration-laptop linear infinite -#{$step-laptop * $index-offset} !important;
 		}
 
 		@media (max-width: 1024px) {
-			animation: moveRightToLeftTablet $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
+			animation: scrollTabletV2 $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
 		}
 
 		@media (max-width: 768px) {
-			animation: moveRightToLeftTablet $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
+			animation: scrollTabletV2 $duration-tablet linear infinite -#{$step-tablet * $index-offset} !important;
 		}
 
 		@media (max-width: 480px) {
-			animation: moveRightToLeftMobile $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
+			animation: scrollMobileV2 $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
 		}
 
 		@media (max-width: 360px) {
-			animation: moveRightToLeftSmall $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
+			animation: scrollSmallV2 $duration-mobile linear infinite -#{$step-mobile * $index-offset} !important;
 		}
 	}
 }
