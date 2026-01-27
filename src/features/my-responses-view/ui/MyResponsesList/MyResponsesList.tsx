@@ -48,7 +48,9 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 	}
 
 	const statusMap = items.reduce((acc: any, item: any) => {
-		acc[item.id] = Object.fromEntries(item.status.map((st: Status) => [st.title, st.is_active]))
+		if (Array.isArray(item.status)) {
+			acc[item.id] = Object.fromEntries(item.status.map((st: Status) => [st.title, st.is_active]))
+		}
 		return acc
 	}, {})
 
