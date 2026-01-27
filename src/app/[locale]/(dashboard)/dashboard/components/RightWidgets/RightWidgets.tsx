@@ -235,14 +235,21 @@ export const RightWidgets = ({ hideActiveStreams = false, hideLawyerGuide = fals
                         ))}
                     </div>
                     <div className={s.calendarDays} suppressHydrationWarning>
-                        {Array.from({ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() }, (_, i) => i + 1).map(day => (
-                            <button 
-                                key={day} 
-                                className={`${s.calendarDay} ${day === currentDate ? s.calendarDayActive : ''}`}
-                            >
-                                {day}
-                            </button>
-                        ))}
+                        {Array.from({ length: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() }, (_, i) => i + 1).map(day => {
+                            const today = new Date()
+                            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).getDay()
+                            const startColumn = firstDayOfMonth === 0 ? 7 : firstDayOfMonth
+                            
+                            return (
+                                <button 
+                                    key={day} 
+                                    className={`${s.calendarDay} ${day === currentDate ? s.calendarDayActive : ''}`}
+                                    style={day === 1 ? { gridColumnStart: startColumn } : undefined}
+                                >
+                                    {day}
+                                </button>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
