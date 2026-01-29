@@ -412,7 +412,7 @@ export const TeamSection = () => {
     if (isModalOpen) {
       // Сохраняем позицию и блокируем фон
       scrollYRef.current = window.scrollY
-      docEl.style.scrollBehavior = 'auto' // отключаем плавный скролл, чтобы не было рывков при восстановлении
+      docEl.style.scrollBehavior = 'auto' 
       document.body.style.position = 'fixed'
       document.body.style.top = `-${scrollYRef.current}px`
       document.body.style.left = '0'
