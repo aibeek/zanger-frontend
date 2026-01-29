@@ -27,7 +27,7 @@ export const LawyerCommentsBlock = ({ orderId }: LawyerCommentsBlockProps) => {
 
     const fetchComments = async () => {
         try {
-            const res = await lawyerApi.getComments(orderId)
+            const res: any = await lawyerApi.getComments(orderId)
             const data = (res && (res.data || res)) as Comment[]
             setComments(data)
         } catch (e) {

@@ -654,14 +654,17 @@ export default function VideoConferencePage() {
                             )}
                             <div className={s.streamThumbnail}>
                               {stream.previewUrl ? (
-                                <img 
+                                <Image 
                                   src={stream.previewUrl} 
                                   alt={stream.topic || t('dashboard.videoConference.withoutTopic')}
                                   className={s.streamPreviewImage}
-                                  onError={(e) => {
+                                  width={280}
+                                  height={158}
+                                  style={{ objectFit: 'cover' }}
+                                  onError={(e: any) => {
                                     const target = e.target as HTMLImageElement
                                     target.style.display = 'none'
-                                    const placeholder = target.nextElementSibling as HTMLElement
+                                    const placeholder = target.parentElement?.querySelector(`.${s.streamThumbnailPlaceholder}`) as HTMLElement
                                     if (placeholder) placeholder.style.display = 'flex'
                                   }}
                                 />
