@@ -1,0 +1,165 @@
+.container {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &::before {
+        content: '';
+        display: block;
+        width: 4px;
+        height: 16px;
+        background: #2563EB;
+        border-radius: 2px;
+    }
+}
+
+.commentsList {
+    max-height: 350px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-right: 8px;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: #D1D5DB;
+        border-radius: 3px;
+    }
+
+    @media (max-height: 700px) {
+        max-height: 200px;
+    }
+}
+
+.commentItem {
+    background: #F9FAFB;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #F3F4F6;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background: #F3F4F6;
+    }
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.lawyerName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.date {
+    font-size: 12px;
+    color: #6B7280;
+}
+
+.commentContent {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+    white-space: pre-wrap;
+}
+
+.inputArea {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    transition: all 0.2s ease;
+
+    &:focus-within {
+        border-color: #2563EB;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05);
+    }
+}
+
+.textarea {
+    width: 100%;
+    min-height: 80px;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-size: 14px;
+    color: #1F2937;
+    padding: 0;
+    margin-bottom: 12px;
+    font-family: inherit;
+    background: transparent;
+    
+    &::placeholder {
+        color: #9CA3AF;
+    }
+
+    @media (max-height: 700px) {
+        min-height: 50px;
+    }
+}
+
+.addButton {
+    align-self: flex-end;
+    background: #2563EB;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    &:hover {
+        background: #1D4ED8;
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background: #F3F4F6;
+        color: #9CA3AF;
+        cursor: not-allowed;
+        transform: none;
+    }
+}
+
+.emptyState {
+    text-align: center;
+    padding: 32px 0;
+    color: #9CA3AF;
+    font-size: 14px;
+    background: #F9FAFB;
+    border-radius: 12px;
+    border: 1px dashed #E5E7EB;
+}

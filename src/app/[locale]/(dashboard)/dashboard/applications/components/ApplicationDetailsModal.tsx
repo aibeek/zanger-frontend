@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { lawyerApi } from '@/shared/api'
 import s from './ApplicationDetailsModal.module.scss'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
+import { LawyerCommentsBlock } from './LawyerCommentsBlock'
 
 interface ApplicationDetailsModalProps {
 	application: any
@@ -94,6 +95,8 @@ export const ApplicationDetailsModal = ({
                         </span>
                     </div>
                 </div>
+
+                <LawyerCommentsBlock orderId={app.id} />
                 
                 <div className={s.actions}>
                     

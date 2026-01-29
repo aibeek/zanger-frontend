@@ -99,6 +99,17 @@ export const lawyerApi = {
 			method: 'POST',
 		}),
 
+	getComments: (orderId: number) =>
+		httpClientWithAuth(`${API_URL}/lawyers/orders/${orderId}/comments`, {
+			method: 'GET',
+		}),
+
+	createComment: (orderId: number, content: string) =>
+		httpClientWithAuth(`${API_URL}/lawyers/orders/${orderId}/comments`, {
+			method: 'POST',
+			body: JSON.stringify({ content }),
+		}),
+
 	getResponses: (params?: { page?: number; per_page?: number }) => {
 		const query = createQuery(params)
 		const url = `${API_URL}/lawyers/responses${query}`

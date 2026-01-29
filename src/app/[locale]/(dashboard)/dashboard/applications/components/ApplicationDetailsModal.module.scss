@@ -18,9 +18,17 @@
 	padding: 32px;
 	width: 100%;
 	max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
 	position: relative;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 	animation: slideIn 0.3s ease-out;
+
+    @media (max-width: 640px) {
+        padding: 20px;
+        border-radius: 16px;
+        max-height: 95vh;
+    }
 }
 
 .closeBtn {
@@ -46,6 +54,10 @@
 	color: #111827;
 	margin-bottom: 16px;
 	padding-right: 30px;
+
+    @media (max-width: 640px) {
+        font-size: 20px;
+    }
 }
 
 .description {
@@ -72,6 +84,12 @@
     & > span > div {
         color: #374151 !important;
         margin-bottom: 0 !important;
+    }
+
+    @media (max-width: 640px) {
+        font-size: 14px;
+        flex-direction: column;
+        gap: 2px;
     }
 }
 
