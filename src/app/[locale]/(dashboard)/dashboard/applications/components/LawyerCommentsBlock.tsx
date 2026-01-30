@@ -20,6 +20,7 @@ interface LawyerCommentsBlockProps {
 }
 
 export const LawyerCommentsBlock = ({ orderId }: LawyerCommentsBlockProps) => {
+
     const [comments, setComments] = useState<Comment[]>([])
     const [newComment, setNewComment] = useState('')
     const [loading, setLoading] = useState(false)

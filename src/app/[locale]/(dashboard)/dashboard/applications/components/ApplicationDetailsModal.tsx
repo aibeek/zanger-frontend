@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { lawyerApi } from '@/shared/api'
+import Cookies from 'js-cookie'
 import s from './ApplicationDetailsModal.module.scss'
 import { DateComponent } from '@/shared/ui-kit/DateComponent'
 import { LawyerCommentsBlock } from './LawyerCommentsBlock'
@@ -24,6 +25,7 @@ export const ApplicationDetailsModal = ({
 }: ApplicationDetailsModalProps) => {
     const t = useTranslations('applications')
     const [detailed, setDetailed] = useState<any>(null)
+    const role = Cookies.get('role')
 
     useEffect(() => {
         if (!application) return
@@ -118,7 +120,7 @@ export const ApplicationDetailsModal = ({
                         </button>
                     )}
 
-                    {onChat && (
+                    {onChat && role !== 'lawyer' && (
                         <button
                             className={s.chatBtn}
                             onClick={() => onChat(app.user?.id || 0, app.user?.name || 'Client')}

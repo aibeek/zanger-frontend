@@ -10,6 +10,7 @@ import { Archive, Eye, Phone, Trash2, MessageCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { ApplicationDetailsModal } from '@/app/[locale]/(dashboard)/dashboard/applications/components/ApplicationDetailsModal'
+import Cookies from 'js-cookie'
 
 import s from './MyResponsesList.module.scss'
 import { truncateDescription } from '@/shared/lib'
@@ -25,6 +26,7 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 	// Функция для обработки нажатия на кнопку "Перейти в чат"
     const router = useRouter()
     const locale = useLocale()
+    const role = Cookies.get('role')
 
 	    const handleGoToChat = (application: any, participantId?: number | string, participantName?: string) => {
         const query = new URLSearchParams({
@@ -163,15 +165,15 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
                 </div>
             )}
 
-			{selectedApp && (
+            {selectedApp && (
 				<ApplicationDetailsModal
 					application={selectedApp}
 					onClose={() => setSelectedApp(null)}
 					onRespond={() => {}} 
 					isResponding={false}
-                    onChat={(participantId, participantName) => {
+                    onChat={role !== 'lawyer' ? ((participantId, participantName) => {
                         handleGoToChat(selectedApp, participantId, participantName)
-                    }}
+                    }) : undefined}
 				/>
 			)}
 		</div>
