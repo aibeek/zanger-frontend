@@ -118,7 +118,6 @@ export const ArchivedResponsesList = ({ items, loadMore, isLoadingMore, isReachi
 				<ApplicationDetailsModal
 					application={selectedApp}
 					onClose={() => setSelectedApp(null)}
-					onRespond={() => {}}
 					isResponding={false}
 				/>
 			)}

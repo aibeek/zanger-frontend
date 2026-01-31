@@ -169,7 +169,6 @@ export const MyResponsesList = ({ items, loadMore, isLoadingMore, isReachingEnd 
 				<ApplicationDetailsModal
 					application={selectedApp}
 					onClose={() => setSelectedApp(null)}
-					onRespond={() => {}} 
 					isResponding={false}
                     onChat={role !== 'lawyer' ? ((participantId, participantName) => {
                         handleGoToChat(selectedApp, participantId, participantName)
