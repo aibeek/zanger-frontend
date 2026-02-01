@@ -32,7 +32,7 @@ export const Header = ({ variant }: HeaderProps) => {
 	const pathname = usePathname()
 	const isHydrated = useHydration()
 	const isMobile = useMediaQuery('(max-width: 900px)') // Изменяем breakpoint для соответствия CSS
-	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройств
+	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройствs
 
 	const { snowEnabled, toggleSnow } = useSnow()
 
