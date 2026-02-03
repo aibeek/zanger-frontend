@@ -17,6 +17,8 @@
 		"@mantine/core": "^7.17.4",
 		"@mantine/hooks": "^7.17.4",
 		"antd": "^5.24.6",
+		"laravel-echo": "^1.16.1",
+		"pusher-js": "^8.4.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",

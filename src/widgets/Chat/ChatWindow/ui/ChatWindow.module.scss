@@ -119,6 +119,44 @@
       }
     }
 
+    // Loading indicator for older messages
+    .loadingMore {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      color: #6c757d;
+      font-size: 13px;
+
+      .spinner {
+        animation: spin 1s linear infinite;
+      }
+    }
+
+    // Load more button
+    .loadMoreContainer {
+      text-align: center;
+      padding: 12px 0;
+      margin-bottom: 16px;
+
+      .loadMoreButton {
+        background: #ffffff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 8px 16px;
+        font-size: 12px;
+        color: #495057;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: #f8f9fa;
+          border-color: #adb5bd;
+        }
+      }
+    }
+
     .noMessages {
       display: flex;
       flex-direction: column;
@@ -228,14 +266,50 @@
           box-shadow: none;
         }
 
+        .messageFooter {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-top: 4px;
+          padding: 0 4px;
+        }
+
         .timestamp {
           font-size: 10px;
           color: #868e96;
-          margin-top: 4px;
           font-weight: 500;
-          padding: 0 4px;
+        }
+
+        .status {
+          display: flex;
+          align-items: center;
+
+          .statusPending {
+            color: #adb5bd;
+          }
+
+          .statusSent {
+            color: #6c757d;
+          }
+
+          .statusDelivered {
+            color: #6c757d;
+          }
+
+          .statusRead {
+            color: #28a745;
+          }
         }
       }
+    }
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
     }
   }
 

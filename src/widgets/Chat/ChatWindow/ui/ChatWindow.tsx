@@ -1,21 +1,78 @@
 'use client'
 
-import { FC, useState, useRef, useEffect } from 'react'
+import { FC, useState, useRef, useEffect, useCallback } from 'react'
 import Image from 'next/image'
-import { ChatWindowProps } from '../../types'
+import { ChatWindowProps, MessageStatus } from '../../types'
 import s from './ChatWindow.module.scss'
+import { Check, CheckCheck, Clock, Loader2 } from 'lucide-react'
 
-export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMessage, onBack }) => {
+export const ChatWindow: FC<ChatWindowProps> = ({ 
+  chat, 
+  currentUserId, 
+  onSendMessage, 
+  onLoadMore,
+  isLoadingMore,
+  hasMore,
+  onBack 
+}) => {
   const [message, setMessage] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const prevScrollHeightRef = useRef<number>(0)
+  const isInitialLoadRef = useRef(true)
 
+  // Scroll to bottom on new messages (only if near bottom)
   useEffect(() => {
-    scrollToBottom()
-  }, [chat?.messages])
+    if (!chat?.messages || !messagesContainerRef.current) return
+
+    const container = messagesContainerRef.current
+    const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
+
+    if (isInitialLoadRef.current) {
+      // Initial load - scroll to bottom
+      scrollToBottom()
+      isInitialLoadRef.current = false
+    } else if (isNearBottom) {
+      // New message and user is near bottom - scroll to see it
+      scrollToBottom()
+    }
+  }, [chat?.messages?.length])
+
+  // Preserve scroll position when loading older messages
+  useEffect(() => {
+    if (!messagesContainerRef.current || isLoadingMore) return
+
+    const container = messagesContainerRef.current
+    if (prevScrollHeightRef.current > 0) {
+      // After loading older messages, maintain scroll position
+      const newScrollHeight = container.scrollHeight
+      const scrollDiff = newScrollHeight - prevScrollHeightRef.current
+      container.scrollTop = scrollDiff
+      prevScrollHeightRef.current = 0
+    }
+  }, [chat?.messages, isLoadingMore])
+
+  // Reset initial load flag when chat changes
+  useEffect(() => {
+    isInitialLoadRef.current = true
+  }, [chat?.id])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
+
+  // Handle scroll for infinite scroll
+  const handleScroll = useCallback(() => {
+    if (!messagesContainerRef.current || !hasMore || isLoadingMore || !onLoadMore) return
+
+    const container = messagesContainerRef.current
+    
+    // Load more when scrolled near top (within 100px)
+    if (container.scrollTop < 100) {
+      prevScrollHeightRef.current = container.scrollHeight
+      onLoadMore()
+    }
+  }, [hasMore, isLoadingMore, onLoadMore])
 
   const handleSendMessage = () => {
     if (message.trim() && onSendMessage) {
@@ -57,6 +114,20 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
       day: '2-digit',
       month: 'long'
     }).format(messageDate)
+  }
+
+  // Render message status icon
+  const renderStatusIcon = (status: MessageStatus, isRead: boolean) => {
+    if (isRead || status === 'read') {
+      return <CheckCheck size={14} className={s.statusRead} />
+    }
+    if (status === 'delivered') {
+      return <CheckCheck size={14} className={s.statusDelivered} />
+    }
+    if (status === 'sent') {
+      return <Check size={14} className={s.statusSent} />
+    }
+    return <Clock size={14} className={s.statusPending} />
   }
 
   const groupMessagesByDate = () => {
@@ -103,7 +174,7 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
 
   return (
     <div className={s.chatWindow}>
-      {/* Шапка чата */}
+      {/* Header */}
       <div className={s.header}>
         {onBack && (
           <button className={s.backButton} onClick={onBack}>
@@ -136,8 +207,32 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
         </div>
       </div>
 
-      {/* Область сообщений */}
-      <div className={s.messagesArea}>
+      {/* Messages area with infinite scroll */}
+      <div 
+        className={s.messagesArea} 
+        ref={messagesContainerRef}
+        onScroll={handleScroll}
+      >
+        {/* Loading indicator for older messages */}
+        {isLoadingMore && (
+          <div className={s.loadingMore}>
+            <Loader2 size={20} className={s.spinner} />
+            <span>Загрузка...</span>
+          </div>
+        )}
+
+        {/* Load more button (alternative to scroll) */}
+        {hasMore && !isLoadingMore && onLoadMore && (
+          <div className={s.loadMoreContainer}>
+            <button 
+              className={s.loadMoreButton}
+              onClick={onLoadMore}
+            >
+              Загрузить предыдущие сообщения
+            </button>
+          </div>
+        )}
+
         {messageGroups.length === 0 ? (
           <div className={s.noMessages}>
             <p>Нет сообщений</p>
@@ -150,30 +245,38 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
                 <span>{group.date}</span>
               </div>
               
-              {group.messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`${s.message} ${
-                    msg.senderId === currentUserId ? s.sent : s.received
-                  }`}
-                >
-                  <div className={s.messageContent}>
-                    <div className={s.bubble}>
-                      {msg.content}
-                    </div>
-                    <div className={s.timestamp}>
-                      {formatTime(msg.timestamp)}
+              {group.messages.map((msg) => {
+                const isSent = msg.senderId === currentUserId
+                return (
+                  <div
+                    key={msg.id}
+                    className={`${s.message} ${isSent ? s.sent : s.received}`}
+                  >
+                    <div className={s.messageContent}>
+                      <div className={s.bubble}>
+                        {msg.content}
+                      </div>
+                      <div className={s.messageFooter}>
+                        <span className={s.timestamp}>
+                          {formatTime(msg.timestamp)}
+                        </span>
+                        {isSent && (
+                          <span className={s.status}>
+                            {renderStatusIcon(msg.status, msg.isRead)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           ))
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Поле ввода */}
+      {/* Input area */}
       <div className={s.inputArea}>
         <div className={s.inputContainer}>
           <textarea
@@ -185,7 +288,6 @@ export const ChatWindow: FC<ChatWindowProps> = ({ chat, currentUserId, onSendMes
             rows={1}
           />
           <div className={s.inputActions}>
-
             <button
               onClick={handleSendMessage}
               disabled={!message.trim()}
