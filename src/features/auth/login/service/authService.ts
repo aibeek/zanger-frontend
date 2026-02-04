@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 
 import { parseError, RoleVariant } from '@/shared/lib'
+import { performLogout } from '@/shared/lib/auth/session'
 import { authApi, LoginDto, tokenService } from '@/shared/api'
 
 export const authService = {
@@ -17,9 +18,7 @@ export const authService = {
 	},
 
 	logout() {
-		tokenService.clearToken()
-		Cookies.remove('role')
-		localStorage.removeItem('personalData')
+		performLogout()
 	},
 
 	ensureToken() {

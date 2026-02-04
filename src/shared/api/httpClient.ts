@@ -1,4 +1,5 @@
-import { authService } from '@/features/auth'
+import { tokenService } from './tokenService'
+import { performLogout } from '@/shared/lib/auth/session'
 
 export class HttpError extends Error {
   status: number
@@ -33,7 +34,11 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 	let token: string
 
 	try {
-		token = authService.ensureToken()
+		if (!tokenService.isTokenValid()) {
+			performLogout()
+			throw new Error('Срок действия токена истёк. Требуется повторная авторизация.')
+		}
+		token = tokenService.getToken() as string
 	} catch (e) {
 		console.warn('Ошибка получения токена', e)
 		throw e
@@ -63,6 +68,13 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 					errorMessage = errorResponse.length > 200 ? errorResponse.substring(0, 200) + '...' : errorResponse
 				}
 			} catch {}
+
+			if (res.status === 401) {
+				performLogout()
+				if (typeof window !== 'undefined') {
+					window.location.assign('/auth/login')
+				}
+			}
 
 			throw new HttpError(errorMessage, res.status, errorData)
 		}
