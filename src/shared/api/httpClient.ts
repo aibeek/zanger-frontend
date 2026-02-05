@@ -81,7 +81,16 @@ export const httpClientWithAuth = async <T>(url: string, options?: RequestInit):
 
 		const contentType = res.headers.get('content-type') || ''
 		if (contentType.includes('application/json')) {
-			return (await res.json()) as T
+			const text = await res.text()
+			// Удаляем возможный HTML-мусор перед JSON (спам-инъекция на сервере)
+			const jsonStart = text.indexOf('{')
+			const cleanJson = jsonStart > 0 ? text.slice(jsonStart) : text
+			try {
+				return JSON.parse(cleanJson) as T
+			} catch {
+				console.error('Failed to parse JSON after cleanup:', text.substring(0, 200))
+				throw new HttpError('Invalid JSON response from server', 0)
+			}
 		}
 		const text = await res.text()
 		return text as unknown as T
@@ -146,7 +155,16 @@ export const httpClient = async <T>(url: string, options?: RequestInit): Promise
 
 		const contentType = res.headers.get('content-type') || ''
 		if (contentType.includes('application/json')) {
-			return (await res.json()) as T
+			const text = await res.text()
+			// Удаляем возможный HTML-мусор перед JSON (спам-инъекция на сервере)
+			const jsonStart = text.indexOf('{')
+			const cleanJson = jsonStart > 0 ? text.slice(jsonStart) : text
+			try {
+				return JSON.parse(cleanJson) as T
+			} catch {
+				console.error('Failed to parse JSON after cleanup:', text.substring(0, 200))
+				throw new HttpError('Invalid JSON response from server', 0)
+			}
 		}
 		const text = await res.text()
 		return text as unknown as T
