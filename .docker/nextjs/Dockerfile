@@ -1,5 +1,5 @@
 # 1) deps: зависимости (кэшируется)
-FROM node:18.20.8-alpine3.21@sha256:a63e8e9e20cf15bcd8e6b1fab564e23c6c59a84cbb5c3b9a0d1b3e8fcfea4a59 AS deps
+FROM node:18-alpine3.21 AS deps
 WORKDIR /app
 
 COPY package*.json ./
@@ -7,7 +7,7 @@ RUN npm install --legacy-peer-deps
 
 
 # 2) build: сборка
-FROM node:18.20.8-alpine3.21@sha256:a63e8e9e20cf15bcd8e6b1fab564e23c6c59a84cbb5c3b9a0d1b3e8fcfea4a59 AS build
+FROM node:18-alpine3.21 AS build
 WORKDIR /app
 
 # NEXT_PUBLIC_* нужны во время next build
@@ -37,7 +37,7 @@ RUN npm run build
 
 
 # 3) runner: минимальный runtime
-FROM node:18.20.8-alpine3.21@sha256:a63e8e9e20cf15bcd8e6b1fab564e23c6c59a84cbb5c3b9a0d1b3e8fcfea4a59 AS runner
+FROM node:18-alpine3.21 AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
