@@ -2,13 +2,21 @@
 FROM node:18-alpine AS deps
 WORKDIR /app
 
+# Install dependencies needed for sharp
+RUN apk add --no-cache libc6-compat
+
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
+# Ensure sharp is installed with the correct platform binaries
+RUN npm install --os=linux --libc=musl --cpu=x64 sharp
 
 
 # 2) build: сборка
 FROM node:18-alpine AS build
 WORKDIR /app
+
+# Install dependencies needed for sharp at build time
+RUN apk add --no-cache libc6-compat
 
 # NEXT_PUBLIC_* нужны во время next build
 ARG NEXT_PUBLIC_API_URL
@@ -40,6 +48,9 @@ RUN npm run build
 FROM node:18-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Install dependencies needed for sharp at runtime
+RUN apk add --no-cache libc6-compat
 
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/public ./public
