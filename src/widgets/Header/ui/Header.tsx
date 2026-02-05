@@ -86,6 +86,7 @@ export const Header = ({ variant }: HeaderProps) => {
 	const [liveError, setLiveError] = useState<string | null>(null)
 	const isLiveFetchingRef = useRef(false)
 	const liveIntervalRef = useRef<number | null>(null)
+	const hasLiveDataRef = useRef(false)
 
 	// Закрытие дропдауна по клику вне и по Esc
 	const liveButtonRef = useRef<HTMLDivElement | null>(null)
@@ -105,6 +106,10 @@ export const Header = ({ variant }: HeaderProps) => {
 			window.removeEventListener('keydown', onKey)
 		}
 	}, [])
+
+	useEffect(() => {
+		hasLiveDataRef.current = liveApplications.length > 0
+	}, [liveApplications.length])
 
 	useEffect(() => {
 		checkAuth()
@@ -196,7 +201,7 @@ export const Header = ({ variant }: HeaderProps) => {
 		if (isLiveFetchingRef.current) return
 		isLiveFetchingRef.current = true
 		try {
-			setLiveLoading(true)
+			if (!hasLiveDataRef.current) setLiveLoading(true)
 			setLiveError(null)
 			const res: any = await sharedApi.getLatestOrders<any>()
 			const data = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []

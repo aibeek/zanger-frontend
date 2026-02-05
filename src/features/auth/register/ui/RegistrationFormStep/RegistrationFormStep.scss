@@ -1,117 +1,113 @@
-// Исправление стилей для выпадающих списков в форме регистрации
-:global(.search-select) {
-	.ant-select-dropdown {
-		background: white !important;
-		border: 1px solid #e6e6e6 !important;
-		border-radius: 8px !important;
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-		z-index: 1050 !important;
-		
-		.ant-select-item {
-			color: #1a1a1d !important;
-			background: transparent !important;
-			padding: 8px 12px !important;
-			transition: all 0.2s ease !important;
-			
-			&:hover {
-				background: #f5f5f5 !important;
-				color: #1a1a1d !important;
-			}
-			
-			&.ant-select-item-option-selected {
-				background: #e6f7ff !important;
-				color: #1890ff !important;
-				font-weight: 600 !important;
-			}
-		}
-		
-		.ant-select-item-group {
-			.ant-select-item-group-title {
-				color: #666 !important;
-				font-weight: 600 !important;
-				font-size: 12px !important;
-				padding: 8px 12px !important;
-				background: #f5f5f5 !important;
-				border-radius: 4px !important;
-				margin: 4px 8px !important;
-			}
-		}
-		
-		// Стили для скроллбара
-		&::-webkit-scrollbar {
-			width: 6px !important;
-		}
-		
-		&::-webkit-scrollbar-track {
-			background: #f1f1f1 !important;
-			border-radius: 4px !important;
-		}
-		
-		&::-webkit-scrollbar-thumb {
-			background: #c1c1c1 !important;
-			border-radius: 4px !important;
-			
-			&:hover {
-				background: #a8a8a8 !important;
-			}
-		}
-	}
+/* Исправление стилей для выпадающих списков в форме регистрации */
+.search-select .ant-select-dropdown {
+	background: white !important;
+	border: 1px solid #e6e6e6 !important;
+	border-radius: 8px !important;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+	z-index: 1050 !important;
+}
 
-	.ant-select-selector {
-		background: #ffffff !important;
-		border: 1px solid #cce5ff !important;
-		border-radius: 10px !important;
-		padding: 0 14px !important;
-		height: 40px !important;
-		display: flex !important;
-		align-items: center !important;
-		color: #1a1a1d !important;
-		
-		&:hover {
-			border-color: #91d5ff !important;
-		}
-		
-		&:focus,
-		&.ant-select-focused {
-			border-color: #1890ff !important;
-			box-shadow: none !important;
-		}
-	}
+.search-select .ant-select-dropdown .ant-select-item {
+	color: #1a1a1d !important;
+	background: transparent !important;
+	padding: 8px 12px !important;
+	transition: all 0.2s ease !important;
+}
 
-	/* Нормализуем высоту и внутреннюю типографику для одиночного селекта */
-	.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
-		height: 40px !important;
-		padding: 0 14px !important;
-		border-radius: 10px !important;
-	}
-	.ant-select-single .ant-select-selector .ant-select-selection-item,
-	.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
-		line-height: 38px !important;
-		font-size: 14px !important;
-	}
-	
-	.ant-select-selection-item {
-		color: #1a1a1d !important;
-		font-weight: 400 !important;
-		font-size: 14px !important;
-		line-height: 1.3 !important;
-	}
-	
-	.ant-select-selection-placeholder {
-		color: rgba(156, 155, 153, 1) !important;
-		font-weight: 400 !important;
-		font-size: 14px !important;
-	}
-	
-	.ant-select-arrow {
-		color: #1a1a1d !important;
-	}
-	
-	.ant-select-clear {
-		color: #999 !important;
-		
-		&:hover {
-			color: #666 !important;
-		}
-	}
+.search-select .ant-select-dropdown .ant-select-item:hover {
+	background: #f5f5f5 !important;
+	color: #1a1a1d !important;
+}
+
+.search-select .ant-select-dropdown .ant-select-item.ant-select-item-option-selected {
+	background: #e6f7ff !important;
+	color: #1890ff !important;
+	font-weight: 600 !important;
+}
+
+.search-select .ant-select-dropdown .ant-select-item-group .ant-select-item-group-title {
+	color: #666 !important;
+	font-weight: 600 !important;
+	font-size: 12px !important;
+	padding: 8px 12px !important;
+	background: #f5f5f5 !important;
+	border-radius: 4px !important;
+	margin: 4px 8px !important;
+}
+
+.search-select .ant-select-dropdown::-webkit-scrollbar {
+	width: 6px !important;
+}
+
+.search-select .ant-select-dropdown::-webkit-scrollbar-track {
+	background: #f1f1f1 !important;
+	border-radius: 4px !important;
+}
+
+.search-select .ant-select-dropdown::-webkit-scrollbar-thumb {
+	background: #c1c1c1 !important;
+	border-radius: 4px !important;
+}
+
+.search-select .ant-select-dropdown::-webkit-scrollbar-thumb:hover {
+	background: #a8a8a8 !important;
+}
+
+.search-select .ant-select-selector {
+	background: #ffffff !important;
+	border: 1px solid #cce5ff !important;
+	border-radius: 10px !important;
+	padding: 0 14px !important;
+	height: 40px !important;
+	display: flex !important;
+	align-items: center !important;
+	color: #1a1a1d !important;
+}
+
+.search-select .ant-select-selector:hover {
+	border-color: #91d5ff !important;
+}
+
+.search-select .ant-select-selector:focus,
+.search-select .ant-select-selector.ant-select-focused {
+	border-color: #1890ff !important;
+	box-shadow: none !important;
+}
+
+/* Нормализуем высоту и внутреннюю типографику для одиночного селекта */
+.search-select .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+	height: 40px !important;
+	padding: 0 14px !important;
+	border-radius: 10px !important;
+}
+
+.search-select .ant-select-single .ant-select-selector .ant-select-selection-item,
+.search-select .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+	line-height: 38px !important;
+	font-size: 14px !important;
+}
+
+.search-select .ant-select-selection-item {
+	color: #1a1a1d !important;
+	font-weight: 400 !important;
+	font-size: 14px !important;
+	line-height: 1.3 !important;
+}
+
+.search-select .ant-select-selection-placeholder {
+	color: rgba(156, 155, 153, 1) !important;
+	font-weight: 400 !important;
+	font-size: 14px !important;
+}
+
+.search-select .ant-select-arrow {
+	color: #1a1a1d !important;
+}
+
+.search-select .ant-select-clear {
+	color: #999 !important;
+}
+
+.search-select .ant-select-clear:hover {
+	color: #666 !important;
 }
