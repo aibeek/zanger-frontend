@@ -38,7 +38,7 @@ export const Footer = ({ id }: FooterProps) => {
 	const pathname = usePathname()
 	const isKz = pathname.includes('kz')
 
-	// Contact form state
+	// Contact fo
 	const [contactForm, setContactForm] = useState({
 		name: '',
 		phone: ''
