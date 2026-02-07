@@ -4,18 +4,27 @@ stages:
 
 variables:
   GA_ID: "G-B7HNWM1W8G"
+  HOME_DIR: "/srv/zanger/web-app"
+  PROJECT: "lawyerplace-frontend"
 
+# --------------------------------------------------
+# COMMON
+# --------------------------------------------------
 before_script:
-  - export LAST_ROOT_NAMESPACE="$(echo "$CI_PROJECT_NAMESPACE" | rev | cut -d'/' -f1 | rev)"
-  - export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}-test"
-  - if [ "$CI_COMMIT_REF_NAME" = "main" ]; then export NAMESPACE_BASED_BRANCH="${LAST_ROOT_NAMESPACE}"; fi
+  - set -e
   - export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
-  - export HOME_DIR="/app/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME"
-  - echo "Namespace for build - ${NAMESPACE_BASED_BRANCH}"
-  - echo "Image tag - ${TAG}"
-  - echo "HOME_DIR - ${HOME_DIR}"
 
-build image:
+  - echo "BRANCH: $CI_COMMIT_BRANCH"
+  - echo "IMAGE TAG: $TAG"
+  - echo "DEPLOY DIR: $HOME_DIR"
+
+  - mkdir -p "$HOME_DIR"
+  - git config --global --add safe.directory "$HOME_DIR" || true
+
+# --------------------------------------------------
+# BUILD IMAGE
+# --------------------------------------------------
+build_image:
   stage: build
   tags:
     - prod-web-app
@@ -23,112 +32,81 @@ build image:
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
-    - echo "# Build Stage start"
+    - echo ">>> BUILD FRONTEND IMAGE"
 
-    # Проверка переменных
-    - test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is missing (check GitLab CI/CD Variables)" && exit 1)
-    - test -n "$NEXT_PUBLIC_BASE_URL" || (echo "NEXT_PUBLIC_BASE_URL is missing" && exit 1)
-    - test -n "$NEXT_PUBLIC_BASE_URL_PROD" || (echo "NEXT_PUBLIC_BASE_URL_PROD is missing" && exit 1)
-    - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" || (echo "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is missing" && exit 1)
+    # обязательные env
+    - test -n "$NEXT_PUBLIC_API_URL"
+    - test -n "$NEXT_PUBLIC_BASE_URL"
+    - test -n "$NEXT_PUBLIC_BASE_URL_PROD"
+    - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
-    # Пробуем использовать кэш из предыдущих билдов
     - docker pull "$CI_REGISTRY_IMAGE:latest" || true
 
-    # Билд с кэшированием
     - |
       docker build -f .docker/nextjs/Dockerfile \
-        --build-arg BUILDKIT_INLINE_CACHE=1 \
         --cache-from "$CI_REGISTRY_IMAGE:latest" \
+        --build-arg BUILDKIT_INLINE_CACHE=1 \
         --build-arg NEXT_PUBLIC_API_URL="$NEXT_PUBLIC_API_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL="$NEXT_PUBLIC_BASE_URL" \
         --build-arg NEXT_PUBLIC_BASE_URL_PROD="$NEXT_PUBLIC_BASE_URL_PROD" \
         --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
-        -t "$CI_REGISTRY_IMAGE:${TAG}" \
+        -t "$CI_REGISTRY_IMAGE:$TAG" \
         -t "$CI_REGISTRY_IMAGE:latest" .
 
-    # Пушим оба тега (версионный + latest для кэша)
-    - docker push "$CI_REGISTRY_IMAGE:${TAG}"
+    - docker push "$CI_REGISTRY_IMAGE:$TAG"
     - docker push "$CI_REGISTRY_IMAGE:latest"
-    
-    # Чистим старые образы
-    - docker image prune -f --filter "until=168h"
-    
-    - echo "# Build Stage end"
 
-deploy to server:
+    - docker image prune -f --filter "until=168h"
+
+# --------------------------------------------------
+# DEPLOY (DEV)
+# --------------------------------------------------
+deploy_dev:
   stage: deploy
   tags:
     - prod-web-app
-  needs: ["build image"]
+  needs: ["build_image"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
+    - echo ">>> DEPLOY FRONTEND (DEV)"
+
+    # ---- sync repo to /srv/zanger/web-app
     - |
-      set -e
-
-      echo "# Deploy DEV start"
-      echo "RUNNING ON HOST: $(hostname)"
-      docker info --format "DockerServer={{.Name}} ServerVersion={{.ServerVersion}}" || true
-
-      echo "update project in $HOME_DIR"
-
-      # Git safe.directory (fix dubious ownership)
-      git config --global --add safe.directory "$HOME_DIR" || true
-
-      # обновляем рабочую директорию на сервере
-      git -C "$HOME_DIR" reset --hard
-      git -C "$HOME_DIR" checkout -- .
-      git -C "$HOME_DIR" pull origin "$CI_COMMIT_BRANCH"
-      cd "$HOME_DIR"
-
-      # Обновляем тег образа в env-файле compose
-      sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$HOME_DIR/.env.docker-compose"
-
-      # GA ID: replace-or-add (без дублей)
-      if grep -q '^NEXT_PUBLIC_GA_ID=' "$HOME_DIR/.env.docker-compose"; then
-        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" "$HOME_DIR/.env.docker-compose"
+      if [ ! -d "$HOME_DIR/.git" ]; then
+        git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git "$HOME_DIR"
       else
-        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> "$HOME_DIR/.env.docker-compose"
+        git -C "$HOME_DIR" fetch origin
+        git -C "$HOME_DIR" checkout dev
+        git -C "$HOME_DIR" reset --hard origin/dev
       fi
 
-      # Login registry
-      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - cd "$HOME_DIR"
 
-      # Выбираем compose (v2 или v1)
+    # ---- update image tag
+    - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" .env.docker-compose
+
+    # ---- GA ID
+    - |
+      if grep -q '^NEXT_PUBLIC_GA_ID=' .env.docker-compose; then
+        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" .env.docker-compose
+      else
+        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> .env.docker-compose
+      fi
+
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+    # ---- compose
+    - |
       if docker compose version >/dev/null 2>&1; then
         COMPOSE="docker compose"
       else
         COMPOSE="docker-compose"
       fi
-      echo "Using compose: $COMPOSE"
 
-      FILE="$HOME_DIR/docker-compose.yml"
-      ENVFILE="$HOME_DIR/.env.docker-compose"
-      SERVICE="lawyerplace-frontend"
+    - $COMPOSE -p "$PROJECT" --env-file .env.docker-compose pull lawyerplace-frontend
+    - $COMPOSE -p "$PROJECT" --env-file .env.docker-compose up -d --no-deps --force-recreate lawyerplace-frontend
 
-      # ВАЖНО: берём имя compose-проекта из реально существующего контейнера
-      PROJECT="$(docker inspect lawyerplace-frontend --format '{{index .Config.Labels "com.docker.compose.project"}}' 2>/dev/null || true)"
-      if [ -z "$PROJECT" ]; then
-        PROJECT="${LAST_ROOT_NAMESPACE}_${CI_PROJECT_NAME}"
-      fi
-      echo "Using compose project: $PROJECT"
-
-      echo "Pull fresh image for $SERVICE"
-      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" pull "$SERVICE"
-
-      echo "Recreate ONLY $SERVICE (no deps)"
-      $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" up -d --no-deps --force-recreate "$SERVICE"
-
-      CID="$($COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps -q "$SERVICE" || true)"
-      if [ -n "$CID" ]; then
-        docker inspect "$CID" --format "Container={{.Name}} Image={{.Config.Image}} Created={{.Created}}"
-      else
-        echo "ERROR: cannot find container id for service $SERVICE"
-        $COMPOSE -p "$PROJECT" --env-file "$ENVFILE" -f "$FILE" ps || true
-        exit 1
-      fi
-
-      docker image prune -f || true
-      echo "# Deploy DEV end"
+    - docker image prune -f || true
