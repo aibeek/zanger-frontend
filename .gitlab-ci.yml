@@ -11,15 +11,16 @@ variables:
 # COMMON
 # --------------------------------------------------
 before_script:
-  - set -e
-  - export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
+  - |
+    set -e
+    export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
+    echo "BRANCH: $CI_COMMIT_BRANCH"
+    echo "IMAGE TAG: $TAG"
+    echo "DEPLOY DIR: $HOME_DIR"
+    mkdir -p "$HOME_DIR"
+    git config --global --add safe.directory "$HOME_DIR" || true
 
-  - echo "BRANCH: $CI_COMMIT_BRANCH"
-  - echo "IMAGE TAG: $TAG"
-  - echo "DEPLOY DIR: $HOME_DIR"
 
-  - mkdir -p "$HOME_DIR"
-  - git config --global --add safe.directory "$HOME_DIR" || true
 
 # --------------------------------------------------
 # BUILD IMAGE
