@@ -18,7 +18,7 @@ before_script:
 build image:
   stage: build
   tags:
-    - dev29260
+    - prod-web-app
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -60,7 +60,7 @@ build image:
 deploy to server:
   stage: deploy
   tags:
-    - dev29260
+    - prod-web-app
   needs: ["build image"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
