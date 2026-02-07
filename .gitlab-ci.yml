@@ -87,14 +87,20 @@ deploy_dev:
     - cd "$HOME_DIR"
 
     # ---- update image tag
-    - sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" .env.docker-compose
+    - |
+      if grep -q '^SERVICE_IMAGE_TAG=' .env; then
+        sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" .env
+      else
+        echo "SERVICE_IMAGE_TAG=${TAG}" >> .env
+      fi
+
 
     # ---- GA ID
     - |
-      if grep -q '^NEXT_PUBLIC_GA_ID=' .env.docker-compose; then
-        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" .env.docker-compose
+      if grep -q '^NEXT_PUBLIC_GA_ID=' .env; then
+        sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" .env
       else
-        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> .env.docker-compose
+        echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> .env
       fi
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
@@ -107,7 +113,7 @@ deploy_dev:
         COMPOSE="docker-compose"
       fi
 
-    - $COMPOSE -p "$PROJECT" --env-file .env.docker-compose pull lawyerplace-frontend
-    - $COMPOSE -p "$PROJECT" --env-file .env.docker-compose up -d --no-deps --force-recreate lawyerplace-frontend
+    - $COMPOSE -p "$PROJECT" --env-file .env pull lawyerplace-frontend
+    - $COMPOSE -p "$PROJECT" --env-file .env up -d --no-deps --force-recreate lawyerplace-frontend
 
     - docker image prune -f || true
