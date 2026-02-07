@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import phone from '@/app/assets/icons/phone.svg'
 import logo from '../../../../../public/logo.svg'
 import { Header } from '@/widgets/Header'
+import { MaintenanceModal } from '@/widgets/MaintenanceModal'
 import s from './MainSection.module.scss'
 import Iphones from '@/app/assets/images/iphones.webp'
 import GooglePlay from '@/app/assets/icons/googleplay.webp'
@@ -27,6 +28,7 @@ export const MainSection = () => {
 
 	return (
 		<section id="mainSection" className={s.wrapper}>
+			<MaintenanceModal />
 			<Header variant={'lending-variant'} />
 			<div className={s.abstractLandscape}>
 				<video
