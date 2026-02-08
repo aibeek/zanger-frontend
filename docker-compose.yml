@@ -3,7 +3,7 @@ version: '3.5'
 services:
   lawyerplace-frontend:
     container_name: lawyerplace-frontend
-    image: registry.gitlab.com/kulenkov1/lawyer-place/web-app:${SERVICE_IMAGE_TAG}
+    image: ${SERVICE_IMAGE_NAME}:${SERVICE_IMAGE_TAG}
     build:
       context: .
       args:
