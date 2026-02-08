@@ -442,41 +442,6 @@ export const Header = ({ variant }: HeaderProps) => {
 
 							<LangSwitcher />
 
-
-							{/* Snow toggle placed to the right of language selector */}
-							<button
-								className={s.snowToggle}
-								onClick={toggleSnow}
-								aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
-								title={snowEnabled ? 'Выключить снег' : 'Включить снег'}
-							>
-								<svg
-									className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''} lucide h-5 w-5 lucide-snowflake-icon lucide-snowflake`}
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								>
-									<path d="m10 20-1.25-2.5L6 18"></path>
-									<path d="M10 4 8.75 6.5 6 6"></path>
-									<path d="m14 20 1.25-2.5L18 18"></path>
-									<path d="m14 4 1.25 2.5L18 6"></path>
-									<path d="m17 21-3-6h-4"></path>
-									<path d="m17 3-3 6 1.5 3"></path>
-									<path d="M2 12h6.5L10 9"></path>
-									<path d="m20 10-1.5 2 1.5 2"></path>
-									<path d="M22 12h-6.5L14 15"></path>
-									<path d="m4 10 1.5 2L4 14"></path>
-									<path d="m7 21 3-6-1.5-3"></path>
-									<path d="m7 3 3 6h4"></path>
-								</svg>
-							</button>
-
 							{isHydrated && isMobile && (
 								<>
 									<div className={s.mobileLiveButtonWrapper} ref={liveButtonRef}>
@@ -560,39 +525,7 @@ export const Header = ({ variant }: HeaderProps) => {
 					{isHydrated && isMobile && showMobileMenu && (
 						<div className={s.mobileMenu}>
 							<div className={s.mobileNavigation}>
-								{/* Snow Toggle Button for Mobile */}
-								<button
-									className={s.snowToggleMobile}
-									onClick={toggleSnow}
-									aria-label={snowEnabled ? 'Выключить снег' : 'Включить снег'}
-								>
-									<svg
-										className={`${s.snowSvg} ${snowEnabled ? s.animateSpinSlow : ''} lucide h-5 w-5 lucide-snowflake-icon lucide-snowflake`}
-										width="24"
-										height="24"
-										viewBox="0 0 24 24"
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<path d="m10 20-1.25-2.5L6 18"></path>
-										<path d="M10 4 8.75 6.5 6 6"></path>
-										<path d="m14 20 1.25-2.5L18 18"></path>
-										<path d="m14 4 1.25 2.5L18 6"></path>
-										<path d="m17 21-3-6h-4"></path>
-										<path d="m17 3-3 6 1.5 3"></path>
-										<path d="M2 12h6.5L10 9"></path>
-										<path d="m20 10-1.5 2 1.5 2"></path>
-										<path d="M22 12h-6.5L14 15"></path>
-										<path d="m4 10 1.5 2L4 14"></path>
-										<path d="m7 21 3-6-1.5-3"></path>
-										<path d="m7 3 3 6h4"></path>
-									</svg>
-									<span className={s.snowToggleLabel}>{snowEnabled ? 'Выключить снег' : 'Включить снег'}</span>
-								</button>
+	
 								<button
 									onClick={() => { scrollToSection('news'); setShowMobileMenu(false); }}
 									className={s.mobileNavLink}
