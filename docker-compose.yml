@@ -4,18 +4,13 @@ services:
   lawyerplace-frontend:
     container_name: lawyerplace-frontend
     image: registry.gitlab.com/kulenkov1/lawyer-place/web-app:${SERVICE_IMAGE_TAG}
-    build:
-      context: .
-      args:
-        - "env_build=${SERVICE_PROFILE}"
-      dockerfile: ./.docker/nextjs/Dockerfile
     restart: always
     networks:
       - lawyerplace_network
     env_file:
       - .env
     ports:
-      - "3000:3000"  # 👈 теперь системный nginx увидит фронтенд
+      - "3000:3000"
 
 networks:
   lawyerplace_network:
