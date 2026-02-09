@@ -409,58 +409,6 @@
 		}
 	}
 
-	// Snow toggle button in header — minimal, icon-only (no circular background)
-	.snowToggle {
-		background: transparent;
-		border: none;
-		padding: 0;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		color: #ffffff; /* keeps SVG stroke=currentColor visible */
-		transition: opacity 0.15s ease, transform 0.15s ease;
-		margin-right: 8px;
-
-		&:hover {
-			opacity: 0.85;
-			transform: none;
-		}
-
-		&:active {
-			opacity: 0.9;
-		}
-	}
-
-	.snowIcon {
-		font-size: 20px;
-		line-height: 1;
-
-		@media (max-width: 1024px) {
-			font-size: 18px;
-		}
-	}
-
-/* SVG snowflake styles + slow spin animation */
-.snowSvg {
-	width: 20px;
-	height: 20px;
-	color: #ffffff; /* icon color */
-	display: inline-block;
-	vertical-align: middle;
-	transition: transform 0.3s ease, opacity 0.3s ease;
-	filter: drop-shadow(0 0 4px rgba(0,0,0,0.75));
-}
-
-.animateSpinSlow {
-	animation: spinSlow 4s linear infinite;
-}
-
-@keyframes spinSlow {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
-}
-
 	.navLink {
 		color: rgba(255, 255, 255, 1);
 		text-decoration: none;

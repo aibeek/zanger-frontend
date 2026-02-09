@@ -17,7 +17,6 @@ import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { AppLink } from '@/shared/ui-kit/AppLink'
 import { NotificationsDropdown } from '@/entities/notifications'
-import { useSnow } from '@/shared/ui-kit/SnowProvider/SnowProvider'
 
 interface HeaderProps {
 	variant: 'user-variant' | 'lending-variant'
@@ -33,8 +32,6 @@ export const Header = ({ variant }: HeaderProps) => {
 	const isHydrated = useHydration()
 	const isMobile = useMediaQuery('(max-width: 900px)') // Изменяем breakpoint для соответствия CSS
 	const isMobileDevice = isMobileOrTablet() // Проверка реальных мобильных устройствs
-
-	const { snowEnabled, toggleSnow } = useSnow()
 
 	// Логирование состояния модального окна
 	useEffect(() => {

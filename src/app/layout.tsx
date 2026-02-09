@@ -3,7 +3,6 @@ import { Open_Sans } from 'next/font/google'
 import Script from 'next/script'
 
 import './styles/index.scss'
-import { SnowProvider } from '@/shared/ui-kit/SnowProvider/SnowProvider'
 
 const openSans = Open_Sans({
     variable: '--font-open-sans',
@@ -47,9 +46,7 @@ export default function RootLayout({
                         </Script>
                     </>
                 )}
-                <SnowProvider>
-                    {children}
-                </SnowProvider>
+                {children}
             </body>
         </html>
     )

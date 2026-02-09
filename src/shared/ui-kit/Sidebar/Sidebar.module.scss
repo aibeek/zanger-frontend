@@ -68,36 +68,6 @@
     text-transform: uppercase;
 }
 
-/* Snow toggle (icon-only) next to logo */
-.snowToggle {
-    background: transparent;
-    border: none;
-    padding: 0 8px 0 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #ffffff;
-}
-
-.snowSvg {
-    width: 18px;
-    height: 18px;
-    display: inline-block;
-    vertical-align: middle;
-    color: #ffffff;
-    filter: drop-shadow(0 0 4px rgba(0,0,0,0.75));
-}
-
-.animateSpinSlow {
-    animation: spinSlow 4s linear infinite;
-}
-
-@keyframes spinSlow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 .userProfile {
     padding: 16px 20px;
     display: flex;
