@@ -3,37 +3,29 @@ stages:
   - deploy
 
 variables:
-  GA_ID: "G-B7HNWM1W8G"
-  DEPLOY_DIR: "/srv/zanger/web-app"
+  DEPLOY_ENV_FILE: "/srv/zanger/web-app/.env"
   PROJECT: "lawyerplace-frontend"
 
-# -------------------------------
-# COMMON
-# -------------------------------
 before_script:
   - |
     set -e
     export TAG="$CI_COMMIT_REF_SLUG-$(echo "$CI_COMMIT_TIMESTAMP" | cut -c1-10)-$CI_COMMIT_SHORT_SHA"
     echo "BRANCH: $CI_COMMIT_BRANCH"
     echo "IMAGE TAG: $TAG"
-    echo "DEPLOY DIR: $DEPLOY_DIR"
+    echo "ENV FILE: $DEPLOY_ENV_FILE"
 
-# -------------------------------
-# BUILD IMAGE
-# -------------------------------
 build_image:
   stage: build
   tags: [prod-web-app]
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
-    - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - echo ">>> BUILD FRONTEND IMAGE"
 
-    - test -n "$NEXT_PUBLIC_API_URL"
-    - test -n "$NEXT_PUBLIC_BASE_URL"
-    - test -n "$NEXT_PUBLIC_BASE_URL_PROD"
-    - test -n "$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
+    - |
+      for v in NEXT_PUBLIC_API_URL NEXT_PUBLIC_BASE_URL NEXT_PUBLIC_BASE_URL_PROD NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY; do
+        test -n "${!v}"
+      done
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker pull "$CI_REGISTRY_IMAGE:latest" || true
@@ -51,11 +43,7 @@ build_image:
 
     - docker push "$CI_REGISTRY_IMAGE:$TAG"
     - docker push "$CI_REGISTRY_IMAGE:latest"
-    - docker image prune -f --filter "until=168h"
 
-# -------------------------------
-# DEPLOY DEV
-# -------------------------------
 deploy_dev:
   stage: deploy
   tags: [prod-web-app]
@@ -63,20 +51,17 @@ deploy_dev:
   rules:
     - if: '$CI_COMMIT_BRANCH == "dev"'
   script:
-    - echo ">>> DEPLOY FRONTEND (DEV)"
+    - echo ">>> DEPLOY FRONTEND (DEV) using repo compose + server env"
 
-    - cd "$DEPLOY_DIR"
-
-    # --- update env
+    # обновляем tag в СЕРВЕРНОМ env
     - |
-      sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" .env || \
-      echo "SERVICE_IMAGE_TAG=${TAG}" >> .env
-
-    - |
-      sed -i "s/^NEXT_PUBLIC_GA_ID=.*/NEXT_PUBLIC_GA_ID=${GA_ID}/" .env || \
-      echo "NEXT_PUBLIC_GA_ID=${GA_ID}" >> .env
+      sed -i "s/^SERVICE_IMAGE_TAG=.*/SERVICE_IMAGE_TAG=${TAG}/" "$DEPLOY_ENV_FILE" || \
+      echo "SERVICE_IMAGE_TAG=${TAG}" >> "$DEPLOY_ENV_FILE"
 
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+
+    # compose берём из репо
+    - cd "$CI_PROJECT_DIR"
 
     - |
       if docker compose version >/dev/null 2>&1; then
@@ -85,7 +70,5 @@ deploy_dev:
         COMPOSE="docker-compose"
       fi
 
-    - $COMPOSE -p "$PROJECT" --env-file .env pull
-    - $COMPOSE -p "$PROJECT" --env-file .env up -d --force-recreate
-
-    - docker image prune -f || true
+    - $COMPOSE -p "$PROJECT" --env-file "$DEPLOY_ENV_FILE" pull lawyerplace-frontend
+    - $COMPOSE -p "$PROJECT" --env-file "$DEPLOY_ENV_FILE" up -d --remove-orphans lawyerplace-frontend
