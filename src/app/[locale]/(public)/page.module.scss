@@ -17,7 +17,6 @@
 		padding: 0;
 	}
 
-	// Убрана полупрозрачная подложка для полной прозрачности фона
 	&::before {
 		content: '';
 		position: absolute;
@@ -25,10 +24,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background-image: url('../../assets/images/MainPageBackground.png');
-		background-size: 100% 100%;
-		background-position: top center;
-		background-repeat: no-repeat;
+		background: #ffffff;
 		pointer-events: none;
 		z-index: -1;
 	}

@@ -1,123 +1,162 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useLocale, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import phone from '@/app/assets/icons/phone.svg'
-import logo from '../../../../../public/logo.svg'
-import { Header } from '@/widgets/Header'
 import s from './MainSection.module.scss'
-import Iphones from '@/app/assets/images/iphones.webp'
-import GooglePlay from '@/app/assets/icons/googleplay.webp'
-import AppleStore from '@/app/assets/icons/appstore.webp'
-import HubsLogoKZ from '../../../../../public/assets/images/hubs.svg'
-import HubsLogoRU from '../../../../../public/assets/images/hub.svg'
-
+import heroImage from '@/app/assets/images/one.png'
+import { LangSwitcher } from '@/shared/ui-kit'
+import { AppLink } from '@/shared/ui-kit/AppLink'
+import { useAuthStore, useMediaQuery, useHydration, isMobileOrTablet } from '@/shared/lib'
+import { useLoginStore } from '@/features/auth'
 
 export const MainSection = () => {
 	const t = useTranslations('lending.mainSection')
-	const locale = useLocale()
+	const ht = useTranslations('header')
+	const isHydrated = useHydration()
+	const isMobile = useMediaQuery('(max-width: 900px)')
+	const { isAuthenticated } = useAuthStore()
+	const { personalData } = useLoginStore()
+	const [showMobileMenu, setShowMobileMenu] = useState(false)
 
-	const HubsLogo = locale === 'kz' ? HubsLogoKZ : HubsLogoRU
-	const hubsDimensions = {
-		width: HubsLogo.width,
-		height: HubsLogo.height,
+	const scrollToSection = (sectionId: string) => {
+		const element = document.getElementById(sectionId)
+		if (element) {
+			const headerHeight = 100
+			const elementPosition = element.offsetTop - headerHeight
+			window.scrollTo({ top: elementPosition, behavior: 'smooth' })
+		}
 	}
 
 	return (
 		<section id="mainSection" className={s.wrapper}>
-			<Header variant={'lending-variant'} />
-			<div className={s.abstractLandscape}>
-				<video
-					className={s.bgVideo}
-					src="/assets/images/mainn.mp4"
-					autoPlay
-					loop
-					muted
-					playsInline
-				/>
-				<div className={s.container}>
-					<div className={s.textSection}>
-						{/* Title and content block (badge moved to phone side) */}
-						<div className={s.titleContainer}>
-							<h1 className={s.title} dangerouslySetInnerHTML={{ __html: t('title') }} />
-						</div>
-						<div className={s.descrContainer}>
-							<p className={s.descr}>{t('description')}</p>
-						</div>
-						<div className={s.numberSection}>
-							<div className={s.bigNumber}>5510</div>
-						</div>
-						<div className={s.disclaimer}>
-							<p>{t('disclaimer')}</p>
-						</div>
-						<div className={s.actionButtons}>
-							<Link href="tel:5510" className={s.phoneButton}>
-								<Image src={phone} alt="Phone" className={s.phoneIcon} width={24} height={24} />
-								{t('phoneButton')}
-							</Link>
-							{/* Mobile-only Astana Hub badge placed right after the call button */}
-							<div className={s.hubsBadgeMobile}>
-								<Image
-									src={HubsLogo}
-									alt="Astana Hub"
-									width={hubsDimensions.width}
-									height={hubsDimensions.height}
-									className={s.hubsLogo}
-								/>
-							</div>
-							{/* <div className={s.requestButtonContainer}>
-							<Link href="/" className={s.requestButton}>
-								{t('createNew')}
-							</Link>
-							</div> */}
+			{/* Navbar */}
+			<header className={s.navbar}>
+				<div className={s.navInner}>
+					<Link href="/" className={s.logoLink}>
+						<Image
+							src="/newlogo.png"
+							alt="ZANGER"
+							width={44}
+							height={44}
+							priority
+						/>
+						<span className={s.logoText}>ZANGER</span>
+					</Link>
+
+					{isHydrated && !isMobile && (
+						<nav className={s.nav}>
+							<button onClick={() => scrollToSection('about')} className={s.navLink}>
+								{ht('aboutUs')}
+							</button>
+							<button onClick={() => scrollToSection('lawyers')} className={s.navLink}>
+								{ht('lawyers')}
+							</button>
+							<button onClick={() => scrollToSection('modules')} className={s.navLink}>
+								{ht('modules')}
+							</button>
+							<button onClick={() => scrollToSection('info')} className={s.navLink}>
+								{ht('info')}
+							</button>
+							<button onClick={() => scrollToSection('resources')} className={s.navLink}>
+								{ht('useful')}
+							</button>
+							<button onClick={() => scrollToSection('news')} className={s.navLink}>
+								{ht('news')}
+							</button>
+						</nav>
+					)}
+
+					<div className={s.navRight}>
+						<LangSwitcher />
+						{isHydrated && !isMobile && (
+							<AppLink
+								className={s.loginBtn}
+								variant="primary"
+								href="/auth/login"
+							>
+								{ht('login')}
+							</AppLink>
+						)}
+						{isHydrated && isMobile && (
+							<button
+								className={s.burger}
+								onClick={() => setShowMobileMenu(!showMobileMenu)}
+								aria-label="Menu"
+							>
+								<span />
+								<span />
+								<span />
+							</button>
+						)}
+					</div>
+				</div>
+
+				{/* Mobile menu */}
+				{isHydrated && isMobile && showMobileMenu && (
+					<div className={s.mobileMenu}>
+						<button onClick={() => { scrollToSection('about'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('aboutUs')}
+						</button>
+						<button onClick={() => { scrollToSection('lawyers'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('lawyers')}
+						</button>
+						<button onClick={() => { scrollToSection('modules'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('modules')}
+						</button>
+						<button onClick={() => { scrollToSection('info'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('info')}
+						</button>
+						<button onClick={() => { scrollToSection('resources'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('useful')}
+						</button>
+						<button onClick={() => { scrollToSection('news'); setShowMobileMenu(false) }} className={s.mobileNavLink}>
+							{ht('news')}
+						</button>
+						<div className={s.mobileAuthBtns}>
+							<AppLink variant="primary" href="/auth/login">
+								{ht('login')}
+							</AppLink>
 						</div>
 					</div>
-					<div className={s.phoneImages}>
-						{/* Astana Hub badge placed above the phone image */}
-						<div className={s.hubsBadge}>
+				)}
+			</header>
+
+			{/* Hero */}
+			<div className={s.hero}>
+				<div className={s.heroImageWrapper}>
+					<Image
+						src={heroImage}
+						alt=""
+						fill
+						className={s.heroImage}
+						priority
+						sizes="100vw"
+					/>
+				</div>
+				<div className={s.container}>
+					<div className={s.heroContent}>
+						<h1
+							className={s.title}
+							dangerouslySetInnerHTML={{ __html: t('title') }}
+						/>
+						<p className={s.subtitle}>{t('description')}</p>
+						<div className={s.numberBlock}>
+							<span className={s.bigNumber}>5510</span>
+						</div>
+						<p className={s.disclaimer}>{t('disclaimer')}</p>
+						<Link href="tel:5510" className={s.phoneButton}>
 							<Image
-								src={HubsLogo}
-								alt="Astana Hub"
-								width={hubsDimensions.width}
-								height={hubsDimensions.height}
-								className={s.hubsLogo}
+								src={phone}
+								alt=""
+								width={20}
+								height={20}
+								className={s.phoneIcon}
 							/>
-						</div>
-						<div className={s.phoneContainer}>
-							<Image
-								src={Iphones}
-								alt="phones"
-								className={s.phonesImg}
-								width={260}
-								height={260}
-							/>
-						</div>
-						<div className={s.appStores}>
-							{/* <Link href={'/'}>
-								<Image
-									src={AppleStore}
-									alt={'app store'}
-									width={160}
-									height={48}
-								/>
-							</Link>
-							<Link href={'/'}>
-								<Image
-									src={GooglePlay}
-									alt={'google play'}
-									width={160}
-									height={48}
-								/>
-							</Link> */}
-							<div className={s.mobileVersionText}>
-								<span
-									className={s.developmentLabel}
-									dangerouslySetInnerHTML={{ __html: t('mobileVersionLabel') }}
-								/>
-							</div>
-						</div>
+							{t('phoneButton')}
+						</Link>
 					</div>
 				</div>
 			</div>
