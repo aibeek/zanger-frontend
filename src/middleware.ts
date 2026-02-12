@@ -14,7 +14,7 @@ export default function middleware(request: NextRequest) {
 		const normalized = ['kk', 'ru'].includes(lang) ? lang : 'ru'
 
 		response.cookies.set('browserLang', normalized, {
-			maxAge: 60 * 60 * 24 * 365, // 1 год
+			maxAge: 60 * 60 * 24 * 365, // 1 год 1 day
 			path: '/',
 		})
 	}
