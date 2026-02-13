@@ -5,15 +5,14 @@ import { useTranslations } from 'next-intl'
 import s from './ResourcesSection.module.scss'
 
 // Импорт иконок
-import AituIcon from '@/app/assets/icons/resourses/aitu.svg'
-import EgovIcon from '@/app/assets/icons/resourses/egov.svg'
-import EotinishIcon from '@/app/assets/icons/resourses/eotinish.svg'
-import AdiletgovIcon from '@/app/assets/icons/resourses/adiletgov.svg'
-import ErdrIcon from '@/app/assets/icons/resourses/erdr.svg'
-import SupremeCourtIcon from '@/app/assets/icons/resourses/sudcabinet.svg'
-import Contract24Icon from '@/app/assets/icons/resourses/договор24.svg'
-import EnotaryIcon from '@/app/assets/icons/resourses/enotary.svg'
-import AdiletkzIcon from '@/app/assets/icons/resourses/adiletkz.svg'
+import AituIcon from '@/app/assets/icons/resource/Aitu.png'
+import EgovIcon from '@/app/assets/icons/resource/Egov.png'
+import EotinishIcon from '@/app/assets/icons/resource/eot.png'
+import AdiletgovIcon from '@/app/assets/icons/resource/adilet.png'
+import ErdrIcon from '@/app/assets/icons/resource/erdr.png'
+import SupremeCourtIcon from '@/app/assets/icons/resource/sud.png'
+import AdiletkzIcon from '@/app/assets/icons/resource/adik.png'
+import EnotaryIcon from '@/app/assets/icons/resource/enot.png'
 
 export const ResourcesSection = () => {
 	const t = useTranslations('lending.resourcesSection')
@@ -25,7 +24,6 @@ export const ResourcesSection = () => {
 		{ id: 'adiletgov', icon: AdiletgovIcon, url: 'https://aisoip.adilet.gov.kz/debtors' },
 		{ id: 'erdr', icon: ErdrIcon, url: 'https://erdr-public.kgp.kz/' },
 		{ id: 'supreme-court', icon: SupremeCourtIcon, url: 'https://office.sud.kz/' },
-		// { id: 'contract24', icon: Contract24Icon, url: 'https://qamqor.gov.kz/' },
 		{ id: 'adiletkz', icon: AdiletkzIcon, url: 'https://adilet.zan.kz/kaz' },
 		{ id: 'enotary', icon: EnotaryIcon, url: 'https://enis.kz/?lang=kk' }
 	]
@@ -52,12 +50,13 @@ export const ResourcesSection = () => {
 								/>
 							</a>
 						) : (
-							<Image
-								key={resource.id}
-								src={resource.icon}
-								alt={resource.id}
-								className={s.resourceIcon}
-							/>
+							<div key={resource.id} className={s.resourceLink}>
+								<Image
+									src={resource.icon}
+									alt={resource.id}
+									className={s.resourceIcon}
+								/>
+							</div>
 						)
 					))}
 				</div>

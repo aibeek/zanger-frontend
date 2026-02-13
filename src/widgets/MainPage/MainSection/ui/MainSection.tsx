@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl'
 import phone from '@/app/assets/icons/phone.svg'
 import s from './MainSection.module.scss'
 import heroImage from '@/app/assets/images/one.png'
+import heroImageBg from '@/app/assets/images/two.png'
 import { LangSwitcher } from '@/shared/ui-kit'
 import { AppLink } from '@/shared/ui-kit/AppLink'
 import { useAuthStore, useMediaQuery, useHydration, isMobileOrTablet } from '@/shared/lib'
@@ -39,8 +40,8 @@ export const MainSection = () => {
 						<Image
 							src="/newlogo.png"
 							alt="ZANGER"
-							width={44}
-							height={44}
+							width={50}
+							height={55}
 							priority
 						/>
 						<span className={s.logoText}>ZANGER</span>
@@ -127,21 +128,35 @@ export const MainSection = () => {
 			{/* Hero */}
 			<div className={s.hero}>
 				<div className={s.heroImageWrapper}>
-					<Image
-						src={heroImage}
-						alt=""
-						fill
-						className={s.heroImage}
-						priority
-						sizes="100vw"
-					/>
+					<div className={s.heroImageBgLayer}>
+						<Image
+							src={heroImageBg}
+							alt=""
+							fill
+							className={s.heroImageBg}
+							priority
+							sizes="100vw"
+						/>
+					</div>
+					<div className={s.heroImageLayer}>
+						<Image
+							src={heroImage}
+							alt=""
+							fill
+							className={s.heroImage}
+							priority
+							sizes="100vw"
+						/>
+					</div>
 				</div>
 				<div className={s.container}>
 					<div className={s.heroContent}>
-						<h1
-							className={s.title}
-							dangerouslySetInnerHTML={{ __html: t('title') }}
-						/>
+						<h1 className={s.title}>
+							{t.rich('title', {
+								span: (chunks) => <span>{chunks}</span>,
+								br: () => <br />,
+							})}
+						</h1>
 						<p className={s.subtitle}>{t('description')}</p>
 						<div className={s.numberBlock}>
 							<span className={s.bigNumber}>5510</span>

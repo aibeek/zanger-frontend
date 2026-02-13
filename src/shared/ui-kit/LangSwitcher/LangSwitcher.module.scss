@@ -19,11 +19,12 @@
     letter-spacing: 0.5px;
     background-color: transparent;
     border: none;
-    color: #fff; 
+    color: #374151; 
     
     /* Эффект при наведении */
     &:hover {
 		    transform: scale(1.1);
+		    color: #1a1a2e;
     }
 }
 

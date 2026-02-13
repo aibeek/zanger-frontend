@@ -1,16 +1,10 @@
 'use client'
 
 import { useTranslations, useLocale } from 'next-intl'
-import Image, { StaticImageData } from 'next/image'
 import { useState } from 'react'
 import { Modal, Button } from '@/shared/ui-kit'
-import moduleIcon from '@/app/assets/icons/moduleIcon.svg'
+import Image from 'next/image'
 import monitor from '@/app/assets/icons/monitor.webp'
-import myApplicationsIcon from '@/app/assets/icons/dashboard-icons/my-applications.svg'
-import documentIcon from '@/app/assets/icons/document.svg'
-import chatIcon from '@/app/assets/icons/dashboard-icons/chat.svg'
-import peopleIcon from '@/app/assets/icons/people.svg'
-import faqIcon from '@/app/assets/icons/dashboard-icons/faq.svg'
 import s from './ModulesSection.module.scss'
 import { useRouter } from 'next/navigation'
 import { authService } from '@/features/auth'
@@ -36,82 +30,25 @@ export const ModulesSection = () => {
     description: module.description
   }))
 
-  const isModuleReady = (title: string): boolean => {
-    const n = title.replace(/\s+/g, '').toUpperCase()
-    return (
-      n.includes('ЗАЯВКИ') ||
-      n.includes('ӨТІНІМДЕР') ||
-      n.includes('ЭДО') ||
-      n.includes('ЭЦҚ') ||
-      n.includes('ECP') ||
-      n.includes('EDO') ||
-      n.includes('ИИ') ||
-      n.includes('КОНСУЛЬТАНТ') ||
-      n.includes('ВКС') ||
-      n.includes('БЕЙНЕ') ||
-      n.includes('CONFERENCE') ||
-      n.includes('VIDEO')
-    )
-  }
-
-  const getModuleIcon = (title: string): string | StaticImageData => {
-    const normalized = title.replace(/\s+/g, '').toUpperCase()
-    if (normalized.includes('ЗАЯВКИ') || normalized.includes('ӨТІНІМДЕР')) return myApplicationsIcon
-    if (normalized.includes('ЭДО') || normalized.includes('ЭЦҚ')) return documentIcon
-    if (normalized.includes('ВКС') || normalized.includes('БЕЙНЕ')) return '/assets/icons/vks.svg'
-    if (normalized.includes('ИИ') || normalized.includes('CONSULTANT')) return chatIcon
-    if (normalized.includes('ФОРУМ')) return peopleIcon
-    if (normalized.includes('БАЗА') || normalized.includes('БІЛІМ') || normalized.includes('КОНТРАГЕНТ')) return faqIcon
-    return documentIcon
-  }
-
   const handleModuleClick = async (module: Module) => {
     const normalized = module.title.replace(/\s+/g, '').toUpperCase()
-    const isEdoOrEcp =
-      normalized.includes('ЭДО') ||
-      normalized.includes('EDO') ||
+
+    const isEcp =
       normalized.includes('ЭЦП') ||
       normalized.includes('ЭЦҚ') ||
       normalized.includes('ECP')
-
-    const isApplications = 
-      normalized.includes('ЗАЯВКИ') ||
-      normalized.includes('ӨТІНІМДЕР')
 
     const isVks =
       normalized.includes('ВКС') ||
       normalized.includes('VIDEO') ||
       normalized.includes('БЕЙНЕ') ||
-      normalized.includes('CONFERENCE')
+      normalized.includes('CONFERENCE') ||
+      normalized.includes('ВИДЕО')
 
-    const isAi =
-      normalized.includes('ИИ') ||
-      normalized.includes('КОНСУЛЬТАНТ')
-
-    if (isAi) {
-      const res = await authService.check()
-      if (res?.isAuthenticated) {
-        router.push(`/${locale}/dashboard/ai-consultant`)
-      } else {
-        router.push(`/${locale}/auth/login`)
-      }
-      return
-    }
-
-    if (isEdoOrEcp) {
+    if (isEcp) {
       const res = await authService.check()
       if (res?.isAuthenticated) {
         router.push(`/${locale}/ecp/statuses`)
-      } else {
-        router.push(`/${locale}/auth/login`)
-      }
-      return
-    }
-
-    if (isApplications) {
-      const res = await authService.check()
-      if (res?.isAuthenticated) {
-        router.push(`/${locale}/dashboard/applications`)
       } else {
         router.push(`/${locale}/auth/login`)
       }
@@ -126,46 +63,85 @@ export const ModulesSection = () => {
     setIsModalOpen(true)
   }
 
+  // Модули, которые должны быть подсвечены синим фоном
+  const isHighlighted = (title: string): boolean => {
+    const n = title.replace(/\s+/g, '').toUpperCase()
+    return (
+      n.includes('БАЗА') ||
+      n.includes('БІЛІМ') ||
+      n.includes('КОНТРАГЕНТ') ||
+      n.includes('УПРАВЛЕНИ') ||
+      n.includes('ДОКУМЕНТ')
+    )
+  }
+
+  // ВКС и ЭЦП — голубой фон #EAF4FF
+  const isBlueCard = (title: string): boolean => {
+    const n = title.replace(/\s+/g, '').toUpperCase()
+    return (
+      n.includes('ВКС') ||
+      n.includes('VIDEO') ||
+      n.includes('БЕЙНЕ') ||
+      n.includes('CONFERENCE') ||
+      n.includes('ВИДЕО') ||
+      n.includes('ЭЦП') ||
+      n.includes('ЭЦҚ') ||
+      n.includes('ECP')
+    )
+  }
+
   return (
     <section id="modules" className={s.modulesSection}>
       <div className={s.container}>
-        <div className={s.titleLine}></div>
         <h2 className={s.title}>{t('title')}</h2>
         
         <div className={s.modulesGrid}>
-          {modules.map((module) => (
-            <div
-              key={module.id}
-              className={s.moduleCard}
-              role="button"
-              tabIndex={0}
-              onClick={() => handleModuleClick(module)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  handleModuleClick(module)
-                }
-              }}
-            >
-              <div className={s.cardContent}>
-                <div className={s.cardHeader}>
-                  <Image src={getModuleIcon(module.title)} alt={module.title} width={32} height={32} />
+          {modules.map((module, index) => {
+            const card = (
+              <div
+                key={module.id}
+                className={`${s.moduleCard} ${isHighlighted(module.title) ? s.moduleCardHighlighted : ''} ${isBlueCard(module.title) ? s.moduleCardBlue : ''}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => handleModuleClick(module)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleModuleClick(module)
+                  }
+                }}
+              >
+                <div className={s.cardContent}>
                   <h3 className={s.moduleTitle}>{module.title}</h3>
-                  {isModuleReady(module.title) ? (
-                    <span className={s.readyBadge}>Готов</span>
-                  ) : (
-                    <span className={s.devBadge}>В разработке</span>
-                  )}
+                  <p className={s.moduleDescription}>{module.description}</p>
                 </div>
-                <p className={s.moduleDescription}>{module.description}</p>
-              </div>
-              <div className={s.moduleIcon}>
-                <div className={s.iconCircle}>
-                  <Image src={moduleIcon} alt="Module icon" width={48} height={48} />
+                <div className={s.moduleIcon}>
+                  <div className={s.arrowIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="7" y1="17" x2="17" y2="7" />
+                      <polyline points="7 7 17 7 17 17" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>        
-          ))}
+            )
+
+            // Вставляем paraq.png после "База данных" (index 1)
+            if (index === 1) {
+              return (
+                <>{card}<div key="img-paraq" className={s.illustrationCard}><Image src="/assets/sectionimg/paraq.png" alt="" width={300} height={300} className={s.illustrationImage} /></div></>
+              )
+            }
+
+            // Вставляем tarazy.png после "Видео-конференц связь" (index 2)
+            if (index === 2) {
+              return (
+                <>{card}<div key="img-tarazy" className={s.illustrationCard}><Image src="/assets/sectionimg/tarazy.png" alt="" width={300} height={300} className={s.illustrationImage} /></div></>
+              )
+            }
+
+            return card
+          })}
         </div>
       </div>
 

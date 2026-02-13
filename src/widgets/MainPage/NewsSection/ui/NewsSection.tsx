@@ -26,7 +26,6 @@ interface NewsItem {
 export const NewsSection = () => {
 	const t = useTranslations('lending.newsSection')
 	const locale = useLocale()
-	const [currentSlide, setCurrentSlide] = useState(0)
 	const { isOpen, open, close } = useModal()
 	const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([])
@@ -102,45 +101,23 @@ export const NewsSection = () => {
 		open()
 	}
 
-	const nextSlide = () => {
-		if (newsItems.length === 0) return
-		setCurrentSlide((prev) => (prev + 1) % newsItems.length)
-	}
-
-	const prevSlide = () => {
-		if (newsItems.length === 0) return
-		setCurrentSlide((prev) => (prev - 1 + newsItems.length) % newsItems.length)
-	}
-
-	const getVisibleItems = () => {
-		if (newsItems.length === 0) return []
-		const items = []
-		for (let i = 0; i < Math.min(3, newsItems.length); i++) {
-			const index = (currentSlide + i) % newsItems.length
-			items.push(newsItems[index])
-		}
-		return items
-	}
-
 	// Показываем скелетон пока загружаются данные
 	if (isLoading) {
 		return (
 			<section id="news" className={s.wrapper}>
 				<div className={s.container}>
-					<div className={s.titleLine}></div>
-					<h2 className={s.title}>{t('title')}</h2>
-					<div className={s.newsGrid}>
-						{[1, 2, 3].map((i) => (
-							<div key={i} className={s.newsCard} style={{ opacity: 0.5 }}>
-								<div className={s.imageContainer} style={{ background: 'rgba(255,255,255,0.1)' }} />
-								<div className={s.content}>
-									<div className={s.textContent}>
-										<div style={{ height: 24, background: 'rgba(255,255,255,0.1)', borderRadius: 4 }} />
-										<div style={{ height: 48, background: 'rgba(255,255,255,0.05)', borderRadius: 4, marginTop: 8 }} />
-									</div>
-								</div>
-							</div>
-						))}
+					<div className={s.header}>
+						<h2 className={s.title}>{t('title')}</h2>
+					</div>
+					<div className={s.contentWrapper}>
+						<div className={s.leftColumn}>
+							{[1, 2, 3].map((i) => (
+								<div key={i} className={s.skeletonItem} />
+							))}
+						</div>
+						<div className={s.rightColumn}>
+							<div className={s.skeletonCard} />
+						</div>
 					</div>
 				</div>
 			</section>
@@ -152,56 +129,75 @@ export const NewsSection = () => {
 		return null
 	}
 
+	// Разделяем новости на список (слева) и главную (справа)
+	// Берем последние 4 новости.
+	// 1-я пойдет в большую карточку (справа), 2,3,4 - в список (слева).
+	// Или наоборот? На скриншоте слева список, справа карточка.
+	// Обычно самое свежее - большое. Если 0-й элемент самый свежий, то он должен быть справа.
+	const featuredNews = newsItems[0]
+	const listNews = newsItems.slice(1, 4)
+
 	return (
 		<section id="news" className={s.wrapper}>
 			<div className={s.container}>
-				<div className={s.titleLine}></div>
-				<h2 className={s.title}>{t('title')}</h2>
-
-				<div className={s.newsGrid}>
-					{getVisibleItems().map((item, index) => (
-						<article key={`${item.id}-${currentSlide}-${index}`} className={s.newsCard}>
-							<div className={s.imageContainer}>
-								<Image
-									src={item.image}
-									alt={item.title}
-									fill
-									className={s.newsImage}
-								/>
-							</div>
-							<div className={s.content}>
-								<div className={s.textContent}>
-									<h3 className={s.newsTitle}>{item.title}</h3>
-									<p className={s.newsDescription}>{item.description}</p>
-								</div>
-								<div className={s.footer}>
-									<span className={s.date}>{item.date}</span>
-									<button
-										type="button"
-										className={s.readMoreBtn}
-										onClick={() => openModal(item)}
-									>
-										{item.readMore}
-									</button>
-								</div>
-							</div>
-						</article>
-					))}
+				<div className={s.header}>
+					<h2 className={s.title}>{t('title')}</h2>
+					<Link href="/news" className={s.seeAllLink}>
+						Смотреть все новости
+					</Link>
 				</div>
 
-				<div className={s.navigation}>
-					<button className={s.navBtn} onClick={prevSlide} aria-label="Previous">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-							<path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-						</svg>
-					</button>
-					<button className={s.navBtn} onClick={nextSlide} aria-label="Next">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-							<path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-						</svg>
-					</button>
+				<div className={s.contentWrapper}>
+					{/* Левая колонка - Список новостей */}
+					<div className={s.leftColumn}>
+						{listNews.map((item) => (
+							<div 
+								key={item.id} 
+								className={s.newsListItem}
+								onClick={() => openModal(item)}
+							>
+								<div className={s.itemContent}>
+									<h3 className={s.itemTitle}>{item.title}</h3>
+									<p className={s.itemDate}>{item.description}</p>
+								</div>
+								<div className={s.arrowIcon}>
+									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M7 17L17 7M17 7H7M17 7V17" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									</svg>
+								</div>
+							</div>
+						))}
+					</div>
+
+					{/* Правая колонка - Большая карточка */}
+					{featuredNews && (
+						<div 
+							className={s.rightColumn}
+							onClick={() => openModal(featuredNews)}
+						>
+							<div className={s.featuredCard}>
+								<Image
+									src={featuredNews.image}
+									alt={featuredNews.title}
+									fill
+									className={s.featuredImage}
+								/>
+								<div className={s.overlay} />
+								<div className={s.featuredContent}>
+									<h3 className={s.featuredTitle}>{featuredNews.title}</h3>
+									<p className={s.featuredDescription}>{featuredNews.description}</p>
+								</div>
+								<div className={s.featuredArrow}>
+									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+										<path d="M7 17L17 7M17 7H7M17 7V17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+									</svg>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
+
 			<Modal
 				isOpen={isOpen}
 				onClose={handleCloseModal}

@@ -9,9 +9,10 @@ export default async function Home() {
 	return (
 		<div className={s.page}>
 				<MainSection />
+				<AboutSection />
+				<TeamSection />
 				<ModulesSection />
-			<NewsSection />
-			<LocalVideoSection
+			{/* <LocalVideoSection
 				videos={[
 					{
 						src: '/assets/images/edo.mp4',
@@ -50,12 +51,13 @@ export default async function Home() {
 						description: t('captions.v3'),
 					},
 				]}
-			/>
+			/> */}
 				<ScrollTopButton />
-				<AboutSection />
-				<TeamSection />
+				
+				
 				<DescriptionSection />
 			<ResourcesSection />
+			<NewsSection />
 			<Footer />
             <WhatsAppFloat />
 	</div>
