@@ -11,7 +11,8 @@ export const AboutSection = () => {
         <div className={s.descriptionBlock}>
           <p className={s.description}>
             {t.rich('description', {
-              b: (chunks) => <b>{chunks}</b>,
+				span: (chunks) => <span className={s.regular}>{chunks}</span>,
+				b: (chunks) => <b>{chunks}</b>,
             })}
           </p>
         </div>

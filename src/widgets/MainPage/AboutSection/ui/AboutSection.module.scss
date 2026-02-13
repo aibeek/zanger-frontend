@@ -1,65 +1,80 @@
 .aboutSection {
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 60px 40px;
-  display: flex;
-  align-items: flex-start;
-  gap: 60px;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: start;
+  column-gap: 200px;
+
+  @media (max-width: 1200px) {
+    column-gap: 80px;
+  }
 
   @media (max-width: 768px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     padding: 40px 20px;
-    gap: 24px;
+    row-gap: 24px;
   }
 }
 
 .title {
   font-family: 'Roboto', sans-serif;
-  font-size: 40px;
-  font-weight: 700;
+  font-size: 64px;
+  font-weight: 400;
+  font-style: normal;
   color: #1a1a2e;
   white-space: nowrap;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1;
+  letter-spacing: 0;
   flex-shrink: 0;
 
   @media (max-width: 768px) {
-    font-size: 32px;
+    font-size: 48px;
   }
 
   @media (max-width: 480px) {
-    font-size: 28px;
+    font-size: 36px;
   }
 }
 
 .descriptionBlock {
   flex: 1;
+  max-width: 932px;
+
+  @media (max-width: 768px) {
+    max-width: none;
+  }
 }
 
 .description {
   font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  line-height: 1.7;
-  color: #374151;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #0b0b1d;
   margin: 0;
-  font-weight: 400;
+  font-weight: 700;
 
   b {
     font-weight: 700;
-    color: #1a1a2e;
+    color: inherit;
   }
 
   @media (max-width: 768px) {
-    font-size: 15px;
+    font-size: 20px;
   }
 
   @media (max-width: 480px) {
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 18px;
   }
+}
+
+.regular {
+  font-weight: 400;
 }

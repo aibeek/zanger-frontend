@@ -428,7 +428,17 @@ export const TeamSection = () => {
     <>
       <section id="lawyers" className={s.wrapper} ref={sectionRef}>
         <div className={s.container}>
-          <h2 className={s.title}>{t('title')}</h2>
+				<div className={s.header}>
+					<Image
+						src="/assets/sectionimg/balga.png"
+						alt=""
+						width={300}
+						height={300}
+						className={s.balga}
+					/>
+					<h2 className={s.title}>{t('title')}</h2>
+					<div className={s.headerSpacer} aria-hidden="true" />
+				</div>
 
           <div className={s.gridWrapper}>
             {/* Left arrow */}

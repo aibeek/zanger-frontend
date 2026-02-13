@@ -1,11 +1,11 @@
 @import '@/app/styles/vars.scss';
 
-$header-height: 90px;
-$header-height-sm: 70px;
+$header-height: 72px;
+$header-height-sm: 60px;
 
 // ===== NAVBAR =====
 .navbar {
-	position: fixed;
+	position: sticky;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -43,7 +43,7 @@ $header-height-sm: 70px;
 .logoText {
 	font-family: 'Roboto', sans-serif;
 	font-size: 30px;
-	font-weight: 900;
+	font-weight: 700;
 	font-style: normal;
 	color: #1a1a2e;
 	letter-spacing: 0;
@@ -190,23 +190,19 @@ $header-height-sm: 70px;
 	display: flex;
 	flex-direction: column;
 	background: #ffffff;
-	padding-top: $header-height;
-
-	@media (max-width: 768px) {
-		padding-top: $header-height-sm;
-	}
 }
 
 // ===== HERO =====
 .hero {
 	position: relative;
 	width: 100%;
-	min-height: 100vh;
+	min-height: calc(100vh - #{$header-height});
 	display: flex;
 	align-items: stretch;
 	background: #ffffff;
 
 	@media (max-width: 768px) {
+		min-height: calc(100vh - #{$header-height-sm});
 		min-height: auto;
 		flex-direction: column;
 	}

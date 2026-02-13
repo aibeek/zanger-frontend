@@ -25,7 +25,9 @@ export const MainSection = () => {
 	const scrollToSection = (sectionId: string) => {
 		const element = document.getElementById(sectionId)
 		if (element) {
-			const headerHeight = 100
+			const headerEl = document.querySelector('header') as HTMLElement | null
+			const isFixed = headerEl ? window.getComputedStyle(headerEl).position === 'fixed' : false
+			const headerHeight = isFixed ? headerEl?.offsetHeight ?? 0 : 0
 			const elementPosition = element.offsetTop - headerHeight
 			window.scrollTo({ top: elementPosition, behavior: 'smooth' })
 		}
@@ -40,8 +42,8 @@ export const MainSection = () => {
 						<Image
 							src="/newlogo.png"
 							alt="ZANGER"
-							width={50}
-							height={55}
+							width={44}
+							height={48}
 							priority
 						/>
 						<span className={s.logoText}>ZANGER</span>
