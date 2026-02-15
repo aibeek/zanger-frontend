@@ -152,34 +152,34 @@ export const Footer = ({ id }: FooterProps) => {
 					<p>ТОО «Global Legal Technologies»</p>
 				</div>
 				<div className={s.bottomLinks}>
-					<Link
+					<a
 						target={'_blank'}
 						href={isKz ? policyNewKzURL : policyNewRuURL}
 						className={s.bottomLink}
 					>
 						{t('privacy')}
-					</Link>
-					<Link
+					</a>
+					<a
 						target={'_blank'}
 						href={isKz ? termsNewKzURL : termsNewRuURL}
 						className={s.bottomLink}
 					>
 						{t('userAgreement')}
-					</Link>
-					<Link
+					</a>
+					<a
 						target={'_blank'}
 						href={paymentHref}
 						className={s.bottomLink}
 					>
 						{t('payment')}
-					</Link>
-					<Link
+					</a>
+					<a
 						target={'_blank'}
 						href={canselSubscriptionHref}
 						className={s.bottomLink}
 					>
 						{t('canselSubscription')}
-					</Link>
+					</a>
 				</div>
 			</div>
 		</footer>
