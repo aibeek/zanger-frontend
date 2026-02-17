@@ -4,15 +4,17 @@ import { Footer } from '@/widgets/Footer'
 import { WhatsAppFloat } from '@/widgets/WhatsAppFloat'
 import { getTranslations } from 'next-intl/server'
 import s from './page.module.scss'
+
 export default async function Home() {
 	const t = await getTranslations('lending.videoSection')
+
 	return (
 		<div className={s.page}>
-				<MainSection />
-				<AboutSection />
-				<TeamSection />
-				<ModulesSection />
-			{/* <LocalVideoSection
+			<MainSection />
+			<AboutSection />
+			<TeamSection />
+			<ModulesSection />
+			<LocalVideoSection
 				videos={[
 					{
 						src: '/assets/images/edo.mp4',
@@ -51,15 +53,13 @@ export default async function Home() {
 						description: t('captions.v3'),
 					},
 				]}
-			/> */}
-				<ScrollTopButton />
-				
-				
-				<DescriptionSection />
+			/>
+			<ScrollTopButton />
+			<DescriptionSection />
 			<ResourcesSection />
 			<NewsSection />
 			<Footer />
-            <WhatsAppFloat />
-	</div>
+			<WhatsAppFloat />
+		</div>
 	)
 }
