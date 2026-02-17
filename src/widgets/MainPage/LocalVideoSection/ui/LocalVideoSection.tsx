@@ -71,7 +71,7 @@ export const LocalVideoSection: React.FC<LocalVideoSectionProps> = ({
   //     return [warning, ...list]
   //   }
   //   return list
-  // }, [videos])
+  // }, [
   const items = videos
 
   // Build a few common fallbacks for potential path/case issues
