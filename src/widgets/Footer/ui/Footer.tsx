@@ -73,7 +73,6 @@ export const Footer = ({ id }: FooterProps) => {
 		setMessageType('')
 
 		try {
-			// Здесь будет реальная отправка формы
 			// Пока что имитируем успешную отправку
 			await new Promise(resolve => setTimeout(resolve, 1000))
 			
