@@ -16,38 +16,38 @@
 	color: #ffffff;
 	position: relative;
 
-	.lendingMain {
+		.lendingMain {
 		max-width: 1384px;
 		width: 100%;
 		margin: 0 auto;
-		padding: 60px 40px;
+			padding: 40px 40px;
 		display: grid;
 		grid-template-columns: 200px 300px 1fr;
 		gap: 60px;
 		background: transparent;
 		border: none;
 
-		@media (max-width: 1424px) {
-			max-width: 1200px;
-			padding: 50px 40px;
+			@media (max-width: 1424px) {
+				max-width: 1200px;
+				padding: 36px 40px;
+			}
+
+			@media (max-width: 1024px) {
+				grid-template-columns: 1fr;
+				gap: 40px;
+				padding: 30px 30px;
+			}
+
+			@media (max-width: 480px) {
+				padding: 16px 16px;
+			}
 		}
 
-		@media (max-width: 1024px) {
-			grid-template-columns: 1fr;
-			gap: 40px;
-			padding: 40px 30px;
+		.leftSection {
+			display: flex;
+			flex-direction: column;
+			gap: 24px;
 		}
-
-		@media (max-width: 480px) {
-			padding: 20px 16px;
-		}
-	}
-
-	.leftSection {
-		display: flex;
-		flex-direction: column;
-		gap: 32px;
-	}
 
 	.logoText {
 		font-family: 'Roboto', sans-serif;
@@ -81,11 +81,11 @@
 		}
 	}
 
-	.contactsSection {
-		display: flex;
-		flex-direction: column;
-		gap: 24px;
-	}
+		.contactsSection {
+			display: flex;
+			flex-direction: column;
+			gap: 18px;
+		}
 
 	.sectionTitle {
 		font-size: 16px;
@@ -139,10 +139,10 @@
 		margin-top: 4px;
 	}
 
-	.socialIcons {
-		display: flex;
-		gap: 12px;
-		margin-top: 8px;
+		.socialIcons {
+			display: flex;
+			gap: 12px;
+			margin-top: 0;
 
 		a {
 			display: flex;
@@ -170,6 +170,7 @@
 	.contactFormSection {
 		display: flex;
 		justify-content: flex-end;
+		align-items: flex-start;
 
 		@media (max-width: 1024px) {
 			justify-content: flex-start;
@@ -179,32 +180,32 @@
 	.contactForm {
 		background: #ffffff;
 		border-radius: 24px;
-		padding: 32px 40px;
+		padding: 24px 32px;
 		width: 100%;
 		max-width: 520px;
 		color: #1a1a2e;
 	}
 
 	.formTitle {
-		font-size: 24px;
+		font-size: 22px;
 		font-weight: 700;
 		color: #1a1a2e;
-		margin-bottom: 24px;
+		margin-bottom: 16px;
 		text-align: center;
 	}
 
 	.formInputs {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 10px;
 	}
 
 	.formInput {
 		background: #F3F4F6;
 		border: none;
 		border-radius: 12px;
-		padding: 14px 20px;
-		font-size: 16px;
+		padding: 12px 18px;
+		font-size: 15px;
 		color: #1a1a2e;
 		width: 100%;
 
@@ -223,13 +224,13 @@
 		color: #ffffff;
 		border: none;
 		border-radius: 12px;
-		padding: 14px 20px;
-		font-size: 16px;
+		padding: 12px 18px;
+		font-size: 15px;
 		font-weight: 600;
 		cursor: pointer;
 		width: 100%;
 		transition: background 0.2s ease;
-		margin-top: 4px;
+		margin-top: 2px;
 
 		&:hover {
 			background: #2563EB;
@@ -241,9 +242,9 @@
 		}
 	}
 
-	.footerBottom {
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 32px 40px;
+		.footerBottom {
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+			padding: 20px 40px;
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
@@ -251,16 +252,16 @@
 		max-width: 1384px;
 		margin: 0 auto;
 
-		@media (max-width: 1024px) {
-			flex-direction: column;
-			gap: 24px;
-			padding: 32px 30px;
-		}
+			@media (max-width: 1024px) {
+				flex-direction: column;
+				gap: 24px;
+				padding: 20px 30px;
+			}
 
-		@media (max-width: 480px) {
-			padding: 24px 16px;
+			@media (max-width: 480px) {
+				padding: 16px 16px;
+			}
 		}
-	}
 
 	.copyright {
 		display: flex;
