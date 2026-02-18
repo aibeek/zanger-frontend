@@ -71,7 +71,7 @@ export const DescriptionSection = () => {
 						</div>
 					</div>
 
-					{/* Юристам */}
+					{/*  */}
 					<div className={`${s.accordionCard} ${openCard === 'right' ? s.accordionCardOpen : ''}`}>
 						<button
 							className={s.accordionHeader}
