@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useModal } from '@/shared/ui-kit'
 import { useEffect, useState } from 'react'
@@ -27,7 +27,7 @@ import { useLoginStore } from '@/features/auth/login'
 import Image from 'next/image'
 import avatar from '@/app/assets/icons/avatar-default.svg'
 
-// Импорт иконок для меню профиля
+// Profile menu icons
 import consultationIcon from '@/app/assets/icons/consultation-price.svg'
 import specializationIcon from '@/app/assets/icons/medal.svg'
 import documentsIcon from '@/app/assets/icons/user-tabs/responses-and-orders.svg'
@@ -58,11 +58,11 @@ const ClientProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
         openAvatar()
     }
 
-    // Добавляем логирование для отладки
+    // Debug logging
     console.log('ClientProfileAvatar - avatarUrl:', avatarUrl)
     console.log('ClientProfileAvatar - imageError:', imageError)
 
-    // Упрощаем логику - показываем реальное фото если оно есть и не было ошибки загрузки
+    // Show the uploaded avatar when it exists and loaded successfully
     const hasValidAvatar = avatarUrl && avatarUrl.trim() !== '' && !imageError
     const imageSrc = hasValidAvatar ? avatarUrl : avatar
 
@@ -122,11 +122,11 @@ const LawyerProfileAvatar = ({ avatarUrl }: { avatarUrl: string }) => {
         openAvatar()
     }
 
-    // Добавляем логирование для отладки
+    // Debug logging
     console.log('LawyerProfileAvatar - avatarUrl:', avatarUrl)
     console.log('LawyerProfileAvatar - imageError:', imageError)
 
-    // Упрощаем логику - показываем реальное фото если оно есть и не было ошибки загрузки
+    // Show the uploaded avatar when it exists and loaded successfully
     const hasValidAvatar = avatarUrl && avatarUrl.trim() !== '' && !imageError
     const imageSrc = hasValidAvatar ? avatarUrl : avatar
 
@@ -181,9 +181,7 @@ export default function ProfilePage() {
     const { close, open, isOpen } = useModal()
     const [popupStatus, setPopupStatus] = useState<'success' | 'failed' | null>(null)
     const [popupMessage, setPopupMessage] = useState<string | null>(null)
-    const [showBanner, setShowBanner] = useState<boolean>(true)
-    const [showPromoBanner, setShowPromoBanner] = useState<boolean>(true)
-    
+    const [showLawyerInfoBanner, setShowLawyerInfoBanner] = useState<boolean>(true)
     useEffect(() => {
         const checkParams = async () => {
             let status: 'success' | 'failed' | null = null
@@ -221,7 +219,7 @@ export default function ProfilePage() {
     const personalData = useLoginStore((state) => state.personalData)
     const avatarUrl = personalData?.icon ?? ''
 
-    // Логирование для отладки аватара
+    // Avatar debug logging
     console.log('ProfilePage - personalData:', personalData)
     console.log('ProfilePage - avatarUrl:', avatarUrl)
     console.log('ProfilePage - role:', role)
@@ -229,8 +227,8 @@ export default function ProfilePage() {
     const [activeModal, setActiveModal] = useState<string | null>(null)
 
     const openModal = (modalType: string) => {
-        console.log('🔓 Opening modal:', modalType)
-        console.log('📊 Current personalData:', personalData)
+        console.log('Opening modal:', modalType)
+        console.log('Current personalData:', personalData)
         setActiveModal(modalType)
         open()
     }
@@ -258,65 +256,16 @@ export default function ProfilePage() {
         return (
             <div className={s.profileContent}>
                 <div className={s.profileSettings}>
-                    {/* Promo Banner */}
-                    {showPromoBanner && (
-                        <div className={s.promoBanner}>
-                            {/* Animated sparkles */}
-                            <div className={s.sparkle} style={{ top: '10%', left: '5%', animationDelay: '0s' }}>✦</div>
-                            <div className={s.sparkle} style={{ top: '20%', right: '15%', animationDelay: '0.5s' }}>✦</div>
-                            <div className={s.sparkle} style={{ bottom: '15%', left: '20%', animationDelay: '1s' }}>✦</div>
-                            <div className={s.sparkle} style={{ top: '60%', right: '8%', animationDelay: '1.5s' }}>✦</div>
-                            <div className={s.sparkle} style={{ bottom: '30%', right: '25%', animationDelay: '0.7s' }}>⭐</div>
-                            
-                            {/* Pulsing badge */}
-                            <div className={s.promoBadge}>
-                                <span className={s.badgeGlow}></span>
-                                -70%
-                            </div>
-                            
-                            <div className={s.promoBannerContent}>
-                                {/* Animated fire */}
-                                <span className={s.promoFireIcon}>🔥</span>
-                                
-                                <span className={s.promoTitle}>{t('profile.promo_banner.title')}</span>
-                                
-                                <div className={s.promoPriceBlock}>
-                                    <span className={s.promoLabel}>{t('profile.promo_banner.label')}</span>
-                                    <span className={s.promoBannerNewPrice}>
-                                        <span className={s.priceGlow}></span>
-                                        {t('profile.promo_banner.newPrice')}
-                                    </span>
-                                    <span className={s.promoPerMonth}>/ {t('profile.promo_banner.perMonth')}</span>
-                                    <span className={s.promoBannerOldPrice}>{t('profile.promo_banner.oldPrice')}</span>
-                                </div>
-                                
-                                <div className={s.promoDateBlock}>
-                                    <span className={s.promoCalendarIcon}>📅</span>
-                                    <span className={s.promoDate}>{t('profile.promo_banner.validUntil')}</span>
-                                </div>
-                            </div>
-                            
-                            <button 
-                                className={s.promoBannerCloseBtn}
-                                onClick={() => setShowPromoBanner(false)}
-                                aria-label={t('profile.promo_banner.hide')}
-                            >
-                                ✕
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Info Banner for Lawyers */}
-                    {showBanner && (
+                    {showLawyerInfoBanner && (
                         <div className={s.infoBanner}>
                             <div className={s.bannerIcon}>ℹ️</div>
                             <div className={s.bannerContent}>
                                 <h4 className={s.bannerTitle}>{t('profile.lawyer_info_banner.title')}</h4>
                                 <p className={s.bannerDescription}>{t('profile.lawyer_info_banner.description')}</p>
                             </div>
-                            <button 
+                            <button
                                 className={s.bannerCloseBtn}
-                                onClick={() => setShowBanner(false)}
+                                onClick={() => setShowLawyerInfoBanner(false)}
                                 aria-label={t('profile.lawyer_info_banner.hide')}
                             >
                                 {t('profile.lawyer_info_banner.hide')}
@@ -409,25 +358,7 @@ export default function ProfilePage() {
     return (
         <div className={s.profileContent}>
             <div className={s.profileSettings}>
-                {/* Info Banner for Clients */}
-                {showBanner && (
-                    <div className={s.infoBanner}>
-                        <div className={s.bannerIcon}>ℹ️</div>
-                        <div className={s.bannerContent}>
-                            <h4 className={s.bannerTitle}>{t('profile.client_info_banner.title')}</h4>
-                            <p className={s.bannerDescription}>{t('profile.client_info_banner.description')}</p>
-                        </div>
-                        <button 
-                            className={s.bannerCloseBtn}
-                            onClick={() => setShowBanner(false)}
-                            aria-label={t('profile.client_info_banner.hide')}
-                        >
-                            {t('profile.client_info_banner.hide')}
-                        </button>
-                    </div>
-                )}
-
-                {/* Profile Header - 2:3 columns для клиентов */}
+                {/* Profile Header - 2:3 columns РґР»СЏ РєР»РёРµРЅС‚РѕРІ */}
                 <div className={s.profileHeader}>
                     {/* Left: Avatar */}
                     <div className={s.clientAvatarSection}>
@@ -452,65 +383,65 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Client Actions Panel - 2 колонки: смена пароля слева, документы справа */}
+                {/* Client Actions Panel - 2 РєРѕР»РѕРЅРєРё: СЃРјРµРЅР° РїР°СЂРѕР»СЏ СЃР»РµРІР°, РґРѕРєСѓРјРµРЅС‚С‹ СЃРїСЂР°РІР° */}
                 <div className={s.clientActionPanel}>
-                    {/* Смена пароля */}
+                    {/* РЎРјРµРЅР° РїР°СЂРѕР»СЏ */}
                     <div className={`${s.clientActionCard} ${s.passwordSection}`}>
-                        <h3>Смена пароля</h3>
+                        <h3>РЎРјРµРЅР° РїР°СЂРѕР»СЏ</h3>
                         <div className={s.passwordForm}>
                             <input 
                                 type="password" 
-                                placeholder="Введите старый пароль" 
+                                placeholder="Р’РІРµРґРёС‚Рµ СЃС‚Р°СЂС‹Р№ РїР°СЂРѕР»СЊ" 
                                 className={s.passwordInput}
                             />
                             <input 
                                 type="password" 
-                                placeholder="Введите новый пароль" 
+                                placeholder="Р’РІРµРґРёС‚Рµ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ" 
                                 className={s.passwordInput}
                             />
                             <input 
                                 type="password" 
-                                placeholder="Подтвердите пароль" 
+                                placeholder="РџРѕРґС‚РІРµСЂРґРёС‚Рµ РїР°СЂРѕР»СЊ" 
                                 className={s.passwordInput}
                             />
                             <div className={s.passwordRequirements}>
-                                Минимальная длина пароля - 8 символов.
+                                РњРёРЅРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РїР°СЂРѕР»СЏ - 8 СЃРёРјРІРѕР»РѕРІ.
                             </div>
                             <div className={s.passwordDescription}>
-                                Пароль должен состоять из заглавных и строчных букв латинского алфавита (A-Z), цифр (0-9) и специальных символов.
+                                РџР°СЂРѕР»СЊ РґРѕР»Р¶РµРЅ СЃРѕСЃС‚РѕСЏС‚СЊ РёР· Р·Р°РіР»Р°РІРЅС‹С… Рё СЃС‚СЂРѕС‡РЅС‹С… Р±СѓРєРІ Р»Р°С‚РёРЅСЃРєРѕРіРѕ Р°Р»С„Р°РІРёС‚Р° (A-Z), С†РёС„СЂ (0-9) Рё СЃРїРµС†РёР°Р»СЊРЅС‹С… СЃРёРјРІРѕР»РѕРІ.
                             </div>
                             <div className={s.passwordButtons}>
-                                <button className={s.primaryBtn}>Сменить пароль</button>
-                                <button className={s.secondaryBtn}>Отмена</button>
+                                <button className={s.primaryBtn}>РЎРјРµРЅРёС‚СЊ РїР°СЂРѕР»СЊ</button>
+                                <button className={s.secondaryBtn}>РћС‚РјРµРЅР°</button>
                             </div>
                         </div>
                     </div>
 
-                    {/* Ваши документы */}
+                    {/* Р’Р°С€Рё РґРѕРєСѓРјРµРЅС‚С‹ */}
                     <div className={`${s.clientActionCard} ${s.documentsSection}`}>
-                        <h3>Ваши документы</h3>
+                        <h3>Р’Р°С€Рё РґРѕРєСѓРјРµРЅС‚С‹</h3>
                         <div className={s.documentsList}>
                             <div className={s.documentItem}>
                                 <div className={s.documentIcon}>
                                     <Image src={documentsIcon} alt="" width={24} height={24} />
                                 </div>
-                                <div className={s.documentName}>Паспорт (скан первой страницы).pdf</div>
+                                <div className={s.documentName}>РџР°СЃРїРѕСЂС‚ (СЃРєР°РЅ РїРµСЂРІРѕР№ СЃС‚СЂР°РЅРёС†С‹).pdf</div>
                             </div>
                             <div className={s.documentItem}>
                                 <div className={s.documentIcon}>
                                     <Image src={documentsIcon} alt="" width={24} height={24} />
                                 </div>
-                                <div className={s.documentName}>Свидетельство о регистрации.pdf</div>
+                                <div className={s.documentName}>РЎРІРёРґРµС‚РµР»СЊСЃС‚РІРѕ Рѕ СЂРµРіРёСЃС‚СЂР°С†РёРё.pdf</div>
                             </div>
                             <div className={s.documentItem}>
                                 <div className={s.documentIcon}>
                                     <Image src={documentsIcon} alt="" width={24} height={24} />
                                 </div>
-                                <div className={s.documentName}>Фото 3x4.jpg</div>
+                                <div className={s.documentName}>Р¤РѕС‚Рѕ 3x4.jpg</div>
                             </div>
                         </div>
                         <button className={s.addDocumentBtn}>
-                            Добавить вложение
+                            Р”РѕР±Р°РІРёС‚СЊ РІР»РѕР¶РµРЅРёРµ
                         </button>
                     </div>
                 </div>
@@ -519,3 +450,4 @@ export default function ProfilePage() {
         </div>
     )
 }
+
