@@ -91,6 +91,44 @@ $header-height-sm: 56px; // mobilee
 		z-index: 0;
 	}
 
+	.sakuraDecor {
+		position: absolute;
+		top: 400px;
+		right: 1px;
+		z-index: 1;
+		pointer-events: none;
+		overflow: hidden;
+		width: 600px;
+		height: 350px;
+
+		@media (max-width: 1200px) {
+			width: 400px;
+			height: 280px;
+		}
+
+		@media (max-width: 900px) {
+			width: 320px;
+			height: 224px;
+		}
+
+		@media (max-width: 600px) {
+			width: 240px;
+			height: 168px;
+		}
+
+		@media (max-width: 480px) {
+			width: 180px;
+			height: 126px;
+		}
+	}
+
+	.sakuraImg {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		object-position: top right;
+	}
+
 	.container {
 		display: flex;
 		align-items: flex-start; // align columns by top so hubsBadge lines up with title

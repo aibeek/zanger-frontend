@@ -13,6 +13,7 @@ import GooglePlay from '@/app/assets/icons/googleplay.webp'
 import AppleStore from '@/app/assets/icons/appstore.webp'
 import HubsLogoKZ from '../../../../../public/assets/images/hubs.svg'
 import HubsLogoRU from '../../../../../public/assets/images/hub.svg'
+import SakuraImg from '@/app/assets/images/maingul.png'
 
 
 export const MainSection = () => {
@@ -37,6 +38,16 @@ export const MainSection = () => {
 					muted
 					playsInline
 				/>
+				<div className={s.sakuraDecor}>
+					<Image
+						src={SakuraImg}
+						alt=""
+						className={s.sakuraImg}
+						width={500}
+						height={350}
+						priority
+					/>
+				</div>
 				<div className={s.container}>
 					<div className={s.textSection}>
 						{/* Title and content block (badge moved to phone side) */}
