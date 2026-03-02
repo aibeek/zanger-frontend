@@ -101,24 +101,61 @@ $header-height-sm: 56px; // mobilee
 		width: 600px;
 		height: 350px;
 
+		@media (max-width: 1600px) {
+			top: 350px;
+			width: 500px;
+			height: 300px;
+		}
+
 		@media (max-width: 1200px) {
+			top: 300px;
+			right: 0;
 			width: 400px;
 			height: 280px;
 		}
 
+		@media (max-width: 1024px) {
+			top: 280px;
+			right: 0;
+			width: 350px;
+			height: 245px;
+		}
+
 		@media (max-width: 900px) {
+			top: auto;
+			bottom: 0;
+			right: 0;
 			width: 320px;
 			height: 224px;
 		}
 
+		@media (max-width: 768px) {
+			top: auto;
+			bottom: 0;
+			right: 0;
+			width: 280px;
+			height: 196px;
+		}
+
 		@media (max-width: 600px) {
+			top: auto;
+			bottom: 0;
+			right: 0;
 			width: 240px;
 			height: 168px;
 		}
 
 		@media (max-width: 480px) {
-			width: 180px;
-			height: 126px;
+			top: auto;
+			bottom: 0;
+			right: 0;
+			width: 200px;
+			height: 140px;
+		}
+
+		@media (max-width: 380px) {
+			width: 170px;
+			height: 120px;
 		}
 	}
 
